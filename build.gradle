@@ -1,0 +1,46 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:0.9.+"
+    }
+}
+
+apply plugin: "android"
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.0.3"
+
+    defaultConfig {
+        versionName "1.0.0"
+        versionCode 100
+
+        def apiFile = file("api.properties")
+        def apiProperties = new Properties()
+
+        if (apiFile.exists()) {
+            apiProperties.load(apiFile.newInputStream())
+
+            buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
+            buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
+            buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
+            buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
+        }
+    }
+}
+
+def formatStringField(field) {
+    return String.format("\"%s\"", field)
+}
+
+dependencies {
+    repositories {
+        mavenCentral()
+    }
+
+    compile "com.squareup.okhttp:okhttp:1.5.+"
+    compile "com.squareup.retrofit:retrofit:1.5.+"
+}

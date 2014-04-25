@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="org.amahi.anywhere"
+	android:installLocation="auto">
+
+	<uses-sdk
+		android:minSdkVersion="14"
+		android:targetSdkVersion="19"/>
+
+	<uses-permission
+		android:name="android.permission.INTERNET"/>
+
+	<application
+		android:label="Amahi Anywhere">
+
+		<activity
+			android:name="org.amahi.anywhere.activity.ServersActivity">
+
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+
+		</activity>
+
+	</application>
+
+</manifest>

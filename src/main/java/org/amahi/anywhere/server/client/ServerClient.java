@@ -2,8 +2,6 @@ package org.amahi.anywhere.server.client;
 
 import com.squareup.okhttp.OkHttpClient;
 
-import org.amahi.anywhere.server.Api;
-import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.header.ApiHeaders;
 import org.amahi.anywhere.server.model.Server;
@@ -14,46 +12,31 @@ import org.amahi.anywhere.server.model.ServerShare;
 import java.util.List;
 
 import retrofit.RestAdapter;
-import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 
 public class ServerClient
 {
-	private final Server server;
+	private final ProxyClient proxyClient;
+
+	private Server server;
 	private ServerRoute serverRoute;
 
-	private final ProxyApi proxyApi;
-	private ServerApi serverApi;
+	private ServerApi api;
 
-	public static ServerClient of(Server server) {
-		return new ServerClient(server);
+	public ServerClient() {
+		this.proxyClient = new ProxyClient();
 	}
 
-	private ServerClient(Server server) {
+	public void connect(Server server) {
 		this.server = server;
+		this.serverRoute = proxyClient.getRoute(server);
 
-		this.proxyApi = buildProxyApi();
+		this.api = buildApi();
 	}
 
-	private ProxyApi buildProxyApi() {
+	private ServerApi buildApi() {
 		RestAdapter apiAdapter = new RestAdapter.Builder()
-			.setEndpoint(Api.getProxyUrl())
-			.setClient(new OkClient(new OkHttpClient()))
-			.setRequestInterceptor(new ApiHeaders())
-			.build();
-
-		return apiAdapter.create(ProxyApi.class);
-	}
-
-	public void connect() {
-		this.serverRoute = proxyApi.getServerRoute(server.getSession());
-
-		this.serverApi = buildServerApi(serverRoute.getRemoteAddress());
-	}
-
-	private ServerApi buildServerApi(String serverAddress) {
-		RestAdapter apiAdapter = new RestAdapter.Builder()
-			.setEndpoint(serverAddress)
+			.setEndpoint(serverRoute.getRemoteAddress())
 			.setClient(new OkClient(new OkHttpClient()))
 			.setRequestInterceptor(new ApiHeaders())
 			.build();
@@ -62,18 +45,10 @@ public class ServerClient
 	}
 
 	public List<ServerShare> getShares() {
-		try {
-			return serverApi.getShares(server.getSession());
-		} catch (RetrofitError e) {
-			throw new RuntimeException(e);
-		}
+		return api.getShares(server.getSession());
 	}
 
 	public List<ServerFile> getFiles(ServerShare share, String path) {
-		try {
-			return serverApi.getFiles(server.getSession(), share.getName(), path);
-		} catch (RetrofitError e) {
-			throw new RuntimeException(e);
-		}
+		return api.getFiles(server.getSession(), share.getName(), path);
 	}
 }

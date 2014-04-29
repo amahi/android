@@ -10,23 +10,14 @@ import org.amahi.anywhere.server.model.Server;
 import java.util.List;
 
 import retrofit.RestAdapter;
-import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 
 public class AmahiClient
 {
 	private final AmahiApi api;
 
-	private final String authenticationToken;
-
-	public static AmahiClient with(String authenticationToken) {
-		return new AmahiClient(authenticationToken);
-	}
-
-	private AmahiClient(String authenticationToken) {
+	public AmahiClient() {
 		this.api = buildApi();
-
-		this.authenticationToken = authenticationToken;
 	}
 
 	private AmahiApi buildApi() {
@@ -39,11 +30,11 @@ public class AmahiClient
 		return apiAdapter.create(AmahiApi.class);
 	}
 
-	public List<Server> getServers() {
-		try {
-			return api.getServers(authenticationToken);
-		} catch (RetrofitError e) {
-			throw new RuntimeException(e);
-		}
+	public String getAuthenticationToken(String username, String password) {
+		return api.authenticate(Api.getClientId(), Api.getClientSecret(), username, password).getToken();
+	}
+
+	public List<Server> getServers(String authenticationToken) {
+		return api.getServers(authenticationToken);
 	}
 }

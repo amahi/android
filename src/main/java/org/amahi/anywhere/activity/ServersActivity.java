@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import org.amahi.anywhere.server.client.AmahiClient;
-import org.amahi.anywhere.server.client.Authenticator;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -27,13 +26,15 @@ public class ServersActivity extends Activity implements Runnable
 
 	@Override
 	public void run() {
-		String authenticationToken = Authenticator.with(this).authenticate("USER", "PASS");
+		AmahiClient amahiClient = new AmahiClient();
 
-		List<Server> servers = AmahiClient.with(authenticationToken).getServers();
+		String authenticationToken = amahiClient.getAuthenticationToken("USER", "PASS");
+
+		List<Server> servers = amahiClient.getServers(authenticationToken);
 		Server server = servers.get(0);
 
-		ServerClient serverClient = ServerClient.of(server);
-		serverClient.connect();
+		ServerClient serverClient = new ServerClient();
+		serverClient.connect(server);
 
 		List<ServerShare> serverShares = serverClient.getShares();
 		ServerShare serverShare = serverShares.get(0);

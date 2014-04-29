@@ -10,10 +10,12 @@ import org.amahi.anywhere.server.model.ServerShare;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import retrofit.RestAdapter;
 import retrofit.client.Client;
 
+@Singleton
 public class ServerClient
 {
 	private final ProxyClient proxyClient;
@@ -27,8 +29,8 @@ public class ServerClient
 	private ServerApi api;
 
 	@Inject
-	public ServerClient(ProxyClient proxyClient, Client client, ApiHeaders headers) {
-		this.proxyClient = proxyClient;
+	public ServerClient(Client client, ApiHeaders headers) {
+		this.proxyClient = new ProxyClient(client, headers);
 
 		this.client = client;
 		this.headers = headers;

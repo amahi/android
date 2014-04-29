@@ -8,10 +8,12 @@ import org.amahi.anywhere.server.model.Server;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import retrofit.RestAdapter;
 import retrofit.client.Client;
 
+@Singleton
 public class AmahiClient
 {
 	private final AmahiApi api;

@@ -6,16 +6,13 @@ import org.amahi.anywhere.server.header.ApiHeaders;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerRoute;
 
-import javax.inject.Inject;
-
 import retrofit.RestAdapter;
 import retrofit.client.Client;
 
-public class ProxyClient
+class ProxyClient
 {
 	private final ProxyApi api;
 
-	@Inject
 	public ProxyClient(Client client, ApiHeaders headers) {
 		this.api = buildApi(client, headers);
 	}

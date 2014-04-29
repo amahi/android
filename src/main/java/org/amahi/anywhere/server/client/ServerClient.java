@@ -5,7 +5,7 @@ import com.squareup.okhttp.OkHttpClient;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
-import org.amahi.anywhere.server.header.SessionHeaders;
+import org.amahi.anywhere.server.header.ApiHeaders;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerRoute;
@@ -39,14 +39,14 @@ public class ServerClient
 		RestAdapter apiAdapter = new RestAdapter.Builder()
 			.setEndpoint(Api.getProxyUrl())
 			.setClient(new OkClient(new OkHttpClient()))
-			.setRequestInterceptor(new SessionHeaders(server.getSession()))
+			.setRequestInterceptor(new ApiHeaders())
 			.build();
 
 		return apiAdapter.create(ProxyApi.class);
 	}
 
 	public void connect() {
-		this.serverRoute = proxyApi.getServerRoute();
+		this.serverRoute = proxyApi.getServerRoute(server.getSession());
 
 		this.serverApi = buildServerApi(serverRoute.getRemoteAddress());
 	}
@@ -55,7 +55,7 @@ public class ServerClient
 		RestAdapter apiAdapter = new RestAdapter.Builder()
 			.setEndpoint(serverAddress)
 			.setClient(new OkClient(new OkHttpClient()))
-			.setRequestInterceptor(new SessionHeaders(server.getSession()))
+			.setRequestInterceptor(new ApiHeaders())
 			.build();
 
 		return apiAdapter.create(ServerApi.class);
@@ -63,7 +63,7 @@ public class ServerClient
 
 	public List<ServerShare> getShares() {
 		try {
-			return serverApi.getShares();
+			return serverApi.getShares(server.getSession());
 		} catch (RetrofitError e) {
 			throw new RuntimeException(e);
 		}
@@ -71,7 +71,7 @@ public class ServerClient
 
 	public List<ServerFile> getFiles(ServerShare share, String path) {
 		try {
-			return serverApi.getFiles(share.getName(), path);
+			return serverApi.getFiles(server.getSession(), share.getName(), path);
 		} catch (RetrofitError e) {
 			throw new RuntimeException(e);
 		}

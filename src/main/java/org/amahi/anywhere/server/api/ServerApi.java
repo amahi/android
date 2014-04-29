@@ -11,10 +11,12 @@ import retrofit.http.Query;
 public interface ServerApi
 {
 	@GET("/shares")
-	public List<ServerShare> getShares();
+	public List<ServerShare> getShares(
+		@Query("session") String session);
 
 	@GET("/files")
 	public List<ServerFile> getFiles(
+		@Query("session") String session,
 		@Query("s") String share,
 		@Query("p") String path);
 }

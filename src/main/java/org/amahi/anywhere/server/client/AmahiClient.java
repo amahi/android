@@ -3,9 +3,8 @@ package org.amahi.anywhere.server.client;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.api.AmahiApi;
 import org.amahi.anywhere.server.header.ApiHeaders;
-import org.amahi.anywhere.server.model.Server;
-
-import java.util.List;
+import org.amahi.anywhere.server.response.AuthenticationResponse;
+import org.amahi.anywhere.server.response.ServersResponse;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -33,11 +32,11 @@ public class AmahiClient
 		return apiAdapter.create(AmahiApi.class);
 	}
 
-	public String getAuthenticationToken(String username, String password) {
-		return api.authenticate(Api.getClientId(), Api.getClientSecret(), username, password).getToken();
+	public void getAuthenticationToken(String username, String password) {
+		api.authenticate(Api.getClientId(), Api.getClientSecret(), username, password, new AuthenticationResponse());
 	}
 
-	public List<Server> getServers(String authenticationToken) {
-		return api.getServers(authenticationToken);
+	public void getServers(String authenticationToken) {
+		api.getServers(authenticationToken, new ServersResponse());
 	}
 }

@@ -2,19 +2,23 @@ package org.amahi.anywhere.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.Toast;
+
+import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
+import org.amahi.anywhere.bus.AuthenticationDoneEvent;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ConnectionNotAuthorizedEvent;
+import org.amahi.anywhere.bus.ConnectionTimeoutEvent;
+import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
-import org.amahi.anywhere.server.model.Server;
-import org.amahi.anywhere.server.model.ServerFile;
-import org.amahi.anywhere.server.model.ServerShare;
-
-import java.util.List;
+import org.amahi.anywhere.server.model.Authentication;
 
 import javax.inject.Inject;
 
-public class ServersActivity extends Activity implements Runnable
+public class ServersActivity extends Activity
 {
 	@Inject
 	AmahiClient amahiClient;
@@ -28,29 +32,58 @@ public class ServersActivity extends Activity implements Runnable
 
 		setUpInjections();
 
-		setUpFiles();
+		setUpAuthentication();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
 	}
 
-	private void setUpFiles() {
-		new Thread(this).start();
+	private void setUpAuthentication() {
+		amahiClient.getAuthenticationToken("USER", "PASS");
+	}
+
+	@Subscribe
+	public void onAuthenticationDone(AuthenticationDoneEvent event) {
+		showMessage("Authorized.");
+
+		setUpServers(event.getAuthentication());
+	}
+
+	private void showMessage(String message) {
+		Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+	}
+
+	private void setUpServers(Authentication authentication) {
+		amahiClient.getServers(authentication.getToken());
+	}
+
+	@Subscribe
+	public void onServersLoaded(ServersLoadedEvent event) {
+		showMessage("Loaded.");
+	}
+
+	@Subscribe
+	public void onConnectionNotAuthorized(ConnectionNotAuthorizedEvent event) {
+		showMessage("Unauthorized.");
+	}
+
+	@Subscribe
+	public void onConnectionTimeout(ConnectionTimeoutEvent event) {
+		showMessage("Timeout.");
 	}
 
 	@Override
-	public void run() {
-		String authenticationToken = amahiClient.getAuthenticationToken("USER", "PASS");
+	protected void onResume() {
+		super.onResume();
 
-		List<Server> servers = amahiClient.getServers(authenticationToken);
-		Server server = servers.get(0);
+		BusProvider.getBus().register(this);
+	}
 
-		serverClient.connect(server);
+	@Override
+	protected void onPause() {
+		super.onPause();
 
-		List<ServerShare> serverShares = serverClient.getShares();
-		ServerShare serverShare = serverShares.get(0);
-
-		List<ServerFile> serverFiles = serverClient.getFiles(serverShare, null);
+		BusProvider.getBus().unregister(this);
 	}
 }

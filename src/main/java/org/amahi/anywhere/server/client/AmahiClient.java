@@ -1,7 +1,5 @@
 package org.amahi.anywhere.server.client;
 
-import com.squareup.okhttp.OkHttpClient;
-
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.api.AmahiApi;
 import org.amahi.anywhere.server.header.ApiHeaders;
@@ -9,22 +7,25 @@ import org.amahi.anywhere.server.model.Server;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit.RestAdapter;
-import retrofit.client.OkClient;
+import retrofit.client.Client;
 
 public class AmahiClient
 {
 	private final AmahiApi api;
 
-	public AmahiClient() {
-		this.api = buildApi();
+	@Inject
+	public AmahiClient(Client client, ApiHeaders headers) {
+		this.api = buildApi(client, headers);
 	}
 
-	private AmahiApi buildApi() {
+	private AmahiApi buildApi(Client client, ApiHeaders headers) {
 		RestAdapter apiAdapter = new RestAdapter.Builder()
 			.setEndpoint(Api.getAmahiUrl())
-			.setClient(new OkClient(new OkHttpClient()))
-			.setRequestInterceptor(new ApiHeaders())
+			.setClient(client)
+			.setRequestInterceptor(headers)
 			.build();
 
 		return apiAdapter.create(AmahiApi.class);

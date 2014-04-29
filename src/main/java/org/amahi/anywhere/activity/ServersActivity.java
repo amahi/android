@@ -3,6 +3,7 @@ package org.amahi.anywhere.activity;
 import android.app.Activity;
 import android.os.Bundle;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
@@ -11,29 +12,40 @@ import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class ServersActivity extends Activity implements Runnable
 {
+	@Inject
+	AmahiClient amahiClient;
+
+	@Inject
+	ServerClient serverClient;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		getFiles();
+		setUpInjections();
+
+		setUpFiles();
 	}
 
-	private void getFiles() {
+	private void setUpInjections() {
+		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpFiles() {
 		new Thread(this).start();
 	}
 
 	@Override
 	public void run() {
-		AmahiClient amahiClient = new AmahiClient();
-
 		String authenticationToken = amahiClient.getAuthenticationToken("USER", "PASS");
 
 		List<Server> servers = amahiClient.getServers(authenticationToken);
 		Server server = servers.get(0);
 
-		ServerClient serverClient = new ServerClient();
 		serverClient.connect(server);
 
 		List<ServerShare> serverShares = serverClient.getShares();

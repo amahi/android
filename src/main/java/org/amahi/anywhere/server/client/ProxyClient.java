@@ -1,29 +1,30 @@
 package org.amahi.anywhere.server.client;
 
-import com.squareup.okhttp.OkHttpClient;
-
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.header.ApiHeaders;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerRoute;
 
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
+import javax.inject.Inject;
 
-class ProxyClient
+import retrofit.RestAdapter;
+import retrofit.client.Client;
+
+public class ProxyClient
 {
 	private final ProxyApi api;
 
-	public ProxyClient() {
-		this.api = buildApi();
+	@Inject
+	public ProxyClient(Client client, ApiHeaders headers) {
+		this.api = buildApi(client, headers);
 	}
 
-	private ProxyApi buildApi() {
+	private ProxyApi buildApi(Client client, ApiHeaders headers) {
 		RestAdapter apiAdapter = new RestAdapter.Builder()
 			.setEndpoint(Api.getProxyUrl())
-			.setClient(new OkClient(new OkHttpClient()))
-			.setRequestInterceptor(new ApiHeaders())
+			.setClient(client)
+			.setRequestInterceptor(headers)
 			.build();
 
 		return apiAdapter.create(ProxyApi.class);

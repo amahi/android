@@ -11,6 +11,7 @@
 		android:name="android.permission.INTERNET"/>
 
 	<application
+		android:name=".AmahiApplication"
 		android:label="Amahi Anywhere">
 
 		<activity

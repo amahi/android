@@ -1,8 +1,10 @@
 package org.amahi.anywhere.server.model;
 
-import android.text.format.Time;
-
 import com.google.gson.annotations.SerializedName;
+
+import org.amahi.anywhere.util.Time;
+
+import java.util.Date;
 
 public class ServerShare
 {
@@ -16,11 +18,7 @@ public class ServerShare
 		return name;
 	}
 
-	public Time getModificationTime() {
-		Time time = new Time();
-
-		time.parse3339(modificationTime);
-
-		return time;
+	public Date getModificationTime() {
+		return Time.parseRfc1123(modificationTime);
 	}
 }

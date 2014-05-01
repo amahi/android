@@ -5,8 +5,8 @@
 This CLA is the same as Apache's CLA with "Apache" replaced by
 "Amahi".
 
-Thank you for your interest in the Amahi Platform (the "Project").
-The Amahi Platform is a project of Amahi. In order to clarify the
+Thank you for your interest in the Amahi Android App (the "Project").
+The Amahi Android App is a project of Amahi. In order to clarify the
 intellectual property license granted with Contributions from any
 person or entity, the Project has this Contributor License Agreement
 ("CLA"). Contributors agree to the terms below in this CLA by

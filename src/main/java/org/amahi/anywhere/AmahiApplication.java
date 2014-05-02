@@ -7,7 +7,7 @@ import dagger.ObjectGraph;
 
 public class AmahiApplication extends Application
 {
-	private ObjectGraph injections;
+	private ObjectGraph injector;
 
 	public static AmahiApplication from(Context context) {
 		return (AmahiApplication) context.getApplicationContext();
@@ -21,10 +21,10 @@ public class AmahiApplication extends Application
 	}
 
 	private void setUpInjections() {
-		injections = ObjectGraph.create(new AmahiModule());
+		injector = ObjectGraph.create(new AmahiModule());
 	}
 
 	public void inject(Object injectionsConsumer) {
-		injections.inject(injectionsConsumer);
+		injector.inject(injectionsConsumer);
 	}
 }

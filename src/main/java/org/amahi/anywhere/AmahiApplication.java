@@ -21,7 +21,7 @@ public class AmahiApplication extends Application
 	}
 
 	private void setUpInjections() {
-		injector = ObjectGraph.create(new AmahiModule());
+		injector = ObjectGraph.create(new AmahiModule(this));
 	}
 
 	public void inject(Object injectionsConsumer) {

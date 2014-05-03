@@ -1,5 +1,7 @@
 package org.amahi.anywhere.server.client;
 
+import org.amahi.anywhere.server.Api;
+import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.header.ApiHeaders;
 import org.amahi.anywhere.server.model.Server;
@@ -18,32 +20,41 @@ import retrofit.client.Client;
 @Singleton
 public class ServerClient
 {
-	private final ProxyClient proxyClient;
-
 	private final Client client;
 	private final ApiHeaders headers;
+
+	private final ProxyApi proxyApi;
+	private ServerApi serverApi;
 
 	private Server server;
 	private ServerRoute serverRoute;
 
-	private ServerApi api;
-
 	@Inject
 	public ServerClient(Client client, ApiHeaders headers) {
-		this.proxyClient = new ProxyClient(client, headers);
-
 		this.client = client;
 		this.headers = headers;
+
+		this.proxyApi = buildProxyApi();
+	}
+
+	private ProxyApi buildProxyApi() {
+		RestAdapter apiAdapter = new RestAdapter.Builder()
+			.setEndpoint(Api.getProxyUrl())
+			.setClient(client)
+			.setRequestInterceptor(headers)
+			.build();
+
+		return apiAdapter.create(ProxyApi.class);
 	}
 
 	public void connect(Server server) {
 		this.server = server;
-		this.serverRoute = proxyClient.getRoute(server);
+		this.serverRoute = proxyApi.getServerRoute(server.getSession());
 
-		this.api = buildApi();
+		this.serverApi = buildServerApi();
 	}
 
-	private ServerApi buildApi() {
+	private ServerApi buildServerApi() {
 		RestAdapter apiAdapter = new RestAdapter.Builder()
 			.setEndpoint(serverRoute.getRemoteAddress())
 			.setClient(client)
@@ -54,10 +65,10 @@ public class ServerClient
 	}
 
 	public List<ServerShare> getShares() {
-		return api.getShares(server.getSession());
+		return serverApi.getShares(server.getSession());
 	}
 
 	public List<ServerFile> getFiles(ServerShare share, String path) {
-		return api.getFiles(server.getSession(), share.getName(), path);
+		return serverApi.getFiles(server.getSession(), share.getName(), path);
 	}
 }

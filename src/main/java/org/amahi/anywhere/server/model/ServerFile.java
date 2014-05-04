@@ -18,7 +18,7 @@ public class ServerFile
 	private String mime;
 
 	@SerializedName("size")
-	private String size;
+	private long size;
 
 	public String getName() {
 		return name;
@@ -32,7 +32,7 @@ public class ServerFile
 		return mime;
 	}
 
-	public String getSize() {
+	public long getSize() {
 		return size;
 	}
 }

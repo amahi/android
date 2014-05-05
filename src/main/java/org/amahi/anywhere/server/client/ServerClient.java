@@ -1,15 +1,20 @@
 package org.amahi.anywhere.server.client;
 
+import com.squareup.otto.Subscribe;
+
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.header.ApiHeaders;
 import org.amahi.anywhere.server.model.Server;
-import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
-
-import java.util.List;
+import org.amahi.anywhere.server.response.ServerRouteResponse;
+import org.amahi.anywhere.server.response.ServerFilesResponse;
+import org.amahi.anywhere.server.response.ServerSharesResponse;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -49,9 +54,28 @@ public class ServerClient
 
 	public void connect(Server server) {
 		this.server = server;
-		this.serverRoute = proxyApi.getServerRoute(server.getSession());
 
+		startServerConnection();
+	}
+
+	private void startServerConnection() {
+		BusProvider.getBus().register(this);
+
+		proxyApi.getServerRoute(server.getSession(), new ServerRouteResponse());
+	}
+
+	@Subscribe
+	public void onServerRouteLoaded(ServerRouteLoadedEvent event) {
+		this.serverRoute = event.getServerRoute();
 		this.serverApi = buildServerApi();
+
+		finishServerConnection();
+	}
+
+	private void finishServerConnection() {
+		BusProvider.getBus().unregister(this);
+
+		BusProvider.getBus().post(new ServerConnectedEvent());
 	}
 
 	private ServerApi buildServerApi() {
@@ -64,11 +88,11 @@ public class ServerClient
 		return apiAdapter.create(ServerApi.class);
 	}
 
-	public List<ServerShare> getShares() {
-		return serverApi.getShares(server.getSession());
+	public void getShares() {
+		serverApi.getShares(server.getSession(), new ServerSharesResponse());
 	}
 
-	public List<ServerFile> getFiles(ServerShare share, String path) {
-		return serverApi.getFiles(server.getSession(), share.getName(), path);
+	public void getFiles(ServerShare share, String path) {
+		serverApi.getFiles(server.getSession(), share.getName(), path, new ServerFilesResponse());
 	}
 }

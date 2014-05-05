@@ -5,6 +5,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.List;
 
+import retrofit.Callback;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Query;
@@ -12,12 +13,14 @@ import retrofit.http.Query;
 public interface ServerApi
 {
 	@GET("/shares")
-	public List<ServerShare> getShares(
-		@Header("session") String session);
+	public void getShares(
+		@Header("session") String session,
+		Callback<List<ServerShare>> callback);
 
 	@GET("/files")
-	public List<ServerFile> getFiles(
+	public void getFiles(
 		@Header("Session") String session,
 		@Query("s") String share,
-		@Query("p") String path);
+		@Query("p") String path,
+		Callback<List<ServerFile>> callback);
 }

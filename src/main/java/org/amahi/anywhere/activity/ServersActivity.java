@@ -11,10 +11,15 @@ import org.amahi.anywhere.bus.AuthenticationDoneEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ConnectionNotAuthorizedEvent;
 import org.amahi.anywhere.bus.ConnectionTimeoutEvent;
+import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
+import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Authentication;
+import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.server.model.ServerShare;
 
 import javax.inject.Inject;
 
@@ -25,6 +30,8 @@ public class ServersActivity extends Activity
 
 	@Inject
 	ServerClient serverClient;
+
+	Server server;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +67,42 @@ public class ServersActivity extends Activity
 
 	@Subscribe
 	public void onServersLoaded(ServersLoadedEvent event) {
-		showMessage("Loaded.");
+		showMessage("Loaded: servers.");
+
+		setUpServerConnection(event.getServers().get(0));
+	}
+
+	private void setUpServerConnection(Server server) {
+		this.server = server;
+
+		serverClient.connect(server);
+	}
+
+	@Subscribe
+	public void onServerConnection(ServerConnectedEvent event) {
+		showMessage("Connected.");
+
+		setUpServerShares();
+	}
+
+	private void setUpServerShares() {
+		serverClient.getShares();
+	}
+
+	@Subscribe
+	public void onServerSharesLoaded(ServerSharesLoadedEvent event) {
+		showMessage("Loaded: server’s shares.");
+
+		setUpServerFiles(event.getServerShares().get(0));
+	}
+
+	private void setUpServerFiles(ServerShare serverShare) {
+		serverClient.getFiles(serverShare, null);
+	}
+
+	@Subscribe
+	public void onServerFilesLoaded(ServerFilesLoadedEvent event) {
+		showMessage("Loaded: server’s files");
 	}
 
 	@Subscribe

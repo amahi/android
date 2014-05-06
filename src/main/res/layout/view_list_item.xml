@@ -18,32 +18,12 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.amahi.anywhere"
-	android:installLocation="auto">
-
-	<uses-sdk
-		android:minSdkVersion="14"
-		android:targetSdkVersion="19"/>
-
-	<uses-permission
-		android:name="android.permission.INTERNET"/>
-
-	<application
-		android:name=".AmahiApplication"
-		android:label="Amahi Anywhere"
-		android:theme="@style/Theme.Amahi">
-
-		<activity
-			android:name="org.amahi.anywhere.activity.ServersActivity">
-
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN"/>
-				<category android:name="android.intent.category.LAUNCHER"/>
-			</intent-filter>
-
-		</activity>
-
-	</application>
-
-</manifest>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/text"
+	android:singleLine="true"
+	android:textSize="@dimen/text_medium"
+	android:gravity="center_vertical"
+	android:padding="8dp"
+	android:drawablePadding="8dp"
+	android:layout_width="match_parent"
+	android:layout_height="?android:attr/listPreferredItemHeight"/>

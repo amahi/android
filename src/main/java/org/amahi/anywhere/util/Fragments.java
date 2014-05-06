@@ -17,29 +17,42 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.activity;
+package org.amahi.anywhere.util;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.os.Bundle;
+import android.app.FragmentManager;
 
-import org.amahi.anywhere.fragment.ServersFragment;
-import org.amahi.anywhere.util.Fragments;
-
-public class ServersActivity extends Activity
+public final class Fragments
 {
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		setUpFragment();
+	private Fragments() {
 	}
 
-	private void setUpFragment() {
-		Fragments.Operator.at(this).set(buildFragment(), android.R.id.content);
-	}
+	public static final class Operator
+	{
+		private final FragmentManager fragmentManager;
 
-	private Fragment buildFragment() {
-		return ServersFragment.newInstance();
+		public static Operator at(Activity activity) {
+			return new Operator(activity);
+		}
+
+		private Operator(Activity activity) {
+			this.fragmentManager = activity.getFragmentManager();
+		}
+
+		public void set(Fragment fragment, int fragmentContainerId) {
+			if (isSet(fragmentContainerId)) {
+				return;
+			}
+
+			fragmentManager
+				.beginTransaction()
+				.add(fragmentContainerId, fragment)
+				.commit();
+		}
+
+		private boolean isSet(int fragmentContainerId) {
+			return fragmentManager.findFragmentById(fragmentContainerId) != null;
+		}
 	}
 }

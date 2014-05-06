@@ -33,7 +33,7 @@ public interface ServerApi
 {
 	@GET("/shares")
 	public void getShares(
-		@Header("session") String session,
+		@Header("Session") String session,
 		Callback<List<ServerShare>> callback);
 
 	@GET("/files")

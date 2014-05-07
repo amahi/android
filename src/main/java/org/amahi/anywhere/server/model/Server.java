@@ -19,9 +19,12 @@
 
 package org.amahi.anywhere.server.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class Server
+public class Server implements Parcelable
 {
 	@SerializedName("name")
 	private String name;
@@ -42,5 +45,36 @@ public class Server
 
 	public boolean isActive() {
 		return active;
+	}
+
+	public static final Creator<Server> CREATOR = new Creator<Server>()
+	{
+		@Override
+		public Server createFromParcel(Parcel parcel) {
+			return new Server(parcel);
+		}
+
+		@Override
+		public Server[] newArray(int size) {
+			return new Server[size];
+		}
+	};
+
+	private Server(Parcel parcel) {
+		this.name = parcel.readString();
+		this.session = parcel.readString();
+		this.active = Boolean.valueOf(parcel.readString());
+	}
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeString(name);
+		parcel.writeString(session);
+		parcel.writeString(String.valueOf(active));
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
 	}
 }

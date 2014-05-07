@@ -20,37 +20,49 @@
 package org.amahi.anywhere.fragment;
 
 import android.app.ListFragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.adapter.ServersAdapter;
+import org.amahi.anywhere.adapter.ServerSharesAdapter;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.ServersLoadedEvent;
-import org.amahi.anywhere.server.client.AmahiClient;
+import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
+import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
-import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Fragments;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class ServersFragment extends ListFragment
+public class ServerSharesFragment extends ListFragment
 {
-	public static ServersFragment newInstance() {
-		return new ServersFragment();
+	public static ServerSharesFragment newInstance(Server server) {
+		ServerSharesFragment fragment = new ServerSharesFragment();
+
+		fragment.setArguments(buildArguments(server));
+
+		return fragment;
+	}
+
+	private static Bundle buildArguments(Server server) {
+		Bundle arguments = new Bundle();
+
+		arguments.putParcelable(Fragments.Arguments.SERVER, server);
+
+		return arguments;
 	}
 
 	@Inject
-	AmahiClient amahiClient;
+	ServerClient serverClient;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,58 +75,58 @@ public class ServersFragment extends ListFragment
 
 		setUpInjections();
 
-		setUpServers();
+		setUpShares();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
 	}
 
-	private void setUpServers() {
-		setUpServersAdapter();
-		setUpServersContent();
+	private void setUpShares() {
+		setUpSharesAdapter();
+
+		setUpServerConnection();
 	}
 
-	private void setUpServersAdapter() {
-		setListAdapter(new ServersAdapter(getActivity()));
+	private void setUpSharesAdapter() {
+		setListAdapter(new ServerSharesAdapter(getActivity()));
 	}
 
-	private void setUpServersContent() {
-		amahiClient.getServers("TOKEN");
+	private void setUpServerConnection() {
+		serverClient.connect(getServer());
+	}
+
+	private Server getServer() {
+		return getArguments().getParcelable(Fragments.Arguments.SERVER);
 	}
 
 	@Subscribe
-	public void onServersLoaded(ServersLoadedEvent event) {
-		setUpServersContent(event.getServers());
-
-		showServersContent();
+	public void onServerConnected(ServerConnectedEvent event) {
+		setUpSharesContent();
 	}
 
-	private void setUpServersContent(List<Server> servers) {
-		getServersAdapter().replaceWith(servers);
+	private void setUpSharesContent() {
+		serverClient.getShares();
 	}
 
-	private ServersAdapter getServersAdapter() {
-		return (ServersAdapter) getListAdapter();
+	@Subscribe
+	public void onSharesLoaded(ServerSharesLoadedEvent event) {
+		setUpSharesContent(event.getServerShares());
+
+		showSharesContent();
 	}
 
-	private void showServersContent() {
+	private void setUpSharesContent(List<ServerShare> shares) {
+		getSharesAdapter().replaceWith(shares);
+	}
+
+	private ServerSharesAdapter getSharesAdapter() {
+		return (ServerSharesAdapter) getListAdapter();
+	}
+
+	private void showSharesContent() {
 		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
 		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.content)));
-	}
-
-	@Override
-	public void onListItemClick(ListView listView, View view, int position, long id) {
-		super.onListItemClick(listView, view, position, id);
-
-		Server server = getServersAdapter().getItem(position);
-
-		startServerSharesActivity(server);
-	}
-
-	private void startServerSharesActivity(Server server) {
-		Intent intent = Intents.Builder.with(getActivity()).buildServerSharesIntent(server);
-		startActivity(intent);
 	}
 
 	@Override

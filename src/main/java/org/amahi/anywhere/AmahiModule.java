@@ -21,6 +21,7 @@ package org.amahi.anywhere;
 
 import android.app.Application;
 
+import org.amahi.anywhere.fragment.ServerSharesFragment;
 import org.amahi.anywhere.fragment.ServersFragment;
 import org.amahi.anywhere.server.ApiModule;
 
@@ -34,7 +35,8 @@ import dagger.Provides;
 		ApiModule.class
 	},
 	injects = {
-		ServersFragment.class
+		ServersFragment.class,
+		ServerSharesFragment.class
 	}
 )
 class AmahiModule

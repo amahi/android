@@ -19,48 +19,42 @@
 
 package org.amahi.anywhere.util;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.content.Context;
+import android.content.Intent;
 
-public final class Fragments
+import org.amahi.anywhere.activity.ServerSharesActivity;
+import org.amahi.anywhere.server.model.Server;
+
+public final class Intents
 {
-	private Fragments() {
+	private Intents() {
 	}
 
-	public static final class Arguments
+	public static final class Extras
 	{
-		private Arguments() {
+		private Extras() {
 		}
 
 		public static final String SERVER = "server";
 	}
 
-	public static final class Operator
+	public static final class Builder
 	{
-		private final FragmentManager fragmentManager;
+		private final Context context;
 
-		public static Operator at(Activity activity) {
-			return new Operator(activity);
+		public static Builder with(Context context) {
+			return new Builder(context);
 		}
 
-		private Operator(Activity activity) {
-			this.fragmentManager = activity.getFragmentManager();
+		private Builder(Context context) {
+			this.context = context;
 		}
 
-		public void set(Fragment fragment, int fragmentContainerId) {
-			if (isSet(fragmentContainerId)) {
-				return;
-			}
+		public Intent buildServerSharesIntent(Server server) {
+			Intent intent = new Intent(context, ServerSharesActivity.class);
+			intent.putExtra(Extras.SERVER, server);
 
-			fragmentManager
-				.beginTransaction()
-				.add(fragmentContainerId, fragment)
-				.commit();
-		}
-
-		private boolean isSet(int fragmentContainerId) {
-			return fragmentManager.findFragmentById(fragmentContainerId) != null;
+			return intent;
 		}
 	}
 }

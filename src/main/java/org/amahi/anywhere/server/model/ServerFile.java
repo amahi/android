@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.server.model;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -30,6 +31,8 @@ import java.util.Date;
 
 public class ServerFile implements Parcelable
 {
+	private ServerFile parentFile;
+
 	@SerializedName("name")
 	private String name;
 
@@ -41,6 +44,14 @@ public class ServerFile implements Parcelable
 
 	@SerializedName("size")
 	private long size;
+
+	public void setParentFile(ServerFile parentFile) {
+		this.parentFile = parentFile;
+	}
+
+	public ServerFile getParentFile() {
+		return parentFile;
+	}
 
 	public String getName() {
 		return name;
@@ -58,6 +69,18 @@ public class ServerFile implements Parcelable
 		return size;
 	}
 
+	public String getPath() {
+		Uri.Builder uri = new Uri.Builder();
+
+		if (parentFile != null) {
+			uri.appendPath(parentFile.getPath());
+		}
+
+		uri.appendPath(name);
+
+		return uri.build().getPath();
+	}
+
 	public static final Creator<ServerFile> CREATOR = new Creator<ServerFile>()
 	{
 		@Override
@@ -72,6 +95,7 @@ public class ServerFile implements Parcelable
 	};
 
 	private ServerFile(Parcel parcel) {
+		this.parentFile = parcel.readParcelable(this.getClass().getClassLoader());
 		this.name = parcel.readString();
 		this.modificationTime = parcel.readString();
 		this.mime = parcel.readString();
@@ -80,6 +104,7 @@ public class ServerFile implements Parcelable
 
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeParcelable(parentFile, flags);
 		parcel.writeString(name);
 		parcel.writeString(modificationTime);
 		parcel.writeString(mime);

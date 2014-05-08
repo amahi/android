@@ -31,8 +31,18 @@ import retrofit.client.Response;
 
 public class ServerFilesResponse extends ApiResponse implements Callback<List<ServerFile>>
 {
+	private final ServerFile serverDirectory;
+
+	public ServerFilesResponse(ServerFile serverDirectory) {
+		this.serverDirectory = serverDirectory;
+	}
+
 	@Override
 	public void success(List<ServerFile> serverFiles, Response response) {
+		for (ServerFile serverFile : serverFiles) {
+			serverFile.setParentFile(serverDirectory);
+		}
+
 		BusProvider.getBus().post(new ServerFilesLoadedEvent(serverFiles));
 	}
 

@@ -29,10 +29,11 @@ import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.header.ApiHeaders;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
+import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 
 import javax.inject.Inject;
@@ -111,7 +112,7 @@ public class ServerClient
 		serverApi.getShares(server.getSession(), new ServerSharesResponse());
 	}
 
-	public void getFiles(ServerShare share, String path) {
-		serverApi.getFiles(server.getSession(), share.getName(), path, new ServerFilesResponse());
+	public void getFiles(ServerShare share, ServerFile directory) {
+		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath(), new ServerFilesResponse(directory));
 	}
 }

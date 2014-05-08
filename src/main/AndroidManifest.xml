@@ -49,6 +49,11 @@
 			android:name=".activity.ServerSharesActivity">
 		</activity>
 
+		<activity
+			android:label="Files"
+			android:name=".activity.ServerFilesActivity">
+		</activity>
+
 	</application>
 
 </manifest>

@@ -113,6 +113,14 @@ public class ServerClient
 	}
 
 	public void getFiles(ServerShare share, ServerFile directory) {
-		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath(), new ServerFilesResponse(directory));
+		serverApi.getFiles(server.getSession(), share.getName(), getPath(directory), new ServerFilesResponse(directory));
+	}
+
+	private String getPath(ServerFile directory) {
+		if (directory == null) {
+			return null;
+		} else {
+			return directory.getPath();
+		}
 	}
 }

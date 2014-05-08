@@ -23,12 +23,12 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 
-import org.amahi.anywhere.fragment.ServerSharesFragment;
-import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.fragment.ServerFilesFragment;
+import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 
-public class ServerSharesActivity extends Activity
+public class ServerFilesActivity extends Activity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +39,11 @@ public class ServerSharesActivity extends Activity
 	}
 
 	private void setUpTitle() {
-		getActionBar().setSubtitle(getServer().getName());
+		getActionBar().setSubtitle(getShare().getName());
 	}
 
-	private Server getServer() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER);
+	private ServerShare getShare() {
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
 	private void setUpFragment() {
@@ -51,6 +51,6 @@ public class ServerSharesActivity extends Activity
 	}
 
 	private Fragment buildFragment() {
-		return ServerSharesFragment.newInstance(getServer());
+		return ServerFilesFragment.newInstance(getShare(), null);
 	}
 }

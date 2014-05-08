@@ -32,12 +32,11 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.adapter.ServerSharesAdapter;
+import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.ServerConnectedEvent;
-import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
+import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
-import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
@@ -46,20 +45,21 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class ServerSharesFragment extends ListFragment
+public class ServerFilesFragment extends ListFragment
 {
-	public static ServerSharesFragment newInstance(Server server) {
-		ServerSharesFragment fragment = new ServerSharesFragment();
+	public static ServerFilesFragment newInstance(ServerShare share, ServerFile directory) {
+		ServerFilesFragment fragment = new ServerFilesFragment();
 
-		fragment.setArguments(buildArguments(server));
+		fragment.setArguments(buildArguments(share, directory));
 
 		return fragment;
 	}
 
-	private static Bundle buildArguments(Server server) {
+	private static Bundle buildArguments(ServerShare share, ServerFile directory) {
 		Bundle arguments = new Bundle();
 
-		arguments.putParcelable(Fragments.Arguments.SERVER, server);
+		arguments.putParcelable(Fragments.Arguments.SERVER_SHARE, share);
+		arguments.putParcelable(Fragments.Arguments.SERVER_FILE, directory);
 
 		return arguments;
 	}
@@ -78,56 +78,50 @@ public class ServerSharesFragment extends ListFragment
 
 		setUpInjections();
 
-		setUpShares();
+		setUpFiles();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
 	}
 
-	private void setUpShares() {
-		setUpSharesAdapter();
-
-		setUpServerConnection();
+	private void setUpFiles() {
+		setUpFilesAdapter();
+		setUpFilesContent();
 	}
 
-	private void setUpSharesAdapter() {
-		setListAdapter(new ServerSharesAdapter(getActivity()));
+	private void setUpFilesAdapter() {
+		setListAdapter(new ServerFilesAdapter(getActivity()));
 	}
 
-	private void setUpServerConnection() {
-		serverClient.connect(getServer());
+	private void setUpFilesContent() {
+		serverClient.getFiles(getShare(), getDirectory());
 	}
 
-	private Server getServer() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER);
+	private ServerShare getShare() {
+		return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
 	}
 
-	@Subscribe
-	public void onServerConnected(ServerConnectedEvent event) {
-		setUpSharesContent();
-	}
-
-	private void setUpSharesContent() {
-		serverClient.getShares();
+	private ServerFile getDirectory() {
+		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
 	}
 
 	@Subscribe
-	public void onSharesLoaded(ServerSharesLoadedEvent event) {
-		setUpSharesContent(event.getServerShares());
+	public void onFilesLoaded(ServerFilesLoadedEvent event) {
+		setUpFilesContent(event.getServerFiles());
 
-		showSharesContent();
+		showFilesContent();
 	}
 
-	private void setUpSharesContent(List<ServerShare> shares) {
-		getSharesAdapter().replaceWith(shares);
+	private void setUpFilesContent(List<ServerFile> files) {
+		getFilesAdapter().replaceWith(files);
 	}
 
-	private ServerSharesAdapter getSharesAdapter() {
-		return (ServerSharesAdapter) getListAdapter();
+	private ServerFilesAdapter getFilesAdapter() {
+		return (ServerFilesAdapter) getListAdapter();
 	}
 
-	private void showSharesContent() {
+	private void showFilesContent() {
 		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
 		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.content)));
 	}
@@ -136,13 +130,17 @@ public class ServerSharesFragment extends ListFragment
 	public void onListItemClick(ListView listView, View view, int position, long id) {
 		super.onListItemClick(listView, view, position, id);
 
-		ServerShare share = getSharesAdapter().getItem(position);
+		ServerFile file = getFilesAdapter().getItem(position);
 
-		startServerFilesActivity(share);
+		if (!file.getMime().equals("text/directory")) {
+			return;
+		}
+
+		startServerFilesActivity(file);
 	}
 
-	private void startServerFilesActivity(ServerShare share) {
-		Intent intent = Intents.Builder.with(getActivity()).buildServerFilesIntent(share, null);
+	private void startServerFilesActivity(ServerFile directory) {
+		Intent intent = Intents.Builder.with(getActivity()).buildServerFilesIntent(getShare(), directory);
 		startActivity(intent);
 	}
 

@@ -20,12 +20,11 @@
 
 <resources>
 
-	<style name="Theme.Amahi" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+	<style name="Theme.Amahi" parent="@android:style/Theme.Holo.Light">
 		<item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
 	</style>
 
-	<style name="Theme.Amahi.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-		<item name="android:background">@color/background_bar</item>
+	<style name="Theme.Amahi.ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
 		<item name="android:displayOptions">showTitle</item>
 	</style>
 

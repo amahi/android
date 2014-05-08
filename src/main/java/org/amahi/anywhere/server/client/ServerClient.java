@@ -72,6 +72,10 @@ public class ServerClient
 		return apiAdapter.create(ProxyApi.class);
 	}
 
+	public boolean isConnected(Server server) {
+		return (this.server != null) && (this.server.getSession().equals(server.getSession()));
+	}
+
 	public void connect(Server server) {
 		this.server = server;
 

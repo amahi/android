@@ -96,7 +96,11 @@ public class ServerSharesFragment extends ListFragment
 	}
 
 	private void setUpServerConnection() {
-		serverClient.connect(getServer());
+		if (!serverClient.isConnected(getServer())) {
+			serverClient.connect(getServer());
+		} else {
+			setUpSharesContent();
+		}
 	}
 
 	private Server getServer() {

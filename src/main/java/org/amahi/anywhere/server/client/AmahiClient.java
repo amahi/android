@@ -56,6 +56,6 @@ public class AmahiClient
 	}
 
 	public void getServers(String authenticationToken) {
-		api.getServers(authenticationToken, new ServersResponse());
+		api.getServers(Api.getClientToken(), new ServersResponse());
 	}
 }

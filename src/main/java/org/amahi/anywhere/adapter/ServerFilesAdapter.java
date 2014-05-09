@@ -94,6 +94,10 @@ public class ServerFilesAdapter extends BaseAdapter
 	}
 
 	private int getFileIcon(ServerFile file) {
+		if (file.getMime().equals("text/directory")) {
+			return R.drawable.ic_doc_directory;
+		}
+
 		String type = file.getMime().split("/")[0];
 
 		if (type.equals("audio")) {

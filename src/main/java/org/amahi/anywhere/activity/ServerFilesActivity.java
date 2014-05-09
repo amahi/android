@@ -24,6 +24,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 
 import org.amahi.anywhere.fragment.ServerFilesFragment;
+import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
@@ -51,6 +52,10 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private Fragment buildFragment() {
-		return ServerFilesFragment.newInstance(getShare(), null);
+		return ServerFilesFragment.newInstance(getShare(), getDirectory());
+	}
+
+	private ServerFile getDirectory() {
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 }

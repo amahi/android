@@ -23,6 +23,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 
+import com.squareup.otto.Subscribe;
+
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileSelectedEvent;
+import org.amahi.anywhere.bus.ParentDirectorySelectedEvent;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -40,7 +45,7 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private void setUpTitle() {
-		getActionBar().setSubtitle(getShare().getName());
+		getActionBar().setTitle(getShare().getName());
 	}
 
 	private ServerShare getShare() {
@@ -52,10 +57,52 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private Fragment buildFragment() {
-		return ServerFilesFragment.newInstance(getShare(), getDirectory());
+		return ServerFilesFragment.newInstance(getShare(), null);
 	}
 
-	private ServerFile getDirectory() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
+	@Subscribe
+	public void onParentDirectorySelected(ParentDirectorySelectedEvent event) {
+		tearDownFragment();
+	}
+
+	private void tearDownFragment() {
+		Fragments.Operator.at(this).removeBackstaced();
+	}
+
+	@Subscribe
+	public void onFileSelected(FileSelectedEvent event) {
+		setUpFile(event.getFile());
+	}
+
+	private void setUpFile(ServerFile file) {
+		if (isDirectory(file)) {
+			setUpFragment(file);
+		}
+	}
+
+	private boolean isDirectory(ServerFile file) {
+		return file.getMime().equals("text/directory");
+	}
+
+	private void setUpFragment(ServerFile directory) {
+		Fragments.Operator.at(this).replaceBackstacked(buildFragment(directory), android.R.id.content);
+	}
+
+	private Fragment buildFragment(ServerFile directory) {
+		return ServerFilesFragment.newInstance(getShare(), directory);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		BusProvider.getBus().register(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		BusProvider.getBus().unregister(this);
 	}
 }

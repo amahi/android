@@ -64,5 +64,17 @@ public final class Fragments
 		private boolean isSet(int fragmentContainerId) {
 			return fragmentManager.findFragmentById(fragmentContainerId) != null;
 		}
+
+		public void replaceBackstacked(Fragment fragment, int fragmentConainerId) {
+			fragmentManager
+				.beginTransaction()
+				.replace(fragmentConainerId, fragment)
+				.addToBackStack(null)
+				.commit();
+		}
+
+		public void removeBackstaced() {
+			fragmentManager.popBackStack();
+		}
 	}
 }

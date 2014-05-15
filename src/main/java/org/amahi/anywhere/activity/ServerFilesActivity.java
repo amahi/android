@@ -25,6 +25,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.squareup.otto.Subscribe;
@@ -64,6 +65,8 @@ public class ServerFilesActivity extends Activity
 			R.string.menu_navigation_close);
 
 		getDrawer().setDrawerListener(navigationDrawerToogle);
+
+		getDrawer().setDrawerShadow(R.drawable.bg_shadow_drawer, Gravity.START);
 	}
 
 	private DrawerLayout getDrawer() {

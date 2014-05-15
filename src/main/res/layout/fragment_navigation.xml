@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/animator_content"
+	android:inAnimation="@android:anim/fade_in"
+	android:outAnimation="@android:anim/fade_out"
+	android:paddingLeft="16dp"
+	android:paddingRight="16dp"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<ProgressBar
+		android:id="@+id/progress_content"
+		android:layout_gravity="center"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"/>
+
+	<LinearLayout
+		android:id="@+id/layout_content"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<TextView
+			android:text="Servers"
+			android:textSize="@dimen/text_small"
+			android:textStyle="bold"
+			android:textAllCaps="true"
+			android:paddingLeft="8dp"
+			android:paddingTop="8dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+
+		<Spinner
+			android:id="@+id/spinner_servers"
+			android:layout_width="match_parent"
+			android:layout_height="64dp"/>
+
+		<Space
+			android:layout_width="match_parent"
+			android:layout_height="16dp"/>
+
+		<TextView
+			android:text="Shares"
+			android:textSize="@dimen/text_small"
+			android:textStyle="bold"
+			android:textAllCaps="true"
+			android:paddingLeft="8dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+
+		<ViewAnimator
+			android:id="@+id/animator_shares"
+			android:inAnimation="@android:anim/fade_in"
+			android:outAnimation="@android:anim/fade_out"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<ProgressBar
+				android:id="@+id/progress_shares"
+				android:layout_gravity="center"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"/>
+
+			<ListView
+				android:id="@+id/list_shares"
+				android:choiceMode="singleChoice"
+				android:divider="@null"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"/>
+
+		</ViewAnimator>
+
+	</LinearLayout>
+
+</ViewAnimator>

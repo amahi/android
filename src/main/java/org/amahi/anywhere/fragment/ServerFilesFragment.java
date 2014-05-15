@@ -179,7 +179,7 @@ public class ServerFilesFragment extends ListFragment
 		if ((isDirectoryAvailable()) && (position == ListPositions.DIRECTORY_HEADER)) {
 			BusProvider.getBus().post(new ParentDirectorySelectedEvent());
 		} else {
-			BusProvider.getBus().post(new FileSelectedEvent(getFile(position)));
+			BusProvider.getBus().post(new FileSelectedEvent(getShare(), getFile(position)));
 		}
 	}
 

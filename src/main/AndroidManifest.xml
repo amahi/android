@@ -36,12 +36,6 @@
 
 		<activity
 			android:name=".activity.ServersActivity">
-
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN"/>
-				<category android:name="android.intent.category.LAUNCHER"/>
-			</intent-filter>
-
 		</activity>
 
 		<activity
@@ -50,8 +44,13 @@
 		</activity>
 
 		<activity
-			android:label="Files"
 			android:name=".activity.ServerFilesActivity">
+
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+
 		</activity>
 
 	</application>

@@ -20,6 +20,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
+import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
@@ -171,6 +172,10 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 	@Override
 	public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
 		getSharesList().setItemChecked(position, true);
+
+		ServerShare share = getSharesAdapter().getItem(position);
+
+		BusProvider.getBus().post(new ShareSelectedEvent(share));
 	}
 
 	@Override

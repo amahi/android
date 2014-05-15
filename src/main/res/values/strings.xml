@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	
+	<string name="menu_navigation_open">Open navigation</string>
+	<string name="menu_navigation_close">Close navigation</string>
+	
+</resources>

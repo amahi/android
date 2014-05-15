@@ -65,6 +65,13 @@ public final class Fragments
 			return fragmentManager.findFragmentById(fragmentContainerId) != null;
 		}
 
+		public void replace(Fragment fragment, int fragmentConainerId) {
+			fragmentManager
+				.beginTransaction()
+				.replace(fragmentConainerId, fragment)
+				.commit();
+		}
+
 		public void replaceBackstacked(Fragment fragment, int fragmentConainerId) {
 			fragmentManager
 				.beginTransaction()

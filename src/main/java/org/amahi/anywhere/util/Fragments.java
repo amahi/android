@@ -33,7 +33,6 @@ public final class Fragments
 		private Arguments() {
 		}
 
-		public static final String SERVER = "server";
 		public static final String SERVER_FILE = "server_file";
 		public static final String SERVER_SHARE = "server_share";
 	}

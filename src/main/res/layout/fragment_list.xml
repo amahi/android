@@ -47,7 +47,7 @@
 
 		<TextView
 			android:id="@android:id/empty"
-			android:text="No servers"
+			android:text="No files"
 			android:textSize="@dimen/text_large"
 			android:textStyle="italic"
 			android:fontFamily="sans-serif-light"

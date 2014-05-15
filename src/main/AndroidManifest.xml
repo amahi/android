@@ -35,15 +35,6 @@
 		android:theme="@style/Theme.Amahi">
 
 		<activity
-			android:name=".activity.ServersActivity">
-		</activity>
-
-		<activity
-			android:label="Shares"
-			android:name=".activity.ServerSharesActivity">
-		</activity>
-
-		<activity
 			android:name=".activity.ServerFilesActivity">
 
 			<intent-filter>

@@ -19,7 +19,11 @@
 
 package org.amahi.anywhere.server.header;
 
+import android.content.Context;
+
 import org.amahi.anywhere.util.Android;
+
+import java.util.Locale;
 
 import retrofit.RequestInterceptor;
 
@@ -40,16 +44,34 @@ public class ApiHeaders implements RequestInterceptor
 		}
 
 		public static final String ACCEPT = "application/json";
-		public static final String USER_AGENT;
+		public static final String USER_AGENT = "AmahiAnywhere/%s (Android %s; %s) Size/%.1f Resolution/%dx%d";
+	}
 
-		static {
-			USER_AGENT = String.format("AmahiAnywhere/%s (Android %s)", Android.getApplicationVersion(), Android.getVersion());
-		}
+	private final String acceptHeader;
+	private final String userAgentHeader;
+
+	public ApiHeaders(Context context) {
+		this.acceptHeader = getAcceptHeader();
+		this.userAgentHeader = getUserAgentHeader(context);
+	}
+
+	private String getAcceptHeader() {
+		return HeaderValues.ACCEPT;
+	}
+
+	private String getUserAgentHeader(Context context) {
+		return String.format(Locale.US, HeaderValues.USER_AGENT,
+			Android.getApplicationVersion(),
+			Android.getVersion(),
+			Android.getDeviceName(),
+			Android.getDeviceScreenSize(context),
+			Android.getDeviceScreenHeight(context),
+			Android.getDeviceScreenWidth(context));
 	}
 
 	@Override
 	public void intercept(RequestFacade request) {
-		request.addHeader(HeaderFields.ACCEPT, HeaderValues.ACCEPT);
-		request.addHeader(HeaderFields.USER_AGENT, HeaderValues.USER_AGENT);
+		request.addHeader(HeaderFields.ACCEPT, acceptHeader);
+		request.addHeader(HeaderFields.USER_AGENT, userAgentHeader);
 	}
 }

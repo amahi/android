@@ -74,7 +74,7 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	ApiHeaders provideHeaders() {
-		return new ApiHeaders();
+	ApiHeaders provideHeaders(Application application) {
+		return new ApiHeaders(application);
 	}
 }

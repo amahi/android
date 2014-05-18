@@ -51,12 +51,8 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	OkHttpClient provideHttpClient(OkResponseCache httpCache) {
-		OkHttpClient httpClient = new OkHttpClient();
-
-		httpClient.setOkResponseCache(httpCache);
-
-		return httpClient;
+	OkHttpClient provideHttpClient() {
+		return new OkHttpClient();
 	}
 
 	@Provides

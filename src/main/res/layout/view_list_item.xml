@@ -22,6 +22,7 @@
 	android:id="@+id/text"
 	android:singleLine="true"
 	android:textSize="@dimen/text_medium"
+	android:background="?android:attr/activatedBackgroundIndicator"
 	android:gravity="center_vertical"
 	android:padding="8dp"
 	android:drawablePadding="8dp"

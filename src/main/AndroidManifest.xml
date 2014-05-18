@@ -35,23 +35,13 @@
 		android:theme="@style/Theme.Amahi">
 
 		<activity
-			android:name=".activity.ServersActivity">
+			android:name=".activity.ServerFilesActivity">
 
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 
-		</activity>
-
-		<activity
-			android:label="Shares"
-			android:name=".activity.ServerSharesActivity">
-		</activity>
-
-		<activity
-			android:label="Files"
-			android:name=".activity.ServerFilesActivity">
 		</activity>
 
 	</application>

@@ -26,7 +26,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.Server;
 
 import java.util.Collections;
@@ -79,25 +78,35 @@ public class ServersAdapter extends BaseAdapter
 	}
 
 	private View newView(ViewGroup container) {
-		return layoutInflater.inflate(R.layout.view_list_item, container, false);
+		return layoutInflater.inflate(android.R.layout.simple_spinner_item, container, false);
 	}
 
 	private void bindView(Server server, View view) {
 		TextView serverView = (TextView) view;
 
-		serverView.setText(getServerName(server));
-		serverView.setCompoundDrawablesWithIntrinsicBounds(getServerStatus(server), 0, 0, 0);
+		serverView.setText(server.getName());
 	}
 
-	private String getServerName(Server server) {
-		return server.getName();
-	}
+	@Override
+	public View getDropDownView(int position, View view, ViewGroup container) {
+		Server server = getItem(position);
 
-	private int getServerStatus(Server server) {
-		if (server.isActive()) {
-			return android.R.drawable.presence_online;
-		} else {
-			return android.R.drawable.presence_invisible;
+		if (view == null) {
+			view = newDropDownView(container);
 		}
+
+		bindDropDownView(server, view);
+
+		return view;
+	}
+
+	private View newDropDownView(ViewGroup container) {
+		return layoutInflater.inflate(android.R.layout.simple_spinner_dropdown_item, container, false);
+	}
+
+	private void bindDropDownView(Server server, View view) {
+		TextView serverView = (TextView) view;
+
+		serverView.setText(server.getName());
 	}
 }

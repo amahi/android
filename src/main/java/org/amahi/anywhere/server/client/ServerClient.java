@@ -19,6 +19,8 @@
 
 package org.amahi.anywhere.server.client;
 
+import android.net.Uri;
+
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.bus.BusProvider;
@@ -126,5 +128,15 @@ public class ServerClient
 		} else {
 			return directory.getPath();
 		}
+	}
+
+	public Uri getFileUri(ServerShare share, ServerFile file) {
+		return Uri.parse(serverRoute.getRemoteAddress())
+			.buildUpon()
+			.path("files")
+			.appendQueryParameter("s", share.getName())
+			.appendQueryParameter("p", file.getPath())
+			.appendQueryParameter("Session", server.getSession())
+			.build();
 	}
 }

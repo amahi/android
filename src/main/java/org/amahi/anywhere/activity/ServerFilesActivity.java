@@ -21,6 +21,7 @@ package org.amahi.anywhere.activity;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -40,6 +41,7 @@ import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Intents;
 
 public class ServerFilesActivity extends Activity
 {
@@ -127,6 +129,8 @@ public class ServerFilesActivity extends Activity
 	private void setUpFile(ServerShare share, ServerFile file) {
 		if (isDirectory(file)) {
 			setUpFilesFragment(share, file);
+		} else {
+			setUpFileActivity(share, file);
 		}
 	}
 
@@ -140,6 +144,11 @@ public class ServerFilesActivity extends Activity
 
 	private Fragment buildFilesFragment(ServerShare share, ServerFile directory) {
 		return ServerFilesFragment.newInstance(share, directory);
+	}
+
+	private void setUpFileActivity(ServerShare share, ServerFile file) {
+		Intent intent = Intents.Builder.with(this).buildServerFileIntent(share, file);
+		startActivity(intent);
 	}
 
 	@Override

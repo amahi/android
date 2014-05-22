@@ -20,6 +20,11 @@
 package org.amahi.anywhere.util;
 
 import android.content.Context;
+import android.content.Intent;
+
+import org.amahi.anywhere.activity.ServerFileActivity;
+import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
 
 public final class Intents
 {
@@ -45,6 +50,14 @@ public final class Intents
 
 		private Builder(Context context) {
 			this.context = context;
+		}
+
+		public Intent buildServerFileIntent(ServerShare share, ServerFile file) {
+			Intent intent = new Intent(context, ServerFileActivity.class);
+			intent.putExtra(Extras.SERVER_SHARE, share);
+			intent.putExtra(Extras.SERVER_FILE, file);
+
+			return intent;
 		}
 	}
 }

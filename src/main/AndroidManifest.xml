@@ -22,15 +22,11 @@
 	package="org.amahi.anywhere"
 	android:installLocation="auto">
 
-	<uses-sdk
-		android:minSdkVersion="14"
-		android:targetSdkVersion="19"/>
-
 	<uses-permission
 		android:name="android.permission.INTERNET"/>
 
 	<application
-		android:label="Amahi Anywhere"
+		android:label="@string/application_name"
 		android:name=".AmahiApplication"
 		android:theme="@style/Theme.Amahi">
 

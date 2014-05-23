@@ -18,6 +18,9 @@ android {
         versionName "1.0.0"
         versionCode 100
 
+        minSdkVersion 14
+        targetSdkVersion 19
+
         def apiFile = file("api.properties")
         def apiProperties = new Properties()
 

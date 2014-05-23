@@ -5,9 +5,11 @@ import timber.log.Timber;
 
 public class ApiLog implements RestAdapter.Log
 {
+	private static final String TAG = "API";
+
 	@Override
 	public void log(String message) {
-		Timber.tag("API");
+		Timber.tag(TAG);
 
 		Timber.d(message);
 	}

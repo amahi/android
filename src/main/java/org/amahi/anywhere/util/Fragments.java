@@ -24,7 +24,9 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 
+import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
+import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 
@@ -47,6 +49,22 @@ public final class Fragments
 		private Builder() {
 		}
 
+		public static Fragment buildNavigationFragment() {
+			return new NavigationFragment();
+		}
+
+		public static Fragment buildServerFilesFragment(ServerShare share, ServerFile directory) {
+			Fragment filesFragment = new ServerFilesFragment();
+
+			Bundle arguments = new Bundle();
+			arguments.putParcelable(Arguments.SERVER_SHARE, share);
+			arguments.putParcelable(Arguments.SERVER_FILE, directory);
+
+			filesFragment.setArguments(arguments);
+
+			return filesFragment;
+		}
+
 		public static Fragment buildServerFileFragment(ServerShare share, ServerFile file) {
 			Fragment fileFragment = buildServerFileFragment(file);
 
@@ -60,7 +78,9 @@ public final class Fragments
 		}
 
 		private static Fragment buildServerFileFragment(ServerFile file) {
-			if (ServerFileImageFragment.FORMATS.contains(file.getMime())) {
+			String fileFormat = file.getMime();
+
+			if (ServerFileImageFragment.SUPPORTED_FORMATS.contains(fileFormat)) {
 				return new ServerFileImageFragment();
 			}
 
@@ -95,17 +115,17 @@ public final class Fragments
 			return fragmentManager.findFragmentById(fragmentContainerId) != null;
 		}
 
-		public void replace(Fragment fragment, int fragmentConainerId) {
+		public void replace(Fragment fragment, int fragmentContainerId) {
 			fragmentManager
 				.beginTransaction()
-				.replace(fragmentConainerId, fragment)
+				.replace(fragmentContainerId, fragment)
 				.commit();
 		}
 
-		public void replaceBackstacked(Fragment fragment, int fragmentConainerId) {
+		public void replaceBackstacked(Fragment fragment, int fragmentContainerId) {
 			fragmentManager
 				.beginTransaction()
-				.replace(fragmentConainerId, fragment)
+				.replace(fragmentContainerId, fragment)
 				.addToBackStack(null)
 				.commit();
 		}

@@ -27,10 +27,10 @@ import javax.inject.Inject;
 
 public class ServerFileImageFragment extends Fragment implements Callback
 {
-	public static Set<String> FORMATS;
+	public static final Set<String> SUPPORTED_FORMATS;
 
 	static {
-		FORMATS = new HashSet<String>(Arrays.asList(
+		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
 			"image/bmp",
 			"image/jpeg",
 			"image/gif",

@@ -36,8 +36,6 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileSelectedEvent;
 import org.amahi.anywhere.bus.ParentDirectorySelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
-import org.amahi.anywhere.fragment.NavigationFragment;
-import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
@@ -45,7 +43,7 @@ import org.amahi.anywhere.util.Intents;
 
 public class ServerFilesActivity extends Activity
 {
-	private ActionBarDrawerToggle navigationDrawerToogle;
+	private ActionBarDrawerToggle navigationDrawerToggle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +57,14 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private void setUpNavigationDrawer() {
-		navigationDrawerToogle = new ActionBarDrawerToggle(
+		navigationDrawerToggle = new ActionBarDrawerToggle(
 			this,
 			getDrawer(),
 			R.drawable.ic_drawer,
 			R.string.menu_navigation_open,
 			R.string.menu_navigation_close);
 
-		getDrawer().setDrawerListener(navigationDrawerToogle);
+		getDrawer().setDrawerListener(navigationDrawerToggle);
 
 		getDrawer().setDrawerShadow(R.drawable.bg_shadow_drawer, Gravity.START);
 	}
@@ -80,7 +78,7 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private Fragment buildNavigationFragment() {
-		return NavigationFragment.newInstance();
+		return Fragments.Builder.buildNavigationFragment();
 	}
 
 	private void showNavigationDrawer() {
@@ -143,7 +141,7 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private Fragment buildFilesFragment(ServerShare share, ServerFile directory) {
-		return ServerFilesFragment.newInstance(share, directory);
+		return Fragments.Builder.buildServerFilesFragment(share, directory);
 	}
 
 	private void setUpFileActivity(ServerShare share, ServerFile file) {
@@ -155,19 +153,19 @@ public class ServerFilesActivity extends Activity
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
-		navigationDrawerToogle.syncState();
+		navigationDrawerToggle.syncState();
 	}
 
 	@Override
 	public void onConfigurationChanged(Configuration configuration) {
 		super.onConfigurationChanged(configuration);
 
-		navigationDrawerToogle.onConfigurationChanged(configuration);
+		navigationDrawerToggle.onConfigurationChanged(configuration);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		if (navigationDrawerToogle.onOptionsItemSelected(menuItem)) {
+		if (navigationDrawerToggle.onOptionsItemSelected(menuItem)) {
 			return true;
 		}
 

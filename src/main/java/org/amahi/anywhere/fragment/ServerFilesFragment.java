@@ -48,23 +48,6 @@ import javax.inject.Inject;
 
 public class ServerFilesFragment extends ListFragment
 {
-	public static ServerFilesFragment newInstance(ServerShare share, ServerFile directory) {
-		ServerFilesFragment fragment = new ServerFilesFragment();
-
-		fragment.setArguments(buildArguments(share, directory));
-
-		return fragment;
-	}
-
-	private static Bundle buildArguments(ServerShare share, ServerFile directory) {
-		Bundle arguments = new Bundle();
-
-		arguments.putParcelable(Fragments.Arguments.SERVER_SHARE, share);
-		arguments.putParcelable(Fragments.Arguments.SERVER_FILE, directory);
-
-		return arguments;
-	}
-
 	private static final class ListPositions
 	{
 		private ListPositions() {

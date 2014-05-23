@@ -33,10 +33,6 @@ import javax.inject.Inject;
 
 public class NavigationFragment extends Fragment implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener
 {
-	public static NavigationFragment newInstance() {
-		return new NavigationFragment();
-	}
-
 	@Inject
 	AmahiClient amahiClient;
 

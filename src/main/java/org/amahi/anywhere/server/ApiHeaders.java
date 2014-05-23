@@ -27,7 +27,7 @@ import java.util.Locale;
 
 import retrofit.RequestInterceptor;
 
-public class ApiHeaders implements RequestInterceptor
+class ApiHeaders implements RequestInterceptor
 {
 	private static final class HeaderFields
 	{

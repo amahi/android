@@ -22,8 +22,6 @@
 	android:id="@+id/animator_content"
 	android:inAnimation="@android:anim/fade_in"
 	android:outAnimation="@android:anim/fade_out"
-	android:paddingLeft="16dp"
-	android:paddingRight="16dp"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
@@ -44,13 +42,16 @@
 			android:textSize="@dimen/text_small"
 			android:textStyle="bold"
 			android:textAllCaps="true"
-			android:paddingLeft="8dp"
-			android:paddingTop="8dp"
+			android:paddingLeft="16dp"
+			android:paddingRight="16dp"
+			android:paddingTop="16dp"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"/>
 
 		<Spinner
 			android:id="@+id/spinner_servers"
+			android:layout_marginLeft="8dp"
+			android:layout_marginRight="8dp"
 			android:layout_width="match_parent"
 			android:layout_height="64dp"/>
 
@@ -63,7 +64,7 @@
 			android:textSize="@dimen/text_small"
 			android:textStyle="bold"
 			android:textAllCaps="true"
-			android:paddingLeft="8dp"
+			android:paddingLeft="16dp"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"/>
 

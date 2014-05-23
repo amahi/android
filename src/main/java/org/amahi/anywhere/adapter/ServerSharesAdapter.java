@@ -79,7 +79,7 @@ public class ServerSharesAdapter extends BaseAdapter
 	}
 
 	private View newView(ViewGroup container) {
-		return layoutInflater.inflate(R.layout.view_list_item, container, false);
+		return layoutInflater.inflate(R.layout.view_server_share_item, container, false);
 	}
 
 	private void bindView(ServerShare share, View view) {

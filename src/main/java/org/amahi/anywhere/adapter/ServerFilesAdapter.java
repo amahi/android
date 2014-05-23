@@ -79,7 +79,7 @@ public class ServerFilesAdapter extends BaseAdapter
 	}
 
 	private View newView(ViewGroup container) {
-		return layoutInflater.inflate(R.layout.view_list_item, container, false);
+		return layoutInflater.inflate(R.layout.view_server_file_item, container, false);
 	}
 
 	private void bindView(ServerFile file, View view) {

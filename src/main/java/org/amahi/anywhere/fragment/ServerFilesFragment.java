@@ -121,7 +121,7 @@ public class ServerFilesFragment extends ListFragment
 	}
 
 	private View buildDirectoryHeader() {
-		return LayoutInflater.from(getActivity()).inflate(R.layout.view_list_item, getListView(), false);
+		return LayoutInflater.from(getActivity()).inflate(R.layout.view_server_file_item, getListView(), false);
 	}
 
 	private String getDirectoryName() {

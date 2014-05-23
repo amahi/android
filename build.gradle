@@ -46,6 +46,7 @@ dependencies {
     }
 
     compile "com.android.support:support-v4:19.1.+"
+    compile "com.jakewharton.timber:timber:2.3.+"
     compile "com.squareup.dagger:dagger:1.2.+"
     compile "com.squareup.okhttp:okhttp:1.5.+"
     compile "com.squareup:otto:1.3.+"

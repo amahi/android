@@ -23,6 +23,7 @@ import android.app.Application;
 import android.content.Context;
 
 import dagger.ObjectGraph;
+import timber.log.Timber;
 
 public class AmahiApplication extends Application
 {
@@ -36,7 +37,19 @@ public class AmahiApplication extends Application
 	public void onCreate() {
 		super.onCreate();
 
+		setUpLogging();
+
 		setUpInjections();
+	}
+
+	private void setUpLogging() {
+		if (isDebugging()) {
+			Timber.plant(new Timber.DebugTree());
+		}
+	}
+
+	private boolean isDebugging() {
+		return BuildConfig.DEBUG;
 	}
 
 	private void setUpInjections() {

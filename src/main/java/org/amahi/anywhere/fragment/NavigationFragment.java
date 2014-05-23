@@ -26,6 +26,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerShare;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -86,7 +87,19 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 	}
 
 	private void setUpServersContent(List<Server> servers) {
-		getServersAdapter().replaceWith(servers);
+		getServersAdapter().replaceWith(filterActiveServers(servers));
+	}
+
+	private List<Server> filterActiveServers(List<Server> servers) {
+		List<Server> activeServers = new ArrayList<Server>();
+
+		for (Server server : servers) {
+			if (server.isActive()) {
+				activeServers.add(server);
+			}
+		}
+
+		return activeServers;
 	}
 
 	private ServersAdapter getServersAdapter() {

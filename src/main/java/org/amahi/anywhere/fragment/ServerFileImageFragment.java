@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ViewAnimator;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -23,7 +25,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-public class ServerImageFileFragment extends Fragment
+public class ServerFileImageFragment extends Fragment implements Callback
 {
 	public static Set<String> FORMATS;
 
@@ -42,7 +44,7 @@ public class ServerImageFileFragment extends Fragment
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_image, container, false);
+		return layoutInflater.inflate(R.layout.fragment_server_file_image, container, false);
 	}
 
 	@Override
@@ -68,7 +70,7 @@ public class ServerImageFileFragment extends Fragment
 			.load(getFileUri())
 			.fit()
 			.centerInside()
-			.into(getImageView());
+			.into(getImageView(), this);
 	}
 
 	private Uri getFileUri() {
@@ -84,6 +86,20 @@ public class ServerImageFileFragment extends Fragment
 	}
 
 	private ImageView getImageView() {
-		return (ImageView) getView().findViewById(R.id.image_content);
+		return (ImageView) getView().findViewById(R.id.image);
+	}
+
+	@Override
+	public void onSuccess() {
+		showFileContent();
+	}
+
+	private void showFileContent() {
+		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
+		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.image)));
+	}
+
+	@Override
+	public void onError() {
 	}
 }

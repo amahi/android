@@ -78,7 +78,7 @@ public class ServerFilesFragment extends ListFragment
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_list, container, false);
+		return layoutInflater.inflate(R.layout.fragment_server_files_list, container, false);
 	}
 
 	@Override

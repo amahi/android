@@ -24,7 +24,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 
-import org.amahi.anywhere.fragment.ServerImageFileFragment;
+import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 
@@ -60,8 +60,8 @@ public final class Fragments
 		}
 
 		private static Fragment buildServerFileFragment(ServerFile file) {
-			if (ServerImageFileFragment.FORMATS.contains(file.getMime())) {
-				return new ServerImageFileFragment();
+			if (ServerFileImageFragment.FORMATS.contains(file.getMime())) {
+				return new ServerFileImageFragment();
 			}
 
 			throw new RuntimeException();

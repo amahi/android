@@ -20,16 +20,13 @@
 package org.amahi.anywhere.server.client;
 
 import org.amahi.anywhere.server.Api;
+import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.api.AmahiApi;
-import org.amahi.anywhere.server.header.ApiHeaders;
 import org.amahi.anywhere.server.response.AuthenticationResponse;
 import org.amahi.anywhere.server.response.ServersResponse;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import retrofit.RestAdapter;
-import retrofit.client.Client;
 
 @Singleton
 public class AmahiClient
@@ -37,18 +34,12 @@ public class AmahiClient
 	private final AmahiApi api;
 
 	@Inject
-	public AmahiClient(Client client, ApiHeaders headers) {
-		this.api = buildApi(client, headers);
+	public AmahiClient(ApiAdapter apiAdapter) {
+		this.api = buildApi(apiAdapter);
 	}
 
-	private AmahiApi buildApi(Client client, ApiHeaders headers) {
-		RestAdapter apiAdapter = new RestAdapter.Builder()
-			.setEndpoint(Api.getAmahiUrl())
-			.setClient(client)
-			.setRequestInterceptor(headers)
-			.build();
-
-		return apiAdapter.create(AmahiApi.class);
+	private AmahiApi buildApi(ApiAdapter apiAdapter) {
+		return apiAdapter.create(AmahiApi.class, Api.getAmahiUrl());
 	}
 
 	public void getAuthenticationToken(String username, String password) {

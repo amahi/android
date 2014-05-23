@@ -27,9 +27,9 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.Api;
+import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
-import org.amahi.anywhere.server.header.ApiHeaders;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerRoute;
@@ -41,14 +41,10 @@ import org.amahi.anywhere.server.response.ServerSharesResponse;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import retrofit.RestAdapter;
-import retrofit.client.Client;
-
 @Singleton
 public class ServerClient
 {
-	private final Client client;
-	private final ApiHeaders headers;
+	private final ApiAdapter apiAdapter;
 
 	private final ProxyApi proxyApi;
 	private ServerApi serverApi;
@@ -57,21 +53,14 @@ public class ServerClient
 	private ServerRoute serverRoute;
 
 	@Inject
-	public ServerClient(Client client, ApiHeaders headers) {
-		this.client = client;
-		this.headers = headers;
+	public ServerClient(ApiAdapter apiAdapter) {
+		this.apiAdapter = apiAdapter;
 
 		this.proxyApi = buildProxyApi();
 	}
 
 	private ProxyApi buildProxyApi() {
-		RestAdapter apiAdapter = new RestAdapter.Builder()
-			.setEndpoint(Api.getProxyUrl())
-			.setClient(client)
-			.setRequestInterceptor(headers)
-			.build();
-
-		return apiAdapter.create(ProxyApi.class);
+		return apiAdapter.create(ProxyApi.class, Api.getProxyUrl());
 	}
 
 	public boolean isConnected(Server server) {
@@ -105,13 +94,11 @@ public class ServerClient
 	}
 
 	private ServerApi buildServerApi() {
-		RestAdapter apiAdapter = new RestAdapter.Builder()
-			.setEndpoint(serverRoute.getRemoteAddress())
-			.setClient(client)
-			.setRequestInterceptor(headers)
-			.build();
+		return apiAdapter.create(ServerApi.class, getServerAddress());
+	}
 
-		return apiAdapter.create(ServerApi.class);
+	private String getServerAddress() {
+		return serverRoute.getRemoteAddress();
 	}
 
 	public void getShares() {
@@ -131,7 +118,7 @@ public class ServerClient
 	}
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {
-		return Uri.parse(serverRoute.getRemoteAddress())
+		return Uri.parse(getServerAddress())
 			.buildUpon()
 			.path("files")
 			.appendQueryParameter("s", share.getName())

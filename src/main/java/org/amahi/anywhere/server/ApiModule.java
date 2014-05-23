@@ -25,8 +25,6 @@ import com.squareup.okhttp.HttpResponseCache;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkResponseCache;
 
-import org.amahi.anywhere.server.header.ApiHeaders;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -34,6 +32,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit.RestAdapter.Log;
+import retrofit.RestAdapter.LogLevel;
 import retrofit.client.Client;
 import retrofit.client.OkClient;
 
@@ -43,6 +43,12 @@ import retrofit.client.OkClient;
 )
 public class ApiModule
 {
+	@Provides
+	@Singleton
+	ApiAdapter provideApiAdapter(Client client, ApiHeaders headers, Log log, LogLevel logLevel) {
+		return new ApiAdapter(client, headers, log, logLevel);
+	}
+
 	@Provides
 	@Singleton
 	Client provideClient(OkHttpClient httpClient) {
@@ -72,5 +78,17 @@ public class ApiModule
 	@Singleton
 	ApiHeaders provideHeaders(Application application) {
 		return new ApiHeaders(application);
+	}
+
+	@Provides
+	@Singleton
+	Log provideLog() {
+		return new ApiLog();
+	}
+
+	@Provides
+	@Singleton
+	LogLevel provideLogLevel() {
+		return LogLevel.HEADERS;
 	}
 }

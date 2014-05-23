@@ -17,7 +17,7 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.header;
+package org.amahi.anywhere.server;
 
 import android.content.Context;
 

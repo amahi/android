@@ -26,10 +26,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.MediaController;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -50,7 +52,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.Callback, IVideoPlayer
+public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.Callback, IVideoPlayer, MediaController.MediaPlayerControl, View.OnTouchListener
 {
 	public static final Set<String> SUPPORTED_FORMATS;
 
@@ -68,7 +70,10 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 	ServerClient serverClient;
 
 	private LibVLC vlc;
+
 	private VlcEvents vlcEvents;
+
+	private MediaController vlcControls;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -130,6 +135,7 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		super.onResume();
 
 		createVlc();
+		createVlcControls();
 
 		startVlc(getFileUri());
 	}
@@ -141,6 +147,77 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		} catch (LibVlcException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void createVlcControls() {
+		vlcControls = new MediaController(getActivity());
+
+		vlcControls.setMediaPlayer(this);
+		vlcControls.setAnchorView(getView().findViewById(R.id.layout_content));
+
+		getView().setOnTouchListener(this);
+	}
+
+	@Override
+	public void start() {
+		vlc.play();
+	}
+
+	@Override
+	public boolean canPause() {
+		return true;
+	}
+
+	@Override
+	public void pause() {
+		vlc.pause();
+	}
+
+	@Override
+	public boolean canSeekBackward() {
+		return true;
+	}
+
+	@Override
+	public boolean canSeekForward() {
+		return true;
+	}
+
+	@Override
+	public void seekTo(int time) {
+		vlc.setTime(time);
+	}
+
+	@Override
+	public int getDuration() {
+		return (int) vlc.getLength();
+	}
+
+	@Override
+	public int getCurrentPosition() {
+		return (int) vlc.getTime();
+	}
+
+	@Override
+	public boolean isPlaying() {
+		return vlc.isPlaying();
+	}
+
+	@Override
+	public int getBufferPercentage() {
+		return 0;
+	}
+
+	@Override
+	public int getAudioSessionId() {
+		return 0;
+	}
+
+	@Override
+	public boolean onTouch(View view, MotionEvent motionEvent) {
+		vlcControls.show();
+
+		return false;
 	}
 
 	private void startVlc(Uri uri) {

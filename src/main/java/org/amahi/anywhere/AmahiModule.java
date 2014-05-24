@@ -23,6 +23,7 @@ import android.app.Application;
 
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
+import org.amahi.anywhere.fragment.ServerFileVideoFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.ApiModule;
 
@@ -38,7 +39,8 @@ import dagger.Provides;
 	injects = {
 		NavigationFragment.class,
 		ServerFilesFragment.class,
-		ServerFileImageFragment.class
+		ServerFileImageFragment.class,
+		ServerFileVideoFragment.class
 	}
 )
 class AmahiModule

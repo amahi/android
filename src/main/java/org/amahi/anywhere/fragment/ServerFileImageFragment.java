@@ -66,6 +66,7 @@ public class ServerFileImageFragment extends Fragment implements Callback
 		return layoutInflater.inflate(R.layout.fragment_server_file_image, container, false);
 	}
 
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);

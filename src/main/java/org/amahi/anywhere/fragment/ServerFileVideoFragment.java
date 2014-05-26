@@ -259,6 +259,7 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 			switch (message.getData().getInt("event")) {
 				case EventHandler.MediaPlayerPlaying:
 					fragmentKeeper.get().showFileContent();
+					fragmentKeeper.get().vlcControls.show();
 					break;
 
 				default:

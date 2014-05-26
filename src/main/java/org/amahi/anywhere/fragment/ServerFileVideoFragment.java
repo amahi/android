@@ -32,6 +32,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.MediaController;
+import android.widget.ViewAnimator;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -153,7 +154,7 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		vlcControls = new MediaController(getActivity());
 
 		vlcControls.setMediaPlayer(this);
-		vlcControls.setAnchorView(getView().findViewById(R.id.layout_content));
+		vlcControls.setAnchorView(getView().findViewById(R.id.animator));
 
 		getView().setOnTouchListener(this);
 	}
@@ -254,6 +255,15 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 			if (message.what == 0) {
 				fragmentKeeper.get().changeSurfaceSize(message.arg1, message.arg2);
 			}
+
+			switch (message.getData().getInt("event")) {
+				case EventHandler.MediaPlayerPlaying:
+					fragmentKeeper.get().showFileContent();
+					break;
+
+				default:
+					break;
+			}
 		}
 	}
 
@@ -289,6 +299,16 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		surfaceLayoutParams.height = screenHeight;
 
 		return surfaceLayoutParams;
+	}
+
+	private void showFileContent() {
+		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
+
+		View surface = getView().findViewById(R.id.surface);
+
+		if (animator.getDisplayedChild() != animator.indexOfChild(surface)) {
+			animator.setDisplayedChild(animator.indexOfChild(surface));
+		}
 	}
 
 	@Override

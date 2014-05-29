@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -50,10 +49,15 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.Callback, IVideoPlayer, MediaController.MediaPlayerControl, View.OnTouchListener
+public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
+	SurfaceHolder.Callback,
+	MediaController.MediaPlayerControl,
+	Runnable,
+	View.OnSystemUiVisibilityChangeListener
 {
 	public static final Set<String> SUPPORTED_FORMATS;
 
@@ -83,6 +87,8 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 
 	private VlcStatus vlcStatus;
 
+	private Handler vlcControlsHandler;
+
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
 		return layoutInflater.inflate(R.layout.fragment_server_file_video, container, false);
@@ -95,6 +101,8 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		setUpInjections();
 
 		setUpFile();
+
+		setUpSystemControls();
 	}
 
 	private void setUpInjections() {
@@ -138,6 +146,20 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		vlc.detachSurface();
 	}
 
+	private void setUpSystemControls() {
+		setUpSystemControlsListener();
+
+		showSystemControls();
+	}
+
+	private void setUpSystemControlsListener() {
+		getActivityView().setOnSystemUiVisibilityChangeListener(this);
+	}
+
+	private View getActivityView() {
+		return getActivity().getWindow().getDecorView();
+	}
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -164,8 +186,6 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 
 		vlcControls.setMediaPlayer(this);
 		vlcControls.setAnchorView(getView().findViewById(R.id.animator));
-
-		getView().setOnTouchListener(this);
 	}
 
 	@Override
@@ -227,13 +247,6 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		return 0;
 	}
 
-	@Override
-	public boolean onTouch(View view, MotionEvent motionEvent) {
-		vlcControls.show();
-
-		return false;
-	}
-
 	private void startVlc(Uri uri) {
 		vlcEvents = new VlcEvents(this);
 		EventHandler.getInstance().addHandler(vlcEvents);
@@ -274,7 +287,7 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 			switch (message.getData().getInt("event")) {
 				case EventHandler.MediaPlayerPlaying:
 					fragmentKeeper.get().showFileContent();
-					fragmentKeeper.get().vlcControls.show();
+					fragmentKeeper.get().showControls();
 					break;
 
 				default:
@@ -327,6 +340,57 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		}
 	}
 
+	private void showControls() {
+		showSystemControls();
+
+		vlcControls.show(0);
+
+		hideControlsDelayed();
+	}
+
+	private void showSystemControls() {
+		getActivityView().setSystemUiVisibility(
+			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+	}
+
+	private void hideControlsDelayed() {
+		vlcControlsHandler = new Handler();
+		vlcControlsHandler.postDelayed(this, TimeUnit.SECONDS.toMillis(3));
+	}
+
+	@Override
+	public void run() {
+		hideControls();
+	}
+
+	private void hideControls() {
+		vlcControls.hide();
+
+		hideSystemControls();
+	}
+
+	private void hideSystemControls() {
+		getActivityView().setSystemUiVisibility(
+			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+			View.SYSTEM_UI_FLAG_FULLSCREEN |
+			View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+	}
+
+	@Override
+	public void onSystemUiVisibilityChange(int visibility) {
+		if (areSystemControlsVisible(visibility)) {
+			showControls();
+		}
+	}
+
+	private boolean areSystemControlsVisible(int visibility) {
+		return (visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+	}
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -339,5 +403,7 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 
 		vlc.stop();
 		vlc.detachSurface();
+
+		vlcControlsHandler.removeCallbacks(this);
 	}
 }

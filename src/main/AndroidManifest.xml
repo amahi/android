@@ -41,7 +41,8 @@
 		</activity>
 
 		<activity
-			android:name=".activity.ServerFileActivity">
+			android:name=".activity.ServerFileActivity"
+			android:theme="@style/Theme.Amahi.ServerFile">
 		</activity>
 
 	</application>

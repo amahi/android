@@ -67,6 +67,11 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		));
 	}
 
+	private static enum VlcStatus
+	{
+		PLAYING, PAUSED
+	}
+
 	@Inject
 	ServerClient serverClient;
 
@@ -75,6 +80,8 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 	private VlcEvents vlcEvents;
 
 	private MediaController vlcControls;
+
+	private VlcStatus vlcStatus;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -122,7 +129,7 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 
 	@Override
 	public void setSurfaceSize(int width, int height, int visibleWidth, int visibleHeight, int sarNumber, int sarDensity) {
-		Message message = Message.obtain(vlcEvents, 0, width, height);
+		Message message = Message.obtain(vlcEvents, 42, width, height);
 		message.sendToTarget();
 	}
 
@@ -145,6 +152,8 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		try {
 			vlc = LibVLC.getInstance();
 			vlc.init(getActivity());
+
+			vlcStatus = VlcStatus.PAUSED;
 		} catch (LibVlcException e) {
 			throw new RuntimeException(e);
 		}
@@ -162,6 +171,8 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 	@Override
 	public void start() {
 		vlc.play();
+
+		vlcStatus = VlcStatus.PLAYING;
 	}
 
 	@Override
@@ -172,6 +183,8 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 	@Override
 	public void pause() {
 		vlc.pause();
+
+		vlcStatus = VlcStatus.PAUSED;
 	}
 
 	@Override
@@ -201,7 +214,7 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 
 	@Override
 	public boolean isPlaying() {
-		return vlc.isPlaying();
+		return vlcStatus == VlcStatus.PLAYING;
 	}
 
 	@Override
@@ -226,6 +239,8 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		EventHandler.getInstance().addHandler(vlcEvents);
 
 		vlc.playMRL(uri.toString());
+
+		vlcStatus = VlcStatus.PLAYING;
 	}
 
 	private Uri getFileUri() {
@@ -252,7 +267,7 @@ public class ServerFileVideoFragment extends Fragment implements SurfaceHolder.C
 		public void handleMessage(Message message) {
 			super.handleMessage(message);
 
-			if (message.what == 0) {
+			if (message.what == 42) {
 				fragmentKeeper.get().changeSurfaceSize(message.arg1, message.arg2);
 			}
 

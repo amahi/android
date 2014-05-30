@@ -81,7 +81,7 @@ public final class Intents
 			}
 
 			if (ServerFileWebActivity.SUPPORTED_FORMATS.contains(fileFormat)) {
-				return ServerFileVideoActivity.class;
+				return ServerFileWebActivity.class;
 			}
 
 			throw new ActivityNotFoundException();

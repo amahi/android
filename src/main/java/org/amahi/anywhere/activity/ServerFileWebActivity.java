@@ -56,6 +56,7 @@ public class ServerFileWebActivity extends Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_server_file_web);
 
 		setUpInjections();
 

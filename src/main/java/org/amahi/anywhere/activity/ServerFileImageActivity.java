@@ -74,7 +74,12 @@ public class ServerFileImageActivity extends Activity implements Callback
 	}
 
 	private void setUpImage() {
+		setUpImageTitle();
 		setUpImageContent();
+	}
+
+	private void setUpImageTitle() {
+		getActionBar().setTitle(getFile().getName());
 	}
 
 	private void setUpImageContent() {

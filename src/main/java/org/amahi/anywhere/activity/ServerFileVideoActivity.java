@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -127,7 +128,12 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 	}
 
 	private void setUpVideo() {
+		setUpVideoTitle();
 		setUpVideoView();
+	}
+
+	private void setUpVideoTitle() {
+		getActionBar().setTitle(getFile().getName());
 	}
 
 	private void setUpVideoView() {
@@ -454,5 +460,17 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 
 	private void tearDownSavedState(Bundle savedState) {
 		savedState.putLong(SavedState.VLC_TIME, vlcTime);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		switch (menuItem.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(menuItem);
+		}
 	}
 }

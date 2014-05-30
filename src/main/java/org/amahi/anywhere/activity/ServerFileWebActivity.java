@@ -68,18 +68,23 @@ public class ServerFileWebActivity extends Activity
 	}
 
 	private void setUpWebResource() {
+		setUpWebResourceTitle();
 		setUpWebResourceContent();
 	}
 
+	private void setUpWebResourceTitle() {
+		getActionBar().setTitle(getFile().getName());
+	}
+
 	private void setUpWebResourceContent() {
-		getWebView().loadUrl(getFileUri().toString());
+		getWebView().loadUrl(getWebResourceUri().toString());
 	}
 
 	private WebView getWebView() {
 		return (WebView) findViewById(R.id.web_content);
 	}
 
-	private Uri getFileUri() {
+	private Uri getWebResourceUri() {
 		return serverClient.getFileUri(getShare(), getFile());
 	}
 

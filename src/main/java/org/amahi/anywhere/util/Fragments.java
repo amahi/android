@@ -26,6 +26,7 @@ import android.os.Bundle;
 
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
+import org.amahi.anywhere.fragment.ServerFileWebFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -82,6 +83,10 @@ public final class Fragments
 
 			if (ServerFileImageFragment.SUPPORTED_FORMATS.contains(fileFormat)) {
 				return new ServerFileImageFragment();
+			}
+
+			if (ServerFileWebFragment.SUPPORTED_FORMATS.contains(fileFormat)) {
+				return new ServerFileWebFragment();
 			}
 
 			throw new RuntimeException();

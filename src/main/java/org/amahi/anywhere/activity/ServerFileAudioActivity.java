@@ -325,18 +325,23 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 	}
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+
+		hideAudioControls();
+	}
+
+	private void hideAudioControls() {
+		audioControls.hide();
+	}
+
+	@Override
 	protected void onStop() {
 		super.onStop();
 
 		audioTime = getCurrentPosition();
 
-		hideAudioControls();
-
 		tearDownAudioPlayer();
-	}
-
-	private void hideAudioControls() {
-		audioControls.hide();
 	}
 
 	private void tearDownAudioPlayer() {

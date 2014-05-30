@@ -71,6 +71,14 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 		));
 	}
 
+	private static final class SavedState
+	{
+		private SavedState() {
+		}
+
+		public static final String VLC_TIME = "vlc_time";
+	}
+
 	private static enum VlcStatus
 	{
 		PLAYING, PAUSED
@@ -89,6 +97,8 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 
 	private Handler vlcControlsHandler;
 
+	private long vlcTime;
+
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
 		return layoutInflater.inflate(R.layout.fragment_server_file_video, container, false);
@@ -98,11 +108,21 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		setUpSavedState(savedInstanceState);
+
 		setUpInjections();
 
 		setUpFile();
 
 		setUpSystemControls();
+	}
+
+	private void setUpSavedState(Bundle savedState) {
+		if (savedState == null) {
+			return;
+		}
+
+		vlcTime = savedState.getLong(SavedState.VLC_TIME);
 	}
 
 	private void setUpInjections() {
@@ -286,6 +306,7 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 
 			switch (message.getData().getInt("event")) {
 				case EventHandler.MediaPlayerPlaying:
+					fragmentKeeper.get().setUpVlcTime();
 					fragmentKeeper.get().showFileContent();
 					fragmentKeeper.get().showControls();
 					break;
@@ -328,6 +349,12 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 		surfaceLayoutParams.height = screenHeight;
 
 		return surfaceLayoutParams;
+	}
+
+	private void setUpVlcTime() {
+		if (vlc.getTime() == 0) {
+			vlc.setTime(vlcTime);
+		}
 	}
 
 	private void showFileContent() {
@@ -401,9 +428,22 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	private void stopVlc() {
 		EventHandler.getInstance().removeHandler(vlcEvents);
 
+		vlcTime = vlc.getTime();
+
 		vlc.stop();
 		vlc.detachSurface();
 
 		vlcControlsHandler.removeCallbacks(this);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		tearDownSavedState(outState);
+	}
+
+	private void tearDownSavedState(Bundle savedState) {
+		savedState.putLong(SavedState.VLC_TIME, vlcTime);
 	}
 }

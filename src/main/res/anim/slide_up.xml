@@ -18,26 +18,8 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/animator"
-	android:inAnimation="@android:anim/fade_in"
-	android:outAnimation="@android:anim/fade_out"
-	android:animateFirstView="false"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
-
-	<ProgressBar
-		android:id="@android:id/progress"
-		android:fitsSystemWindows="true"
-		android:layout_gravity="center"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"/>
-
-	<SurfaceView
-		android:id="@+id/surface"
-		android:fitsSystemWindows="false"
-		android:layout_gravity="center"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
-
-</ViewAnimator>
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+	android:fromYDelta="50%p"
+	android:toYDelta="0%p"
+	android:interpolator="@android:anim/decelerate_interpolator"
+	android:duration="@android:integer/config_shortAnimTime"/>

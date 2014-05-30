@@ -30,6 +30,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.MediaController;
 import android.widget.ViewAnimator;
 
@@ -369,8 +371,7 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 
 	private void showControls() {
 		showSystemControls();
-
-		vlcControls.show(0);
+		showVlcControls();
 
 		hideControlsDelayed();
 	}
@@ -380,6 +381,13 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
 			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
 			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+	}
+
+	private void showVlcControls() {
+		Animation showAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_up);
+		vlcControls.startAnimation(showAnimation);
+
+		vlcControls.show(0);
 	}
 
 	private void hideControlsDelayed() {
@@ -393,9 +401,15 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	}
 
 	private void hideControls() {
+		hideVlcControls();
+		hideSystemControls();
+	}
+
+	private void hideVlcControls() {
 		vlcControls.hide();
 
-		hideSystemControls();
+		Animation hideAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
+		vlcControls.startAnimation(hideAnimation);
 	}
 
 	private void hideSystemControls() {

@@ -60,12 +60,10 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 
 	static {
 		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
-			"audio/aac",
 			"audio/flac",
 			"audio/mp4",
 			"audio/mpeg",
-			"audio/x-aac",
-			"audio/x-m4a"
+			"audio/ogg"
 		));
 	}
 

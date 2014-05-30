@@ -18,33 +18,8 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.amahi.anywhere"
-	android:installLocation="auto">
-
-	<uses-permission
-		android:name="android.permission.INTERNET"/>
-
-	<application
-		android:label="@string/application_name"
-		android:name=".AmahiApplication"
-		android:theme="@style/Theme.Amahi">
-
-		<activity
-			android:name=".activity.ServerFilesActivity">
-
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN"/>
-				<category android:name="android.intent.category.LAUNCHER"/>
-			</intent-filter>
-
-		</activity>
-
-		<activity
-			android:name=".activity.ServerFileActivity"
-			android:theme="@style/Theme.Amahi.ServerFile">
-		</activity>
-
-	</application>
-
-</manifest>
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+	android:fromYDelta="0%p"
+	android:toYDelta="50%p"
+	android:interpolator="@android:anim/accelerate_interpolator"
+	android:duration="@android:integer/config_shortAnimTime"/>

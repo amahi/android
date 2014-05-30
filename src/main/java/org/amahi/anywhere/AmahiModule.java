@@ -22,7 +22,9 @@ package org.amahi.anywhere;
 import android.app.Application;
 
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.ServerFileAudioFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
+import org.amahi.anywhere.fragment.ServerFileVideoFragment;
 import org.amahi.anywhere.fragment.ServerFileWebFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.ApiModule;
@@ -40,6 +42,9 @@ import dagger.Provides;
 		NavigationFragment.class,
 		ServerFilesFragment.class,
 		ServerFileImageFragment.class,
+		ServerFileAudioFragment.class,
+		ServerFileImageFragment.class,
+		ServerFileVideoFragment.class,
 		ServerFileWebFragment.class
 	}
 )

@@ -25,7 +25,9 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.ServerFileAudioFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
+import org.amahi.anywhere.fragment.ServerFileVideoFragment;
 import org.amahi.anywhere.fragment.ServerFileWebFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -87,6 +89,14 @@ public final class Fragments
 
 			if (ServerFileWebFragment.SUPPORTED_FORMATS.contains(fileFormat)) {
 				return new ServerFileWebFragment();
+			}
+
+			if (ServerFileVideoFragment.SUPPORTED_FORMATS.contains(fileFormat)) {
+				return new ServerFileVideoFragment();
+			}
+
+			if (ServerFileAudioFragment.SUPPORTED_FORMATS.contains(fileFormat)) {
+				return new ServerFileAudioFragment();
 			}
 
 			throw new RuntimeException();

@@ -17,15 +17,14 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.fragment;
+package org.amahi.anywhere.activity;
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -41,7 +40,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
-import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Intents;
 import org.videolan.libvlc.EventHandler;
 import org.videolan.libvlc.IVideoPlayer;
 import org.videolan.libvlc.LibVLC;
@@ -55,7 +54,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
+public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 	SurfaceHolder.Callback,
 	MediaController.MediaPlayerControl,
 	Runnable,
@@ -102,19 +101,15 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	private long vlcTime;
 
 	@Override
-	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_server_file_video, container, false);
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_server_file_video);
 
 		setUpSavedState(savedInstanceState);
 
 		setUpInjections();
 
-		setUpFile();
+		setUpVideo();
 
 		setUpSystemControls();
 	}
@@ -128,14 +123,14 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	}
 
 	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
+		AmahiApplication.from(this).inject(this);
 	}
 
-	private void setUpFile() {
-		setUpFileView();
+	private void setUpVideo() {
+		setUpVideoView();
 	}
 
-	private void setUpFileView() {
+	private void setUpVideoView() {
 		SurfaceHolder surfaceHolder = getSurface().getHolder();
 
 		surfaceHolder.setFormat(PixelFormat.RGBX_8888);
@@ -145,7 +140,7 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	}
 
 	private SurfaceView getSurface() {
-		return (SurfaceView) getView().findViewById(R.id.surface);
+		return (SurfaceView) findViewById(R.id.surface);
 	}
 
 	@Override
@@ -179,7 +174,7 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	}
 
 	private View getActivityView() {
-		return getActivity().getWindow().getDecorView();
+		return getWindow().getDecorView();
 	}
 
 	@Override
@@ -189,13 +184,13 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 		createVlc();
 		createVlcControls();
 
-		startVlc(getFileUri());
+		startVlc(getVideoUri());
 	}
 
 	private void createVlc() {
 		try {
 			vlc = LibVLC.getInstance();
-			vlc.init(getActivity());
+			vlc.init(this);
 
 			vlcStatus = VlcStatus.PAUSED;
 		} catch (LibVlcException e) {
@@ -204,10 +199,10 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	}
 
 	private void createVlcControls() {
-		vlcControls = new MediaController(getActivity());
+		vlcControls = new MediaController(this);
 
 		vlcControls.setMediaPlayer(this);
-		vlcControls.setAnchorView(getView().findViewById(R.id.animator));
+		vlcControls.setAnchorView(findViewById(R.id.animator));
 	}
 
 	@Override
@@ -278,24 +273,24 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 		vlcStatus = VlcStatus.PLAYING;
 	}
 
-	private Uri getFileUri() {
+	private Uri getVideoUri() {
 		return serverClient.getFileUri(getShare(), getFile());
 	}
 
 	private ServerShare getShare() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
 	private ServerFile getFile() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 
 	private static final class VlcEvents extends Handler
 	{
-		private final WeakReference<ServerFileVideoFragment> fragmentKeeper;
+		private final WeakReference<ServerFileVideoActivity> activityKeeper;
 
-		private VlcEvents(ServerFileVideoFragment fragment) {
-			this.fragmentKeeper = new WeakReference<ServerFileVideoFragment>(fragment);
+		private VlcEvents(ServerFileVideoActivity fragment) {
+			this.activityKeeper = new WeakReference<ServerFileVideoActivity>(fragment);
 		}
 
 		@Override
@@ -303,14 +298,14 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 			super.handleMessage(message);
 
 			if (message.what == 42) {
-				fragmentKeeper.get().changeSurfaceSize(message.arg1, message.arg2);
+				activityKeeper.get().changeSurfaceSize(message.arg1, message.arg2);
 			}
 
 			switch (message.getData().getInt("event")) {
 				case EventHandler.MediaPlayerPlaying:
-					fragmentKeeper.get().setUpVlcTime();
-					fragmentKeeper.get().showFileContent();
-					fragmentKeeper.get().showControls();
+					activityKeeper.get().setUpVlcTime();
+					activityKeeper.get().showFileContent();
+					activityKeeper.get().showControls();
 					break;
 
 				default:
@@ -333,8 +328,8 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	}
 
 	private ViewGroup.LayoutParams getSurfaceLayoutParams(int videoWidth, int videoHeight) {
-		int screenWidth = Android.getDeviceScreenWidth(getActivity());
-		int screenHeight = Android.getDeviceScreenHeight(getActivity());
+		int screenWidth = Android.getDeviceScreenWidth(this);
+		int screenHeight = Android.getDeviceScreenHeight(this);
 
 		float screenAspectRatio = (float) screenWidth / (float) screenHeight;
 		float videoAspectRatio = (float) videoWidth / (float) videoHeight;
@@ -360,9 +355,9 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	}
 
 	private void showFileContent() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
 
-		View surface = getView().findViewById(R.id.surface);
+		View surface = findViewById(R.id.surface);
 
 		if (animator.getDisplayedChild() != animator.indexOfChild(surface)) {
 			animator.setDisplayedChild(animator.indexOfChild(surface));
@@ -384,7 +379,7 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	}
 
 	private void showVlcControls() {
-		Animation showAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_up);
+		Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
 		vlcControls.startAnimation(showAnimation);
 
 		vlcControls.show(0);
@@ -408,7 +403,7 @@ public class ServerFileVideoFragment extends Fragment implements IVideoPlayer,
 	private void hideVlcControls() {
 		vlcControls.hide();
 
-		Animation hideAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
+		Animation hideAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down);
 		vlcControls.startAnimation(hideAnimation);
 	}
 

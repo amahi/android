@@ -21,11 +21,11 @@ package org.amahi.anywhere;
 
 import android.app.Application;
 
+import org.amahi.anywhere.activity.ServerFileAudioActivity;
+import org.amahi.anywhere.activity.ServerFileImageActivity;
+import org.amahi.anywhere.activity.ServerFileVideoActivity;
+import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.fragment.NavigationFragment;
-import org.amahi.anywhere.fragment.ServerFileAudioFragment;
-import org.amahi.anywhere.fragment.ServerFileImageFragment;
-import org.amahi.anywhere.fragment.ServerFileVideoFragment;
-import org.amahi.anywhere.fragment.ServerFileWebFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.ApiModule;
 
@@ -41,11 +41,10 @@ import dagger.Provides;
 	injects = {
 		NavigationFragment.class,
 		ServerFilesFragment.class,
-		ServerFileImageFragment.class,
-		ServerFileAudioFragment.class,
-		ServerFileImageFragment.class,
-		ServerFileVideoFragment.class,
-		ServerFileWebFragment.class
+		ServerFileAudioActivity.class,
+		ServerFileImageActivity.class,
+		ServerFileVideoActivity.class,
+		ServerFileWebActivity.class
 	}
 )
 class AmahiModule

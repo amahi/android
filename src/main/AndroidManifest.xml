@@ -41,7 +41,22 @@
 		</activity>
 
 		<activity
-			android:name=".activity.ServerFileActivity"
+			android:name=".activity.ServerFileAudioActivity"
+			android:theme="@style/Theme.Amahi.ServerFile">
+		</activity>
+
+		<activity
+			android:name=".activity.ServerFileImageActivity"
+			android:theme="@style/Theme.Amahi.ServerFile">
+		</activity>
+
+		<activity
+			android:name=".activity.ServerFileVideoActivity"
+			android:theme="@style/Theme.Amahi.ServerFile">
+		</activity>
+
+		<activity
+			android:name=".activity.ServerFileWebActivity"
 			android:theme="@style/Theme.Amahi.ServerFile">
 		</activity>
 

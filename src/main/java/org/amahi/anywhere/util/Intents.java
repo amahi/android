@@ -19,10 +19,15 @@
 
 package org.amahi.anywhere.util;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 
-import org.amahi.anywhere.activity.ServerFileActivity;
+import org.amahi.anywhere.activity.ServerFileAudioActivity;
+import org.amahi.anywhere.activity.ServerFileImageActivity;
+import org.amahi.anywhere.activity.ServerFileVideoActivity;
+import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 
@@ -36,8 +41,8 @@ public final class Intents
 		private Extras() {
 		}
 
-		public static final String SERVER_FILE = "server_file";
 		public static final String SERVER_SHARE = "server_share";
+		public static final String SERVER_FILE = "server_file";
 	}
 
 	public static final class Builder
@@ -53,11 +58,33 @@ public final class Intents
 		}
 
 		public Intent buildServerFileIntent(ServerShare share, ServerFile file) {
-			Intent intent = new Intent(context, ServerFileActivity.class);
+			Intent intent = new Intent(context, getServerFileActivity(file));
 			intent.putExtra(Extras.SERVER_SHARE, share);
 			intent.putExtra(Extras.SERVER_FILE, file);
 
 			return intent;
+		}
+
+		private Class<? extends Activity> getServerFileActivity(ServerFile file) {
+			String fileFormat = file.getMime();
+
+			if (ServerFileAudioActivity.SUPPORTED_FORMATS.contains(fileFormat)) {
+				return ServerFileAudioActivity.class;
+			}
+
+			if (ServerFileImageActivity.SUPPORTED_FORMATS.contains(fileFormat)) {
+				return ServerFileImageActivity.class;
+			}
+
+			if (ServerFileVideoActivity.SUPPORTED_FORMATS.contains(fileFormat)) {
+				return ServerFileVideoActivity.class;
+			}
+
+			if (ServerFileWebActivity.SUPPORTED_FORMATS.contains(fileFormat)) {
+				return ServerFileVideoActivity.class;
+			}
+
+			throw new ActivityNotFoundException();
 		}
 	}
 }

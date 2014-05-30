@@ -17,17 +17,20 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.fragment;
+package org.amahi.anywhere.activity;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.webkit.WebViewFragment;
+import android.view.MenuItem;
+import android.webkit.WebView;
 
 import org.amahi.anywhere.AmahiApplication;
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Intents;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,7 +38,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-public class ServerFileWebFragment extends WebViewFragment
+public class ServerFileWebActivity extends Activity
 {
 	public static final Set<String> SUPPORTED_FORMATS;
 
@@ -51,24 +54,28 @@ public class ServerFileWebFragment extends WebViewFragment
 	ServerClient serverClient;
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
 		setUpInjections();
 
-		setUpFile();
+		setUpWebResource();
 	}
 
 	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
+		AmahiApplication.from(this).inject(this);
 	}
 
-	private void setUpFile() {
-		setUpFileContent();
+	private void setUpWebResource() {
+		setUpWebResourceContent();
 	}
 
-	private void setUpFileContent() {
+	private void setUpWebResourceContent() {
 		getWebView().loadUrl(getFileUri().toString());
+	}
+
+	private WebView getWebView() {
+		return (WebView) findViewById(R.id.web_content);
 	}
 
 	private Uri getFileUri() {
@@ -76,10 +83,22 @@ public class ServerFileWebFragment extends WebViewFragment
 	}
 
 	private ServerShare getShare() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
 	private ServerFile getFile() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		switch (menuItem.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(menuItem);
+		}
 	}
 }

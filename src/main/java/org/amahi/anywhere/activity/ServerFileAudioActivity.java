@@ -17,17 +17,15 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.fragment;
+package org.amahi.anywhere.activity;
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -43,7 +41,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Intents;
 import org.videolan.libvlc.EventHandler;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.LibVlcException;
@@ -59,7 +57,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-public class ServerFileAudioFragment extends Fragment implements MediaController.MediaPlayerControl
+public class ServerFileAudioActivity extends Activity implements MediaController.MediaPlayerControl
 {
 	public static final Set<String> SUPPORTED_FORMATS;
 
@@ -101,19 +99,15 @@ public class ServerFileAudioFragment extends Fragment implements MediaController
 	private long vlcTime;
 
 	@Override
-	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_server_file_audio, container, false);
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_server_file_audio);
 
 		setUpSavedState(savedInstanceState);
 
 		setUpInjections();
 
-		setUpFile();
+		setUpAudio();
 	}
 
 	private void setUpSavedState(Bundle savedState) {
@@ -125,24 +119,24 @@ public class ServerFileAudioFragment extends Fragment implements MediaController
 	}
 
 	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
+		AmahiApplication.from(this).inject(this);
 	}
 
-	private void setUpFile() {
-		setUpFileMetadata();
-		setUpFileImage();
+	private void setUpAudio() {
+		setUpAudioMetadata();
+		setUpAudioAlbumArt();
 	}
 
-	private void setUpFileMetadata() {
+	private void setUpAudioMetadata() {
 		MediaMetadataRetriever metadataRetriever = getFileMetadataRetriever();
 
 		String title = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
 		String artist = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
 		String album = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
 
-		TextView titleView = (TextView) getView().findViewById(R.id.text_title);
-		TextView artistView = (TextView) getView().findViewById(R.id.text_artist);
-		TextView albumView = (TextView) getView().findViewById(R.id.text_album);
+		TextView titleView = (TextView) findViewById(R.id.text_title);
+		TextView artistView = (TextView) findViewById(R.id.text_artist);
+		TextView albumView = (TextView) findViewById(R.id.text_album);
 
 		titleView.setText(title);
 		artistView.setText(artist);
@@ -152,20 +146,20 @@ public class ServerFileAudioFragment extends Fragment implements MediaController
 	private MediaMetadataRetriever getFileMetadataRetriever() {
 		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
-		retriever.setDataSource(getFileUri().toString(), new HashMap<String, String>());
+		retriever.setDataSource(getAudioUri().toString(), new HashMap<String, String>());
 
 		return retriever;
 	}
 
-	private void setUpFileImage() {
-		ImageView albumArtView = (ImageView) getView().findViewById(R.id.image_album_art);
+	private void setUpAudioAlbumArt() {
+		ImageView albumArtView = (ImageView) findViewById(R.id.image_album_art);
 
-		Picasso picasso = new Picasso.Builder(getActivity())
+		Picasso picasso = new Picasso.Builder(this)
 			.downloader(new AlbumArtDownloader())
 			.build();
 
 		picasso
-			.load(getFileUri())
+			.load(getAudioUri())
 			.fit()
 			.centerInside()
 			.placeholder(android.R.color.darker_gray)
@@ -198,13 +192,13 @@ public class ServerFileAudioFragment extends Fragment implements MediaController
 		createVlc();
 		createVlcControls();
 
-		startVlc(getFileUri());
+		startVlc(getAudioUri());
 	}
 
 	private void createVlc() {
 		try {
 			vlc = LibVLC.getInstance();
-			vlc.init(getActivity());
+			vlc.init(this);
 
 			vlcStatus = VlcStatus.PAUSED;
 		} catch (LibVlcException e) {
@@ -213,10 +207,10 @@ public class ServerFileAudioFragment extends Fragment implements MediaController
 	}
 
 	private void createVlcControls() {
-		vlcControls = new MediaController(getActivity());
+		vlcControls = new MediaController(this);
 
 		vlcControls.setMediaPlayer(this);
-		vlcControls.setAnchorView(getView().findViewById(R.id.animator));
+		vlcControls.setAnchorView(findViewById(R.id.animator));
 	}
 
 	@Override
@@ -287,24 +281,24 @@ public class ServerFileAudioFragment extends Fragment implements MediaController
 		vlcStatus = VlcStatus.PLAYING;
 	}
 
-	private Uri getFileUri() {
+	private Uri getAudioUri() {
 		return serverClient.getFileUri(getShare(), getFile());
 	}
 
 	private ServerShare getShare() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
 	private ServerFile getFile() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 
 	private static final class VlcEvents extends Handler
 	{
-		private final WeakReference<ServerFileAudioFragment> fragmentKeeper;
+		private final WeakReference<ServerFileAudioActivity> activityKeeper;
 
-		private VlcEvents(ServerFileAudioFragment fragment) {
-			this.fragmentKeeper = new WeakReference<ServerFileAudioFragment>(fragment);
+		private VlcEvents(ServerFileAudioActivity fragment) {
+			this.activityKeeper = new WeakReference<ServerFileAudioActivity>(fragment);
 		}
 
 		@Override
@@ -313,9 +307,9 @@ public class ServerFileAudioFragment extends Fragment implements MediaController
 
 			switch (message.getData().getInt("event")) {
 				case EventHandler.MediaPlayerPlaying:
-					fragmentKeeper.get().setUpVlcTime();
-					fragmentKeeper.get().showFileContent();
-					fragmentKeeper.get().showVlcControls();
+					activityKeeper.get().setUpVlcTime();
+					activityKeeper.get().showFileContent();
+					activityKeeper.get().showVlcControls();
 					break;
 
 				default:
@@ -331,9 +325,9 @@ public class ServerFileAudioFragment extends Fragment implements MediaController
 	}
 
 	private void showFileContent() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
 
-		View content = getView().findViewById(R.id.layout_content);
+		View content = findViewById(R.id.layout_content);
 
 		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
 			animator.setDisplayedChild(animator.indexOfChild(content));
@@ -341,7 +335,7 @@ public class ServerFileAudioFragment extends Fragment implements MediaController
 	}
 
 	private void showVlcControls() {
-		Animation showAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_up);
+		Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
 		vlcControls.startAnimation(showAnimation);
 
 		vlcControls.show(0);

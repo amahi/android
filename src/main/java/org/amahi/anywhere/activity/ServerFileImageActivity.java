@@ -17,14 +17,12 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.fragment;
+package org.amahi.anywhere.activity;
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.ViewAnimator;
 
@@ -36,7 +34,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Intents;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -44,7 +42,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-public class ServerFileImageFragment extends Fragment implements Callback
+public class ServerFileImageActivity extends Activity implements Callback
 {
 	public static final Set<String> SUPPORTED_FORMATS;
 
@@ -62,64 +60,71 @@ public class ServerFileImageFragment extends Fragment implements Callback
 	ServerClient serverClient;
 
 	@Override
-	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_server_file_image, container, false);
-	}
-
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_server_file_image);
 
 		setUpInjections();
 
-		setUpFile();
+		setUpImage();
 	}
 
 	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
+		AmahiApplication.from(this).inject(this);
 	}
 
-	private void setUpFile() {
-		setUpFileContent();
+	private void setUpImage() {
+		setUpImageContent();
 	}
 
-	private void setUpFileContent() {
+	private void setUpImageContent() {
 		Picasso
-			.with(getActivity())
-			.load(getFileUri())
+			.with(this)
+			.load(getImageUri())
 			.fit()
 			.centerInside()
 			.into(getImageView(), this);
 	}
 
-	private Uri getFileUri() {
+	private Uri getImageUri() {
 		return serverClient.getFileUri(getShare(), getFile());
 	}
 
 	private ServerShare getShare() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
 	private ServerFile getFile() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 
 	private ImageView getImageView() {
-		return (ImageView) getView().findViewById(R.id.image);
+		return (ImageView) findViewById(R.id.image);
 	}
 
 	@Override
 	public void onSuccess() {
-		showFileContent();
+		showImageContent();
 	}
 
-	private void showFileContent() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
-		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.image)));
+	private void showImageContent() {
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
+		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.image)));
 	}
 
 	@Override
 	public void onError() {
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		switch (menuItem.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(menuItem);
+		}
 	}
 }

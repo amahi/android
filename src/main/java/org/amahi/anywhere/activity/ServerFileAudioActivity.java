@@ -20,11 +20,12 @@
 package org.amahi.anywhere.activity;
 
 import android.app.Activity;
+import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -42,14 +43,10 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Intents;
-import org.videolan.libvlc.EventHandler;
-import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.LibVlcException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,7 +54,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-public class ServerFileAudioActivity extends Activity implements MediaController.MediaPlayerControl
+public class ServerFileAudioActivity extends Activity implements MediaController.MediaPlayerControl, MediaPlayer.OnPreparedListener, Runnable
 {
 	public static final Set<String> SUPPORTED_FORMATS;
 
@@ -77,26 +74,17 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 		private SavedState() {
 		}
 
-		public static final String VLC_TIME = "vlc_time";
-	}
-
-	private static enum VlcStatus
-	{
-		PLAYING, PAUSED
+		public static final String AUDIO_TIME = "audio_time";
 	}
 
 	@Inject
 	ServerClient serverClient;
 
-	private LibVLC vlc;
+	private MediaPlayer audioPlayer;
 
-	private VlcEvents vlcEvents;
+	private MediaController audioControls;
 
-	private MediaController vlcControls;
-
-	private VlcStatus vlcStatus;
-
-	private long vlcTime;
+	private int audioTime;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +103,7 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 			return;
 		}
 
-		vlcTime = savedState.getLong(SavedState.VLC_TIME);
+		audioTime = savedState.getInt(SavedState.AUDIO_TIME);
 	}
 
 	private void setUpInjections() {
@@ -123,8 +111,22 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 	}
 
 	private void setUpAudio() {
-		setUpAudioMetadata();
+		setUpAudioTitle();
+		setUpAudioMetadataAsync();
 		setUpAudioAlbumArt();
+	}
+
+	private void setUpAudioTitle() {
+		getActionBar().setTitle(getFile().getName());
+	}
+
+	private void setUpAudioMetadataAsync() {
+		new Thread(this).start();
+	}
+
+	@Override
+	public void run() {
+		setUpAudioMetadata();
 	}
 
 	private void setUpAudioMetadata() {
@@ -141,6 +143,8 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 		titleView.setText(title);
 		artistView.setText(artist);
 		albumView.setText(album);
+
+		metadataRetriever.release();
 	}
 
 	private MediaMetadataRetriever getFileMetadataRetriever() {
@@ -170,8 +174,12 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 	{
 		@Override
 		public Response load(Uri uri, boolean localCacheOnly) throws IOException {
-			byte[] albumArtBytes = getMetadataRetriever(uri).getEmbeddedPicture();
+			MediaMetadataRetriever metadataRetriever = getMetadataRetriever(uri);
+
+			byte[] albumArtBytes = metadataRetriever.getEmbeddedPicture();
 			InputStream albumArtStream = new ByteArrayInputStream(albumArtBytes);
+
+			metadataRetriever.release();
 
 			return new Response(albumArtStream, false);
 		}
@@ -186,99 +194,23 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 	}
 
 	@Override
-	public void onResume() {
-		super.onResume();
+	protected void onStart() {
+		super.onStart();
 
-		createVlc();
-		createVlcControls();
-
-		startVlc(getAudioUri());
+		setUpAudioPlayer();
+		setUpAudioControls();
 	}
 
-	private void createVlc() {
+	private void setUpAudioPlayer() {
 		try {
-			vlc = LibVLC.getInstance();
-			vlc.init(this);
-
-			vlcStatus = VlcStatus.PAUSED;
-		} catch (LibVlcException e) {
+			audioPlayer = new MediaPlayer();
+			audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+			audioPlayer.setDataSource(this, getAudioUri());
+			audioPlayer.setOnPreparedListener(this);
+			audioPlayer.prepareAsync();
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private void createVlcControls() {
-		vlcControls = new MediaController(this);
-
-		vlcControls.setMediaPlayer(this);
-		vlcControls.setAnchorView(findViewById(R.id.animator));
-	}
-
-	@Override
-	public void start() {
-		vlc.play();
-
-		vlcStatus = VlcStatus.PLAYING;
-	}
-
-	@Override
-	public boolean canPause() {
-		return true;
-	}
-
-	@Override
-	public void pause() {
-		vlc.pause();
-
-		vlcStatus = VlcStatus.PAUSED;
-	}
-
-	@Override
-	public boolean canSeekBackward() {
-		return true;
-	}
-
-	@Override
-	public boolean canSeekForward() {
-		return true;
-	}
-
-	@Override
-	public void seekTo(int time) {
-		vlc.setTime(time);
-	}
-
-	@Override
-	public int getDuration() {
-		return (int) vlc.getLength();
-	}
-
-	@Override
-	public int getCurrentPosition() {
-		return (int) vlc.getTime();
-	}
-
-	@Override
-	public boolean isPlaying() {
-		return vlcStatus == VlcStatus.PLAYING;
-	}
-
-	@Override
-	public int getBufferPercentage() {
-		return 0;
-	}
-
-	@Override
-	public int getAudioSessionId() {
-		return 0;
-	}
-
-	private void startVlc(Uri uri) {
-		vlcEvents = new VlcEvents(this);
-		EventHandler.getInstance().addHandler(vlcEvents);
-
-		vlc.playMRL(uri.toString());
-
-		vlcStatus = VlcStatus.PLAYING;
 	}
 
 	private Uri getAudioUri() {
@@ -293,38 +225,29 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 
-	private static final class VlcEvents extends Handler
-	{
-		private final WeakReference<ServerFileAudioActivity> activityKeeper;
+	private void setUpAudioControls() {
+		audioControls = new MediaController(this);
 
-		private VlcEvents(ServerFileAudioActivity fragment) {
-			this.activityKeeper = new WeakReference<ServerFileAudioActivity>(fragment);
-		}
+		audioControls.setMediaPlayer(this);
+		audioControls.setAnchorView(findViewById(R.id.animator));
+	}
 
-		@Override
-		public void handleMessage(Message message) {
-			super.handleMessage(message);
+	@Override
+	public void onPrepared(MediaPlayer mediaPlayer) {
+		setUpAudioTime();
+		start();
 
-			switch (message.getData().getInt("event")) {
-				case EventHandler.MediaPlayerPlaying:
-					activityKeeper.get().setUpVlcTime();
-					activityKeeper.get().showFileContent();
-					activityKeeper.get().showVlcControls();
-					break;
+		showAudio();
+		showAudioControls();
+	}
 
-				default:
-					break;
-			}
+	private void setUpAudioTime() {
+		if (audioPlayer.getCurrentPosition() == 0) {
+			audioPlayer.seekTo(audioTime);
 		}
 	}
 
-	private void setUpVlcTime() {
-		if (vlc.getTime() == 0) {
-			vlc.setTime(vlcTime);
-		}
-	}
-
-	private void showFileContent() {
+	private void showAudio() {
 		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
 
 		View content = findViewById(R.id.layout_content);
@@ -334,26 +257,93 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 		}
 	}
 
-	private void showVlcControls() {
+	private void showAudioControls() {
 		Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
-		vlcControls.startAnimation(showAnimation);
+		audioControls.startAnimation(showAnimation);
 
-		vlcControls.show(0);
+		audioControls.show(0);
 	}
 
 	@Override
-	public void onPause() {
-		super.onPause();
-
-		stopVlc();
+	public void start() {
+		audioPlayer.start();
 	}
 
-	private void stopVlc() {
-		EventHandler.getInstance().removeHandler(vlcEvents);
+	@Override
+	public boolean canPause() {
+		return true;
+	}
 
-		vlcTime = vlc.getTime();
+	@Override
+	public void pause() {
+		audioPlayer.pause();
+	}
 
-		vlc.stop();
+	@Override
+	public boolean canSeekBackward() {
+		return true;
+	}
+
+	@Override
+	public boolean canSeekForward() {
+		return true;
+	}
+
+	@Override
+	public void seekTo(int time) {
+		audioPlayer.seekTo(time);
+	}
+
+	@Override
+	public int getDuration() {
+		return audioPlayer.getDuration();
+	}
+
+	@Override
+	public int getCurrentPosition() {
+		return audioPlayer.getCurrentPosition();
+	}
+
+	@Override
+	public boolean isPlaying() {
+		return audioPlayer.isPlaying();
+	}
+
+	@Override
+	public int getBufferPercentage() {
+		return 0;
+	}
+
+	@Override
+	public int getAudioSessionId() {
+		return audioPlayer.getAudioSessionId();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		audioPlayer.start();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+
+		audioTime = getCurrentPosition();
+
+		hideAudioControls();
+
+		tearDownAudioPlayer();
+	}
+
+	private void hideAudioControls() {
+		audioControls.hide();
+	}
+
+	private void tearDownAudioPlayer() {
+		audioPlayer.stop();
+		audioPlayer.release();
 	}
 
 	@Override
@@ -364,6 +354,18 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 	}
 
 	private void tearDownSavedState(Bundle savedState) {
-		savedState.putLong(SavedState.VLC_TIME, vlcTime);
+		savedState.putInt(SavedState.AUDIO_TIME, getCurrentPosition());
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		switch (menuItem.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(menuItem);
+		}
 	}
 }

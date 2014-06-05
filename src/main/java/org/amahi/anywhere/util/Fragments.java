@@ -77,6 +77,10 @@ public final class Fragments
 			this.fragmentManager = activity.getFragmentManager();
 		}
 
+		public Fragment find(String fragmentTag) {
+			return fragmentManager.findFragmentByTag(fragmentTag);
+		}
+
 		public void set(Fragment fragment, int fragmentContainerId) {
 			if (isSet(fragmentContainerId)) {
 				return;

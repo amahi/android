@@ -20,9 +20,11 @@
 package org.amahi.anywhere.activity;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -31,18 +33,29 @@ import android.view.MenuItem;
 
 import com.squareup.otto.Subscribe;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileSelectedEvent;
 import org.amahi.anywhere.bus.ParentDirectorySelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
+import org.amahi.anywhere.fragment.FileDownloadingFragment;
+import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
+import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.task.FileDownloadingTask;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 
+import javax.inject.Inject;
+
 public class ServerFilesActivity extends Activity
 {
+	@Inject
+	ServerClient serverClient;
+
 	private ActionBarDrawerToggle navigationDrawerToggle;
 
 	@Override
@@ -50,10 +63,16 @@ public class ServerFilesActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_server_files);
 
+		setUpInjections();
+
 		setUpNavigationDrawer();
 		setUpNavigationFragment();
 
 		showNavigationDrawer();
+	}
+
+	private void setUpInjections() {
+		AmahiApplication.from(this).inject(this);
 	}
 
 	private void setUpNavigationDrawer() {
@@ -145,8 +164,63 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private void setUpFileActivity(ServerShare share, ServerFile file) {
+		if (Intents.Builder.with(this).isServerFileSupported(file)) {
+			startFileActivity(share, file);
+			return;
+		}
+
+		if (Intents.Builder.with(this).isServerFileShareSupported(file, getFileUri(share, file))) {
+			startFileShareActivity(share, file);
+			return;
+		}
+
+		showGooglePlaySearchFragment(file);
+	}
+
+	private void startFileActivity(ServerShare share, ServerFile file) {
 		Intent intent = Intents.Builder.with(this).buildServerFileIntent(share, file);
 		startActivity(intent);
+	}
+
+	private Uri getFileUri(ServerShare share, ServerFile file) {
+		return serverClient.getFileUri(share, file);
+	}
+
+	private void startFileShareActivity(ServerShare share, ServerFile file) {
+		showFileDownloadingFragment();
+
+		startFileDownloading(share, file);
+	}
+
+	private void showFileDownloadingFragment() {
+		DialogFragment fragment = new FileDownloadingFragment();
+		fragment.show(getFragmentManager(), FileDownloadingFragment.TAG);
+	}
+
+	private void startFileDownloading(ServerShare share, ServerFile file) {
+		FileDownloadingTask.execute(this, file, getFileUri(share, file));
+	}
+
+	@Subscribe
+	public void onFileDownloaded(FileDownloadedEvent event) {
+		hideFileDownloadingFragment();
+
+		startFileShareActivity(event.getFile(), event.getFileUri());
+	}
+
+	private void hideFileDownloadingFragment() {
+		DialogFragment fragment = (DialogFragment) Fragments.Operator.at(this).find(FileDownloadingFragment.TAG);
+		fragment.dismiss();
+	}
+
+	private void startFileShareActivity(ServerFile file, Uri fileUri) {
+		Intent intent = Intents.Builder.with(this).buildServerFileShareIntent(file, fileUri);
+		startActivity(intent);
+	}
+
+	private void showGooglePlaySearchFragment(ServerFile file) {
+		GooglePlaySearchFragment fragment = GooglePlaySearchFragment.newInstance(file);
+		fragment.show(getFragmentManager(), GooglePlaySearchFragment.TAG);
 	}
 
 	@Override

@@ -23,6 +23,9 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -30,6 +33,8 @@ import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+
+import java.util.List;
 
 public final class Intents
 {
@@ -45,6 +50,14 @@ public final class Intents
 		public static final String SERVER_FILE = "server_file";
 	}
 
+	public static final class Uris
+	{
+		private Uris() {
+		}
+
+		public static final String GOOGLE_PLAY_SEARCH = "market://search?q=%s";
+	}
+
 	public static final class Builder
 	{
 		private final Context context;
@@ -57,12 +70,8 @@ public final class Intents
 			this.context = context;
 		}
 
-		public Intent buildServerFileIntent(ServerShare share, ServerFile file) {
-			Intent intent = new Intent(context, getServerFileActivity(file));
-			intent.putExtra(Extras.SERVER_SHARE, share);
-			intent.putExtra(Extras.SERVER_FILE, file);
-
-			return intent;
+		public boolean isServerFileSupported(ServerFile file) {
+			return getServerFileActivity(file) != null;
 		}
 
 		private Class<? extends Activity> getServerFileActivity(ServerFile file) {
@@ -85,6 +94,42 @@ public final class Intents
 			}
 
 			throw new ActivityNotFoundException();
+		}
+
+		public Intent buildServerFileIntent(ServerShare share, ServerFile file) {
+			Intent intent = new Intent(context, getServerFileActivity(file));
+			intent.putExtra(Extras.SERVER_SHARE, share);
+			intent.putExtra(Extras.SERVER_FILE, file);
+
+			return intent;
+		}
+
+		public boolean isServerFileShareSupported(ServerFile file, Uri fileUri) {
+			PackageManager packageManager = context.getPackageManager();
+
+			Intent serverFileShareIntent = buildServerFileShareIntent(file, fileUri);
+
+			List<ResolveInfo> applications = packageManager.queryIntentActivities(
+				serverFileShareIntent,
+				PackageManager.MATCH_DEFAULT_ONLY);
+
+			return !applications.isEmpty();
+		}
+
+		public Intent buildServerFileShareIntent(ServerFile file, Uri fileUri) {
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setDataAndType(fileUri, file.getMime());
+
+			return Intent.createChooser(intent, null);
+		}
+
+		public Intent buildGooglePlaySearchIntent(String search) {
+			String googlePlaySearchUri = String.format(Uris.GOOGLE_PLAY_SEARCH, search);
+
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setData(Uri.parse(googlePlaySearchUri));
+
+			return intent;
 		}
 	}
 }

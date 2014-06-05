@@ -25,6 +25,7 @@ import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
 import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
+import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.ApiModule;
@@ -41,6 +42,7 @@ import dagger.Provides;
 	injects = {
 		NavigationFragment.class,
 		ServerFilesFragment.class,
+		ServerFilesActivity.class,
 		ServerFileAudioActivity.class,
 		ServerFileImageActivity.class,
 		ServerFileVideoActivity.class,

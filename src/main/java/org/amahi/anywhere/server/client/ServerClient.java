@@ -25,6 +25,7 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.bus.ServerConnectionChosenEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
@@ -34,6 +35,7 @@ import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.server.response.ServerConnectionResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
@@ -51,6 +53,7 @@ public class ServerClient
 
 	private Server server;
 	private ServerRoute serverRoute;
+	private String serverAddress;
 
 	@Inject
 	public ServerClient(ApiAdapter apiAdapter) {
@@ -82,17 +85,25 @@ public class ServerClient
 	@Subscribe
 	public void onServerRouteLoaded(ServerRouteLoadedEvent event) {
 		this.serverRoute = event.getServerRoute();
-		this.serverApi = buildServerApi();
+		this.serverApi = buildServerApi(serverRoute.getLocalAddress());
+
+		startServerConnectionChoice();
+	}
+
+	private ServerApi buildServerApi(String serverAddress) {
+		return apiAdapter.create(ServerApi.class, serverAddress);
+	}
+
+	private void startServerConnectionChoice() {
+		serverApi.getShares(server.getSession(), new ServerConnectionResponse(serverRoute));
+	}
+
+	@Subscribe
+	public void onServerConnectionChosen(ServerConnectionChosenEvent event) {
+		this.serverAddress = event.getServerAddress();
+		this.serverApi = buildServerApi(event.getServerAddress());
 
 		finishServerConnection();
-	}
-
-	private ServerApi buildServerApi() {
-		return apiAdapter.create(ServerApi.class, getServerAddress());
-	}
-
-	private String getServerAddress() {
-		return serverRoute.getRemoteAddress();
 	}
 
 	private void finishServerConnection() {
@@ -114,7 +125,7 @@ public class ServerClient
 	}
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {
-		return Uri.parse(getServerAddress())
+		return Uri.parse(serverAddress)
 			.buildUpon()
 			.path("files")
 			.appendQueryParameter("s", share.getName())

@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
@@ -237,9 +238,21 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 
 	@Subscribe
 	public void onSharesLoaded(ServerSharesLoadedEvent event) {
+		setUpServerConnectionSign();
+
 		setUpSharesContent(event.getServerShares());
 
 		showSharesContent();
+	}
+
+	private void setUpServerConnectionSign() {
+		TextView connectionSign = (TextView) getView().findViewById(R.id.text_connection);
+
+		if (serverClient.isConnectionLocal()) {
+			connectionSign.setText("Local connection");
+		} else {
+			connectionSign.setText("Remote connection");
+		}
 	}
 
 	private void setUpSharesContent(List<ServerShare> shares) {

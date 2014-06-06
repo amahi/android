@@ -70,6 +70,10 @@ public class ServerClient
 		return (this.server != null) && (this.server.getSession().equals(server.getSession()));
 	}
 
+	public boolean isConnectionLocal() {
+		return serverRoute.getLocalAddress().equals(serverAddress);
+	}
+
 	public void connect(Server server) {
 		this.server = server;
 

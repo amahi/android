@@ -87,12 +87,6 @@ public class ServerClient
 		finishServerConnection();
 	}
 
-	private void finishServerConnection() {
-		BusProvider.getBus().unregister(this);
-
-		BusProvider.getBus().post(new ServerConnectedEvent());
-	}
-
 	private ServerApi buildServerApi() {
 		return apiAdapter.create(ServerApi.class, getServerAddress());
 	}
@@ -101,20 +95,22 @@ public class ServerClient
 		return serverRoute.getRemoteAddress();
 	}
 
+	private void finishServerConnection() {
+		BusProvider.getBus().unregister(this);
+
+		BusProvider.getBus().post(new ServerConnectedEvent());
+	}
+
 	public void getShares() {
 		serverApi.getShares(server.getSession(), new ServerSharesResponse());
 	}
 
-	public void getFiles(ServerShare share, ServerFile directory) {
-		serverApi.getFiles(server.getSession(), share.getName(), getPath(directory), new ServerFilesResponse(directory));
+	public void getFiles(ServerShare share) {
+		serverApi.getFiles(server.getSession(), share.getName(), null, new ServerFilesResponse(null));
 	}
 
-	private String getPath(ServerFile directory) {
-		if (directory == null) {
-			return null;
-		} else {
-			return directory.getPath();
-		}
+	public void getFiles(ServerShare share, ServerFile directory) {
+		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath(), new ServerFilesResponse(directory));
 	}
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {

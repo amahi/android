@@ -128,7 +128,11 @@ public class ServerFilesFragment extends ListFragment
 	}
 
 	private void setUpFilesContent() {
-		serverClient.getFiles(getShare(), getDirectory());
+		if (!isDirectoryAvailable()) {
+			serverClient.getFiles(getShare());
+		} else {
+			serverClient.getFiles(getShare(), getDirectory());
+		}
 	}
 
 	private ServerShare getShare() {

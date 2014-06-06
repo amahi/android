@@ -47,6 +47,19 @@ public final class Android
 		return getDeviceScreenMetrics(context).widthPixels;
 	}
 
+	public static int getDeviceScreenHeight(Context context) {
+		return getDeviceScreenMetrics(context).heightPixels;
+	}
+
+	public static double getDeviceScreenSize(Context context) {
+		DisplayMetrics screenMetrics = getDeviceScreenMetrics(context);
+
+		float screenWidth = screenMetrics.widthPixels / screenMetrics.xdpi;
+		float screenHeight = screenMetrics.heightPixels / screenMetrics.ydpi;
+
+		return Math.sqrt(Math.pow(screenWidth, 2) + Math.pow(screenHeight, 2));
+	}
+
 	private static DisplayMetrics getDeviceScreenMetrics(Context context) {
 		DisplayMetrics screenMetrics = new DisplayMetrics();
 
@@ -59,18 +72,5 @@ public final class Android
 		}
 
 		return screenMetrics;
-	}
-
-	public static int getDeviceScreenHeight(Context context) {
-		return getDeviceScreenMetrics(context).heightPixels;
-	}
-
-	public static double getDeviceScreenSize(Context context) {
-		DisplayMetrics screenMetrics = getDeviceScreenMetrics(context);
-
-		float screenWidth = screenMetrics.widthPixels / screenMetrics.xdpi;
-		float screenHeight = screenMetrics.heightPixels / screenMetrics.ydpi;
-
-		return Math.sqrt(Math.pow(screenWidth, 2) + Math.pow(screenHeight, 2));
 	}
 }

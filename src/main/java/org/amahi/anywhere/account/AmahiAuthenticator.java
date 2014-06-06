@@ -31,9 +31,9 @@ import android.text.TextUtils;
 
 import org.amahi.anywhere.activity.AuthenticationActivity;
 
-public class AmahiAuthenticator extends AbstractAccountAuthenticator
+class AmahiAuthenticator extends AbstractAccountAuthenticator
 {
-	private Context context;
+	private final Context context;
 
 	public AmahiAuthenticator(Context context) {
 		super(context);

@@ -24,24 +24,13 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.amahi.anywhere.util.Time;
-
-import java.util.Date;
-
 public class ServerShare implements Parcelable
 {
 	@SerializedName("name")
 	private String name;
 
-	@SerializedName("mtime")
-	private String modificationTime;
-
 	public String getName() {
 		return name;
-	}
-
-	public Date getModificationTime() {
-		return Time.parseRfc1123(modificationTime);
 	}
 
 	public static final Creator<ServerShare> CREATOR = new Creator<ServerShare>()
@@ -59,13 +48,11 @@ public class ServerShare implements Parcelable
 
 	private ServerShare(Parcel parcel) {
 		this.name = parcel.readString();
-		this.modificationTime = parcel.readString();
 	}
 
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
 		parcel.writeString(name);
-		parcel.writeString(modificationTime);
 	}
 
 	@Override

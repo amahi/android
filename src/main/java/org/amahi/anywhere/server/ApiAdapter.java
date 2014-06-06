@@ -20,12 +20,14 @@
 package org.amahi.anywhere.server;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import retrofit.RestAdapter.Builder;
 import retrofit.RestAdapter.Log;
 import retrofit.RestAdapter.LogLevel;
 import retrofit.client.Client;
 
+@Singleton
 public class ApiAdapter
 {
 	private final Builder apiBuilder;

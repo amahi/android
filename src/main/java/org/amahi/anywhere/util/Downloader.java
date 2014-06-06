@@ -35,14 +35,14 @@ import okio.Buffer;
 
 public final class Downloader
 {
-	private final Context context;
+	private final File downloadDirectory;
 
 	public Downloader(Context context) {
-		this.context = context;
+		this.downloadDirectory = context.getExternalCacheDir();
 	}
 
 	public Uri download(Uri remoteFileUri, String localFileName) {
-		File localFile = buildLocalFile(localFileName);
+		File localFile = new File(downloadDirectory, localFileName);
 
 		InputStream remoteFileStream = buildRemoteFileStream(remoteFileUri);
 		OutputStream localFileStream = buildLocalFileStream(localFile);
@@ -50,12 +50,6 @@ public final class Downloader
 		download(remoteFileStream, localFileStream);
 
 		return Uri.fromFile(localFile);
-	}
-
-	private File buildLocalFile(String localFileName) {
-		File localFileDirectory = context.getExternalCacheDir();
-
-		return new File(localFileDirectory, localFileName);
 	}
 
 	private InputStream buildRemoteFileStream(Uri remoteFileUri) {

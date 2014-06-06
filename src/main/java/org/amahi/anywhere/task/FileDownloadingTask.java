@@ -40,7 +40,7 @@ public class FileDownloadingTask extends AsyncTask<Void, Void, BusEvent>
 		new FileDownloadingTask(context, file, fileUri).execute();
 	}
 
-	public FileDownloadingTask(Context context, ServerFile file, Uri fileUri) {
+	private FileDownloadingTask(Context context, ServerFile file, Uri fileUri) {
 		this.downloader = new Downloader(context);
 
 		this.file = file;

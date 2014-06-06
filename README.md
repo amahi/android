@@ -26,7 +26,6 @@ You will need JDK 1.6, Android SDK 22 and Gradle 1.12 installed.
   url.proxy = URL
   client.id = ID
   client.secret = SECRET
-  client.token = TOKEN
   ```
 
 4. Build application.

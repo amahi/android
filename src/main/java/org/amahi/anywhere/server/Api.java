@@ -41,8 +41,4 @@ public final class Api
 	public static String getClientSecret() {
 		return BuildConfig.API_CLIENT_SECRET;
 	}
-
-	public static String getClientToken() {
-		return BuildConfig.API_CLIENT_TOKEN;
-	}
 }

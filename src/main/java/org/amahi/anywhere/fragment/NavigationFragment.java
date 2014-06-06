@@ -19,6 +19,12 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,6 +39,7 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.adapter.ServerSharesAdapter;
 import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.BusProvider;
@@ -45,12 +52,14 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerShare;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class NavigationFragment extends Fragment implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener
+public class NavigationFragment extends Fragment implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener, AccountManagerCallback<Bundle>
 {
 	@Inject
 	AmahiClient amahiClient;
@@ -69,16 +78,69 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 
 		setUpInjections();
 
-		setUpServers();
+		setUpAuthentication();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
 	}
 
-	private void setUpServers() {
+	private void setUpAuthentication() {
+		List<Account> accounts = getAccounts();
+
+		if (accounts.isEmpty()) {
+			setUpAccount();
+		} else {
+			setUpAuthenticationToken();
+		}
+	}
+
+	private List<Account> getAccounts() {
+		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE_ACCOUNT));
+	}
+
+	private AccountManager getAccountManager() {
+		return AccountManager.get(getActivity());
+	}
+
+	private void setUpAccount() {
+		getAccountManager().addAccount(AmahiAccount.TYPE_ACCOUNT, AmahiAccount.TYPE_TOKEN, null, null, getActivity(), this, null);
+	}
+
+	private void setUpAuthenticationToken() {
+		Account account = getAccounts().get(0);
+
+		getAccountManager().getAuthToken(account, AmahiAccount.TYPE_ACCOUNT, null, getActivity(), this, null);
+	}
+
+	@Override
+	public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
+		try {
+			Bundle accountManagerResult = accountManagerFuture.getResult();
+
+			String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
+
+			if (authenticationToken != null) {
+				setUpServers(authenticationToken);
+			} else {
+				setUpAuthenticationToken();
+			}
+		} catch (OperationCanceledException e) {
+			tearDownActivity();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (AuthenticatorException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void tearDownActivity() {
+		getActivity().finish();
+	}
+
+	private void setUpServers(String authenticationToken) {
 		setUpServersAdapter();
-		setUpServersContent();
+		setUpServersContent(authenticationToken);
 		setUpServersListener();
 	}
 
@@ -90,8 +152,8 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 		return (Spinner) getView().findViewById(R.id.spinner_servers);
 	}
 
-	private void setUpServersContent() {
-		amahiClient.getServers("TOKEN");
+	private void setUpServersContent(String authenticationToken) {
+		amahiClient.getServers(authenticationToken);
 	}
 
 	@Subscribe

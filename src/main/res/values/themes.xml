@@ -40,4 +40,12 @@
 		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
 	</style>
 
+	<style name="Theme.Amahi.Authentication" parent="@style/Theme.Amahi">
+		<item name="android:actionBarStyle">@style/Theme.Amahi.Authentication.ActionBar</item>
+	</style>
+
+	<style name="Theme.Amahi.Authentication.ActionBar" parent="@style/Theme.Amahi.ActionBar">
+		<item name="android:displayOptions">showTitle</item>
+	</style>
+
 </resources>

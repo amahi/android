@@ -28,6 +28,14 @@
 		android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 	<uses-permission
 		android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission
+		android:name="android.permission.GET_ACCOUNTS" />
+	<uses-permission
+		android:name="android.permission.MANAGE_ACCOUNTS" />
+	<uses-permission
+		android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+	<uses-permission
+		android:name="android.permission.USE_CREDENTIALS" />
 
 	<application
 		android:label="@string/application_name"
@@ -63,6 +71,25 @@
 			android:name=".activity.ServerFileWebActivity"
 			android:theme="@style/Theme.Amahi.ServerFile">
 		</activity>
+
+		<activity
+			android:name=".activity.AuthenticationActivity"
+			android:theme="@style/Theme.Amahi.Authentication">
+		</activity>
+
+		<service
+			android:name=".account.AmahiAuthenticatorService"
+			android:exported="false">
+
+			<intent-filter>
+				<action android:name="android.accounts.AccountAuthenticator"/>
+			</intent-filter>
+
+			<meta-data
+				android:name="android.accounts.AccountAuthenticator"
+				android:resource="@xml/authenticator"/>
+
+		</service>
 
 	</application>
 

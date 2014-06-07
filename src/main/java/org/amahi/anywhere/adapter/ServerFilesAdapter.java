@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.util.Mimes;
 
 import java.util.Collections;
 import java.util.List;
@@ -94,28 +95,36 @@ public class ServerFilesAdapter extends BaseAdapter
 	}
 
 	private int getFileIcon(ServerFile file) {
-		if (file.getMime().equals("text/directory")) {
-			return R.drawable.ic_doc_directory;
+		switch (Mimes.match(file.getMime())) {
+			case Mimes.Type.ARCHIVE:
+				return R.drawable.ic_file_archive;
+
+			case Mimes.Type.AUDIO:
+				return R.drawable.ic_file_audio;
+
+			case Mimes.Type.CODE:
+				return R.drawable.ic_file_code;
+
+			case Mimes.Type.DOCUMENT:
+				return R.drawable.ic_file_text;
+
+			case Mimes.Type.DIRECTORY:
+				return R.drawable.ic_file_directory;
+
+			case Mimes.Type.IMAGE:
+				return R.drawable.ic_file_image;
+
+			case Mimes.Type.PRESENTATION:
+				return R.drawable.ic_file_presentation;
+
+			case Mimes.Type.SPREADSHEET:
+				return R.drawable.ic_file_spreadsheet;
+
+			case Mimes.Type.VIDEO:
+				return R.drawable.ic_file_video;
+
+			default:
+				return R.drawable.ic_file_generic;
 		}
-
-		String type = file.getMime().split("/")[0];
-
-		if (type.equals("audio")) {
-			return R.drawable.ic_doc_audio;
-		}
-
-		if (type.equals("video")) {
-			return R.drawable.ic_doc_video;
-		}
-
-		if (type.equals("image")) {
-			return R.drawable.ic_doc_image;
-		}
-
-		if (type.equals("text")) {
-			return R.drawable.ic_doc_text;
-		}
-
-		return R.drawable.ic_doc_generic;
 	}
 }

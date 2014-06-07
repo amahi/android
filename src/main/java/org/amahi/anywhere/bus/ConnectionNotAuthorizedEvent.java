@@ -19,6 +19,6 @@
 
 package org.amahi.anywhere.bus;
 
-public class ConnectionNotAuthorizedEvent implements BusEvent
+public class ConnectionNotAuthorizedEvent extends ConnectionErrorEvent
 {
 }

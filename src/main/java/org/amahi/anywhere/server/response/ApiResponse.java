@@ -20,6 +20,7 @@
 package org.amahi.anywhere.server.response;
 
 import org.amahi.anywhere.bus.BusEvent;
+import org.amahi.anywhere.bus.ConnectionErrorEvent;
 import org.amahi.anywhere.bus.ConnectionNotAuthorizedEvent;
 import org.amahi.anywhere.bus.ConnectionTimeoutEvent;
 
@@ -38,7 +39,7 @@ class ApiResponse
 				return new ConnectionTimeoutEvent();
 
 			default:
-				return null;
+				return new ConnectionErrorEvent();
 		}
 	}
 }

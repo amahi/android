@@ -24,9 +24,12 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
@@ -36,11 +39,12 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.bus.AuthenticationDoneEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ConnectionNotAuthorizedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 
 import javax.inject.Inject;
 
-public class AuthenticationActivity extends AccountAuthenticatorActivity implements View.OnClickListener
+public class AuthenticationActivity extends AccountAuthenticatorActivity implements TextWatcher, View.OnClickListener
 {
 	@Inject
 	AmahiClient amahiClient;
@@ -52,17 +56,67 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
 		setUpInjections();
 
-		setUpAuthenticationListener();
+		setUpAuthenticationAction();
+		setUpAuthenticationListeners();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
 	}
 
-	private void setUpAuthenticationListener() {
-		Button authenticationButton = (Button) findViewById(R.id.button_authentication);
+	private void setUpAuthenticationAction() {
+		if (getUsername().isEmpty() || getPassword().isEmpty()) {
+			getAuthenticationButton().setEnabled(false);
+		} else {
+			getAuthenticationButton().setEnabled(true);
+		}
+	}
 
-		authenticationButton.setOnClickListener(this);
+	private String getUsername() {
+		return getUsernameEdit().getText().toString();
+	}
+
+	private String getPassword() {
+		return getPasswordEdit().getText().toString();
+	}
+
+	private Button getAuthenticationButton() {
+		return (Button) findViewById(R.id.button_authentication);
+	}
+
+	private void setUpAuthenticationListeners() {
+		setUpAuthenticationTextListener();
+		setUpAuthenticationActionListener();
+	}
+
+	private void setUpAuthenticationTextListener() {
+		getUsernameEdit().addTextChangedListener(this);
+		getPasswordEdit().addTextChangedListener(this);
+	}
+
+	private EditText getUsernameEdit() {
+		return (EditText) findViewById(R.id.edit_username);
+	}
+
+	private EditText getPasswordEdit() {
+		return (EditText) findViewById(R.id.edit_password);
+	}
+
+	@Override
+	public void onTextChanged(CharSequence text, int after, int before, int count) {
+		setUpAuthenticationAction();
+	}
+
+	@Override
+	public void afterTextChanged(Editable text) {
+	}
+
+	@Override
+	public void beforeTextChanged(CharSequence text, int start, int count, int before) {
+	}
+
+	private void setUpAuthenticationActionListener() {
+		getAuthenticationButton().setOnClickListener(this);
 	}
 
 	@Override
@@ -71,35 +125,16 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private void setUpAuthentication() {
-		if (getUsername().isEmpty()) {
-			getUsernameEdit().setError("Shouldn’t be empty");
-			return;
-		}
-
-		if (getPassword().isEmpty()) {
-			getPasswordEdit().setError("Shouldn’t be empty");
-			return;
-		}
+		hideAuthenticationText();
 
 		showProgress();
 
-		amahiClient.getAuthenticationToken(getUsername(), getPassword());
+		startAuthentication();
 	}
 
-	private String getUsername() {
-		return getUsernameEdit().getText().toString();
-	}
-
-	private EditText getUsernameEdit() {
-		return (EditText) findViewById(R.id.edit_username);
-	}
-
-	private String getPassword() {
-		return getPasswordEdit().getText().toString();
-	}
-
-	private EditText getPasswordEdit() {
-		return (EditText) findViewById(R.id.edit_password);
+	private void hideAuthenticationText() {
+		getUsernameEdit().setEnabled(false);
+		getPasswordEdit().setEnabled(false);
 	}
 
 	private void showProgress() {
@@ -107,14 +142,44 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		animator.setDisplayedChild(animator.indexOfChild(findViewById(android.R.id.progress)));
 	}
 
+	private void startAuthentication() {
+		amahiClient.getAuthenticationToken(getUsername(), getPassword());
+	}
+
+	@Subscribe
+	public void onNotAuthorized(ConnectionNotAuthorizedEvent event) {
+		showAuthenticationText();
+
+		hideProgress();
+
+		showAuthenticationMessage();
+	}
+
+	private void showAuthenticationText() {
+		getUsernameEdit().setEnabled(true);
+		getPasswordEdit().setEnabled(true);
+	}
+
+	private void hideProgress() {
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
+		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.button_authentication)));
+	}
+
+	private void showAuthenticationMessage() {
+		Toast.makeText(this, "Authentication failed.", Toast.LENGTH_LONG).show();
+	}
+
 	@Subscribe
 	public void onAuthenticationDone(AuthenticationDoneEvent event) {
+		finishAuthentication(event.getAuthentication().getToken());
+	}
+
+	private void finishAuthentication(String authenticationToken) {
 		AccountManager accountManager = AccountManager.get(this);
 
 		Bundle authenticationBundle = new Bundle();
 
 		Account account = new AmahiAccount(getUsername());
-		String authenticationToken = event.getAuthentication().getToken();
 
 		if (accountManager.addAccountExplicitly(account, getPassword(), null)) {
 			authenticationBundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);

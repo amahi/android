@@ -18,43 +18,43 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/animator"
-	android:inAnimation="@android:anim/fade_in"
-	android:outAnimation="@android:anim/fade_out"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_gravity="center"
+	android:paddingLeft="32dp"
+	android:paddingRight="32dp"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="wrap_content">
 
-	<LinearLayout
-		android:orientation="vertical"
-		android:gravity="center"
-		android:paddingLeft="32dp"
-		android:paddingRight="32dp"
+	<EditText
+		android:id="@+id/edit_username"
+		android:hint="Username"
+		android:singleLine="true"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"/>
+
+	<Space
+		android:layout_width="match_parent"
+		android:layout_height="8dp"/>
+
+	<EditText
+		android:id="@+id/edit_password"
+		android:hint="Password"
+		android:inputType="textPassword"
+		android:fontFamily="sans-serif"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"/>
+
+	<Space
+		android:layout_width="match_parent"
+		android:layout_height="16dp"/>
+
+	<ViewAnimator
+		android:id="@+id/animator"
+		android:inAnimation="@android:anim/fade_in"
+		android:outAnimation="@android:anim/fade_out"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
-
-		<EditText
-			android:id="@+id/edit_username"
-			android:hint="Username"
-			android:singleLine="true"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
-
-		<Space
-			android:layout_width="match_parent"
-			android:layout_height="8dp"/>
-
-		<EditText
-			android:id="@+id/edit_password"
-			android:hint="Password"
-			android:inputType="textPassword"
-			android:singleLine="true"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
-
-		<Space
-			android:layout_width="match_parent"
-			android:layout_height="16dp"/>
 
 		<Button
 			android:id="@+id/button_authentication"
@@ -62,12 +62,15 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"/>
 
-	</LinearLayout>
+		<ProgressBar
+			android:id="@android:id/progress"
+			android:layout_gravity="center"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
 
-	<ProgressBar
-		android:id="@android:id/progress"
-		android:layout_gravity="center"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"/>
+	</ViewAnimator>
 
-</ViewAnimator>
+</LinearLayout>
+
+
+

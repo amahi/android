@@ -208,7 +208,7 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 		vlcControls = new MediaController(this);
 
 		vlcControls.setMediaPlayer(this);
-		vlcControls.setAnchorView(findViewById(R.id.animator));
+		vlcControls.setAnchorView(findViewById(R.id.container_controls));
 	}
 
 	@Override
@@ -363,10 +363,10 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 	private void showFileContent() {
 		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
 
-		View surface = findViewById(R.id.surface);
+		View contentLayout = findViewById(R.id.layout_content);
 
-		if (animator.getDisplayedChild() != animator.indexOfChild(surface)) {
-			animator.setDisplayedChild(animator.indexOfChild(surface));
+		if (animator.getDisplayedChild() != animator.indexOfChild(contentLayout)) {
+			animator.setDisplayedChild(animator.indexOfChild(contentLayout));
 		}
 	}
 

@@ -28,16 +28,34 @@
 
 	<ProgressBar
 		android:id="@android:id/progress"
-		android:fitsSystemWindows="true"
 		android:layout_gravity="center"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"/>
 
-	<SurfaceView
-		android:id="@+id/surface"
-		android:fitsSystemWindows="false"
-		android:layout_gravity="center"
+	<FrameLayout
+		android:id="@+id/layout_content"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+		android:layout_height="match_parent">
+
+		<SurfaceView
+			android:id="@+id/surface"
+			android:fitsSystemWindows="false"
+			android:layout_gravity="center"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"/>
+
+		<FrameLayout
+			android:fitsSystemWindows="true"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+			<View
+				android:id="@+id/container_controls"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"/>
+
+		</FrameLayout>
+
+	</FrameLayout>
 
 </ViewAnimator>

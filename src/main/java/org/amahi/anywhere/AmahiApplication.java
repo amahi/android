@@ -40,10 +40,9 @@ public class AmahiApplication extends Application
 		super.onCreate();
 
 		setUpLogging();
+		setUpReporting();
 
 		setUpInjections();
-
-		Crashlytics.start(this);
 	}
 
 	private void setUpLogging() {
@@ -54,6 +53,10 @@ public class AmahiApplication extends Application
 
 	private boolean isDebugging() {
 		return BuildConfig.DEBUG;
+	}
+
+	private void setUpReporting() {
+		Crashlytics.start(this);
 	}
 
 	private void setUpInjections() {

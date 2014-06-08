@@ -20,7 +20,6 @@
 package org.amahi.anywhere.util;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -93,7 +92,7 @@ public final class Intents
 				return ServerFileWebActivity.class;
 			}
 
-			throw new ActivityNotFoundException();
+			return null;
 		}
 
 		public Intent buildServerFileIntent(ServerShare share, ServerFile file) {
@@ -104,23 +103,28 @@ public final class Intents
 			return intent;
 		}
 
-		public boolean isServerFileShareSupported(ServerFile file, Uri fileUri) {
+		public boolean isServerFileShareSupported(ServerFile file) {
 			PackageManager packageManager = context.getPackageManager();
 
-			Intent serverFileShareIntent = buildServerFileShareIntent(file, fileUri);
-
 			List<ResolveInfo> applications = packageManager.queryIntentActivities(
-				serverFileShareIntent,
+				buildServerFileShareIntent(file),
 				PackageManager.MATCH_DEFAULT_ONLY);
 
 			return !applications.isEmpty();
+		}
+
+		private Intent buildServerFileShareIntent(ServerFile file) {
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setType(file.getMime());
+
+			return intent;
 		}
 
 		public Intent buildServerFileShareIntent(ServerFile file, Uri fileUri) {
 			Intent intent = new Intent(Intent.ACTION_VIEW);
 			intent.setDataAndType(fileUri, file.getMime());
 
-			return Intent.createChooser(intent, null);
+			return intent;
 		}
 
 		public Intent buildGooglePlaySearchIntent(String search) {

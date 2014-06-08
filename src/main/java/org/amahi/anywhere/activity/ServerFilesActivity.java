@@ -169,7 +169,7 @@ public class ServerFilesActivity extends Activity
 			return;
 		}
 
-		if (Intents.Builder.with(this).isServerFileShareSupported(file, getFileUri(share, file))) {
+		if (Intents.Builder.with(this).isServerFileShareSupported(file)) {
 			startFileShareActivity(share, file);
 			return;
 		}

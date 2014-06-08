@@ -22,6 +22,8 @@ package org.amahi.anywhere;
 import android.app.Application;
 import android.content.Context;
 
+import com.crashlytics.android.Crashlytics;
+
 import dagger.ObjectGraph;
 import timber.log.Timber;
 
@@ -40,6 +42,8 @@ public class AmahiApplication extends Application
 		setUpLogging();
 
 		setUpInjections();
+
+		Crashlytics.start(this);
 	}
 
 	private void setUpLogging() {

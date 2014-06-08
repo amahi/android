@@ -11,3 +11,6 @@ local.properties
 
 # API information
 api.properties
+
+# crashlytics details
+crashlytics.properties

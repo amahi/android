@@ -56,7 +56,9 @@ public class AmahiApplication extends Application
 	}
 
 	private void setUpReporting() {
-		Crashlytics.start(this);
+		if (!isDebugging()) {
+			Crashlytics.start(this);
+		}
 	}
 
 	private void setUpInjections() {

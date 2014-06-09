@@ -21,7 +21,6 @@ package org.amahi.anywhere.activity;
 
 import android.app.Activity;
 import android.media.AudioManager;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,27 +33,28 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
-import com.squareup.picasso.Downloader;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
+import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
+import org.amahi.anywhere.util.AudioAlbumArtDownloader;
 import org.amahi.anywhere.util.Intents;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-public class ServerFileAudioActivity extends Activity implements MediaController.MediaPlayerControl, MediaPlayer.OnPreparedListener, Runnable
+public class ServerFileAudioActivity extends Activity implements MediaController.MediaPlayerControl, MediaPlayer.OnPreparedListener
 {
 	public static final Set<String> SUPPORTED_FORMATS;
 
@@ -110,7 +110,7 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 
 	private void setUpAudio() {
 		setUpAudioTitle();
-		setUpAudioMetadataAsync();
+		setUpAudioMetadata();
 		setUpAudioAlbumArt();
 	}
 
@@ -118,46 +118,42 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 		getActionBar().setTitle(getFile().getName());
 	}
 
-	private void setUpAudioMetadataAsync() {
-		new Thread(this).start();
-	}
-
-	@Override
-	public void run() {
-		setUpAudioMetadata();
+	private ServerFile getFile() {
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 
 	private void setUpAudioMetadata() {
-		MediaMetadataRetriever metadataRetriever = getFileMetadataRetriever();
-
-		String title = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-		String artist = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-		String album = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-
-		TextView titleView = (TextView) findViewById(R.id.text_title);
-		TextView artistView = (TextView) findViewById(R.id.text_artist);
-		TextView albumView = (TextView) findViewById(R.id.text_album);
-
-		titleView.setText(title);
-		artistView.setText(artist);
-		albumView.setText(album);
-
-		metadataRetriever.release();
+		AudioMetadataRetrievingTask.execute(getAudioUri());
 	}
 
-	private MediaMetadataRetriever getFileMetadataRetriever() {
-		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+	private Uri getAudioUri() {
+		return serverClient.getFileUri(getShare(), getFile());
+	}
 
-		retriever.setDataSource(getAudioUri().toString(), new HashMap<String, String>());
+	private ServerShare getShare() {
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+	}
 
-		return retriever;
+	@Subscribe
+	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
+		setUpAudioMetadata(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+	}
+
+	private void setUpAudioMetadata(String audioTitle, String audioArtist, String audioAlbum) {
+		TextView audioTitleView = (TextView) findViewById(R.id.text_title);
+		TextView audioArtistView = (TextView) findViewById(R.id.text_artist);
+		TextView audioAlbumView = (TextView) findViewById(R.id.text_album);
+
+		audioTitleView.setText(audioTitle);
+		audioArtistView.setText(audioArtist);
+		audioAlbumView.setText(audioAlbum);
 	}
 
 	private void setUpAudioAlbumArt() {
-		ImageView albumArtView = (ImageView) findViewById(R.id.image_album_art);
+		ImageView audioAlbumArtView = (ImageView) findViewById(R.id.image_album_art);
 
 		Picasso picasso = new Picasso.Builder(this)
-			.downloader(new AlbumArtDownloader())
+			.downloader(new AudioAlbumArtDownloader())
 			.build();
 
 		picasso
@@ -165,30 +161,7 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 			.fit()
 			.centerInside()
 			.placeholder(android.R.color.darker_gray)
-			.into(albumArtView);
-	}
-
-	private static final class AlbumArtDownloader implements Downloader
-	{
-		@Override
-		public Response load(Uri uri, boolean localCacheOnly) throws IOException {
-			MediaMetadataRetriever metadataRetriever = getMetadataRetriever(uri);
-
-			byte[] albumArtBytes = metadataRetriever.getEmbeddedPicture();
-			InputStream albumArtStream = new ByteArrayInputStream(albumArtBytes);
-
-			metadataRetriever.release();
-
-			return new Response(albumArtStream, false);
-		}
-
-		private MediaMetadataRetriever getMetadataRetriever(Uri uri) {
-			MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-
-			retriever.setDataSource(uri.toString(), new HashMap<String, String>());
-
-			return retriever;
-		}
+			.into(audioAlbumArtView);
 	}
 
 	@Override
@@ -209,18 +182,6 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private Uri getAudioUri() {
-		return serverClient.getFileUri(getShare(), getFile());
-	}
-
-	private ServerShare getShare() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
-	}
-
-	private ServerFile getFile() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 
 	private void setUpAudioControls() {
@@ -321,12 +282,16 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 	protected void onResume() {
 		super.onResume();
 
+		BusProvider.getBus().register(this);
+
 		audioPlayer.start();
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
+
+		BusProvider.getBus().unregister(this);
 
 		hideAudioControls();
 	}

@@ -33,11 +33,11 @@ import java.net.URL;
 
 import okio.Buffer;
 
-public final class Downloader
+public final class FileDownloader
 {
 	private final File downloadDirectory;
 
-	public Downloader(Context context) {
+	public FileDownloader(Context context) {
 		this.downloadDirectory = context.getExternalCacheDir();
 	}
 

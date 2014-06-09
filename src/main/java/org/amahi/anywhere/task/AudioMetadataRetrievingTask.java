@@ -19,37 +19,41 @@
 
 package org.amahi.anywhere.task;
 
-import android.content.Context;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
 
+import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusEvent;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.FileDownloadedEvent;
-import org.amahi.anywhere.server.model.ServerFile;
-import org.amahi.anywhere.util.FileDownloader;
 
-public class FileDownloadingTask extends AsyncTask<Void, Void, BusEvent>
+import java.util.HashMap;
+
+public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 {
-	private final FileDownloader fileDownloader;
+	private final Uri audioUri;
 
-	private final ServerFile file;
-	private final Uri fileUri;
-
-	public static void execute(Context context, ServerFile file, Uri fileUri) {
-		new FileDownloadingTask(context, file, fileUri).execute();
+	public static void execute(Uri audioUri) {
+		new AudioMetadataRetrievingTask(audioUri).execute();
 	}
 
-	private FileDownloadingTask(Context context, ServerFile file, Uri fileUri) {
-		this.fileDownloader = new FileDownloader(context);
-
-		this.file = file;
-		this.fileUri = fileUri;
+	private AudioMetadataRetrievingTask(Uri audioUri) {
+		this.audioUri = audioUri;
 	}
 
 	@Override
 	protected BusEvent doInBackground(Void... parameters) {
-		return new FileDownloadedEvent(file, fileDownloader.download(fileUri, file.getName()));
+		MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
+
+		audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
+
+		String audioTitle = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+		String audioArtist = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+		String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+
+		audioMetadataRetriever.release();
+
+		return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum);
 	}
 
 	@Override

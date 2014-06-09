@@ -32,10 +32,10 @@ import java.util.HashMap;
 public class AudioAlbumArtDownloader implements Downloader
 {
 	@Override
-	public Response load(Uri uri, boolean localCacheOnly) throws IOException {
+	public Response load(Uri audioUri, boolean localCacheOnly) throws IOException {
 		MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
 
-		audioMetadataRetriever.setDataSource(uri.toString(), new HashMap<String, String>());
+		audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
 
 		byte[] audioAlbumArtBytes = audioMetadataRetriever.getEmbeddedPicture();
 		InputStream audioAlbumArtStream = new ByteArrayInputStream(audioAlbumArtBytes);

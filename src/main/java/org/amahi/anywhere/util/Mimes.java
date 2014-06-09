@@ -101,10 +101,10 @@ public class Mimes
 	private static int matchKnown(String mime) {
 		Integer type = types.get(mime);
 
-		if (type == null) {
-			return Type.UNDEFINED;
-		} else {
+		if (type != null) {
 			return type;
+		} else {
+			return Type.UNDEFINED;
 		}
 	}
 

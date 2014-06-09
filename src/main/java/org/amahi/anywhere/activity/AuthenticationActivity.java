@@ -143,7 +143,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private void startAuthentication() {
-		amahiClient.getAuthenticationToken(getUsername(), getPassword());
+		amahiClient.authenticate(getUsername(), getPassword());
 	}
 
 	@Subscribe

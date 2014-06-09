@@ -42,7 +42,7 @@ public class AmahiClient
 		return apiAdapter.create(AmahiApi.class, Api.getAmahiUrl());
 	}
 
-	public void getAuthenticationToken(String username, String password) {
+	public void authenticate(String username, String password) {
 		api.authenticate(Api.getClientId(), Api.getClientSecret(), username, password, new AuthenticationResponse());
 	}
 

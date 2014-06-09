@@ -25,7 +25,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
@@ -35,7 +34,6 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileSelectedEvent;
-import org.amahi.anywhere.bus.ParentDirectorySelectedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -48,14 +46,6 @@ import javax.inject.Inject;
 
 public class ServerFilesFragment extends ListFragment
 {
-	private static final class ListPositions
-	{
-		private ListPositions() {
-		}
-
-		public static final int DIRECTORY_HEADER = 0;
-	}
-
 	@Inject
 	ServerClient serverClient;
 
@@ -78,49 +68,8 @@ public class ServerFilesFragment extends ListFragment
 	}
 
 	private void setUpFiles() {
-		if (isDirectoryAvailable()) {
-			setUpDirectoryHeader();
-		}
-
 		setUpFilesAdapter();
 		setUpFilesContent();
-	}
-
-	private boolean isDirectoryAvailable() {
-		return getDirectory() != null;
-	}
-
-	private ServerFile getDirectory() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
-	}
-
-	private void setUpDirectoryHeader() {
-		TextView header = (TextView) buildDirectoryHeader();
-
-		header.setText(String.format("Up to %s", getDirectoryName()));
-		header.setCompoundDrawablesWithIntrinsicBounds(getDirectoryIcon(), 0, 0, 0);
-
-		setUpDirectoryHeader(header);
-	}
-
-	private View buildDirectoryHeader() {
-		return LayoutInflater.from(getActivity()).inflate(R.layout.view_server_file_item, getListView(), false);
-	}
-
-	private String getDirectoryName() {
-		if (getDirectory().getParentFile() == null) {
-			return getShare().getName();
-		} else {
-			return getDirectory().getParentFile().getName();
-		}
-	}
-
-	private int getDirectoryIcon() {
-		return R.drawable.ic_action_upward;
-	}
-
-	private void setUpDirectoryHeader(View header) {
-		getListView().addHeaderView(header);
 	}
 
 	private void setUpFilesAdapter() {
@@ -133,6 +82,14 @@ public class ServerFilesFragment extends ListFragment
 		} else {
 			serverClient.getFiles(getShare(), getDirectory());
 		}
+	}
+
+	private boolean isDirectoryAvailable() {
+		return getDirectory() != null;
+	}
+
+	private ServerFile getDirectory() {
+		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
 	}
 
 	private ServerShare getShare() {
@@ -163,18 +120,10 @@ public class ServerFilesFragment extends ListFragment
 	public void onListItemClick(ListView listView, View view, int position, long id) {
 		super.onListItemClick(listView, view, position, id);
 
-		if ((isDirectoryAvailable()) && (position == ListPositions.DIRECTORY_HEADER)) {
-			BusProvider.getBus().post(new ParentDirectorySelectedEvent());
-		} else {
-			BusProvider.getBus().post(new FileSelectedEvent(getShare(), getFile(position)));
-		}
+		BusProvider.getBus().post(new FileSelectedEvent(getShare(), getFile(position)));
 	}
 
 	private ServerFile getFile(int position) {
-		if (isDirectoryAvailable()) {
-			position -= getListView().getHeaderViewsCount();
-		}
-
 		return getFilesAdapter().getItem(position);
 	}
 

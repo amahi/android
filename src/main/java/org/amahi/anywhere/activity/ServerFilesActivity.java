@@ -38,7 +38,6 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileSelectedEvent;
-import org.amahi.anywhere.bus.ParentDirectorySelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.fragment.FileDownloadingFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
@@ -48,6 +47,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.FileDownloadingTask;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Mimes;
 
 import javax.inject.Inject;
 
@@ -130,15 +130,6 @@ public class ServerFilesActivity extends Activity
 	}
 
 	@Subscribe
-	public void onParentDirectorySelected(ParentDirectorySelectedEvent event) {
-		tearDownFragment();
-	}
-
-	private void tearDownFragment() {
-		Fragments.Operator.at(this).removeBackstaced();
-	}
-
-	@Subscribe
 	public void onFileSelected(FileSelectedEvent event) {
 		setUpFile(event.getShare(), event.getFile());
 	}
@@ -151,12 +142,12 @@ public class ServerFilesActivity extends Activity
 		}
 	}
 
-	private void setUpFilesFragment(ServerShare share, ServerFile directory) {
-		Fragments.Operator.at(this).replaceBackstacked(buildFilesFragment(share, directory), R.id.container_files);
+	private boolean isDirectory(ServerFile file) {
+		return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
 	}
 
-	private boolean isDirectory(ServerFile file) {
-		return file.getMime().equals("text/directory");
+	private void setUpFilesFragment(ServerShare share, ServerFile directory) {
+		Fragments.Operator.at(this).replaceBackstacked(buildFilesFragment(share, directory), R.id.container_files);
 	}
 
 	private Fragment buildFilesFragment(ServerShare share, ServerFile directory) {

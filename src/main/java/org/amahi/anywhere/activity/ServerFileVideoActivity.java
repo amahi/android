@@ -209,6 +209,8 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 
 		vlcControls.setMediaPlayer(this);
 		vlcControls.setAnchorView(findViewById(R.id.container_controls));
+
+		vlcControlsHandler = new Handler();
 	}
 
 	@Override
@@ -392,7 +394,6 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 	}
 
 	private void hideControlsDelayed() {
-		vlcControlsHandler = new Handler();
 		vlcControlsHandler.postDelayed(this, TimeUnit.SECONDS.toMillis(3));
 	}
 

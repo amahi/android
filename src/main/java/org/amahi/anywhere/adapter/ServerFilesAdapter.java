@@ -56,6 +56,10 @@ public class ServerFilesAdapter extends BaseAdapter
 		return files.size();
 	}
 
+	public List<ServerFile> getItems() {
+		return files;
+	}
+
 	@Override
 	public ServerFile getItem(int position) {
 		return files.get(position);

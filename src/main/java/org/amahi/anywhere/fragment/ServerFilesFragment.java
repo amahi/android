@@ -22,6 +22,9 @@ package org.amahi.anywhere.fragment;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -40,12 +43,22 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
 
 public class ServerFilesFragment extends ListFragment
 {
+	private static enum FilesSort
+	{
+		NAME, MODIFICATION_TIME
+	}
+
+	private FilesSort filesSort = FilesSort.NAME;
+
 	@Inject
 	ServerClient serverClient;
 
@@ -68,8 +81,13 @@ public class ServerFilesFragment extends ListFragment
 	}
 
 	private void setUpFiles() {
+		setUpFilesMenu();
 		setUpFilesAdapter();
 		setUpFilesContent();
+	}
+
+	private void setUpFilesMenu() {
+		setHasOptionsMenu(true);
 	}
 
 	private void setUpFilesAdapter() {
@@ -104,11 +122,32 @@ public class ServerFilesFragment extends ListFragment
 	}
 
 	private void setUpFilesContent(List<ServerFile> files) {
-		getFilesAdapter().replaceWith(files);
+		getFilesAdapter().replaceWith(sortFiles(files));
 	}
 
 	private ServerFilesAdapter getFilesAdapter() {
 		return (ServerFilesAdapter) getListAdapter();
+	}
+
+	private List<ServerFile> sortFiles(List<ServerFile> files) {
+		List<ServerFile> sortedFiles = new ArrayList<ServerFile>(files);
+
+		Collections.sort(sortedFiles, getFilesComparator());
+
+		return sortedFiles;
+	}
+
+	private Comparator<ServerFile> getFilesComparator() {
+		switch (filesSort) {
+			case NAME:
+				return new FileNameComparator();
+
+			case MODIFICATION_TIME:
+				return new FileModificationTimeComparator();
+
+			default:
+				return new FileNameComparator();
+		}
 	}
 
 	private void showFilesContent() {
@@ -128,6 +167,55 @@ public class ServerFilesFragment extends ListFragment
 	}
 
 	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+		super.onCreateOptionsMenu(menu, menuInflater);
+
+		menuInflater.inflate(R.menu.action_bar_server_files, menu);
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+
+		switch (filesSort) {
+			case NAME:
+				menu.findItem(R.id.menu_sort_name).setChecked(true);
+				break;
+
+			case MODIFICATION_TIME:
+				menu.findItem(R.id.menu_sort_modification_time).setChecked(true);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		menuItem.setChecked(!menuItem.isChecked());
+
+		switch (menuItem.getItemId()) {
+			case R.id.menu_sort_name:
+				filesSort = FilesSort.NAME;
+				setUpFilesContentSort();
+				return true;
+
+			case R.id.menu_sort_modification_time:
+				filesSort = FilesSort.MODIFICATION_TIME;
+				setUpFilesContentSort();
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(menuItem);
+		}
+	}
+
+	private void setUpFilesContentSort() {
+		getFilesAdapter().replaceWith(sortFiles(getFilesAdapter().getItems()));
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
 
@@ -139,5 +227,21 @@ public class ServerFilesFragment extends ListFragment
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	private static final class FileNameComparator implements Comparator<ServerFile>
+	{
+		@Override
+		public int compare(ServerFile firstFile, ServerFile secondFile) {
+			return firstFile.getName().compareTo(secondFile.getName());
+		}
+	}
+
+	private static final class FileModificationTimeComparator implements Comparator<ServerFile>
+	{
+		@Override
+		public int compare(ServerFile firstFile, ServerFile secondFile) {
+			return firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
+		}
 	}
 }

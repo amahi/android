@@ -25,6 +25,8 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 public class ServerFile implements Parcelable
 {
 	private ServerFile parentFile;
@@ -34,6 +36,9 @@ public class ServerFile implements Parcelable
 
 	@SerializedName("mime_type")
 	private String mime;
+
+	@SerializedName("mtime")
+	private Date modificationTime;
 
 	@SerializedName("size")
 	private long size;
@@ -52,6 +57,10 @@ public class ServerFile implements Parcelable
 
 	public String getMime() {
 		return mime;
+	}
+
+	public Date getModificationTime() {
+		return modificationTime;
 	}
 
 	public long getSize() {
@@ -87,6 +96,7 @@ public class ServerFile implements Parcelable
 		this.parentFile = parcel.readParcelable(this.getClass().getClassLoader());
 		this.name = parcel.readString();
 		this.mime = parcel.readString();
+		this.modificationTime = new Date(parcel.readLong());
 		this.size = parcel.readLong();
 	}
 
@@ -95,6 +105,7 @@ public class ServerFile implements Parcelable
 		parcel.writeParcelable(parentFile, flags);
 		parcel.writeString(name);
 		parcel.writeString(mime);
+		parcel.writeLong(modificationTime.getTime());
 		parcel.writeLong(size);
 	}
 

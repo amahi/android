@@ -21,9 +21,13 @@ package org.amahi.anywhere.server;
 
 import android.app.Application;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.HttpResponseCache;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkResponseCache;
+
+import org.amahi.anywhere.util.Time;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +40,8 @@ import retrofit.RestAdapter.Log;
 import retrofit.RestAdapter.LogLevel;
 import retrofit.client.Client;
 import retrofit.client.OkClient;
+import retrofit.converter.Converter;
+import retrofit.converter.GsonConverter;
 
 @Module(
 	complete = false,
@@ -45,8 +51,8 @@ public class ApiModule
 {
 	@Provides
 	@Singleton
-	ApiAdapter provideApiAdapter(Client client, ApiHeaders headers, Log log, LogLevel logLevel) {
-		return new ApiAdapter(client, headers, log, logLevel);
+	ApiAdapter provideApiAdapter(Client client, ApiHeaders headers, Converter converter, Log log, LogLevel logLevel) {
+		return new ApiAdapter(client, headers, converter, log, logLevel);
 	}
 
 	@Provides
@@ -78,6 +84,16 @@ public class ApiModule
 	@Singleton
 	ApiHeaders provideHeaders(Application application) {
 		return new ApiHeaders(application);
+	}
+
+	@Provides
+	@Singleton
+	Converter provideConverter() {
+		Gson gson = new GsonBuilder()
+			.setDateFormat(Time.Format.RFC_1123)
+			.create();
+
+		return new GsonConverter(gson);
 	}
 
 	@Provides

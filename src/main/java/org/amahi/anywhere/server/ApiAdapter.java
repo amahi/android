@@ -26,6 +26,7 @@ import retrofit.RestAdapter.Builder;
 import retrofit.RestAdapter.Log;
 import retrofit.RestAdapter.LogLevel;
 import retrofit.client.Client;
+import retrofit.converter.Converter;
 
 @Singleton
 public class ApiAdapter
@@ -33,14 +34,15 @@ public class ApiAdapter
 	private final Builder apiBuilder;
 
 	@Inject
-	public ApiAdapter(Client client, ApiHeaders headers, Log log, LogLevel logLevel) {
-		this.apiBuilder = buildApiBuilder(client, headers, log, logLevel);
+	public ApiAdapter(Client client, ApiHeaders headers, Converter converter, Log log, LogLevel logLevel) {
+		this.apiBuilder = buildApiBuilder(client, headers, converter, log, logLevel);
 	}
 
-	private Builder buildApiBuilder(Client client, ApiHeaders headers, Log log, LogLevel logLevel) {
+	private Builder buildApiBuilder(Client client, ApiHeaders headers, Converter converter, Log log, LogLevel logLevel) {
 		return new Builder()
 			.setClient(client)
 			.setRequestInterceptor(headers)
+			.setConverter(converter)
 			.setLog(log)
 			.setLogLevel(logLevel);
 	}

@@ -14,3 +14,4 @@ api.properties
 
 # Crashlytics information
 crashlytics.properties
+crashlytics-build.properties

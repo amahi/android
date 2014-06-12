@@ -324,6 +324,10 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 					activityKeeper.get().showControls();
 					break;
 
+				case EventHandler.MediaPlayerEndReached:
+					activityKeeper.get().finish();
+					break;
+
 				default:
 					break;
 			}

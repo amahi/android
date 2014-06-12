@@ -29,14 +29,14 @@
 		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
 	</style>
 
-	<style name="Theme.Amahi.ServerFile" parent="@android:style/Theme.Holo">
-		<item name="android:actionBarStyle">@style/Theme.Amahi.ServerFile.ActionBar</item>
+	<style name="Theme.Amahi.Fullscreen" parent="@android:style/Theme.Holo">
+		<item name="android:actionBarStyle">@style/Theme.Amahi.Fullscreen.ActionBar</item>
 		<item name="android:windowActionBarOverlay">true</item>
 		<item name="android:windowBackground">@android:color/black</item>
 		<item name="android:windowContentOverlay">@null</item>
 	</style>
 
-	<style name="Theme.Amahi.ServerFile.ActionBar" parent="@android:style/Widget.Holo.ActionBar">
+	<style name="Theme.Amahi.Fullscreen.ActionBar" parent="@android:style/Widget.Holo.ActionBar">
 		<item name="android:background">#cc000000</item>
 		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
 	</style>

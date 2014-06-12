@@ -57,22 +57,21 @@
 
 		<activity
 			android:name=".activity.ServerFileAudioActivity"
-			android:theme="@style/Theme.Amahi.ServerFile">
+			android:theme="@style/Theme.Amahi.Fullscreen">
 		</activity>
 
 		<activity
 			android:name=".activity.ServerFileImageActivity"
-			android:theme="@style/Theme.Amahi.ServerFile">
+			android:theme="@style/Theme.Amahi.Fullscreen">
 		</activity>
 
 		<activity
 			android:name=".activity.ServerFileVideoActivity"
-			android:theme="@style/Theme.Amahi.ServerFile">
+			android:theme="@style/Theme.Amahi.Fullscreen">
 		</activity>
 
 		<activity
-			android:name=".activity.ServerFileWebActivity"
-			android:theme="@style/Theme.Amahi.ServerFile">
+			android:name=".activity.ServerFileWebActivity">
 		</activity>
 
 		<activity

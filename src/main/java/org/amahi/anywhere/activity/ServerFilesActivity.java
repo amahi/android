@@ -30,6 +30,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.squareup.otto.Subscribe;
 
@@ -51,12 +52,14 @@ import org.amahi.anywhere.util.Mimes;
 
 import javax.inject.Inject;
 
-public class ServerFilesActivity extends Activity
+public class ServerFilesActivity extends Activity implements DrawerLayout.DrawerListener
 {
 	@Inject
 	ServerClient serverClient;
 
 	private ActionBarDrawerToggle navigationDrawerToggle;
+
+	private ServerShare selectedShare;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,20 +79,51 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private void setUpNavigationDrawer() {
-		navigationDrawerToggle = new ActionBarDrawerToggle(
+		this.navigationDrawerToggle = buildNavigationDrawerToggle();
+
+		getDrawer().setDrawerListener(this);
+		getDrawer().setDrawerShadow(R.drawable.bg_shadow_drawer, Gravity.START);
+	}
+
+	private ActionBarDrawerToggle buildNavigationDrawerToggle() {
+		return new ActionBarDrawerToggle(
 			this,
 			getDrawer(),
 			R.drawable.ic_drawer,
 			R.string.menu_navigation_open,
 			R.string.menu_navigation_close);
-
-		getDrawer().setDrawerListener(navigationDrawerToggle);
-
-		getDrawer().setDrawerShadow(R.drawable.bg_shadow_drawer, Gravity.START);
 	}
 
 	private DrawerLayout getDrawer() {
 		return (DrawerLayout) findViewById(R.id.drawer_content);
+	}
+
+	@Override
+	public void onDrawerOpened(View drawer) {
+		navigationDrawerToggle.onDrawerOpened(drawer);
+
+		setUpTitle(getString(R.string.application_name));
+	}
+
+	private void setUpTitle(String title) {
+		getActionBar().setTitle(title);
+	}
+
+	@Override
+	public void onDrawerClosed(View drawer) {
+		navigationDrawerToggle.onDrawerClosed(drawer);
+
+		setUpTitle(selectedShare);
+	}
+
+	@Override
+	public void onDrawerSlide(View drawer, float slideOffset) {
+		navigationDrawerToggle.onDrawerSlide(drawer, slideOffset);
+	}
+
+	@Override
+	public void onDrawerStateChanged(int state) {
+		navigationDrawerToggle.onDrawerStateChanged(state);
 	}
 
 	private void setUpNavigationFragment() {
@@ -108,12 +142,12 @@ public class ServerFilesActivity extends Activity
 	public void onShareSelected(ShareSelectedEvent event) {
 		setUpShare(event.getShare());
 
-		setUpTitle(event.getShare());
-
 		hideNavigationDrawer();
 	}
 
 	private void setUpShare(ServerShare share) {
+		this.selectedShare = share;
+
 		setUpFilesFragment(share);
 	}
 
@@ -122,7 +156,9 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private void setUpTitle(ServerShare share) {
-		getActionBar().setTitle(share.getName());
+		if (share != null) {
+			getActionBar().setTitle(share.getName());
+		}
 	}
 
 	private void hideNavigationDrawer() {

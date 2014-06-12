@@ -241,7 +241,7 @@ public class ServerFilesFragment extends ListFragment
 	{
 		@Override
 		public int compare(ServerFile firstFile, ServerFile secondFile) {
-			return firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
+			return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
 		}
 	}
 }

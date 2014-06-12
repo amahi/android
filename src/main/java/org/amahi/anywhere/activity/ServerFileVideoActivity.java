@@ -81,6 +81,14 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 		public static final String VLC_TIME = "vlc_time";
 	}
 
+	private static final class VlcEvent
+	{
+		private VlcEvent() {
+		}
+
+		public static final int CHANGE_VIDEO_SIZE = 100;
+	}
+
 	private static enum VlcStatus
 	{
 		PLAYING, PAUSED
@@ -160,7 +168,7 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 
 	@Override
 	public void setSurfaceSize(int width, int height, int visibleWidth, int visibleHeight, int sarNumber, int sarDensity) {
-		Message message = Message.obtain(vlcEvents, 42, width, height);
+		Message message = Message.obtain(vlcEvents, VlcEvent.CHANGE_VIDEO_SIZE, width, height);
 		message.sendToTarget();
 	}
 
@@ -305,7 +313,7 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 		public void handleMessage(Message message) {
 			super.handleMessage(message);
 
-			if (message.what == 42) {
+			if (message.what == VlcEvent.CHANGE_VIDEO_SIZE) {
 				activityKeeper.get().changeSurfaceSize(message.arg1, message.arg2);
 			}
 
@@ -444,7 +452,9 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 	private void stopVlc() {
 		EventHandler.getInstance().removeHandler(vlcEvents);
 
-		vlcTime = vlc.getTime();
+		if (vlc.getTime() != 0) {
+			vlcTime = vlc.getTime();
+		}
 
 		vlc.stop();
 		vlc.detachSurface();

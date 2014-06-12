@@ -57,7 +57,7 @@ public class ServerFilesFragment extends ListFragment
 		NAME, MODIFICATION_TIME
 	}
 
-	private FilesSort filesSort = FilesSort.NAME;
+	private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
 
 	@Inject
 	ServerClient serverClient;

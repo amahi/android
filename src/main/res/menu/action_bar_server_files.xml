@@ -22,25 +22,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<item
-		android:icon="@drawable/ic_menu_sort"
+		android:icon="@drawable/ic_action_sort_date"
+        android:id="@+id/menu_sort"
 		android:title="Sort"
 		android:showAsAction="always">
-
-		<menu>
-
-			<group android:checkableBehavior="single">
-
-				<item
-					android:id="@+id/menu_sort_name"
-					android:title="Name"/>
-
-				<item
-					android:id="@+id/menu_sort_modification_time"
-					android:title="Modification time"/>
-
-			</group>
-
-		</menu>
 
 	</item>
 

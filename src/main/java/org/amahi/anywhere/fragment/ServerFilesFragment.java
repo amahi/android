@@ -21,6 +21,7 @@ package org.amahi.anywhere.fragment;
 
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -176,41 +177,37 @@ public class ServerFilesFragment extends ListFragment
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
-
-		switch (filesSort) {
-			case NAME:
-				menu.findItem(R.id.menu_sort_name).setChecked(true);
-				break;
-
-			case MODIFICATION_TIME:
-				menu.findItem(R.id.menu_sort_modification_time).setChecked(true);
-				break;
-
-			default:
-				break;
-		}
+        menu.getItem(0).setIcon(getResources().getDrawable(R.drawable.ic_action_sort_date));
+        setUpFilesContentSort();
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		menuItem.setChecked(!menuItem.isChecked());
-
-		switch (menuItem.getItemId()) {
-			case R.id.menu_sort_name:
-				filesSort = FilesSort.NAME;
-				setUpFilesContentSort();
-				return true;
-
-			case R.id.menu_sort_modification_time:
-				filesSort = FilesSort.MODIFICATION_TIME;
-				setUpFilesContentSort();
-				return true;
-
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
+        switch (menuItem.getItemId()) {
+            case R.id.menu_sort:
+                toggleSort(menuItem);
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
 	}
+    private void toggleSort(MenuItem menuItem){
+        switch (filesSort) {
+            case NAME:
+                filesSort = FilesSort.MODIFICATION_TIME;
+                setUpFilesContentSort();
+                menuItem.setIcon(getResources().getDrawable(R.drawable.ic_action_sort_date));
+                break;
+            case MODIFICATION_TIME:
+                filesSort = FilesSort.NAME;
+                setUpFilesContentSort();
+                menuItem.setIcon(getResources().getDrawable(R.drawable.ic_action_sort_name));
+                break;
+            default:
+                break;
+        }
 
+    }
 	private void setUpFilesContentSort() {
 		getFilesAdapter().replaceWith(sortFiles(getFilesAdapter().getItems()));
 	}

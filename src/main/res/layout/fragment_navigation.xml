@@ -62,12 +62,12 @@
 			android:layout_width="match_parent"
 			android:layout_height="8dp"/>
 
-		<TextView
-			android:id="@+id/text_connection"
-			android:textAllCaps="true"
-			android:paddingLeft="16dp"
-			android:paddingRight="16dp"
-			android:layout_width="match_parent"
+		<Switch
+			android:id="@+id/switch_connection"
+			android:textOn="Local"
+			android:textOff="Remote"
+			android:layout_gravity="center"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"/>
 
 		<Space

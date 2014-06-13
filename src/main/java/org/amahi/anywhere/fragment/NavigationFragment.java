@@ -31,9 +31,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.Switch;
 import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
@@ -60,7 +61,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class NavigationFragment extends Fragment implements AdapterView.OnItemSelectedListener, AdapterView.OnItemClickListener, AccountManagerCallback<Bundle>
+public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
+	AdapterView.OnItemSelectedListener,
+	AdapterView.OnItemClickListener,
+	CompoundButton.OnCheckedChangeListener
 {
 	@Inject
 	AmahiClient amahiClient;
@@ -142,7 +146,9 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 	private void setUpServers(String authenticationToken) {
 		setUpServersAdapter();
 		setUpServersContent(authenticationToken);
+
 		setUpServersListener();
+		setUpServersConnectionListener();
 	}
 
 	private void setUpServersAdapter() {
@@ -219,17 +225,39 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 		return (ListView) getView().findViewById(R.id.list_shares);
 	}
 
+	private void setUpSharesListener() {
+		getSharesList().setOnItemClickListener(this);
+	}
+
 	private void setUpServerConnection(Server server) {
-		if (!serverClient.isConnected(server)) {
-			serverClient.connect(server);
-		} else {
-			setUpSharesContent();
+		if (serverClient.isConnected(server)) {
+			return;
 		}
+
+		serverClient.connect(server);
 	}
 
 	@Subscribe
 	public void onServerConnected(ServerConnectedEvent event) {
+		setUpServerConnection();
+
 		setUpSharesContent();
+	}
+
+	private void setUpServerConnection() {
+		if (isConnectionLocal()) {
+			serverClient.connectLocal();
+		} else {
+			serverClient.connectRemote();
+		}
+	}
+
+	private boolean isConnectionLocal() {
+		return getConnectionSwitch().isChecked();
+	}
+
+	private Switch getConnectionSwitch() {
+		return (Switch) getView().findViewById(R.id.switch_connection);
 	}
 
 	private void setUpSharesContent() {
@@ -238,21 +266,9 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 
 	@Subscribe
 	public void onSharesLoaded(ServerSharesLoadedEvent event) {
-		setUpServerConnectionSign();
-
 		setUpSharesContent(event.getServerShares());
 
 		showSharesContent();
-	}
-
-	private void setUpServerConnectionSign() {
-		TextView connectionSign = (TextView) getView().findViewById(R.id.text_connection);
-
-		if (serverClient.isConnectionLocal()) {
-			connectionSign.setText("Local connection");
-		} else {
-			connectionSign.setText("Remote connection");
-		}
 	}
 
 	private void setUpSharesContent(List<ServerShare> shares) {
@@ -268,10 +284,6 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.list_shares)));
 	}
 
-	private void setUpSharesListener() {
-		getSharesList().setOnItemClickListener(this);
-	}
-
 	@Override
 	public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
 		getSharesList().setItemChecked(position, true);
@@ -279,6 +291,10 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 		ServerShare share = getSharesAdapter().getItem(position);
 
 		BusProvider.getBus().post(new ShareSelectedEvent(share));
+	}
+
+	private void setUpServersConnectionListener() {
+		getConnectionSwitch().setOnCheckedChangeListener(this);
 	}
 
 	@Override
@@ -293,5 +309,10 @@ public class NavigationFragment extends Fragment implements AdapterView.OnItemSe
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	@Override
+	public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+		setUpServerConnection();
 	}
 }

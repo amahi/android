@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -103,10 +104,15 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 		navigationDrawerToggle.onDrawerOpened(drawer);
 
 		setUpTitle(getString(R.string.application_name));
+		setUpMenu();
 	}
 
 	private void setUpTitle(String title) {
 		getActionBar().setTitle(title);
+	}
+
+	private void setUpMenu() {
+		invalidateOptionsMenu();
 	}
 
 	@Override
@@ -114,6 +120,7 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 		navigationDrawerToggle.onDrawerClosed(drawer);
 
 		setUpTitle(selectedShare);
+		setUpMenu();
 	}
 
 	@Override
@@ -258,10 +265,22 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration configuration) {
-		super.onConfigurationChanged(configuration);
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		setUpMenu(menu);
 
-		navigationDrawerToggle.onConfigurationChanged(configuration);
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	private void setUpMenu(Menu menu) {
+		MenuItem sortMenuItem = menu.findItem(R.id.menu_sort);
+
+		if (sortMenuItem != null) {
+			sortMenuItem.setVisible(!isNavigationDrawerOpen());
+		}
+	}
+
+	private boolean isNavigationDrawerOpen() {
+		return getDrawer().isDrawerOpen(findViewById(R.id.container_navigation));
 	}
 
 	@Override
@@ -271,6 +290,13 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 		}
 
 		return super.onOptionsItemSelected(menuItem);
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration configuration) {
+		super.onConfigurationChanged(configuration);
+
+		navigationDrawerToggle.onConfigurationChanged(configuration);
 	}
 
 	@Override

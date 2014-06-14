@@ -21,7 +21,6 @@ package org.amahi.anywhere.fragment;
 
 import android.app.ListFragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -147,7 +146,7 @@ public class ServerFilesFragment extends ListFragment
 				return new FileModificationTimeComparator();
 
 			default:
-				return new FileNameComparator();
+				return null;
 		}
 	}
 
@@ -177,37 +176,55 @@ public class ServerFilesFragment extends ListFragment
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
-        menu.getItem(0).setIcon(getResources().getDrawable(R.drawable.ic_action_sort_date));
-        setUpFilesContentSort();
+
+		setUpFilesContentSortIcon(menu.findItem(R.id.menu_sort));
+	}
+
+	private void setUpFilesContentSortIcon(MenuItem menuItem) {
+		switch (filesSort) {
+			case NAME:
+				menuItem.setIcon(R.drawable.ic_menu_sort_name);
+				break;
+
+			case MODIFICATION_TIME:
+				menuItem.setIcon(R.drawable.ic_menu_sort_modification_time);
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.menu_sort:
-                toggleSort(menuItem);
-                return true;
-            default:
-                return super.onOptionsItemSelected(menuItem);
-        }
-	}
-    private void toggleSort(MenuItem menuItem){
-        switch (filesSort) {
-            case NAME:
-                filesSort = FilesSort.MODIFICATION_TIME;
-                setUpFilesContentSort();
-                menuItem.setIcon(getResources().getDrawable(R.drawable.ic_action_sort_date));
-                break;
-            case MODIFICATION_TIME:
-                filesSort = FilesSort.NAME;
-                setUpFilesContentSort();
-                menuItem.setIcon(getResources().getDrawable(R.drawable.ic_action_sort_name));
-                break;
-            default:
-                break;
-        }
+		switch (menuItem.getItemId()) {
+			case R.id.menu_sort:
+				setUpFilesContentSortIcon(menuItem);
+				setUpFilesContentSortSwitched();
+				return true;
 
-    }
+			default:
+				return super.onOptionsItemSelected(menuItem);
+		}
+	}
+
+	private void setUpFilesContentSortSwitched() {
+		switch (filesSort) {
+			case NAME:
+				filesSort = FilesSort.MODIFICATION_TIME;
+				break;
+
+			case MODIFICATION_TIME:
+				filesSort = FilesSort.NAME;
+				break;
+
+			default:
+				break;
+		}
+
+		setUpFilesContentSort();
+	}
+
 	private void setUpFilesContentSort() {
 		getFilesAdapter().replaceWith(sortFiles(getFilesAdapter().getItems()));
 	}

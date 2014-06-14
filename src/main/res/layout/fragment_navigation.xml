@@ -64,7 +64,8 @@
 
 		<Switch
 			android:id="@+id/switch_connection"
-			android:textOn="Local"
+            android:checked="true"
+			android:textOn="LAN"
 			android:textOff="Remote"
 			android:layout_gravity="center"
 			android:layout_width="wrap_content"

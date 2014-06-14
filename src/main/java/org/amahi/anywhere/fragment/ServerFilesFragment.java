@@ -199,8 +199,8 @@ public class ServerFilesFragment extends ListFragment
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
 			case R.id.menu_sort:
-				setUpFilesContentSortIcon(menuItem);
 				setUpFilesContentSortSwitched();
+				setUpFilesContentSortIcon(menuItem);
 				return true;
 
 			default:

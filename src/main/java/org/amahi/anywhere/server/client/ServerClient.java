@@ -25,7 +25,6 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
-import org.amahi.anywhere.bus.ServerConnectionChosenEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
@@ -35,7 +34,6 @@ import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.server.response.ServerConnectionResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
@@ -70,10 +68,6 @@ public class ServerClient
 		return (this.server != null) && (this.server.getSession().equals(server.getSession()));
 	}
 
-	public boolean isConnectionLocal() {
-		return serverRoute.getLocalAddress().equals(serverAddress);
-	}
-
 	public void connect(Server server) {
 		this.server = server;
 
@@ -89,23 +83,6 @@ public class ServerClient
 	@Subscribe
 	public void onServerRouteLoaded(ServerRouteLoadedEvent event) {
 		this.serverRoute = event.getServerRoute();
-		this.serverApi = buildServerApi(serverRoute.getLocalAddress());
-
-		startServerConnectionChoice();
-	}
-
-	private ServerApi buildServerApi(String serverAddress) {
-		return apiAdapter.create(ServerApi.class, serverAddress);
-	}
-
-	private void startServerConnectionChoice() {
-		serverApi.getShares(server.getSession(), new ServerConnectionResponse(serverRoute));
-	}
-
-	@Subscribe
-	public void onServerConnectionChosen(ServerConnectionChosenEvent event) {
-		this.serverAddress = event.getServerAddress();
-		this.serverApi = buildServerApi(event.getServerAddress());
 
 		finishServerConnection();
 	}
@@ -114,6 +91,20 @@ public class ServerClient
 		BusProvider.getBus().unregister(this);
 
 		BusProvider.getBus().post(new ServerConnectedEvent());
+	}
+
+	public void connectLocal() {
+		this.serverAddress = serverRoute.getLocalAddress();
+		this.serverApi = buildServerApi(serverAddress);
+	}
+
+	private ServerApi buildServerApi(String serverAddress) {
+		return apiAdapter.create(ServerApi.class, serverAddress);
+	}
+
+	public void connectRemote() {
+		this.serverAddress = serverRoute.getRemoteAddress();
+		this.serverApi = buildServerApi(serverAddress);
 	}
 
 	public void getShares() {

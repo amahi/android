@@ -31,48 +31,54 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"/>
 
-	<FrameLayout
+	<android.support.v4.widget.SwipeRefreshLayout
 		android:id="@+id/content"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
-		<ListView
-			android:id="@android:id/list"
-			android:scrollbarStyle="outsideOverlay"
-			android:paddingLeft="16dp"
-			android:paddingRight="16dp"
+		<FrameLayout
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"/>
+			android:layout_height="match_parent">
 
-		<LinearLayout
-			android:id="@android:id/empty"
-			android:orientation="vertical"
-			android:layout_gravity="center"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
-
-			<TextView
-				android:text="No Files"
-				android:textSize="@dimen/text_large"
-				android:textStyle="bold"
-				android:gravity="center_horizontal"
+			<ListView
+				android:id="@android:id/list"
+				android:scrollbarStyle="outsideOverlay"
+				android:paddingLeft="16dp"
+				android:paddingRight="16dp"
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content"/>
+				android:layout_height="match_parent"/>
 
-			<Space
+			<LinearLayout
+				android:id="@android:id/empty"
+				android:orientation="vertical"
+				android:layout_gravity="center"
 				android:layout_width="match_parent"
-				android:layout_height="8dp"/>
+				android:layout_height="wrap_content">
 
-			<TextView
-				android:text="Create some and try again"
-				android:textSize="@dimen/text_small"
-				android:gravity="center_horizontal"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"/>
+				<TextView
+					android:text="No Files"
+					android:textSize="@dimen/text_large"
+					android:textStyle="bold"
+					android:gravity="center_horizontal"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"/>
 
-		</LinearLayout>
+				<Space
+					android:layout_width="match_parent"
+					android:layout_height="8dp"/>
 
-	</FrameLayout>
+				<TextView
+					android:text="Create some and try again"
+					android:textSize="@dimen/text_small"
+					android:gravity="center_horizontal"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"/>
+
+			</LinearLayout>
+
+		</FrameLayout>
+
+	</android.support.v4.widget.SwipeRefreshLayout>
 
 	<LinearLayout
 		android:id="@+id/error"

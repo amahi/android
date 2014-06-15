@@ -293,7 +293,12 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 	private void showSharesContent() {
 		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator_shares);
-		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.list_shares)));
+
+		View content = getView().findViewById(R.id.list_shares);
+
+		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
+			animator.setDisplayedChild(animator.indexOfChild(content));
+		}
 	}
 
 	@Subscribe

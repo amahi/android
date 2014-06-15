@@ -21,6 +21,7 @@ package org.amahi.anywhere.fragment;
 
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,7 +52,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class ServerFilesFragment extends ListFragment
+public class ServerFilesFragment extends ListFragment implements SwipeRefreshLayout.OnRefreshListener
 {
 	private static enum FilesSort
 	{
@@ -85,6 +86,7 @@ public class ServerFilesFragment extends ListFragment
 		setUpFilesMenu();
 		setUpFilesAdapter();
 		setUpFilesContent();
+		setUpFilesContentRefreshing();
 	}
 
 	private void setUpFilesMenu() {
@@ -120,6 +122,8 @@ public class ServerFilesFragment extends ListFragment
 		setUpFilesContent(event.getServerFiles());
 
 		showFilesContent();
+
+		hideFilesContentRefreshing();
 	}
 
 	private void setUpFilesContent(List<ServerFile> files) {
@@ -153,17 +157,49 @@ public class ServerFilesFragment extends ListFragment
 
 	private void showFilesContent() {
 		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
-		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.content)));
+
+		View content = getView().findViewById(R.id.content);
+
+		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
+			animator.setDisplayedChild(animator.indexOfChild(content));
+		}
+	}
+
+	private void hideFilesContentRefreshing() {
+		getRefreshLayout().setRefreshing(false);
+	}
+
+	private SwipeRefreshLayout getRefreshLayout() {
+		return (SwipeRefreshLayout) getView().findViewById(R.id.content);
 	}
 
 	@Subscribe
 	public void onServerFilesLoadFailed(ServerFilesLoadFailedEvent event) {
 		showFilesError();
+
+		hideFilesContentRefreshing();
 	}
 
 	private void showFilesError() {
 		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
 		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.error)));
+	}
+
+	private void setUpFilesContentRefreshing() {
+		SwipeRefreshLayout refreshLayout = getRefreshLayout();
+
+		refreshLayout.setColorScheme(
+			android.R.color.holo_blue_light,
+			android.R.color.holo_orange_light,
+			android.R.color.holo_green_light,
+			android.R.color.holo_red_light);
+
+		refreshLayout.setOnRefreshListener(this);
+	}
+
+	@Override
+	public void onRefresh() {
+		setUpFilesContent();
 	}
 
 	@Override

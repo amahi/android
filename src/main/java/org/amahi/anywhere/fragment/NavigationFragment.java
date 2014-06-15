@@ -46,7 +46,9 @@ import org.amahi.anywhere.adapter.ServerSharesAdapter;
 import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
+import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
@@ -174,6 +176,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		getServersAdapter().replaceWith(filterActiveServers(servers));
 	}
 
+	private ServersAdapter getServersAdapter() {
+		return (ServersAdapter) getServersSpinner().getAdapter();
+	}
+
 	private List<Server> filterActiveServers(List<Server> servers) {
 		List<Server> activeServers = new ArrayList<Server>();
 
@@ -186,13 +192,19 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		return activeServers;
 	}
 
-	private ServersAdapter getServersAdapter() {
-		return (ServersAdapter) getServersSpinner().getAdapter();
-	}
-
 	private void showContent() {
 		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator_content);
 		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.layout_content)));
+	}
+
+	@Subscribe
+	public void onServersLoadFailed(ServersLoadFailedEvent event) {
+		showError();
+	}
+
+	private void showError() {
+		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator_content);
+		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.layout_error)));
 	}
 
 	private void setUpServersListener() {
@@ -284,6 +296,16 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.list_shares)));
 	}
 
+	@Subscribe
+	public void onSharesLoadFailed(ServerSharesLoadFailedEvent event) {
+		showSharesError();
+	}
+
+	private void showSharesError() {
+		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator_shares);
+		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.layout_shares_error)));
+	}
+
 	@Override
 	public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
 		getSharesList().setItemChecked(position, true);
@@ -298,6 +320,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	@Override
+	public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+		setUpServerConnection();
+
+		setUpSharesContent();
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
 
@@ -309,10 +338,5 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
-	}
-
-	@Override
-	public void onCheckedChanged(CompoundButton button, boolean isChecked) {
-		setUpServerConnection();
 	}
 }

@@ -44,14 +44,62 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"/>
 
-		<TextView
+		<LinearLayout
 			android:id="@android:id/empty"
-			android:text="No files"
-			android:textSize="@dimen/text_large"
+			android:orientation="vertical"
 			android:layout_gravity="center"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:text="No Files"
+				android:textSize="@dimen/text_large"
+				android:textStyle="bold"
+				android:gravity="center_horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"/>
+
+			<Space
+				android:layout_width="match_parent"
+				android:layout_height="8dp"/>
+
+			<TextView
+				android:text="Create some and try again"
+				android:textSize="@dimen/text_small"
+				android:gravity="center_horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"/>
+
+		</LinearLayout>
 
 	</FrameLayout>
+
+	<LinearLayout
+		android:id="@+id/error"
+		android:orientation="vertical"
+		android:layout_gravity="center"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<TextView
+			android:text="Connection Error"
+			android:textSize="@dimen/text_large"
+			android:textStyle="bold"
+			android:gravity="center_horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"/>
+
+		<Space
+			android:layout_width="match_parent"
+			android:layout_height="8dp"/>
+
+		<TextView
+			android:text="Check your settings and try again"
+			android:textSize="@dimen/text_small"
+			android:gravity="center_horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"/>
+
+	</LinearLayout>
 
 </ViewAnimator>

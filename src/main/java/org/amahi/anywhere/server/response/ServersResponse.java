@@ -20,6 +20,7 @@
 package org.amahi.anywhere.server.response;
 
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.server.model.Server;
 
@@ -29,7 +30,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class ServersResponse extends ApiResponse implements Callback<List<Server>>
+public class ServersResponse implements Callback<List<Server>>
 {
 	@Override
 	public void success(List<Server> servers, Response response) {
@@ -38,6 +39,6 @@ public class ServersResponse extends ApiResponse implements Callback<List<Server
 
 	@Override
 	public void failure(RetrofitError error) {
-		BusProvider.getBus().post(getFailureEvent(error));
+		BusProvider.getBus().post(new ServersLoadFailedEvent());
 	}
 }

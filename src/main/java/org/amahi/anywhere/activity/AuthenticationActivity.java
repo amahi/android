@@ -37,9 +37,9 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
-import org.amahi.anywhere.bus.AuthenticationDoneEvent;
+import org.amahi.anywhere.bus.AuthenticationFailedEvent;
+import org.amahi.anywhere.bus.AuthenticationSucceedEvent;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.ConnectionNotAuthorizedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 
 import javax.inject.Inject;
@@ -122,14 +122,14 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	@Override
 	public void onClick(View view) {
 		setUpAuthentication();
+
+		startAuthentication();
 	}
 
 	private void setUpAuthentication() {
 		hideAuthenticationText();
 
 		showProgress();
-
-		startAuthentication();
 	}
 
 	private void hideAuthenticationText() {
@@ -147,12 +147,16 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	@Subscribe
-	public void onNotAuthorized(ConnectionNotAuthorizedEvent event) {
+	public void onAuthenticationFailed(AuthenticationFailedEvent event) {
+		tearDownAuthentication();
+
+		showAuthenticationFailureMessage();
+	}
+
+	private void tearDownAuthentication() {
 		showAuthenticationText();
 
 		hideProgress();
-
-		showAuthenticationMessage();
 	}
 
 	private void showAuthenticationText() {
@@ -165,12 +169,12 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.button_authentication)));
 	}
 
-	private void showAuthenticationMessage() {
+	private void showAuthenticationFailureMessage() {
 		Toast.makeText(this, "Authentication failed.", Toast.LENGTH_LONG).show();
 	}
 
 	@Subscribe
-	public void onAuthenticationDone(AuthenticationDoneEvent event) {
+	public void onAuthenticationSucceed(AuthenticationSucceedEvent event) {
 		finishAuthentication(event.getAuthentication().getToken());
 	}
 

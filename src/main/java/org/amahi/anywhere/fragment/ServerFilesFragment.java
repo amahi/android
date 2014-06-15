@@ -37,6 +37,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileSelectedEvent;
+import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -153,6 +154,16 @@ public class ServerFilesFragment extends ListFragment
 	private void showFilesContent() {
 		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
 		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.content)));
+	}
+
+	@Subscribe
+	public void onServerFilesLoadFailed(ServerFilesLoadFailedEvent event) {
+		showFilesError();
+	}
+
+	private void showFilesError() {
+		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
+		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.error)));
 	}
 
 	@Override

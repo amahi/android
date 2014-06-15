@@ -19,15 +19,6 @@
 
 package org.amahi.anywhere.bus;
 
-public class ServerConnectionChosenEvent implements BusEvent
+public class ServersLoadFailedEvent implements BusEvent
 {
-	private final String serverAddress;
-
-	public ServerConnectionChosenEvent(String serverAddress) {
-		this.serverAddress = serverAddress;
-	}
-
-	public String getServerAddress() {
-		return serverAddress;
-	}
 }

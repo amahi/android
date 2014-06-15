@@ -20,6 +20,7 @@
 package org.amahi.anywhere.server.response;
 
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerConnectionFailedEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.model.ServerRoute;
 
@@ -27,7 +28,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class ServerRouteResponse extends ApiResponse implements Callback<ServerRoute>
+public class ServerRouteResponse implements Callback<ServerRoute>
 {
 	@Override
 	public void success(ServerRoute serverRoute, Response response) {
@@ -36,6 +37,6 @@ public class ServerRouteResponse extends ApiResponse implements Callback<ServerR
 
 	@Override
 	public void failure(RetrofitError error) {
-		BusProvider.getBus().post(getFailureEvent(error));
+		BusProvider.getBus().post(new ServerConnectionFailedEvent());
 	}
 }

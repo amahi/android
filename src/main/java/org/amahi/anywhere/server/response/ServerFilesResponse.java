@@ -20,6 +20,7 @@
 package org.amahi.anywhere.server.response;
 
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.model.ServerFile;
 
@@ -29,7 +30,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class ServerFilesResponse extends ApiResponse implements Callback<List<ServerFile>>
+public class ServerFilesResponse implements Callback<List<ServerFile>>
 {
 	private final ServerFile serverDirectory;
 
@@ -48,6 +49,6 @@ public class ServerFilesResponse extends ApiResponse implements Callback<List<Se
 
 	@Override
 	public void failure(RetrofitError error) {
-		BusProvider.getBus().post(getFailureEvent(error));
+		BusProvider.getBus().post(new ServerFilesLoadFailedEvent());
 	}
 }

@@ -19,6 +19,6 @@
 
 package org.amahi.anywhere.bus;
 
-public class ConnectionErrorEvent implements BusEvent
+public class AuthenticationFailedEvent implements BusEvent
 {
 }

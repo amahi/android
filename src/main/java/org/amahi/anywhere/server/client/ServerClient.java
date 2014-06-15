@@ -64,8 +64,16 @@ public class ServerClient
 		return apiAdapter.create(ProxyApi.class, Api.getProxyUrl());
 	}
 
+	public boolean isConnected() {
+		return (server != null) && (serverRoute != null) && (serverAddress != null);
+	}
+
 	public boolean isConnected(Server server) {
 		return (this.server != null) && (this.server.getSession().equals(server.getSession()));
+	}
+
+	public boolean isConnectionLocal() {
+		return serverRoute.getLocalAddress().equals(serverAddress);
 	}
 
 	public void connect(Server server) {

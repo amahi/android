@@ -265,6 +265,13 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.action_bar_navigation, menu);
+
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		setUpMenu(menu);
 
@@ -273,14 +280,23 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 
 	private void setUpMenu(Menu menu) {
 		MenuItem sortMenuItem = menu.findItem(R.id.menu_sort);
+		MenuItem connectionMenuItem = menu.findItem(R.id.menu_connection);
 
 		if (sortMenuItem != null) {
 			sortMenuItem.setVisible(!isNavigationDrawerOpen());
+		}
+
+		if (connectionMenuItem != null) {
+			connectionMenuItem.setVisible(!isNavigationDrawerOpen() && !isConnectionLocal());
 		}
 	}
 
 	private boolean isNavigationDrawerOpen() {
 		return getDrawer().isDrawerOpen(findViewById(R.id.container_navigation));
+	}
+
+	private boolean isConnectionLocal() {
+		return serverClient.isConnected() && serverClient.isConnectionLocal();
 	}
 
 	@Override

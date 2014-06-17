@@ -40,9 +40,6 @@ public class ServerFile implements Parcelable
 	@SerializedName("mtime")
 	private Date modificationTime;
 
-	@SerializedName("size")
-	private long size;
-
 	public void setParentFile(ServerFile parentFile) {
 		this.parentFile = parentFile;
 	}
@@ -61,10 +58,6 @@ public class ServerFile implements Parcelable
 
 	public Date getModificationTime() {
 		return modificationTime;
-	}
-
-	public long getSize() {
-		return size;
 	}
 
 	public String getPath() {
@@ -97,7 +90,6 @@ public class ServerFile implements Parcelable
 		this.name = parcel.readString();
 		this.mime = parcel.readString();
 		this.modificationTime = new Date(parcel.readLong());
-		this.size = parcel.readLong();
 	}
 
 	@Override
@@ -106,7 +98,6 @@ public class ServerFile implements Parcelable
 		parcel.writeString(name);
 		parcel.writeString(mime);
 		parcel.writeLong(modificationTime.getTime());
-		parcel.writeLong(size);
 	}
 
 	@Override

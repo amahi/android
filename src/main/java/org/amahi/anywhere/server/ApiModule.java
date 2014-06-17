@@ -88,12 +88,14 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	Converter provideConverter() {
-		Gson gson = new GsonBuilder()
-			.setDateFormat(Time.Format.RFC_1123)
-			.create();
+	Converter provideJsonConverter(Gson json) {
+		return new GsonConverter(json);
+	}
 
-		return new GsonConverter(gson);
+	@Provides
+	@Singleton
+	Gson provideJson() {
+		return new GsonBuilder().setDateFormat(Time.Format.RFC_1123).create();
 	}
 
 	@Provides

@@ -37,6 +37,7 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.bus.AuthenticationConnectionFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationSucceedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -171,6 +172,17 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
 	private void showAuthenticationFailureMessage() {
 		Toast.makeText(this, "Authentication failed.", Toast.LENGTH_LONG).show();
+	}
+
+	@Subscribe
+	public void onAuthenticationConnectionFailed(AuthenticationConnectionFailedEvent event) {
+		tearDownAuthentication();
+
+		showAuthenticationConnectionFailureMessage();
+	}
+
+	private void showAuthenticationConnectionFailureMessage() {
+		Toast.makeText(this, "Connection failed.", Toast.LENGTH_LONG).show();
 	}
 
 	@Subscribe

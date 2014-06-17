@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.server.response;
 
+import org.amahi.anywhere.bus.AuthenticationConnectionFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationSucceedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -37,6 +38,10 @@ public class AuthenticationResponse implements Callback<Authentication>
 
 	@Override
 	public void failure(RetrofitError error) {
-		BusProvider.getBus().post(new AuthenticationFailedEvent());
+		if (error.isNetworkError()) {
+			BusProvider.getBus().post(new AuthenticationConnectionFailedEvent());
+		} else {
+			BusProvider.getBus().post(new AuthenticationFailedEvent());
+		}
 	}
 }

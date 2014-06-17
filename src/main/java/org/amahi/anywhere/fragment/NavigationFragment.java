@@ -243,17 +243,15 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 	private void setUpServerConnection(Server server) {
 		if (serverClient.isConnected(server)) {
-			return;
+			setUpServerConnection();
+		} else {
+			serverClient.connect(server);
 		}
-
-		serverClient.connect(server);
 	}
 
 	@Subscribe
 	public void onServerConnected(ServerConnectedEvent event) {
 		setUpServerConnection();
-
-		setUpSharesContent();
 	}
 
 	private void setUpServerConnection() {
@@ -262,6 +260,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		} else {
 			serverClient.connectRemote();
 		}
+
+		setUpSharesContent();
 	}
 
 	private boolean isConnectionLocal() {
@@ -327,8 +327,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	@Override
 	public void onCheckedChanged(CompoundButton button, boolean isChecked) {
 		setUpServerConnection();
-
-		setUpSharesContent();
 	}
 
 	@Override

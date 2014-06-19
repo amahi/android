@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -47,6 +48,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.FileDownloadingTask;
+import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -71,10 +73,7 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 
 		setUpHomeNavigation();
 
-		setUpNavigationDrawer();
-		setUpNavigationFragment();
-
-		showNavigationDrawer();
+		setUpNavigation();
 	}
 
 	private void setUpInjections() {
@@ -82,7 +81,26 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 	}
 
 	private void setUpHomeNavigation() {
-		getActionBar().setHomeButtonEnabled(true);
+		ActionBar actionBar = getActionBar();
+
+		actionBar.setHomeButtonEnabled(isNavigationDrawerAvailable());
+		actionBar.setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
+	}
+
+	private boolean isNavigationDrawerAvailable() {
+		return !Android.isTablet(this);
+	}
+
+	private void setUpNavigation() {
+		if (isNavigationDrawerAvailable()) {
+			setUpNavigationDrawer();
+		}
+
+		setUpNavigationFragment();
+
+		if (isNavigationDrawerAvailable()) {
+			showNavigationDrawer();
+		}
 	}
 
 	private void setUpNavigationDrawer() {
@@ -155,7 +173,9 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 	public void onShareSelected(ShareSelectedEvent event) {
 		setUpShare(event.getShare());
 
-		hideNavigationDrawer();
+		if (isNavigationDrawerAvailable()) {
+			hideNavigationDrawer();
+		}
 	}
 
 	private void setUpShare(ServerShare share) {
@@ -267,7 +287,9 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
-		navigationDrawerToggle.syncState();
+		if (isNavigationDrawerAvailable()) {
+			navigationDrawerToggle.syncState();
+		}
 	}
 
 	@Override
@@ -279,7 +301,9 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		setUpMenu(menu);
+		if (isNavigationDrawerAvailable()) {
+			setUpMenu(menu);
+		}
 
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -307,7 +331,7 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		if (navigationDrawerToggle.onOptionsItemSelected(menuItem)) {
+		if (isNavigationDrawerAvailable() && navigationDrawerToggle.onOptionsItemSelected(menuItem)) {
 			return true;
 		}
 
@@ -318,7 +342,9 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 	public void onConfigurationChanged(Configuration configuration) {
 		super.onConfigurationChanged(configuration);
 
-		navigationDrawerToggle.onConfigurationChanged(configuration);
+		if (isNavigationDrawerAvailable()) {
+			navigationDrawerToggle.onConfigurationChanged(configuration);
+		}
 	}
 
 	@Override

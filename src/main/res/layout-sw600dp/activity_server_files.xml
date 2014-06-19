@@ -18,11 +18,23 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:baselineAligned="false"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<include
-		layout="@layout/layout_authentication"/>
+	<FrameLayout
+		android:id="@+id/container_navigation"
+		android:background="@android:color/white"
+		android:layout_weight="1"
+		android:layout_width="0dp"
+		android:layout_height="match_parent"/>
 
-</FrameLayout>
+	<FrameLayout
+		android:id="@+id/container_files"
+		android:layout_weight="2"
+		android:layout_width="0dp"
+		android:layout_height="match_parent"/>
+
+</LinearLayout>

@@ -18,54 +18,41 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
 	android:layout_gravity="center"
 	android:paddingLeft="32dp"
 	android:paddingRight="32dp"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@drawable/gradient">
+	android:layout_height="wrap_content">
 
 	<EditText
 		android:id="@+id/edit_username"
 		android:hint="Username"
 		android:singleLine="true"
-		android:layout_centerHorizontal="true"
-		android:layout_above="@+id/gap1"
+		android:background="@android:drawable/editbox_background_normal"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="@android:drawable/editbox_background_normal"/>
+		android:layout_height="wrap_content"/>
 
 	<Space
-		android:id="@+id/gap1"
 		android:layout_width="match_parent"
-		android:layout_centerHorizontal="true"
-		android:layout_above="@+id/edit_password"
 		android:layout_height="8dp"/>
 
 	<EditText
 		android:id="@+id/edit_password"
 		android:hint="Password"
-		android:layout_centerHorizontal="true"
-		android:layout_centerVertical="true"
 		android:inputType="textPassword"
 		android:fontFamily="sans-serif"
+		android:background="@android:drawable/editbox_background_normal"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="@android:drawable/editbox_background_normal"/>
+		android:layout_height="wrap_content"/>
 
 	<Space
-		android:id="@+id/gap2"
 		android:layout_width="match_parent"
-		android:layout_below="@+id/edit_password"
-		android:layout_centerHorizontal="true"
 		android:layout_height="16dp"/>
 
 	<ViewAnimator
 		android:id="@+id/animator"
-		android:layout_centerHorizontal="true"
-		android:layout_below="@+id/gap2"
 		android:inAnimation="@android:anim/fade_in"
 		android:outAnimation="@android:anim/fade_out"
 		android:layout_width="match_parent"
@@ -74,9 +61,9 @@
 		<Button
 			android:id="@+id/button_authentication"
 			android:text="Sign in"
+			android:background="@android:drawable/btn_default"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="@android:drawable/btn_default"/>
+			android:layout_height="wrap_content"/>
 
 		<ProgressBar
 			android:id="@android:id/progress"
@@ -86,7 +73,4 @@
 
 	</ViewAnimator>
 
-</RelativeLayout>
-
-
-
+</LinearLayout>

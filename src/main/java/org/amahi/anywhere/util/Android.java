@@ -25,10 +25,15 @@ import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 import org.amahi.anywhere.BuildConfig;
+import org.amahi.anywhere.R;
 
 public final class Android
 {
 	private Android() {
+	}
+
+	public static boolean isTablet(Context context) {
+		return context.getResources().getBoolean(R.bool.tablet);
 	}
 
 	public static String getVersion() {

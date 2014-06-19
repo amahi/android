@@ -31,12 +31,13 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"/>
 
-	<android.support.v4.widget.SwipeRefreshLayout
+	<FrameLayout
 		android:id="@+id/content"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
-		<FrameLayout
+		<android.support.v4.widget.SwipeRefreshLayout
+			android:id="@+id/layout_refresh"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent">
 
@@ -48,37 +49,37 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"/>
 
-			<LinearLayout
-				android:id="@android:id/empty"
-				android:orientation="vertical"
-				android:layout_gravity="center"
+		</android.support.v4.widget.SwipeRefreshLayout>
+
+		<LinearLayout
+			android:id="@android:id/empty"
+			android:orientation="vertical"
+			android:layout_gravity="center"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<TextView
+				android:text="No Files"
+				android:textSize="@dimen/text_large"
+				android:textStyle="bold"
+				android:gravity="center_horizontal"
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content">
+				android:layout_height="wrap_content"/>
 
-				<TextView
-					android:text="No Files"
-					android:textSize="@dimen/text_large"
-					android:textStyle="bold"
-					android:gravity="center_horizontal"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"/>
+			<Space
+				android:layout_width="match_parent"
+				android:layout_height="8dp"/>
 
-				<Space
-					android:layout_width="match_parent"
-					android:layout_height="8dp"/>
+			<TextView
+				android:text="Create some and try again"
+				android:textSize="@dimen/text_small"
+				android:gravity="center_horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"/>
 
-				<TextView
-					android:text="Create some and try again"
-					android:textSize="@dimen/text_small"
-					android:gravity="center_horizontal"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"/>
+		</LinearLayout>
 
-			</LinearLayout>
-
-		</FrameLayout>
-
-	</android.support.v4.widget.SwipeRefreshLayout>
+	</FrameLayout>
 
 	<LinearLayout
 		android:id="@+id/error"

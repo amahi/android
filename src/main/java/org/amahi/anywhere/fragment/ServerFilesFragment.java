@@ -170,7 +170,7 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	}
 
 	private SwipeRefreshLayout getRefreshLayout() {
-		return (SwipeRefreshLayout) getView().findViewById(R.id.content);
+		return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
 	}
 
 	@Subscribe

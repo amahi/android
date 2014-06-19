@@ -69,6 +69,8 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 
 		setUpInjections();
 
+		setUpHomeNavigation();
+
 		setUpNavigationDrawer();
 		setUpNavigationFragment();
 
@@ -77,6 +79,10 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpHomeNavigation() {
+		getActionBar().setHomeButtonEnabled(true);
 	}
 
 	private void setUpNavigationDrawer() {

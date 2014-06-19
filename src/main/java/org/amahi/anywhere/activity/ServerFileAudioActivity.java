@@ -93,6 +93,8 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 
 		setUpInjections();
 
+		setUpHomeNavigation();
+
 		setUpAudio();
 	}
 
@@ -106,6 +108,10 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpHomeNavigation() {
+		getActionBar().setHomeButtonEnabled(true);
 	}
 
 	private void setUpAudio() {

@@ -118,6 +118,8 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 
 		setUpInjections();
 
+		setUpHomeNavigation();
+
 		setUpVideo();
 
 		setUpSystemControls();
@@ -133,6 +135,10 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpHomeNavigation() {
+		getActionBar().setHomeButtonEnabled(true);
 	}
 
 	private void setUpVideo() {

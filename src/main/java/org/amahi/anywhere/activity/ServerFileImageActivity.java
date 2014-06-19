@@ -66,11 +66,17 @@ public class ServerFileImageActivity extends Activity implements Callback
 
 		setUpInjections();
 
+		setUpHomeNavigation();
+
 		setUpImage();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpHomeNavigation() {
+		getActionBar().setHomeButtonEnabled(true);
 	}
 
 	private void setUpImage() {

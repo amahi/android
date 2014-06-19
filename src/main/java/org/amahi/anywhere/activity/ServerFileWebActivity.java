@@ -60,11 +60,17 @@ public class ServerFileWebActivity extends Activity
 
 		setUpInjections();
 
+		setUpHomeNavigation();
+
 		setUpWebResource();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpHomeNavigation() {
+		getActionBar().setHomeButtonEnabled(true);
 	}
 
 	private void setUpWebResource() {

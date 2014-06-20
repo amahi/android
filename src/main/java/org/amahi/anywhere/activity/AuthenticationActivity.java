@@ -33,6 +33,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -83,8 +84,8 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		return getPasswordEdit().getText().toString();
 	}
 
-	private Button getAuthenticationButton() {
-		return (Button) findViewById(R.id.button_authentication);
+	private ActionProcessButton getAuthenticationButton() {
+		return (ActionProcessButton) findViewById(R.id.button_authentication);
 	}
 
 	private void setUpAuthenticationMessages() {
@@ -158,8 +159,10 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private void showProgress() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator_button);
-		animator.setDisplayedChild(animator.indexOfChild(findViewById(android.R.id.progress)));
+		ActionProcessButton authenticationButton = getAuthenticationButton();
+
+		authenticationButton.setMode(ActionProcessButton.Mode.ENDLESS);
+		authenticationButton.setProgress(1);
 	}
 
 	private void startAuthentication() {
@@ -185,8 +188,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private void hideProgress() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator_button);
-		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.button_authentication)));
+		getAuthenticationButton().setProgress(0);
 	}
 
 	private void showAuthenticationFailureMessage() {

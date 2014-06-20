@@ -43,7 +43,6 @@
 
 	<style name="Theme.Amahi.Authentication" parent="@style/Theme.Amahi">
 		<item name="android:actionBarStyle">@style/Theme.Amahi.Authentication.ActionBar</item>
-		<item name="android:windowBackground">@drawable/bg_authentication</item>
 	</style>
 
 	<style name="Theme.Amahi.Authentication.ActionBar" parent="@style/Theme.Amahi.ActionBar">

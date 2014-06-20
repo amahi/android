@@ -20,10 +20,14 @@
 package org.amahi.anywhere.activity;
 
 import android.app.Activity;
-import android.media.AudioManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -43,18 +47,20 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioAlbumArtDownloader;
 import org.amahi.anywhere.util.Intents;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-public class ServerFileAudioActivity extends Activity implements MediaController.MediaPlayerControl, MediaPlayer.OnPreparedListener
+public class ServerFileAudioActivity extends Activity implements ServiceConnection,
+	MediaPlayer.OnPreparedListener,
+	MediaController.MediaPlayerControl
 {
 	public static final Set<String> SUPPORTED_FORMATS;
 
@@ -67,43 +73,22 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 		));
 	}
 
-	private static final class SavedState
-	{
-		private SavedState() {
-		}
-
-		public static final String AUDIO_TIME = "audio_time";
-	}
-
 	@Inject
 	ServerClient serverClient;
 
-	private MediaPlayer audioPlayer;
-
+	private AudioService audioService;
 	private MediaController audioControls;
-
-	private int audioTime;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_server_file_audio);
 
-		setUpSavedState(savedInstanceState);
-
 		setUpInjections();
 
 		setUpHomeNavigation();
 
 		setUpAudio();
-	}
-
-	private void setUpSavedState(Bundle savedState) {
-		if (savedState == null) {
-			return;
-		}
-
-		audioTime = savedState.getInt(SavedState.AUDIO_TIME);
 	}
 
 	private void setUpInjections() {
@@ -174,20 +159,35 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 	protected void onStart() {
 		super.onStart();
 
-		setUpAudioPlayer();
-		setUpAudioControls();
+		setUpAudioService();
+		setUpAudioServiceBind();
 	}
 
-	private void setUpAudioPlayer() {
-		try {
-			audioPlayer = new MediaPlayer();
-			audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			audioPlayer.setDataSource(this, getAudioUri());
-			audioPlayer.setOnPreparedListener(this);
-			audioPlayer.prepareAsync();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	private void setUpAudioService() {
+		Intent intent = new Intent(this, AudioService.class);
+		startService(intent);
+	}
+
+	private void setUpAudioServiceBind() {
+		Intent intent = new Intent(this, AudioService.class);
+		bindService(intent, this, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName serviceName) {
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName serviceName, IBinder serviceBinder) {
+		setUpAudioServiceBind(serviceBinder);
+
+		setUpAudioControls();
+		setUpAudioPlayback();
+	}
+
+	private void setUpAudioServiceBind(IBinder serviceBinder) {
+		AudioService.AudioServiceBinder audioServiceBinder = (AudioService.AudioServiceBinder) serviceBinder;
+		audioService = audioServiceBinder.getAudioService();
 	}
 
 	private void setUpAudioControls() {
@@ -197,22 +197,27 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 		audioControls.setAnchorView(findViewById(R.id.animator));
 	}
 
-	@Override
-	public void onPrepared(MediaPlayer mediaPlayer) {
-		setUpAudioTime();
-		start();
-
-		showAudio();
-		showAudioControls();
-	}
-
-	private void setUpAudioTime() {
-		if (audioPlayer.getCurrentPosition() == 0) {
-			audioPlayer.seekTo(audioTime);
+	private void setUpAudioPlayback() {
+		if (audioService.isStarted()) {
+			showAudio();
+		} else {
+			audioService.startAudio(getAudioUri(), this);
 		}
 	}
 
+	@Override
+	public void onPrepared(MediaPlayer audioPlayer) {
+		start();
+
+		showAudio();
+	}
+
 	private void showAudio() {
+		showAudioMetadata();
+		showAudioControls();
+	}
+
+	private void showAudioMetadata() {
 		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
 
 		View content = findViewById(R.id.layout_content);
@@ -223,15 +228,27 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 	}
 
 	private void showAudioControls() {
-		Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up_view);
-		audioControls.startAnimation(showAnimation);
+		if (areAudioControlsAvailable() && !audioControls.isShowing()) {
+			Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up_view);
+			audioControls.startAnimation(showAnimation);
 
-		audioControls.show(0);
+			audioControls.show(0);
+		}
+	}
+
+	private boolean areAudioControlsAvailable() {
+		return audioControls != null;
+	}
+
+	private void hideAudioControls() {
+		if (areAudioControlsAvailable()) {
+			audioControls.hide();
+		}
 	}
 
 	@Override
 	public void start() {
-		audioPlayer.start();
+		audioService.getAudioPlayer().start();
 	}
 
 	@Override
@@ -241,7 +258,7 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 
 	@Override
 	public void pause() {
-		audioPlayer.pause();
+		audioService.getAudioPlayer().pause();
 	}
 
 	@Override
@@ -256,22 +273,22 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 
 	@Override
 	public void seekTo(int time) {
-		audioPlayer.seekTo(time);
+		audioService.getAudioPlayer().seekTo(time);
 	}
 
 	@Override
 	public int getDuration() {
-		return audioPlayer.getDuration();
+		return audioService.getAudioPlayer().getDuration();
 	}
 
 	@Override
 	public int getCurrentPosition() {
-		return audioPlayer.getCurrentPosition();
+		return audioService.getAudioPlayer().getCurrentPosition();
 	}
 
 	@Override
 	public boolean isPlaying() {
-		return audioPlayer.isPlaying();
+		return audioService.getAudioPlayer().isPlaying();
 	}
 
 	@Override
@@ -281,54 +298,7 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 
 	@Override
 	public int getAudioSessionId() {
-		return audioPlayer.getAudioSessionId();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		BusProvider.getBus().register(this);
-
-		audioPlayer.start();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		BusProvider.getBus().unregister(this);
-
-		hideAudioControls();
-	}
-
-	private void hideAudioControls() {
-		audioControls.hide();
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-
-		audioTime = getCurrentPosition();
-
-		tearDownAudioPlayer();
-	}
-
-	private void tearDownAudioPlayer() {
-		audioPlayer.stop();
-		audioPlayer.release();
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-
-		tearDownSavedState(outState);
-	}
-
-	private void tearDownSavedState(Bundle savedState) {
-		savedState.putInt(SavedState.AUDIO_TIME, getCurrentPosition());
+		return audioService.getAudioPlayer().getAudioSessionId();
 	}
 
 	@Override
@@ -341,5 +311,48 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 			default:
 				return super.onOptionsItemSelected(menuItem);
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		showAudioControls();
+
+		BusProvider.getBus().register(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		hideAudioControls();
+
+		BusProvider.getBus().unregister(this);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+
+		tearDownAudioServiceBind();
+	}
+
+	private void tearDownAudioServiceBind() {
+		unbindService(this);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (isFinishing()) {
+			tearDownAudioService();
+		}
+	}
+
+	private void tearDownAudioService() {
+		Intent intent = new Intent(this, AudioService.class);
+		stopService(intent);
 	}
 }

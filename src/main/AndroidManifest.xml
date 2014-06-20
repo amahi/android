@@ -39,6 +39,9 @@
 	<uses-permission
 		android:name="android.permission.USE_CREDENTIALS"/>
 
+	<uses-permission
+		android:name="android.permission.WAKE_LOCK"/>
+
 	<application
         android:icon="@drawable/ic_launcher"
 		android:label="@string/application_name"
@@ -91,6 +94,10 @@
 				android:name="android.accounts.AccountAuthenticator"
 				android:resource="@xml/authenticator"/>
 
+		</service>
+
+		<service
+			android:name=".service.AudioService">
 		</service>
 
 		<meta-data

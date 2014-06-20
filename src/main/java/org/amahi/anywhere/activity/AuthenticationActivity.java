@@ -26,10 +26,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
@@ -58,6 +59,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		setUpInjections();
 
 		setUpAuthenticationAction();
+		setUpAuthenticationMessages();
 		setUpAuthenticationListeners();
 	}
 
@@ -85,6 +87,14 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		return (Button) findViewById(R.id.button_authentication);
 	}
 
+	private void setUpAuthenticationMessages() {
+		TextView authenticationFailureMessage = (TextView) findViewById(R.id.text_message_authentication);
+		TextView authenticationConnectionFailureMessage = (TextView) findViewById(R.id.text_message_authentication_connection);
+
+		authenticationFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
+		authenticationConnectionFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
+	}
+
 	private void setUpAuthenticationListeners() {
 		setUpAuthenticationTextListener();
 		setUpAuthenticationActionListener();
@@ -106,6 +116,13 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	@Override
 	public void onTextChanged(CharSequence text, int after, int before, int count) {
 		setUpAuthenticationAction();
+
+		hideAuthenticationFailureMessage();
+	}
+
+	private void hideAuthenticationFailureMessage() {
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator_message);
+		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.view_message_empty)));
 	}
 
 	@Override
@@ -131,6 +148,8 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		hideAuthenticationText();
 
 		showProgress();
+
+		hideAuthenticationFailureMessage();
 	}
 
 	private void hideAuthenticationText() {
@@ -139,7 +158,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private void showProgress() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator_button);
 		animator.setDisplayedChild(animator.indexOfChild(findViewById(android.R.id.progress)));
 	}
 
@@ -166,12 +185,13 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private void hideProgress() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator_button);
 		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.button_authentication)));
 	}
 
 	private void showAuthenticationFailureMessage() {
-		Toast.makeText(this, "Authentication failed.", Toast.LENGTH_LONG).show();
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator_message);
+		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.text_message_authentication)));
 	}
 
 	@Subscribe
@@ -182,7 +202,8 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private void showAuthenticationConnectionFailureMessage() {
-		Toast.makeText(this, "Connection failed.", Toast.LENGTH_LONG).show();
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator_message);
+		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.text_message_authentication_connection)));
 	}
 
 	@Subscribe

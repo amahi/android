@@ -405,7 +405,7 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 	}
 
 	private void showVlcControls() {
-		Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+		Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up_view);
 		vlcControls.startAnimation(showAnimation);
 
 		vlcControls.show(0);
@@ -428,7 +428,7 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 	private void hideVlcControls() {
 		vlcControls.hide();
 
-		Animation hideAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down);
+		Animation hideAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down_view);
 		vlcControls.startAnimation(hideAnimation);
 	}
 

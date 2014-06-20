@@ -223,7 +223,7 @@ public class ServerFileAudioActivity extends Activity implements MediaController
 	}
 
 	private void showAudioControls() {
-		Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+		Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up_view);
 		audioControls.startAnimation(showAnimation);
 
 		audioControls.show(0);

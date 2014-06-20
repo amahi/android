@@ -26,6 +26,17 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content">
 
+	<ImageView
+		android:src="@drawable/ic_banner"
+		android:paddingLeft="32dp"
+		android:paddingRight="32dp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"/>
+
+	<Space
+		android:layout_width="match_parent"
+		android:layout_height="8dp"/>
+
 	<EditText
 		android:id="@+id/edit_username"
 		android:hint="Username"

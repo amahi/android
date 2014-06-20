@@ -42,11 +42,7 @@
 	</style>
 
 	<style name="Theme.Amahi.Authentication" parent="@style/Theme.Amahi">
-		<item name="android:actionBarStyle">@style/Theme.Amahi.Authentication.ActionBar</item>
-	</style>
-
-	<style name="Theme.Amahi.Authentication.ActionBar" parent="@style/Theme.Amahi.ActionBar">
-		<item name="android:displayOptions">showHome|showTitle</item>
+		<item name="android:windowNoTitle">true</item>
 	</style>
 
 </resources>

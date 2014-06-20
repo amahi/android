@@ -26,6 +26,7 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.Fragment;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -150,7 +151,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpServersContent(authenticationToken);
 
 		setUpServersListener();
-		setUpServersConnectionListener();
+		setUpServerConnectionListener();
 	}
 
 	private void setUpServersAdapter() {
@@ -244,6 +245,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	private void setUpServerConnection(Server server) {
 		if (serverClient.isConnected(server)) {
 			setUpServerConnection();
+			setUpServerConnectionIndicator();
 		} else {
 			serverClient.connect(server);
 		}
@@ -252,6 +254,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	@Subscribe
 	public void onServerConnected(ServerConnectedEvent event) {
 		setUpServerConnection();
+		setUpServerConnectionIndicator();
 	}
 
 	private void setUpServerConnection() {
@@ -270,6 +273,18 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 	private Switch getConnectionSwitch() {
 		return (Switch) getView().findViewById(R.id.switch_connection);
+	}
+
+	private void setUpServerConnectionIndicator() {
+		getActivity().getActionBar().setBackgroundDrawable(getServerConnectionIndicator());
+	}
+
+	private Drawable getServerConnectionIndicator() {
+		if (isConnectionLocal()) {
+			return getResources().getDrawable(R.drawable.bg_action_bar);
+		} else {
+			return getResources().getDrawable(R.drawable.bg_action_bar_warning);
+		}
 	}
 
 	private void setUpSharesContent() {
@@ -320,13 +335,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		BusProvider.getBus().post(new ShareSelectedEvent(share));
 	}
 
-	private void setUpServersConnectionListener() {
+	private void setUpServerConnectionListener() {
 		getConnectionSwitch().setOnCheckedChangeListener(this);
 	}
 
 	@Override
 	public void onCheckedChanged(CompoundButton button, boolean isChecked) {
 		setUpServerConnection();
+		setUpServerConnectionIndicator();
 	}
 
 	@Override

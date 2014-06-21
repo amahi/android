@@ -107,14 +107,6 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		return audioSource != null;
 	}
 
-	public boolean isAudioPlaying() {
-		try {
-			return isAudioStarted() && audioPlayer.isPlaying();
-		} catch (IllegalStateException e) {
-			return false;
-		}
-	}
-
 	public void startAudio(Uri audioUri, MediaPlayer.OnPreparedListener audioListener) {
 		try {
 			audioSource = audioUri;
@@ -253,6 +245,14 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		}
 	}
 
+	private boolean isAudioPlaying() {
+		try {
+			return isAudioStarted() && audioPlayer.isPlaying();
+		} catch (IllegalStateException e) {
+			return false;
+		}
+	}
+
 	private void setUpAudioVolume() {
 		audioPlayer.setVolume(1.0f, 1.0f);
 	}
@@ -286,16 +286,16 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		audioPlayer.release();
 	}
 
-	private void tearDownAudioPlayerNotification() {
-		stopForeground(true);
-	}
-
 	private void tearDownAudioPlayerRemote() {
 		AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		ComponentName audioReceiver = new ComponentName(getPackageName(), AudioReceiver.class.getName());
 
 		audioManager.unregisterMediaButtonEventReceiver(audioReceiver);
 		audioManager.unregisterRemoteControlClient(audioPlayerRemote);
+	}
+
+	private void tearDownAudioPlayerNotification() {
+		stopForeground(true);
 	}
 
 	public static final class AudioServiceBinder extends Binder

@@ -185,6 +185,10 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		}
 	}
 
+	private boolean areAudioControlsAvailable() {
+		return audioControls != null;
+	}
+
 	private void setUpAudioPlayback() {
 		if (audioService.isAudioStarted()) {
 			showAudio();
@@ -222,10 +226,6 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 			showAudioControls();
 		}
-	}
-
-	private boolean areAudioControlsAvailable() {
-		return audioControls != null;
 	}
 
 	private void showAudioControls() {

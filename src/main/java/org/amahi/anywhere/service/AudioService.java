@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.service;
 
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
@@ -33,9 +34,11 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.app.NotificationCompat;
 
 import com.squareup.otto.Subscribe;
 
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AudioControlPauseEvent;
 import org.amahi.anywhere.bus.AudioControlPlayEvent;
 import org.amahi.anywhere.bus.AudioControlPlayPauseEvent;
@@ -48,8 +51,10 @@ import java.io.IOException;
 
 public class AudioService extends Service implements MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener
 {
+	private static final int AUDIO_PLAYER_NOTIFICATION = 42;
+
 	private MediaPlayer audioPlayer;
-	private RemoteControlClient audioRemote;
+	private RemoteControlClient audioPlayerRemote;
 
 	private Uri audioSource;
 
@@ -87,15 +92,15 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
 		Intent audioIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
 		audioIntent.setComponent(audioReceiver);
-		PendingIntent audioPendingIntent = PendingIntent.getBroadcast(this, 0, audioIntent, 0);
+		PendingIntent audioPendingIntent = PendingIntent.getBroadcast(this, 0, audioIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		audioRemote = new RemoteControlClient(audioPendingIntent);
-		audioRemote.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE);
-		audioRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+		audioPlayerRemote = new RemoteControlClient(audioPendingIntent);
+		audioPlayerRemote.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE);
+		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 
 		audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 		audioManager.registerMediaButtonEventReceiver(audioReceiver);
-		audioManager.registerRemoteControlClient(audioRemote);
+		audioManager.registerRemoteControlClient(audioPlayerRemote);
 	}
 
 	public boolean isAudioStarted() {
@@ -130,17 +135,50 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-		setUpAudioMetadata(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum(), event.getAudioAlbumArt());
+		setUpAudioPlayerRemote(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum(), event.getAudioAlbumArt());
+		setUpAudioPlayerNotification(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum(), event.getAudioAlbumArt());
 	}
 
-	private void setUpAudioMetadata(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {
-		audioRemote
+	private void setUpAudioPlayerRemote(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {
+		audioPlayerRemote
 			.editMetadata(true)
 			.putString(MediaMetadataRetriever.METADATA_KEY_TITLE, audioTitle)
 			.putString(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST, audioArtist)
 			.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, audioAlbum)
 			.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, audioAlbumArt)
 			.apply();
+	}
+
+	private void setUpAudioPlayerNotification(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {
+		Notification notification = new NotificationCompat.Builder(this)
+			.setContentTitle(getAudioPlayerNotificationTitle(audioTitle))
+			.setContentText(getAudioPlayerNotificationText(audioArtist, audioAlbum))
+			.setSmallIcon(getAudioPlayerNotificationSmallIcon())
+			.setLargeIcon(getAudioPlayerNotificationLargeIcon(audioAlbumArt))
+			.setOngoing(true)
+			.setWhen(0)
+			.build();
+
+		startForeground(AUDIO_PLAYER_NOTIFICATION, notification);
+	}
+
+	private String getAudioPlayerNotificationTitle(String audioTitle) {
+		return audioTitle;
+	}
+
+	private String getAudioPlayerNotificationText(String audioArtist, String audioAlbum) {
+		return String.format("%s - %s", audioArtist, audioAlbum);
+	}
+
+	private int getAudioPlayerNotificationSmallIcon() {
+		return R.drawable.ic_notification_audio;
+	}
+
+	private Bitmap getAudioPlayerNotificationLargeIcon(Bitmap audioAlbumArt) {
+		int iconHeight = (int) getResources().getDimension(android.R.dimen.notification_large_icon_height);
+		int iconWidth = (int) getResources().getDimension(android.R.dimen.notification_large_icon_width);
+
+		return Bitmap.createScaledBitmap(audioAlbumArt, iconWidth, iconHeight, false);
 	}
 
 	public MediaPlayer getAudioPlayer() {
@@ -169,13 +207,13 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 	public void playAudio() {
 		audioPlayer.start();
 
-		audioRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 	}
 
 	public void pauseAudio() {
 		audioPlayer.pause();
 
-		audioRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
+		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
 	}
 
 	@Override
@@ -226,6 +264,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
 		tearDownAudioPlayer();
 		tearDownAudioPlayerRemote();
+		tearDownAudioPlayerNotification();
 	}
 
 	private void tearDownBus() {
@@ -237,12 +276,16 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		audioPlayer.release();
 	}
 
+	private void tearDownAudioPlayerNotification() {
+		stopForeground(true);
+	}
+
 	private void tearDownAudioPlayerRemote() {
 		AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		ComponentName audioReceiver = new ComponentName(getPackageName(), AudioReceiver.class.getName());
 
 		audioManager.unregisterMediaButtonEventReceiver(audioReceiver);
-		audioManager.unregisterRemoteControlClient(audioRemote);
+		audioManager.unregisterRemoteControlClient(audioPlayerRemote);
 	}
 
 	public static final class AudioServiceBinder extends Binder

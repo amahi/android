@@ -50,6 +50,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.view.AudioController;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -76,7 +77,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	ServerClient serverClient;
 
 	private AudioService audioService;
-	private MediaController audioControls;
+	private AudioController audioControls;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -177,7 +178,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	private void setUpAudioControls() {
 		if (!areAudioControlsAvailable()) {
-			audioControls = new MediaController(this);
+			audioControls = new AudioController(this);
 
 			audioControls.setMediaPlayer(this);
 			audioControls.setAnchorView(findViewById(R.id.animator));
@@ -229,7 +230,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	private void showAudioControls() {
 		if (areAudioControlsAvailable() && !audioControls.isShowing()) {
-			audioControls.show(0);
+			audioControls.show();
 		}
 	}
 

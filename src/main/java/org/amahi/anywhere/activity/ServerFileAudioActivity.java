@@ -24,6 +24,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,7 +39,6 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Picasso;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -49,7 +49,6 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
-import org.amahi.anywhere.util.AudioAlbumArtDownloader;
 import org.amahi.anywhere.util.Intents;
 
 import java.util.Arrays;
@@ -102,7 +101,6 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	private void setUpAudio() {
 		setUpAudioTitle();
 		setUpAudioMetadata();
-		setUpAudioAlbumArt();
 	}
 
 	private void setUpAudioTitle() {
@@ -127,32 +125,19 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-		setUpAudioMetadata(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+		setUpAudioMetadata(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum(), event.getAudioAlbumArt());
 	}
 
-	private void setUpAudioMetadata(String audioTitle, String audioArtist, String audioAlbum) {
+	private void setUpAudioMetadata(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {
 		TextView audioTitleView = (TextView) findViewById(R.id.text_title);
 		TextView audioArtistView = (TextView) findViewById(R.id.text_artist);
 		TextView audioAlbumView = (TextView) findViewById(R.id.text_album);
+		ImageView audioAlbumArtView = (ImageView) findViewById(R.id.image_album_art);
 
 		audioTitleView.setText(audioTitle);
 		audioArtistView.setText(audioArtist);
 		audioAlbumView.setText(audioAlbum);
-	}
-
-	private void setUpAudioAlbumArt() {
-		ImageView audioAlbumArtView = (ImageView) findViewById(R.id.image_album_art);
-
-		Picasso picasso = new Picasso.Builder(this)
-			.downloader(new AudioAlbumArtDownloader())
-			.build();
-
-		picasso
-			.load(getAudioUri())
-			.fit()
-			.centerInside()
-			.placeholder(android.R.color.darker_gray)
-			.into(audioAlbumArtView);
+		audioAlbumArtView.setImageBitmap(audioAlbumArt);
 	}
 
 	@Override
@@ -191,14 +176,16 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	}
 
 	private void setUpAudioControls() {
-		audioControls = new MediaController(this);
+		if (!areAudioControlsAvailable()) {
+			audioControls = new MediaController(this);
 
-		audioControls.setMediaPlayer(this);
-		audioControls.setAnchorView(findViewById(R.id.animator));
+			audioControls.setMediaPlayer(this);
+			audioControls.setAnchorView(findViewById(R.id.animator));
+		}
 	}
 
 	private void setUpAudioPlayback() {
-		if (audioService.isStarted()) {
+		if (audioService.isAudioStarted()) {
 			showAudio();
 		} else {
 			audioService.startAudio(getAudioUri(), this);
@@ -214,7 +201,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	private void showAudio() {
 		showAudioMetadata();
-		showAudioControls();
+		showAudioControlsAnimated();
 	}
 
 	private void showAudioMetadata() {
@@ -227,12 +214,12 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		}
 	}
 
-	private void showAudioControls() {
+	private void showAudioControlsAnimated() {
 		if (areAudioControlsAvailable() && !audioControls.isShowing()) {
 			Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up_view);
 			audioControls.startAnimation(showAnimation);
 
-			audioControls.show(0);
+			showAudioControls();
 		}
 	}
 
@@ -240,15 +227,21 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		return audioControls != null;
 	}
 
+	private void showAudioControls() {
+		if (areAudioControlsAvailable() && !audioControls.isShowing()) {
+			audioControls.show(0);
+		}
+	}
+
 	private void hideAudioControls() {
-		if (areAudioControlsAvailable()) {
+		if (areAudioControlsAvailable() && audioControls.isShowing()) {
 			audioControls.hide();
 		}
 	}
 
 	@Override
 	public void start() {
-		audioService.getAudioPlayer().start();
+		audioService.playAudio();
 	}
 
 	@Override
@@ -258,7 +251,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	@Override
 	public void pause() {
-		audioService.getAudioPlayer().pause();
+		audioService.pauseAudio();
 	}
 
 	@Override

@@ -145,8 +145,18 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 			.putString(MediaMetadataRetriever.METADATA_KEY_TITLE, audioTitle)
 			.putString(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST, audioArtist)
 			.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, audioAlbum)
-			.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, audioAlbumArt)
+			.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, getAudioPlayerRemoteArtwork(audioAlbumArt))
 			.apply();
+	}
+
+	private Bitmap getAudioPlayerRemoteArtwork(Bitmap audioAlbumArt) {
+		Bitmap.Config artworkConfig = audioAlbumArt.getConfig();
+
+		if (artworkConfig == null) {
+			artworkConfig = Bitmap.Config.ARGB_8888;
+		}
+
+		return audioAlbumArt.copy(artworkConfig, false);
 	}
 
 	private void setUpAudioPlayerNotification(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {

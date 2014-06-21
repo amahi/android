@@ -21,6 +21,7 @@ package org.amahi.anywhere;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.StrictMode;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -41,6 +42,7 @@ public class AmahiApplication extends Application
 
 		setUpLogging();
 		setUpReporting();
+		setUpDetecting();
 
 		setUpInjections();
 	}
@@ -58,6 +60,12 @@ public class AmahiApplication extends Application
 	private void setUpReporting() {
 		if (!isDebugging()) {
 			Crashlytics.start(this);
+		}
+	}
+
+	private void setUpDetecting() {
+		if (isDebugging()) {
+			StrictMode.enableDefaults();
 		}
 	}
 

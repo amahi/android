@@ -19,35 +19,6 @@
 
 package org.amahi.anywhere.bus;
 
-import android.graphics.Bitmap;
-
-public class AudioMetadataRetrievedEvent implements BusEvent
+public class AudioControlPlayPauseEvent implements BusEvent
 {
-	private final String audioTitle;
-	private final String audioArtist;
-	private final String audioAlbum;
-	private final Bitmap audioAlbumArt;
-
-	public AudioMetadataRetrievedEvent(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {
-		this.audioTitle = audioTitle;
-		this.audioArtist = audioArtist;
-		this.audioAlbum = audioAlbum;
-		this.audioAlbumArt = audioAlbumArt;
-	}
-
-	public String getAudioTitle() {
-		return audioTitle;
-	}
-
-	public String getAudioArtist() {
-		return audioArtist;
-	}
-
-	public String getAudioAlbum() {
-		return audioAlbum;
-	}
-
-	public Bitmap getAudioAlbumArt() {
-		return audioAlbumArt;
-	}
 }

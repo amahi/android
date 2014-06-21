@@ -19,6 +19,8 @@
 
 package org.amahi.anywhere.task;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -51,9 +53,12 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 		String audioArtist = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
 		String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
 
+		byte[] audioAlbumArtBytes = audioMetadataRetriever.getEmbeddedPicture();
+		Bitmap audioAlbumArt = BitmapFactory.decodeByteArray(audioAlbumArtBytes, 0, audioAlbumArtBytes.length);
+
 		audioMetadataRetriever.release();
 
-		return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum);
+		return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt);
 	}
 
 	@Override

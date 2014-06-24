@@ -65,6 +65,6 @@ public final class AudioMetadataFormatter
 			return audioArtist;
 		}
 
-		return String.format("%s — %s", audioArtist, audioAlbum);
+		return String.format("%s - %s", audioArtist, audioAlbum);
 	}
 }

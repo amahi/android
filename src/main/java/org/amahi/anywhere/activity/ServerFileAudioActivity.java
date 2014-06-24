@@ -49,6 +49,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
+import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.view.AudioController;
 
@@ -126,18 +127,19 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-		setUpAudioMetadata(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum(), event.getAudioAlbumArt());
+		AudioMetadataFormatter audioMetadataFormatter = new AudioMetadataFormatter(
+			event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+
+		setUpAudioMetadata(audioMetadataFormatter, event.getAudioAlbumArt());
 	}
 
-	private void setUpAudioMetadata(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {
+	private void setUpAudioMetadata(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
 		TextView audioTitleView = (TextView) findViewById(R.id.text_title);
-		TextView audioArtistView = (TextView) findViewById(R.id.text_artist);
-		TextView audioAlbumView = (TextView) findViewById(R.id.text_album);
+		TextView audioSubtitleView = (TextView) findViewById(R.id.text_subtitle);
 		ImageView audioAlbumArtView = (ImageView) findViewById(R.id.image_album_art);
 
-		audioTitleView.setText(audioTitle);
-		audioArtistView.setText(audioArtist);
-		audioAlbumView.setText(audioAlbum);
+		audioTitleView.setText(audioMetadataFormatter.getAudioTitle(getFile()));
+		audioSubtitleView.setText(audioMetadataFormatter.getAudioSubtitle(getShare()));
 		audioAlbumArtView.setImageBitmap(audioAlbumArt);
 	}
 

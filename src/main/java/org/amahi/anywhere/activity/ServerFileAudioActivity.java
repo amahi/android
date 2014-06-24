@@ -193,7 +193,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		if (audioService.isAudioStarted()) {
 			showAudio();
 		} else {
-			audioService.startAudio(getAudioUri(), this);
+			audioService.startAudio(getShare(), getFile(), this);
 		}
 	}
 

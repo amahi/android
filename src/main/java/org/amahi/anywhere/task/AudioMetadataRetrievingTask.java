@@ -52,13 +52,21 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 		String audioTitle = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
 		String audioArtist = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
 		String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-
-		byte[] audioAlbumArtBytes = audioMetadataRetriever.getEmbeddedPicture();
-		Bitmap audioAlbumArt = BitmapFactory.decodeByteArray(audioAlbumArtBytes, 0, audioAlbumArtBytes.length);
+		Bitmap audioAlbumArt = extractAlbumArt(audioMetadataRetriever);
 
 		audioMetadataRetriever.release();
 
 		return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt);
+	}
+
+	private Bitmap extractAlbumArt(MediaMetadataRetriever audioMetadataRetriever) {
+		byte[] audioAlbumArtBytes = audioMetadataRetriever.getEmbeddedPicture();
+
+		if (audioAlbumArtBytes == null) {
+			return null;
+		}
+
+		return BitmapFactory.decodeByteArray(audioAlbumArtBytes, 0, audioAlbumArtBytes.length);
 	}
 
 	@Override

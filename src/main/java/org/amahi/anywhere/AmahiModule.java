@@ -30,6 +30,7 @@ import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.ApiModule;
+import org.amahi.anywhere.service.AudioService;
 
 import javax.inject.Singleton;
 
@@ -41,14 +42,15 @@ import dagger.Provides;
 		ApiModule.class
 	},
 	injects = {
-		NavigationFragment.class,
-		ServerFilesFragment.class,
 		AuthenticationActivity.class,
 		ServerFilesActivity.class,
 		ServerFileAudioActivity.class,
 		ServerFileImageActivity.class,
 		ServerFileVideoActivity.class,
-		ServerFileWebActivity.class
+		ServerFileWebActivity.class,
+		NavigationFragment.class,
+		ServerFilesFragment.class,
+		AudioService.class
 	}
 )
 class AmahiModule

@@ -38,6 +38,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.squareup.otto.Subscribe;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AudioControlPauseEvent;
 import org.amahi.anywhere.bus.AudioControlPlayEvent;
@@ -45,9 +46,15 @@ import org.amahi.anywhere.bus.AudioControlPlayPauseEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.receiver.AudioReceiver;
+import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
+import org.amahi.anywhere.util.AudioMetadataFormatter;
 
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 public class AudioService extends Service implements MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener
 {
@@ -56,7 +63,11 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 	private MediaPlayer audioPlayer;
 	private RemoteControlClient audioPlayerRemote;
 
-	private Uri audioSource;
+	private ServerShare audioShare;
+	private ServerFile audioFile;
+
+	@Inject
+	ServerClient serverClient;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -67,10 +78,16 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 	public void onCreate() {
 		super.onCreate();
 
+		setUpInjections();
+
 		setUpBus();
 
 		setUpAudioPlayer();
 		setUpAudioPlayerRemote();
+	}
+
+	private void setUpInjections() {
+		AmahiApplication.from(this).inject(this);
 	}
 
 	private void setUpBus() {
@@ -92,7 +109,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
 		Intent audioIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
 		audioIntent.setComponent(audioReceiver);
-		PendingIntent audioPendingIntent = PendingIntent.getBroadcast(this, 0, audioIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent audioPendingIntent = PendingIntent.getBroadcast(this, 0, audioIntent, 0);
 
 		audioPlayerRemote = new RemoteControlClient(audioPendingIntent);
 		audioPlayerRemote.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE);
@@ -104,44 +121,58 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 	}
 
 	public boolean isAudioStarted() {
-		return audioSource != null;
+		return (audioShare != null) && (audioFile != null);
 	}
 
-	public void startAudio(Uri audioUri, MediaPlayer.OnPreparedListener audioListener) {
-		try {
-			audioSource = audioUri;
+	public void startAudio(ServerShare audioShare, ServerFile audioFile, MediaPlayer.OnPreparedListener audioListener) {
+		this.audioShare = audioShare;
+		this.audioFile = audioFile;
 
-			audioPlayer.setDataSource(this, audioUri);
+		setUpAudioPlayback(audioListener);
+		setUpAudioMetadata();
+	}
+
+	private void setUpAudioPlayback(MediaPlayer.OnPreparedListener audioListener) {
+		try {
+			audioPlayer.setDataSource(this, getAudioUri());
 			audioPlayer.setOnPreparedListener(audioListener);
 			audioPlayer.prepareAsync();
-
-			setUpAudioMetadata();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	private Uri getAudioUri() {
+		return serverClient.getFileUri(audioShare, audioFile);
+	}
+
 	private void setUpAudioMetadata() {
-		AudioMetadataRetrievingTask.execute(audioSource);
+		AudioMetadataRetrievingTask.execute(getAudioUri());
 	}
 
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-		setUpAudioPlayerRemote(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum(), event.getAudioAlbumArt());
-		setUpAudioPlayerNotification(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum(), event.getAudioAlbumArt());
+		AudioMetadataFormatter audioMetadataFormatter = new AudioMetadataFormatter(
+			event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+
+		setUpAudioPlayerRemote(audioMetadataFormatter, event.getAudioAlbumArt());
+		setUpAudioPlayerNotification(audioMetadataFormatter, event.getAudioAlbumArt());
 	}
 
-	private void setUpAudioPlayerRemote(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {
+	private void setUpAudioPlayerRemote(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
 		audioPlayerRemote
 			.editMetadata(true)
-			.putString(MediaMetadataRetriever.METADATA_KEY_TITLE, audioTitle)
-			.putString(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST, audioArtist)
-			.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, audioAlbum)
+			.putString(MediaMetadataRetriever.METADATA_KEY_TITLE, audioMetadataFormatter.getAudioTitle(audioFile))
+			.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, audioMetadataFormatter.getAudioSubtitle(audioShare))
 			.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, getAudioPlayerRemoteArtwork(audioAlbumArt))
 			.apply();
 	}
 
 	private Bitmap getAudioPlayerRemoteArtwork(Bitmap audioAlbumArt) {
+		if (audioAlbumArt == null) {
+			return null;
+		}
+
 		Bitmap.Config artworkConfig = audioAlbumArt.getConfig();
 
 		if (artworkConfig == null) {
@@ -151,12 +182,12 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		return audioAlbumArt.copy(artworkConfig, false);
 	}
 
-	private void setUpAudioPlayerNotification(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {
+	private void setUpAudioPlayerNotification(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
 		Notification notification = new NotificationCompat.Builder(this)
-			.setContentTitle(getAudioPlayerNotificationTitle(audioTitle))
-			.setContentText(getAudioPlayerNotificationText(audioArtist, audioAlbum))
-			.setSmallIcon(getAudioPlayerNotificationSmallIcon())
-			.setLargeIcon(getAudioPlayerNotificationLargeIcon(audioAlbumArt))
+			.setContentTitle(audioMetadataFormatter.getAudioTitle(audioFile))
+			.setContentText(audioMetadataFormatter.getAudioSubtitle(audioShare))
+			.setSmallIcon(getAudioPlayerNotificationIcon())
+			.setLargeIcon(getAudioPlayerNotificationArtwork(audioAlbumArt))
 			.setOngoing(true)
 			.setWhen(0)
 			.build();
@@ -164,21 +195,17 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		startForeground(AUDIO_PLAYER_NOTIFICATION, notification);
 	}
 
-	private String getAudioPlayerNotificationTitle(String audioTitle) {
-		return audioTitle;
-	}
-
-	private String getAudioPlayerNotificationText(String audioArtist, String audioAlbum) {
-		return String.format("%s - %s", audioArtist, audioAlbum);
-	}
-
-	private int getAudioPlayerNotificationSmallIcon() {
+	private int getAudioPlayerNotificationIcon() {
 		return R.drawable.ic_notification_audio;
 	}
 
-	private Bitmap getAudioPlayerNotificationLargeIcon(Bitmap audioAlbumArt) {
+	private Bitmap getAudioPlayerNotificationArtwork(Bitmap audioAlbumArt) {
 		int iconHeight = (int) getResources().getDimension(android.R.dimen.notification_large_icon_height);
 		int iconWidth = (int) getResources().getDimension(android.R.dimen.notification_large_icon_width);
+
+		if (audioAlbumArt == null) {
+			return null;
+		}
 
 		return Bitmap.createScaledBitmap(audioAlbumArt, iconWidth, iconHeight, false);
 	}
@@ -237,7 +264,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-				tearDownVolume();
+				tearDownAudioVolume();
 				break;
 
 			default:
@@ -257,7 +284,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		audioPlayer.setVolume(1.0f, 1.0f);
 	}
 
-	private void tearDownVolume() {
+	private void tearDownAudioVolume() {
 		audioPlayer.setVolume(0.3f, 0.3f);
 	}
 

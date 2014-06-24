@@ -59,6 +59,7 @@
 		</activity>
 
 		<activity
+			android:launchMode="singleTop"
 			android:name=".activity.ServerFileAudioActivity"
 			android:theme="@style/Theme.Amahi.Fullscreen">
 		</activity>

@@ -51,6 +51,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
+import org.amahi.anywhere.util.Intents;
 
 import java.io.IOException;
 
@@ -183,6 +184,9 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 	}
 
 	private void setUpAudioPlayerNotification(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
+		Intent audioIntent = Intents.Builder.with(this).buildServerFileIntent(audioShare, audioFile);
+		PendingIntent audioPendingIntent = PendingIntent.getActivity(this, 0, audioIntent, 0);
+
 		Notification notification = new NotificationCompat.Builder(this)
 			.setContentTitle(audioMetadataFormatter.getAudioTitle(audioFile))
 			.setContentText(audioMetadataFormatter.getAudioSubtitle(audioShare))
@@ -190,6 +194,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 			.setLargeIcon(getAudioPlayerNotificationArtwork(audioAlbumArt))
 			.setOngoing(true)
 			.setWhen(0)
+			.setContentIntent(audioPendingIntent)
 			.build();
 
 		startForeground(AUDIO_PLAYER_NOTIFICATION, notification);

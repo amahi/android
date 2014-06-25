@@ -101,6 +101,10 @@
 			android:name=".service.AudioService">
 		</service>
 
+		<service
+			android:name=".service.VideoService">
+		</service>
+
 		<receiver
 			android:name=".receiver.AudioReceiver">
 

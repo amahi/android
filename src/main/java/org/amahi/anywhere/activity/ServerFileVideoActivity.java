@@ -20,34 +20,38 @@
 package org.amahi.anywhere.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.PixelFormat;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
+import android.os.IBinder;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.MediaController;
 import android.widget.ViewAnimator;
 
+import com.squareup.otto.Subscribe;
+
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.VideoFinishedEvent;
+import org.amahi.anywhere.bus.VideoSizeChangedEvent;
+import org.amahi.anywhere.bus.VideoStartedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
-import org.videolan.libvlc.EventHandler;
-import org.videolan.libvlc.IVideoPlayer;
-import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.LibVlcException;
+import org.amahi.anywhere.view.VideoController;
 
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,10 +59,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
+public class ServerFileVideoActivity extends Activity implements ServiceConnection,
 	SurfaceHolder.Callback,
-	MediaController.MediaPlayerControl,
 	Runnable,
+	MediaController.MediaPlayerControl,
 	View.OnSystemUiVisibilityChangeListener
 {
 	public static final Set<String> SUPPORTED_FORMATS;
@@ -73,48 +77,17 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 		));
 	}
 
-	private static final class SavedState
-	{
-		private SavedState() {
-		}
-
-		public static final String VLC_TIME = "vlc_time";
-	}
-
-	private static final class VlcEvent
-	{
-		private VlcEvent() {
-		}
-
-		public static final int CHANGE_VIDEO_SIZE = 100;
-	}
-
-	private static enum VlcStatus
-	{
-		PLAYING, PAUSED
-	}
-
 	@Inject
 	ServerClient serverClient;
 
-	private LibVLC vlc;
-
-	private VlcEvents vlcEvents;
-
-	private MediaController vlcControls;
-
-	private VlcStatus vlcStatus;
-
-	private Handler vlcControlsHandler;
-
-	private long vlcTime;
+	private VideoService videoService;
+	private VideoController videoControls;
+	private Handler videoControlsHandler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_server_file_video);
-
-		setUpSavedState(savedInstanceState);
 
 		setUpInjections();
 
@@ -123,14 +96,6 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 		setUpVideo();
 
 		setUpSystemControls();
-	}
-
-	private void setUpSavedState(Bundle savedState) {
-		if (savedState == null) {
-			return;
-		}
-
-		vlcTime = savedState.getLong(SavedState.VLC_TIME);
 	}
 
 	private void setUpInjections() {
@@ -143,11 +108,134 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 
 	private void setUpVideo() {
 		setUpVideoTitle();
-		setUpVideoView();
 	}
 
 	private void setUpVideoTitle() {
-		getActionBar().setTitle(getFile().getName());
+		getActionBar().setTitle(getVideoFile().getName());
+	}
+
+	private ServerFile getVideoFile() {
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
+	}
+
+	private void setUpSystemControls() {
+		setUpSystemControlsListener();
+
+		showSystemControls();
+	}
+
+	private void setUpSystemControlsListener() {
+		getActivityView().setOnSystemUiVisibilityChangeListener(this);
+	}
+
+	private View getActivityView() {
+		return getWindow().getDecorView();
+	}
+
+	@Override
+	public void onSystemUiVisibilityChange(int visibility) {
+		if (areSystemControlsVisible(visibility)) {
+			showControls();
+		}
+	}
+
+	private boolean areSystemControlsVisible(int visibility) {
+		return (visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+	}
+
+	private void showControls() {
+		showSystemControls();
+		showVideoControls();
+
+		hideControlsDelayed();
+	}
+
+	private void showSystemControls() {
+		getActivityView().setSystemUiVisibility(
+			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+	}
+
+	private void showVideoControls() {
+		if (areVideoControlsAvailable()) {
+			videoControls.showAnimated();
+		}
+	}
+
+	private boolean areVideoControlsAvailable() {
+		return videoControls != null;
+	}
+
+	private void hideControlsDelayed() {
+		if (isVideoControlsHandlerAvailable()) {
+			videoControlsHandler.postDelayed(this, TimeUnit.SECONDS.toMillis(3));
+		}
+	}
+
+	private boolean isVideoControlsHandlerAvailable() {
+		return videoControlsHandler != null;
+	}
+
+	@Override
+	public void run() {
+		hideControls();
+	}
+
+	private void hideControls() {
+		hideSystemControls();
+		hideVideoControls();
+	}
+
+	private void hideSystemControls() {
+		getActivityView().setSystemUiVisibility(
+			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+			View.SYSTEM_UI_FLAG_FULLSCREEN |
+			View.SYSTEM_UI_FLAG_LOW_PROFILE |
+			View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+	}
+
+	private void hideVideoControls() {
+		videoControls.hideAnimated();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		setUpVideoService();
+		setUpVideoServiceBind();
+	}
+
+	private void setUpVideoService() {
+		Intent intent = new Intent(this, VideoService.class);
+		startService(intent);
+	}
+
+	private void setUpVideoServiceBind() {
+		Intent intent = new Intent(this, VideoService.class);
+		bindService(intent, this, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName serviceName) {
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName serviceName, IBinder serviceBinder) {
+		setUpVideoServiceBind(serviceBinder);
+
+		setUpVideoView();
+		setUpVideoControls();
+		setUpVideoControlsHandler();
+		setUpVideoPlayback();
+	}
+
+	private void setUpVideoServiceBind(IBinder serviceBinder) {
+		VideoService.VideoServiceBinder videoServiceBinder = (VideoService.VideoServiceBinder) serviceBinder;
+		videoService = videoServiceBinder.getVideoService();
 	}
 
 	private void setUpVideoView() {
@@ -169,69 +257,62 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 
 	@Override
 	public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
-		vlc.attachSurface(surfaceHolder.getSurface(), this);
-	}
-
-	@Override
-	public void setSurfaceSize(int width, int height, int visibleWidth, int visibleHeight, int sarNumber, int sarDensity) {
-		Message message = Message.obtain(vlcEvents, VlcEvent.CHANGE_VIDEO_SIZE, width, height);
-		message.sendToTarget();
+		videoService.getVideoPlayer().attachSurface(surfaceHolder.getSurface(), videoService);
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-		vlc.detachSurface();
+		videoService.getVideoPlayer().detachSurface();
 	}
 
-	private void setUpSystemControls() {
-		setUpSystemControlsListener();
+	private void setUpVideoControls() {
+		if (!areVideoControlsAvailable()) {
+			videoControls = new VideoController(this);
 
-		showSystemControls();
-	}
-
-	private void setUpSystemControlsListener() {
-		getActivityView().setOnSystemUiVisibilityChangeListener(this);
-	}
-
-	private View getActivityView() {
-		return getWindow().getDecorView();
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		createVlc();
-		createVlcControls();
-
-		startVlc(getVideoUri());
-	}
-
-	private void createVlc() {
-		try {
-			vlc = LibVLC.getInstance();
-			vlc.init(this);
-
-			vlcStatus = VlcStatus.PAUSED;
-		} catch (LibVlcException e) {
-			throw new RuntimeException(e);
+			videoControls.setMediaPlayer(this);
+			videoControls.setAnchorView(findViewById(R.id.container_controls));
 		}
 	}
 
-	private void createVlcControls() {
-		vlcControls = new MediaController(this);
+	private void setUpVideoControlsHandler() {
+		if (!isVideoControlsHandlerAvailable()) {
+			videoControlsHandler = new Handler();
+		}
+	}
 
-		vlcControls.setMediaPlayer(this);
-		vlcControls.setAnchorView(findViewById(R.id.container_controls));
+	private void setUpVideoPlayback() {
+		if (videoService.isVideoStarted()) {
+			showVideo();
+		} else {
+			videoService.startVideo(getVideoShare(), getVideoFile());
+		}
+	}
 
-		vlcControlsHandler = new Handler();
+	private void showVideo() {
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
+
+		View contentLayout = findViewById(R.id.layout_content);
+
+		if (animator.getDisplayedChild() != animator.indexOfChild(contentLayout)) {
+			animator.setDisplayedChild(animator.indexOfChild(contentLayout));
+		}
+	}
+
+	private ServerShare getVideoShare() {
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+	}
+
+	@Subscribe
+	public void onVideoStarted(VideoStartedEvent event) {
+		start();
+
+		showVideo();
+		showControls();
 	}
 
 	@Override
 	public void start() {
-		vlc.play();
-
-		vlcStatus = VlcStatus.PLAYING;
+		videoService.playVideo();
 	}
 
 	@Override
@@ -241,9 +322,7 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 
 	@Override
 	public void pause() {
-		vlc.pause();
-
-		vlcStatus = VlcStatus.PAUSED;
+		videoService.pauseVideo();
 	}
 
 	@Override
@@ -258,22 +337,22 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 
 	@Override
 	public void seekTo(int time) {
-		vlc.setTime(time);
+		videoService.getVideoPlayer().setTime(time);
 	}
 
 	@Override
 	public int getDuration() {
-		return (int) vlc.getLength();
+		return (int) videoService.getVideoPlayer().getLength();
 	}
 
 	@Override
 	public int getCurrentPosition() {
-		return (int) vlc.getTime();
+		return (int) videoService.getVideoPlayer().getTime();
 	}
 
 	@Override
 	public boolean isPlaying() {
-		return vlcStatus == VlcStatus.PLAYING;
+		return videoService.isVideoPlaying();
 	}
 
 	@Override
@@ -286,58 +365,14 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 		return 0;
 	}
 
-	private void startVlc(Uri uri) {
-		vlcEvents = new VlcEvents(this);
-		EventHandler.getInstance().addHandler(vlcEvents);
-
-		vlc.playMRL(uri.toString());
-
-		vlcStatus = VlcStatus.PLAYING;
+	@Subscribe
+	public void onVideoFinished(VideoFinishedEvent event) {
+		finish();
 	}
 
-	private Uri getVideoUri() {
-		return serverClient.getFileUri(getShare(), getFile());
-	}
-
-	private ServerShare getShare() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
-	}
-
-	private ServerFile getFile() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
-	}
-
-	private static final class VlcEvents extends Handler
-	{
-		private final WeakReference<ServerFileVideoActivity> activityKeeper;
-
-		private VlcEvents(ServerFileVideoActivity fragment) {
-			this.activityKeeper = new WeakReference<ServerFileVideoActivity>(fragment);
-		}
-
-		@Override
-		public void handleMessage(Message message) {
-			super.handleMessage(message);
-
-			if (message.what == VlcEvent.CHANGE_VIDEO_SIZE) {
-				activityKeeper.get().changeSurfaceSize(message.arg1, message.arg2);
-			}
-
-			switch (message.getData().getInt("event")) {
-				case EventHandler.MediaPlayerPlaying:
-					activityKeeper.get().setUpVlcTime();
-					activityKeeper.get().showFileContent();
-					activityKeeper.get().showControls();
-					break;
-
-				case EventHandler.MediaPlayerEndReached:
-					activityKeeper.get().finish();
-					break;
-
-				default:
-					break;
-			}
-		}
+	@Subscribe
+	public void onVideoSizeChanged(VideoSizeChangedEvent event) {
+		changeSurfaceSize(event.getVideoWidth(), event.getVideoHeight());
 	}
 
 	private void changeSurfaceSize(int videoWidth, int videoHeight) {
@@ -374,116 +409,6 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 		return surfaceLayoutParams;
 	}
 
-	private void setUpVlcTime() {
-		if (vlc.getTime() == 0) {
-			vlc.setTime(vlcTime);
-		}
-	}
-
-	private void showFileContent() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
-
-		View contentLayout = findViewById(R.id.layout_content);
-
-		if (animator.getDisplayedChild() != animator.indexOfChild(contentLayout)) {
-			animator.setDisplayedChild(animator.indexOfChild(contentLayout));
-		}
-	}
-
-	private void showControls() {
-		showSystemControls();
-		showVlcControls();
-
-		hideControlsDelayed();
-	}
-
-	private void showSystemControls() {
-		getActivityView().setSystemUiVisibility(
-			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-	}
-
-	private void showVlcControls() {
-		Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up_view);
-		vlcControls.startAnimation(showAnimation);
-
-		vlcControls.show(0);
-	}
-
-	private void hideControlsDelayed() {
-		vlcControlsHandler.postDelayed(this, TimeUnit.SECONDS.toMillis(3));
-	}
-
-	@Override
-	public void run() {
-		hideControls();
-	}
-
-	private void hideControls() {
-		hideVlcControls();
-		hideSystemControls();
-	}
-
-	private void hideVlcControls() {
-		vlcControls.hide();
-
-		Animation hideAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down_view);
-		vlcControls.startAnimation(hideAnimation);
-	}
-
-	private void hideSystemControls() {
-		getActivityView().setSystemUiVisibility(
-			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-			View.SYSTEM_UI_FLAG_FULLSCREEN |
-			View.SYSTEM_UI_FLAG_LOW_PROFILE |
-			View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-	}
-
-	@Override
-	public void onSystemUiVisibilityChange(int visibility) {
-		if (areSystemControlsVisible(visibility)) {
-			showControls();
-		}
-	}
-
-	private boolean areSystemControlsVisible(int visibility) {
-		return (visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		stopVlc();
-	}
-
-	private void stopVlc() {
-		EventHandler.getInstance().removeHandler(vlcEvents);
-
-		if (vlc.getTime() != 0) {
-			vlcTime = vlc.getTime();
-		}
-
-		vlc.stop();
-		vlc.detachSurface();
-
-		vlcControlsHandler.removeCallbacks(this);
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-
-		tearDownSavedState(outState);
-	}
-
-	private void tearDownSavedState(Bundle savedState) {
-		savedState.putLong(SavedState.VLC_TIME, vlcTime);
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
@@ -494,5 +419,62 @@ public class ServerFileVideoActivity extends Activity implements IVideoPlayer,
 			default:
 				return super.onOptionsItemSelected(menuItem);
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		hideControlsDelayed();
+
+		BusProvider.getBus().register(this);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		BusProvider.getBus().unregister(this);
+
+		tearDownVideoControlsHandler();
+
+		if (isFinishing()) {
+			tearDownVideoPlayback();
+		}
+	}
+
+	private void tearDownVideoControlsHandler() {
+		if (isVideoControlsHandlerAvailable()) {
+			videoControlsHandler.removeCallbacks(this);
+		}
+	}
+
+	private void tearDownVideoPlayback() {
+		videoService.getVideoPlayer().stop();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+
+		tearDownVideoServiceBind();
+	}
+
+	private void tearDownVideoServiceBind() {
+		unbindService(this);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (isFinishing()) {
+			tearDownVideoService();
+		}
+	}
+
+	private void tearDownVideoService() {
+		Intent intent = new Intent(this, VideoService.class);
+		stopService(intent);
 	}
 }

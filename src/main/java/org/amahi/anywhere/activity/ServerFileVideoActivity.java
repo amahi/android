@@ -158,7 +158,7 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	}
 
 	private void showVideoControls() {
-		if (areVideoControlsAvailable()) {
+		if (areVideoControlsAvailable() && !videoControls.isShowing()) {
 			videoControls.showAnimated();
 		}
 	}
@@ -425,8 +425,6 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	protected void onResume() {
 		super.onResume();
 
-		hideControlsDelayed();
-
 		BusProvider.getBus().register(this);
 	}
 
@@ -437,6 +435,10 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 		BusProvider.getBus().unregister(this);
 
 		tearDownVideoControlsHandler();
+
+		if (!isChangingConfigurations()) {
+			pause();
+		}
 
 		if (isFinishing()) {
 			tearDownVideoPlayback();

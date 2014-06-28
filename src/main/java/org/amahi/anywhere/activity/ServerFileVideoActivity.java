@@ -50,7 +50,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.view.VideoController;
+import org.amahi.anywhere.view.MediaControls;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -81,7 +81,7 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	ServerClient serverClient;
 
 	private VideoService videoService;
-	private VideoController videoControls;
+	private MediaControls videoControls;
 	private Handler videoControlsHandler;
 
 	@Override
@@ -267,7 +267,7 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 
 	private void setUpVideoControls() {
 		if (!areVideoControlsAvailable()) {
-			videoControls = new VideoController(this);
+			videoControls = new MediaControls(this);
 
 			videoControls.setMediaPlayer(this);
 			videoControls.setAnchorView(findViewById(R.id.container_controls));

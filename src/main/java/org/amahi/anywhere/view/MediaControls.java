@@ -22,17 +22,47 @@ package org.amahi.anywhere.view;
 import android.app.Activity;
 import android.content.Context;
 import android.view.KeyEvent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.MediaController;
 
-public class AudioController extends MediaController
+import org.amahi.anywhere.R;
+
+public class MediaControls extends MediaController implements Animation.AnimationListener
 {
-	public AudioController(Context context) {
+	public MediaControls(Context context) {
 		super(context);
 	}
 
 	@Override
 	public void show(int timeout) {
 		super.show(0);
+	}
+
+	public void showAnimated() {
+		Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.slide_up_view);
+		startAnimation(animation);
+
+		show();
+	}
+
+	public void hideAnimated() {
+		Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.slide_down_view);
+		animation.setAnimationListener(this);
+		startAnimation(animation);
+	}
+
+	@Override
+	public void onAnimationEnd(Animation animation) {
+		hide();
+	}
+
+	@Override
+	public void onAnimationStart(Animation animation) {
+	}
+
+	@Override
+	public void onAnimationRepeat(Animation animation) {
 	}
 
 	@Override

@@ -32,8 +32,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
@@ -52,7 +50,7 @@ import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.view.AudioController;
+import org.amahi.anywhere.view.MediaControls;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -89,7 +87,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	ServerClient serverClient;
 
 	private AudioService audioService;
-	private AudioController audioControls;
+	private MediaControls audioControls;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -225,7 +223,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	private void setUpAudioControls() {
 		if (!areAudioControlsAvailable()) {
-			audioControls = new AudioController(this);
+			audioControls = new MediaControls(this);
 
 			audioControls.setMediaPlayer(this);
 			audioControls.setAnchorView(findViewById(R.id.animator));
@@ -253,21 +251,12 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	private void showAudio() {
 		showAudioMetadata();
-		showAudioControlsAnimated();
-	}
-
-	private void showAudioControlsAnimated() {
-		if (areAudioControlsAvailable() && !audioControls.isShowing()) {
-			Animation showAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up_view);
-			audioControls.startAnimation(showAnimation);
-
-			showAudioControls();
-		}
+		showAudioControls();
 	}
 
 	private void showAudioControls() {
 		if (areAudioControlsAvailable() && !audioControls.isShowing()) {
-			audioControls.show();
+			audioControls.showAnimated();
 		}
 	}
 
@@ -348,9 +337,15 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	protected void onResume() {
 		super.onResume();
 
-		showAudioControls();
+		showAudioControlsForced();
 
 		BusProvider.getBus().register(this);
+	}
+
+	private void showAudioControlsForced() {
+		if (areAudioControlsAvailable() && !audioControls.isShowing()) {
+			audioControls.show();
+		}
 	}
 
 	@Override

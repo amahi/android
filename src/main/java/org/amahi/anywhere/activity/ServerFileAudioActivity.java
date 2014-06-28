@@ -360,6 +360,14 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		hideAudioControls();
 
 		BusProvider.getBus().unregister(this);
+
+		if (isFinishing()) {
+			tearDownAudioPlayback();
+		}
+	}
+
+	private void tearDownAudioPlayback() {
+		audioService.pauseAudio();
 	}
 
 	@Override

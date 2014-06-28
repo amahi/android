@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -74,6 +75,16 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		));
 	}
 
+	private static final class State
+	{
+		private State() {
+		}
+
+		public static final String AUDIO_TITLE = "audio_title";
+		public static final String AUDIO_SUBTITLE = "audio_subtitle";
+		public static final String AUDIO_ALBUM_ART = "audio_album_art";
+	}
+
 	@Inject
 	ServerClient serverClient;
 
@@ -89,7 +100,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 		setUpHomeNavigation();
 
-		setUpAudio();
+		setUpAudio(savedInstanceState);
 	}
 
 	private void setUpInjections() {
@@ -100,9 +111,9 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		getActionBar().setHomeButtonEnabled(true);
 	}
 
-	private void setUpAudio() {
+	private void setUpAudio(Bundle state) {
 		setUpAudioTitle();
-		setUpAudioMetadata();
+		setUpAudioMetadata(state);
 	}
 
 	private void setUpAudioTitle() {
@@ -113,8 +124,46 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 
-	private void setUpAudioMetadata() {
-		AudioMetadataRetrievingTask.execute(getAudioUri());
+	private void setUpAudioMetadata(Bundle state) {
+		if (isAudioMetadataStateValid(state)) {
+			setUpAudioMetadataState(state);
+
+			showAudioMetadata();
+		} else {
+			AudioMetadataRetrievingTask.execute(getAudioUri());
+		}
+	}
+
+	private boolean isAudioMetadataStateValid(Bundle state) {
+		return (state != null) && state.containsKey(State.AUDIO_TITLE);
+	}
+
+	private void setUpAudioMetadataState(Bundle state) {
+		getAudioTitleView().setText(state.getString(State.AUDIO_TITLE));
+		getAudioSubtitleView().setText(state.getString(State.AUDIO_SUBTITLE));
+		getAudioAlbumArtView().setImageBitmap((Bitmap) state.getParcelable(State.AUDIO_ALBUM_ART));
+	}
+
+	private TextView getAudioTitleView() {
+		return (TextView) findViewById(R.id.text_title);
+	}
+
+	private TextView getAudioSubtitleView() {
+		return (TextView) findViewById(R.id.text_subtitle);
+	}
+
+	private ImageView getAudioAlbumArtView() {
+		return (ImageView) findViewById(R.id.image_album_art);
+	}
+
+	private void showAudioMetadata() {
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
+
+		View content = findViewById(R.id.layout_content);
+
+		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
+			animator.setDisplayedChild(animator.indexOfChild(content));
+		}
 	}
 
 	private Uri getAudioUri() {
@@ -134,13 +183,9 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	}
 
 	private void setUpAudioMetadata(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
-		TextView audioTitleView = (TextView) findViewById(R.id.text_title);
-		TextView audioSubtitleView = (TextView) findViewById(R.id.text_subtitle);
-		ImageView audioAlbumArtView = (ImageView) findViewById(R.id.image_album_art);
-
-		audioTitleView.setText(audioMetadataFormatter.getAudioTitle(getFile()));
-		audioSubtitleView.setText(audioMetadataFormatter.getAudioSubtitle(getShare()));
-		audioAlbumArtView.setImageBitmap(audioAlbumArt);
+		getAudioTitleView().setText(audioMetadataFormatter.getAudioTitle(getFile()));
+		getAudioSubtitleView().setText(audioMetadataFormatter.getAudioSubtitle(getShare()));
+		getAudioAlbumArtView().setImageBitmap(audioAlbumArt);
 	}
 
 	@Override
@@ -209,16 +254,6 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	private void showAudio() {
 		showAudioMetadata();
 		showAudioControlsAnimated();
-	}
-
-	private void showAudioMetadata() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
-
-		View content = findViewById(R.id.layout_content);
-
-		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
-			animator.setDisplayedChild(animator.indexOfChild(content));
-		}
 	}
 
 	private void showAudioControlsAnimated() {
@@ -336,6 +371,23 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	private void tearDownAudioServiceBind() {
 		unbindService(this);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle state) {
+		super.onSaveInstanceState(state);
+
+		tearDownAudioMetadataState(state);
+	}
+
+	private void tearDownAudioMetadataState(Bundle state) {
+		String audioTitle = getAudioTitleView().getText().toString();
+		String audioSubtitle = getAudioSubtitleView().getText().toString();
+		BitmapDrawable audioAlbumArt = (BitmapDrawable) getAudioAlbumArtView().getDrawable();
+
+		state.putString(State.AUDIO_TITLE, audioTitle);
+		state.putString(State.AUDIO_SUBTITLE, audioSubtitle);
+		state.putParcelable(State.AUDIO_ALBUM_ART, audioAlbumArt.getBitmap());
 	}
 
 	@Override

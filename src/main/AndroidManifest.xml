@@ -79,6 +79,11 @@
 		</activity>
 
 		<activity
+			android:label="Settings"
+			android:name=".activity.SettingsActivity">
+		</activity>
+
+		<activity
 			android:name=".activity.AuthenticationActivity"
 			android:theme="@style/Theme.Amahi.Authentication">
 		</activity>

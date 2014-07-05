@@ -21,8 +21,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<item
-		android:id="@+id/menu_sort"
-		android:title="Sort"
-		android:showAsAction="always"/>
+		android:id="@+id/menu_settings"
+		android:title="Settings"
+		android:showAsAction="never"/>
 
 </menu>

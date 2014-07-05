@@ -19,7 +19,7 @@
   -->
 
 <resources>
-	
+
 	<string name="application_name" translatable="false">Amahi</string>
 
 	<string name="menu_navigation_open">Open navigation</string>
@@ -27,5 +27,5 @@
 
 	<string name="error_authentication">The username or password are not correct. Please try again. <a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
 	<string name="error_authentication_connection">Connection error. Check your settings and try again.</string>
-	
+
 </resources>

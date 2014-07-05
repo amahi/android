@@ -30,6 +30,7 @@ import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
 import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
+import org.amahi.anywhere.activity.SettingsActivity;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 
@@ -54,6 +55,9 @@ public final class Intents
 		private Uris() {
 		}
 
+		public static final String EMAIL = "mailto:%s?subject=%s";
+
+		public static final String GOOGLE_PLAY = "market://details?id=%s";
 		public static final String GOOGLE_PLAY_SEARCH = "market://search?q=%s";
 	}
 
@@ -125,6 +129,27 @@ public final class Intents
 			intent.setDataAndType(fileUri, file.getMime());
 
 			return intent;
+		}
+
+		public Intent buildSettingsIntent() {
+			return new Intent(context, SettingsActivity.class);
+		}
+
+		public Intent buildFeedbackIntent() {
+			String feedbackAddress = "support@amahi.org";
+			String feedbackSubject = "Android Amahi Anywhere";
+
+			String feedbackUri = String.format(Uris.EMAIL, feedbackAddress, feedbackSubject);
+
+			return new Intent(Intent.ACTION_SENDTO, Uri.parse(feedbackUri));
+		}
+
+		public Intent buildGooglePlayIntent() {
+			String packageName = context.getPackageName();
+
+			String googlePlayUri = String.format(Uris.GOOGLE_PLAY, packageName);
+
+			return new Intent(Intent.ACTION_VIEW, Uri.parse(googlePlayUri));
 		}
 
 		public Intent buildGooglePlaySearchIntent(String search) {

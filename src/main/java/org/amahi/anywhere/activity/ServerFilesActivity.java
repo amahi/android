@@ -41,6 +41,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileSelectedEvent;
+import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.fragment.FileDownloadingFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
@@ -281,6 +282,16 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 	private void showGooglePlaySearchFragment(ServerFile file) {
 		GooglePlaySearchFragment fragment = GooglePlaySearchFragment.newInstance(file);
 		fragment.show(getFragmentManager(), GooglePlaySearchFragment.TAG);
+	}
+
+	@Subscribe
+	public void onSettingsSelected(SettingsSelectedEvent event) {
+		setUpSettingsActivity();
+	}
+
+	private void setUpSettingsActivity() {
+		Intent intent = Intents.Builder.with(this).buildSettingsIntent();
+		startActivity(intent);
 	}
 
 	@Override

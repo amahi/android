@@ -24,18 +24,22 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
+import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
@@ -51,6 +55,7 @@ import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
+import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -67,7 +72,7 @@ import javax.inject.Inject;
 public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
 	AdapterView.OnItemSelectedListener,
 	AdapterView.OnItemClickListener,
-	CompoundButton.OnCheckedChangeListener
+	OnAccountsUpdateListener
 {
 	@Inject
 	AmahiClient amahiClient;
@@ -86,20 +91,36 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 		setUpInjections();
 
+		setUpSettingsMenu();
+
 		setUpAuthentication();
+		setUpAuthenticationListener();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
 	}
 
-	private void setUpAuthentication() {
-		List<Account> accounts = getAccounts();
+	private void setUpSettingsMenu() {
+		setHasOptionsMenu(true);
+	}
 
-		if (accounts.isEmpty()) {
+	private void setUpAuthentication() {
+		if (getAccounts().isEmpty()) {
 			setUpAccount();
 		} else {
 			setUpAuthenticationToken();
+		}
+	}
+
+	private void setUpAuthenticationListener() {
+		getAccountManager().addOnAccountsUpdatedListener(this, null, false);
+	}
+
+	@Override
+	public void onAccountsUpdated(Account[] accounts) {
+		if (getAccounts().isEmpty()) {
+			setUpAccount();
 		}
 	}
 
@@ -149,9 +170,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	private void setUpServers(String authenticationToken) {
 		setUpServersAdapter();
 		setUpServersContent(authenticationToken);
-
 		setUpServersListener();
-		setUpServerConnectionListener();
 	}
 
 	private void setUpServersAdapter() {
@@ -267,14 +286,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpSharesContent();
 	}
 
-	private boolean isConnectionLocal() {
-		return getConnectionSwitch().isChecked();
-	}
-
-	private Switch getConnectionSwitch() {
-		return (Switch) getView().findViewById(R.id.switch_connection);
-	}
-
 	private void setUpServerConnectionIndicator() {
 		getActivity().getActionBar().setBackgroundDrawable(getServerConnectionIndicator());
 	}
@@ -285,6 +296,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		} else {
 			return getResources().getDrawable(R.drawable.bg_action_bar_warning);
 		}
+	}
+
+	private boolean isConnectionLocal() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+
+		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
 	}
 
 	private void setUpSharesContent() {
@@ -335,19 +353,30 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		BusProvider.getBus().post(new ShareSelectedEvent(share));
 	}
 
-	private void setUpServerConnectionListener() {
-		getConnectionSwitch().setOnCheckedChangeListener(this);
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+		super.onCreateOptionsMenu(menu, menuInflater);
+
+		menuInflater.inflate(R.menu.action_bar_navigation, menu);
 	}
 
 	@Override
-	public void onCheckedChanged(CompoundButton button, boolean isChecked) {
-		setUpServerConnection();
-		setUpServerConnectionIndicator();
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		switch (menuItem.getItemId()) {
+			case R.id.menu_settings:
+				BusProvider.getBus().post(new SettingsSelectedEvent());
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(menuItem);
+		}
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		setUpServerConnectionIndicator();
 
 		BusProvider.getBus().register(this);
 	}
@@ -357,5 +386,16 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		tearDownAuthenticationListener();
+	}
+
+	private void tearDownAuthenticationListener() {
+		getAccountManager().removeOnAccountsUpdatedListener(this);
 	}
 }

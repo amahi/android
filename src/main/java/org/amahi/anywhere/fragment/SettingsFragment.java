@@ -131,6 +131,10 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	@Override
 	public void run(AccountManagerFuture<Boolean> booleanAccountManagerFuture) {
+		tearDownActivity();
+	}
+
+	private void tearDownActivity() {
 		getActivity().finish();
 	}
 

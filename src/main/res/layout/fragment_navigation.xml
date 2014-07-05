@@ -60,19 +60,6 @@
 
 		<Space
 			android:layout_width="match_parent"
-			android:layout_height="8dp"/>
-
-		<Switch
-			android:id="@+id/switch_connection"
-			android:checked="true"
-			android:textOn="LAN"
-			android:textOff="Remote"
-			android:layout_gravity="center"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
-
-		<Space
-			android:layout_width="match_parent"
 			android:layout_height="16dp"/>
 
 		<TextView

@@ -25,10 +25,12 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -158,7 +160,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(getString(R.string.preference_key_server_connection))) {
 			setUpSettingsSummary();
+
 			setUpServerConnection();
+			setUpServerConnectionIndicator();
 		}
 	}
 
@@ -176,9 +180,38 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		return serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_local));
 	}
 
+	private void setUpServerConnectionIndicator() {
+		if (isConnectionAvailable()) {
+			getActivity().getActionBar().setBackgroundDrawable(getServerConnectionIndicator());
+		}
+	}
+
+	private boolean isConnectionAvailable() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+		return preferences.contains(getString(R.string.preference_key_server_connection));
+	}
+
+	private Drawable getServerConnectionIndicator() {
+		if (isConnectionLocal()) {
+			return getResources().getDrawable(R.drawable.bg_action_bar);
+		} else {
+			return getResources().getDrawable(R.drawable.bg_action_bar_warning);
+		}
+	}
+
+	private boolean isConnectionLocal() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+
+		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+	}
+
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		setUpServerConnectionIndicator();
 
 		setUpSettingsPreferenceListener();
 	}

@@ -73,14 +73,14 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void setUpSettingsSummary() {
-		Preference applicationVersion = getSetting(R.string.preference_key_application_version);
-		applicationVersion.setSummary(getApplicationVersionSummary());
+		Preference applicationVersion = getPreference(R.string.preference_key_application_version);
+		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
 
-		ListPreference serverConnection = getSetting(R.string.preference_key_server_connection);
-		serverConnection.setSummary(String.format("Use %s", serverConnection.getEntry()));
+		applicationVersion.setSummary(getApplicationVersionSummary());
+		serverConnection.setSummary(getServerConnection());
 	}
 
-	private <T extends Preference> T getSetting(int settingId) {
+	private <T extends Preference> T getPreference(int settingId) {
 		return (T) findPreference(getString(settingId));
 	}
 
@@ -88,10 +88,16 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		return Android.getApplicationVersion();
 	}
 
+	private String getServerConnection() {
+		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
+
+		return String.format("Use %s", serverConnection.getEntry());
+	}
+
 	private void setUpSettingsListeners() {
-		Preference accountSignOut = getSetting(R.string.preference_key_account_sign_out);
-		Preference applicationFeedback = getSetting(R.string.preference_key_application_feedback);
-		Preference applicationRating = getSetting(R.string.preference_key_application_rating);
+		Preference accountSignOut = getPreference(R.string.preference_key_account_sign_out);
+		Preference applicationFeedback = getPreference(R.string.preference_key_application_feedback);
+		Preference applicationRating = getPreference(R.string.preference_key_application_rating);
 
 		accountSignOut.setOnPreferenceClickListener(this);
 		applicationFeedback.setOnPreferenceClickListener(this);
@@ -165,7 +171,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private boolean isServerConnectionLocal() {
-		ListPreference serverConnection = getSetting(R.string.preference_key_server_connection);
+		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
 
 		return serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_local));
 	}

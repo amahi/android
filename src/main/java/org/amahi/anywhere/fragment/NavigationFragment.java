@@ -277,7 +277,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void setUpServerConnection() {
-		if (isConnectionLocal()) {
+		if (!isConnectionAvailable() || isConnectionLocal()) {
 			serverClient.connectLocal();
 		} else {
 			serverClient.connectRemote();
@@ -286,8 +286,16 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpSharesContent();
 	}
 
+	private boolean isConnectionAvailable() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+		return preferences.contains(getString(R.string.preference_key_server_connection));
+	}
+
 	private void setUpServerConnectionIndicator() {
-		getActivity().getActionBar().setBackgroundDrawable(getServerConnectionIndicator());
+		if (isConnectionAvailable()) {
+			getActivity().getActionBar().setBackgroundDrawable(getServerConnectionIndicator());
+		}
 	}
 
 	private Drawable getServerConnectionIndicator() {

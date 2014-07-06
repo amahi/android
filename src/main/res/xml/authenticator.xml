@@ -20,5 +20,5 @@
 
 <account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
 	android:accountType="org.amahi"
-	android:icon="@drawable/ic_logo"
+	android:icon="@drawable/ic_launcher"
 	android:label="@string/application_name"/>

@@ -26,10 +26,12 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.NetworkChangedEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerConnectionDetectedEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
+import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.model.Server;
@@ -54,6 +56,7 @@ public class ServerClient
 	private Server server;
 	private ServerRoute serverRoute;
 	private String serverAddress;
+	private ApiConnection serverConnection;
 
 	private int network;
 
@@ -61,6 +64,8 @@ public class ServerClient
 	public ServerClient(ApiAdapter apiAdapter) {
 		this.apiAdapter = apiAdapter;
 		this.proxyApi = buildProxyApi();
+
+		this.serverConnection = ApiConnection.AUTO;
 
 		this.network = Integer.MIN_VALUE;
 
@@ -77,6 +82,10 @@ public class ServerClient
 
 	@Subscribe
 	public void onNetworkChanged(NetworkChangedEvent event) {
+		if (this.serverConnection != ApiConnection.AUTO) {
+			return;
+		}
+
 		if (this.network != event.getNetwork()) {
 			this.network = event.getNetwork();
 
@@ -85,6 +94,9 @@ public class ServerClient
 	}
 
 	private void startServerConnectionDetection() {
+		this.serverAddress = serverRoute.getLocalAddress();
+		this.serverApi = buildServerApi();
+
 		serverApi.getShares(server.getSession(), new ServerConnectionResponse(serverRoute));
 	}
 
@@ -97,7 +109,7 @@ public class ServerClient
 	}
 
 	private void finishServerConnectionDetection() {
-		BusProvider.getBus().post(new ServerConnectedEvent());
+		BusProvider.getBus().post(new ServerConnectionChangedEvent());
 	}
 
 	public boolean isConnected() {
@@ -109,7 +121,7 @@ public class ServerClient
 	}
 
 	public boolean isConnectionLocal() {
-		return serverRoute.getLocalAddress().equals(serverAddress);
+		return !isConnected() || serverRoute.getLocalAddress().equals(serverAddress);
 	}
 
 	public void connect(Server server) {
@@ -133,7 +145,14 @@ public class ServerClient
 		BusProvider.getBus().post(new ServerConnectedEvent());
 	}
 
+	public void connectAuto() {
+		this.serverConnection = ApiConnection.AUTO;
+
+		startServerConnectionDetection();
+	}
+
 	public void connectLocal() {
+		this.serverConnection = ApiConnection.LOCAL;
 		this.serverAddress = serverRoute.getLocalAddress();
 		this.serverApi = buildServerApi();
 	}
@@ -143,6 +162,7 @@ public class ServerClient
 	}
 
 	public void connectRemote() {
+		this.serverConnection = ApiConnection.REMOTE;
 		this.serverAddress = serverRoute.getRemoteAddress();
 		this.serverApi = buildServerApi();
 	}

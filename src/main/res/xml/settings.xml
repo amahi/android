@@ -27,7 +27,7 @@
 			android:title="Connection"
 			android:entries="@array/preference_entries_server_connection"
 			android:entryValues="@array/preference_entries_keys_server_connection"
-			android:defaultValue="@string/preference_key_server_connection_local"/>
+			android:defaultValue="@string/preference_key_server_connection_auto"/>
 
 	</PreferenceCategory>
 

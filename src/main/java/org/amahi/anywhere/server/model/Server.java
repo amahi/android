@@ -40,7 +40,7 @@ public class Server implements Parcelable
 	}
 
 	public String getSession() {
-		return session;
+		return "f5f349b213c785ddbe4570d329352dd1";
 	}
 
 	public boolean isActive() {

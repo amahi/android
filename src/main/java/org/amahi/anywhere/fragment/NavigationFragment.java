@@ -51,6 +51,7 @@ import org.amahi.anywhere.adapter.ServerSharesAdapter;
 import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
@@ -277,7 +278,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void setUpServerConnection() {
-		if (!isConnectionAvailable() || isConnectionLocal()) {
+		if (!isConnectionAvailable() || isConnectionAuto()) {
+			serverClient.connectAuto();
+		} else if (isConnectionLocal()) {
 			serverClient.connectLocal();
 		} else {
 			serverClient.connectRemote();
@@ -299,11 +302,18 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private Drawable getServerConnectionIndicator() {
-		if (isConnectionLocal()) {
+		if (serverClient.isConnectionLocal()) {
 			return getResources().getDrawable(R.drawable.bg_action_bar);
 		} else {
 			return getResources().getDrawable(R.drawable.bg_action_bar_warning);
 		}
+	}
+
+	private boolean isConnectionAuto() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+
+		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_auto));
 	}
 
 	private boolean isConnectionLocal() {
@@ -311,6 +321,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
 		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+	}
+
+	@Subscribe
+	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+		setUpServerConnectionIndicator();
+
+		setUpSharesContent();
 	}
 
 	private void setUpSharesContent() {

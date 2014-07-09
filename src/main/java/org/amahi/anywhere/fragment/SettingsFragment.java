@@ -32,9 +32,14 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
+import com.squareup.otto.Subscribe;
+
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
+import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
@@ -79,7 +84,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
 
 		applicationVersion.setSummary(getApplicationVersionSummary());
-		serverConnection.setSummary(getServerConnection());
+		serverConnection.setSummary(getServerConnectionSummary());
 	}
 
 	private <T extends Preference> T getPreference(int settingId) {
@@ -90,7 +95,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		return Android.getApplicationVersion();
 	}
 
-	private String getServerConnection() {
+	private String getServerConnectionSummary() {
 		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
 
 		return String.format("Use %s", serverConnection.getEntry());
@@ -167,17 +172,40 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void setUpServerConnection() {
-		if (isServerConnectionLocal()) {
-			serverClient.connectLocal();
-		} else {
-			serverClient.connectRemote();
+		switch (getServerConnection()) {
+			case AUTO:
+				serverClient.connectAuto();
+				break;
+
+			case LOCAL:
+				serverClient.connectLocal();
+				break;
+
+			case REMOTE:
+				serverClient.connectRemote();
+				break;
+
+			default:
+				break;
 		}
 	}
 
-	private boolean isServerConnectionLocal() {
+	private ApiConnection getServerConnection() {
 		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
 
-		return serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_local));
+		if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_auto))) {
+			return ApiConnection.AUTO;
+		}
+
+		if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_local))) {
+			return ApiConnection.LOCAL;
+		}
+
+		if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_remote))) {
+			return ApiConnection.REMOTE;
+		}
+
+		return ApiConnection.AUTO;
 	}
 
 	private void setUpServerConnectionIndicator() {
@@ -201,15 +229,19 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private boolean isConnectionLocal() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+		return serverClient.isConnectionLocal();
+	}
 
-		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+	@Subscribe
+	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+		setUpServerConnectionIndicator();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		BusProvider.getBus().register(this);
 
 		setUpServerConnectionIndicator();
 
@@ -223,6 +255,8 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	@Override
 	public void onPause() {
 		super.onPause();
+
+		BusProvider.getBus().unregister(this);
 
 		tearDownSettingsPreferenceListener();
 	}

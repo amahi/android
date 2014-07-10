@@ -54,6 +54,7 @@ import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Intents;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -65,6 +66,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 	private RemoteControlClient audioPlayerRemote;
 
 	private ServerShare audioShare;
+	private List<ServerFile> audioFiles;
 	private ServerFile audioFile;
 
 	@Inject
@@ -125,19 +127,19 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		return (audioShare != null) && (audioFile != null);
 	}
 
-	public void startAudio(ServerShare audioShare, ServerFile audioFile, MediaPlayer.OnPreparedListener audioListener) {
+	public void startAudio(ServerShare audioShare, List<ServerFile> audioFiles, ServerFile audioFile, MediaPlayer.OnPreparedListener audioListener) {
 		this.audioShare = audioShare;
+		this.audioFiles = audioFiles;
 		this.audioFile = audioFile;
 
+		setUpAudioPlayback();
 		setUpAudioPlayback(audioListener);
 		setUpAudioMetadata();
 	}
 
-	private void setUpAudioPlayback(MediaPlayer.OnPreparedListener audioListener) {
+	private void setUpAudioPlayback() {
 		try {
 			audioPlayer.setDataSource(this, getAudioUri());
-			audioPlayer.setOnPreparedListener(audioListener);
-			audioPlayer.prepareAsync();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -145,6 +147,54 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
 	private Uri getAudioUri() {
 		return serverClient.getFileUri(audioShare, audioFile);
+	}
+
+	private void setUpAudioPlayback(MediaPlayer.OnPreparedListener audioListener) {
+		audioPlayer.setOnPreparedListener(audioListener);
+		audioPlayer.prepareAsync();
+	}
+
+	public void startNextAudio() {
+		this.audioFile = getNextAudioFile();
+
+		setUpAudioPlayback();
+		setUpAudioMetadata();
+	}
+
+	private ServerFile getNextAudioFile() {
+		int currentAudioFilePosition = audioFiles.indexOf(audioFile);
+
+		if (currentAudioFilePosition == audioFiles.size() - 1) {
+			return audioFiles.get(0);
+		}
+
+		return audioFiles.get(currentAudioFilePosition + 1);
+	}
+
+	public void startPreviousAudio() {
+		this.audioFile = getPreviousAudioFile();
+
+		setUpAudioPlayback();
+		setUpAudioMetadata();
+	}
+
+	private ServerFile getPreviousAudioFile() {
+		int currentAudioFilePosition = audioFiles.indexOf(audioFile);
+
+		if (currentAudioFilePosition == 0) {
+			return audioFiles.get(audioFiles.size() - 1);
+		}
+
+		return audioFiles.get(currentAudioFilePosition - 1);
+	}
+
+	public void startAudio(ServerShare audioShare, ServerFile audioFile, MediaPlayer.OnPreparedListener audioListener) {
+		this.audioShare = audioShare;
+		this.audioFile = audioFile;
+
+		setUpAudioPlayback();
+		setUpAudioPlayback(audioListener);
+		setUpAudioMetadata();
 	}
 
 	private void setUpAudioMetadata() {

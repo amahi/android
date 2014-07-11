@@ -90,6 +90,8 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	private AudioService audioService;
 	private MediaControls audioControls;
 
+	private ServerFile audioFile;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -111,16 +113,21 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	}
 
 	private void setUpAudio(Bundle state) {
+		setUpAudioFile();
 		setUpAudioTitle();
 		setUpAudioMetadata(state);
 	}
 
-	private void setUpAudioTitle() {
-		getActionBar().setTitle(getFile().getName());
+	private void setUpAudioFile() {
+		this.audioFile = getFile();
 	}
 
 	private ServerFile getFile() {
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
+	}
+
+	private void setUpAudioTitle() {
+		getActionBar().setTitle(audioFile.getName());
 	}
 
 	private void setUpAudioMetadata(Bundle state) {
@@ -172,7 +179,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	}
 
 	private void setUpAudioMetadata(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
-		getAudioTitleView().setText(audioMetadataFormatter.getAudioTitle(getFile()));
+		getAudioTitleView().setText(audioMetadataFormatter.getAudioTitle(audioFile));
 		getAudioSubtitleView().setText(audioMetadataFormatter.getAudioSubtitle(getShare()));
 		getAudioAlbumArtView().setImageBitmap(audioAlbumArt);
 	}
@@ -256,7 +263,11 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	@Subscribe
 	public void onAudioPrepared(AudioPreparedEvent event) {
+		this.audioFile = audioService.getAudioFile();
+
 		start();
+
+		setUpAudioTitle();
 
 		showAudio();
 	}
@@ -274,6 +285,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	@Subscribe
 	public void onNextAudio(AudioControlNextEvent event) {
+		tearDownAudioTitle();
 		tearDownAudioMetadata();
 
 		hideAudio();
@@ -281,6 +293,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	@Subscribe
 	public void onPreviousAudio(AudioControlPreviousEvent event) {
+		tearDownAudioTitle();
 		tearDownAudioMetadata();
 
 		hideAudio();
@@ -288,11 +301,15 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 
 	@Subscribe
 	public void onAudioCompleted(AudioCompletedEvent event) {
+		tearDownAudioTitle();
 		tearDownAudioMetadata();
 
 		hideAudio();
 	}
 
+	private void tearDownAudioTitle() {
+		getActionBar().setTitle(null);
+	}
 
 	private void tearDownAudioMetadata() {
 		getAudioTitleView().setText(null);

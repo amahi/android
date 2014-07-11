@@ -240,6 +240,10 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		return Bitmap.createScaledBitmap(audioAlbumArt, iconWidth, iconHeight, false);
 	}
 
+	public ServerFile getAudioFile() {
+		return audioFile;
+	}
+
 	public MediaPlayer getAudioPlayer() {
 		return audioPlayer;
 	}

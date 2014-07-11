@@ -20,29 +20,27 @@
 package org.amahi.anywhere.activity;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.ViewAnimator;
-
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.adapter.ServerFileImagePagerAdapter;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Intents;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-public class ServerFileImageActivity extends Activity implements Callback
+public class ServerFileImageActivity extends Activity implements ViewPager.OnPageChangeListener
 {
 	public static final Set<String> SUPPORTED_FORMATS;
 
@@ -81,50 +79,70 @@ public class ServerFileImageActivity extends Activity implements Callback
 
 	private void setUpImage() {
 		setUpImageTitle();
-		setUpImageContent();
+		setUpImageAdapter();
+		setUpImagePosition();
+		setUpImageListener();
 	}
 
 	private void setUpImageTitle() {
-		getActionBar().setTitle(getFile().getName());
+		setUpImageTitle(getFile());
 	}
 
-	private void setUpImageContent() {
-		Picasso
-			.with(this)
-			.load(getImageUri())
-			.fit()
-			.centerInside()
-			.into(getImageView(), this);
-	}
-
-	private Uri getImageUri() {
-		return serverClient.getFileUri(getShare(), getFile());
-	}
-
-	private ServerShare getShare() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+	private void setUpImageTitle(ServerFile file) {
+		getActionBar().setTitle(file.getName());
 	}
 
 	private ServerFile getFile() {
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 
-	private ImageView getImageView() {
-		return (ImageView) findViewById(R.id.image);
+	private void setUpImageAdapter() {
+		getImagePager().setAdapter(new ServerFileImagePagerAdapter(getFragmentManager(), getShare(), getImageFiles()));
+	}
+
+	private ViewPager getImagePager() {
+		return (ViewPager) findViewById(R.id.pager_images);
+	}
+
+	private ServerShare getShare() {
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+	}
+
+	private List<ServerFile> getImageFiles() {
+		List<ServerFile> imageFiles = new ArrayList<ServerFile>();
+
+		for (ServerFile file : getFiles()) {
+			if (SUPPORTED_FORMATS.contains(file.getMime())) {
+				imageFiles.add(file);
+			}
+		}
+
+		return imageFiles;
+	}
+
+	private List<ServerFile> getFiles() {
+		return getIntent().getParcelableArrayListExtra(Intents.Extras.SERVER_FILES);
+	}
+
+	private void setUpImagePosition() {
+		getImagePager().setCurrentItem(getImageFiles().indexOf(getFile()));
+	}
+
+	private void setUpImageListener() {
+		getImagePager().setOnPageChangeListener(this);
 	}
 
 	@Override
-	public void onSuccess() {
-		showImageContent();
-	}
-
-	private void showImageContent() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
-		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.image)));
+	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 	}
 
 	@Override
-	public void onError() {
+	public void onPageScrollStateChanged(int state) {
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		setUpImageTitle(getImageFiles().get(position));
 	}
 
 	@Override

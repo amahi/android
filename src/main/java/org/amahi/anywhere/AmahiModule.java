@@ -28,6 +28,7 @@ import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.server.ApiModule;
@@ -52,6 +53,7 @@ import dagger.Provides;
 		ServerFileWebActivity.class,
 		NavigationFragment.class,
 		ServerFilesFragment.class,
+		ServerFileImageFragment.class,
 		SettingsFragment.class,
 		AudioService.class,
 		VideoService.class

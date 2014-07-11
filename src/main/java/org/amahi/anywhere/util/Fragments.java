@@ -25,6 +25,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -62,6 +63,18 @@ public final class Fragments
 			filesFragment.setArguments(arguments);
 
 			return filesFragment;
+		}
+
+		public static Fragment buildServerFileImageFragment(ServerShare share, ServerFile file) {
+			Fragment fileFragment = new ServerFileImageFragment();
+
+			Bundle arguments = new Bundle();
+			arguments.putParcelable(Arguments.SERVER_SHARE, share);
+			arguments.putParcelable(Arguments.SERVER_FILE, file);
+
+			fileFragment.setArguments(arguments);
+
+			return fileFragment;
 		}
 	}
 

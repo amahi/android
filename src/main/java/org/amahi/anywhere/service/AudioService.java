@@ -64,7 +64,8 @@ import javax.inject.Inject;
 
 public class AudioService extends Service implements AudioManager.OnAudioFocusChangeListener,
 	MediaPlayer.OnPreparedListener,
-	MediaPlayer.OnCompletionListener
+	MediaPlayer.OnCompletionListener,
+	MediaPlayer.OnErrorListener
 {
 	private static final class Notifications
 	{
@@ -119,6 +120,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		audioPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
 
 		audioPlayer.setOnCompletionListener(this);
+		audioPlayer.setOnErrorListener(this);
 	}
 
 	private void setUpAudioPlayerRemote() {
@@ -170,9 +172,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 	@Override
 	public void onPrepared(MediaPlayer audioPlayer) {
-		playAudio();
-
 		BusProvider.getBus().post(new AudioPreparedEvent());
+
+		playAudio();
 	}
 
 	private void setUpAudioMetadata() {
@@ -388,9 +390,14 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 	@Override
 	public void onCompletion(MediaPlayer audioPlayer) {
-		startNextAudio();
-
 		BusProvider.getBus().post(new AudioCompletedEvent());
+
+		startNextAudio();
+	}
+
+	@Override
+	public boolean onError(MediaPlayer audioPlayer, int errorReason, int errorExtra) {
+		return true;
 	}
 
 	@Override

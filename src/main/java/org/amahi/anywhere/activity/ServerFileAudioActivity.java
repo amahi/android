@@ -26,8 +26,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.MenuItem;
@@ -41,26 +39,29 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.AudioCompletedEvent;
+import org.amahi.anywhere.bus.AudioControlNextEvent;
+import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
+import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
-import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.view.MediaControls;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-public class ServerFileAudioActivity extends Activity implements ServiceConnection,
-	MediaPlayer.OnPreparedListener,
-	MediaController.MediaPlayerControl
+public class ServerFileAudioActivity extends Activity implements ServiceConnection, MediaController.MediaPlayerControl
 {
 	public static final Set<String> SUPPORTED_FORMATS;
 
@@ -127,8 +128,6 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 			setUpAudioMetadataState(state);
 
 			showAudioMetadata();
-		} else {
-			AudioMetadataRetrievingTask.execute(getAudioUri());
 		}
 	}
 
@@ -164,14 +163,6 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		}
 	}
 
-	private Uri getAudioUri() {
-		return serverClient.getFileUri(getShare(), getFile());
-	}
-
-	private ServerShare getShare() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
-	}
-
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
 		AudioMetadataFormatter audioMetadataFormatter = new AudioMetadataFormatter(
@@ -184,6 +175,10 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		getAudioTitleView().setText(audioMetadataFormatter.getAudioTitle(getFile()));
 		getAudioSubtitleView().setText(audioMetadataFormatter.getAudioSubtitle(getShare()));
 		getAudioAlbumArtView().setImageBitmap(audioAlbumArt);
+	}
+
+	private ServerShare getShare() {
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
 	@Override
@@ -226,6 +221,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 			audioControls = new MediaControls(this);
 
 			audioControls.setMediaPlayer(this);
+			audioControls.setPrevNextListeners(new AudioControlsNextListener(), new AudioControlsPreviousListener());
 			audioControls.setAnchorView(findViewById(R.id.animator));
 		}
 	}
@@ -238,12 +234,28 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		if (audioService.isAudioStarted()) {
 			showAudio();
 		} else {
-			audioService.startAudio(getShare(), getFile(), this);
+			audioService.startAudio(getShare(), getAudioFiles(), getFile());
 		}
 	}
 
-	@Override
-	public void onPrepared(MediaPlayer audioPlayer) {
+	private List<ServerFile> getAudioFiles() {
+		List<ServerFile> audioFiles = new ArrayList<ServerFile>();
+
+		for (ServerFile file : getFiles()) {
+			if (SUPPORTED_FORMATS.contains(file.getMime())) {
+				audioFiles.add(file);
+			}
+		}
+
+		return audioFiles;
+	}
+
+	private List<ServerFile> getFiles() {
+		return getIntent().getParcelableArrayListExtra(Intents.Extras.SERVER_FILES);
+	}
+
+	@Subscribe
+	public void onAudioPrepared(AudioPreparedEvent event) {
 		start();
 
 		showAudio();
@@ -260,9 +272,52 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		}
 	}
 
+	@Subscribe
+	public void onNextAudio(AudioControlNextEvent event) {
+		tearDownAudioMetadata();
+
+		hideAudio();
+	}
+
+	@Subscribe
+	public void onPreviousAudio(AudioControlPreviousEvent event) {
+		tearDownAudioMetadata();
+
+		hideAudio();
+	}
+
+	@Subscribe
+	public void onAudioCompleted(AudioCompletedEvent event) {
+		tearDownAudioMetadata();
+
+		hideAudio();
+	}
+
+
+	private void tearDownAudioMetadata() {
+		getAudioTitleView().setText(null);
+		getAudioSubtitleView().setText(null);
+		getAudioAlbumArtView().setImageBitmap(null);
+	}
+
+	private void hideAudio() {
+		hideAudioMetadata();
+		hideAudioControls();
+	}
+
+	private void hideAudioMetadata() {
+		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
+
+		View progress = findViewById(android.R.id.progress);
+
+		if (animator.getDisplayedChild() != animator.indexOfChild(progress)) {
+			animator.setDisplayedChild(animator.indexOfChild(progress));
+		}
+	}
+
 	private void hideAudioControls() {
 		if (areAudioControlsAvailable() && audioControls.isShowing()) {
-			audioControls.hide();
+			audioControls.hideAnimated();
 		}
 	}
 
@@ -352,12 +407,18 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	protected void onPause() {
 		super.onPause();
 
-		hideAudioControls();
+		hideAudioControlsForced();
 
 		BusProvider.getBus().unregister(this);
 
 		if (isFinishing()) {
 			tearDownAudioPlayback();
+		}
+	}
+
+	private void hideAudioControlsForced() {
+		if (areAudioControlsAvailable() && audioControls.isShowing()) {
+			audioControls.hide();
 		}
 	}
 
@@ -405,5 +466,21 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	private void tearDownAudioService() {
 		Intent intent = new Intent(this, AudioService.class);
 		stopService(intent);
+	}
+
+	private static final class AudioControlsNextListener implements View.OnClickListener
+	{
+		@Override
+		public void onClick(View view) {
+			BusProvider.getBus().post(new AudioControlNextEvent());
+		}
+	}
+
+	private static final class AudioControlsPreviousListener implements View.OnClickListener
+	{
+		@Override
+		public void onClick(View view) {
+			BusProvider.getBus().post(new AudioControlPreviousEvent());
+		}
 	}
 }

@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Parcelable;
 
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -34,6 +35,7 @@ import org.amahi.anywhere.activity.SettingsActivity;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class Intents
@@ -47,6 +49,7 @@ public final class Intents
 		}
 
 		public static final String SERVER_FILE = "server_file";
+		public static final String SERVER_FILES = "server_files";
 		public static final String SERVER_SHARE = "server_share";
 	}
 
@@ -99,9 +102,10 @@ public final class Intents
 			return null;
 		}
 
-		public Intent buildServerFileIntent(ServerShare share, ServerFile file) {
+		public Intent buildServerFileIntent(ServerShare share, List<ServerFile> files, ServerFile file) {
 			Intent intent = new Intent(context, getServerFileActivity(file));
 			intent.putExtra(Extras.SERVER_SHARE, share);
+			intent.putParcelableArrayListExtra(Extras.SERVER_FILES, new ArrayList<Parcelable>(files));
 			intent.putExtra(Extras.SERVER_FILE, file);
 
 			return intent;

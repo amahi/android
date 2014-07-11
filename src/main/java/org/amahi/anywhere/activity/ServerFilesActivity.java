@@ -54,6 +54,8 @@ import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 public class ServerFilesActivity extends Activity implements DrawerLayout.DrawerListener
@@ -201,14 +203,14 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 
 	@Subscribe
 	public void onFileSelected(FileSelectedEvent event) {
-		setUpFile(event.getShare(), event.getFile());
+		setUpFile(event.getShare(), event.getFiles(), event.getFile());
 	}
 
-	private void setUpFile(ServerShare share, ServerFile file) {
+	private void setUpFile(ServerShare share, List<ServerFile> files, ServerFile file) {
 		if (isDirectory(file)) {
 			setUpFilesFragment(share, file);
 		} else {
-			setUpFileActivity(share, file);
+			setUpFileActivity(share, files, file);
 		}
 	}
 
@@ -224,9 +226,9 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 		return Fragments.Builder.buildServerFilesFragment(share, directory);
 	}
 
-	private void setUpFileActivity(ServerShare share, ServerFile file) {
+	private void setUpFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
 		if (Intents.Builder.with(this).isServerFileSupported(file)) {
-			startFileActivity(share, file);
+			startFileActivity(share, files, file);
 			return;
 		}
 
@@ -238,8 +240,8 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 		showGooglePlaySearchFragment(file);
 	}
 
-	private void startFileActivity(ServerShare share, ServerFile file) {
-		Intent intent = Intents.Builder.with(this).buildServerFileIntent(share, file);
+	private void startFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
+		Intent intent = Intents.Builder.with(this).buildServerFileIntent(share, files, file);
 		startActivity(intent);
 	}
 

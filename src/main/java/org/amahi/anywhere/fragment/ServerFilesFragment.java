@@ -206,7 +206,11 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	public void onListItemClick(ListView listView, View view, int position, long id) {
 		super.onListItemClick(listView, view, position, id);
 
-		BusProvider.getBus().post(new FileSelectedEvent(getShare(), getFile(position)));
+		BusProvider.getBus().post(new FileSelectedEvent(getShare(), getFiles(), getFile(position)));
+	}
+
+	private List<ServerFile> getFiles() {
+		return getFilesAdapter().getItems();
 	}
 
 	private ServerFile getFile(int position) {

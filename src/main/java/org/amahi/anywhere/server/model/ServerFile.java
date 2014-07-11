@@ -104,4 +104,39 @@ public class ServerFile implements Parcelable
 	public int describeContents() {
 		return 0;
 	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+
+		if (object == null) {
+			return false;
+		}
+
+		if (getClass() != object.getClass()) {
+			return false;
+		}
+
+		ServerFile file = (ServerFile) object;
+
+		if ((parentFile != null) && (!parentFile.equals(file.parentFile))) {
+			return false;
+		}
+
+		if (!name.equals(file.name)) {
+			return false;
+		}
+
+		if (!mime.equals(file.mime)) {
+			return false;
+		}
+
+		if (!modificationTime.equals(file.modificationTime)) {
+			return false;
+		}
+
+		return true;
+	}
 }

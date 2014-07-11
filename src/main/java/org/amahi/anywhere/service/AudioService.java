@@ -40,10 +40,14 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.AudioCompletedEvent;
+import org.amahi.anywhere.bus.AudioControlNextEvent;
 import org.amahi.anywhere.bus.AudioControlPauseEvent;
 import org.amahi.anywhere.bus.AudioControlPlayEvent;
 import org.amahi.anywhere.bus.AudioControlPlayPauseEvent;
+import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
+import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.receiver.AudioReceiver;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -58,9 +62,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class AudioService extends Service implements MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener
+public class AudioService extends Service implements AudioManager.OnAudioFocusChangeListener,
+	MediaPlayer.OnPreparedListener,
+	MediaPlayer.OnCompletionListener
 {
-	private static final int AUDIO_PLAYER_NOTIFICATION = 42;
+	private static final class Notifications
+	{
+		private Notifications() {
+		}
+
+		public static final int AUDIO_PLAYER = 42;
+	}
 
 	private MediaPlayer audioPlayer;
 	private RemoteControlClient audioPlayerRemote;
@@ -115,7 +127,10 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		PendingIntent audioPendingIntent = PendingIntent.getBroadcast(this, 0, audioIntent, 0);
 
 		audioPlayerRemote = new RemoteControlClient(audioPendingIntent);
-		audioPlayerRemote.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE);
+		audioPlayerRemote.setTransportControlFlags(
+			RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE |
+			RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
+			RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS);
 		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 
 		audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
@@ -124,22 +139,23 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 	}
 
 	public boolean isAudioStarted() {
-		return (audioShare != null) && (audioFile != null);
+		return (audioShare != null) && (audioFiles != null) && (audioFile != null);
 	}
 
-	public void startAudio(ServerShare audioShare, List<ServerFile> audioFiles, ServerFile audioFile, MediaPlayer.OnPreparedListener audioListener) {
+	public void startAudio(ServerShare audioShare, List<ServerFile> audioFiles, ServerFile audioFile) {
 		this.audioShare = audioShare;
 		this.audioFiles = audioFiles;
 		this.audioFile = audioFile;
 
 		setUpAudioPlayback();
-		setUpAudioPlayback(audioListener);
 		setUpAudioMetadata();
 	}
 
 	private void setUpAudioPlayback() {
 		try {
 			audioPlayer.setDataSource(this, getAudioUri());
+			audioPlayer.setOnPreparedListener(this);
+			audioPlayer.prepareAsync();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -149,52 +165,11 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		return serverClient.getFileUri(audioShare, audioFile);
 	}
 
-	private void setUpAudioPlayback(MediaPlayer.OnPreparedListener audioListener) {
-		audioPlayer.setOnPreparedListener(audioListener);
-		audioPlayer.prepareAsync();
-	}
+	@Override
+	public void onPrepared(MediaPlayer audioPlayer) {
+		playAudio();
 
-	public void startNextAudio() {
-		this.audioFile = getNextAudioFile();
-
-		setUpAudioPlayback();
-		setUpAudioMetadata();
-	}
-
-	private ServerFile getNextAudioFile() {
-		int currentAudioFilePosition = audioFiles.indexOf(audioFile);
-
-		if (currentAudioFilePosition == audioFiles.size() - 1) {
-			return audioFiles.get(0);
-		}
-
-		return audioFiles.get(currentAudioFilePosition + 1);
-	}
-
-	public void startPreviousAudio() {
-		this.audioFile = getPreviousAudioFile();
-
-		setUpAudioPlayback();
-		setUpAudioMetadata();
-	}
-
-	private ServerFile getPreviousAudioFile() {
-		int currentAudioFilePosition = audioFiles.indexOf(audioFile);
-
-		if (currentAudioFilePosition == 0) {
-			return audioFiles.get(audioFiles.size() - 1);
-		}
-
-		return audioFiles.get(currentAudioFilePosition - 1);
-	}
-
-	public void startAudio(ServerShare audioShare, ServerFile audioFile, MediaPlayer.OnPreparedListener audioListener) {
-		this.audioShare = audioShare;
-		this.audioFile = audioFile;
-
-		setUpAudioPlayback();
-		setUpAudioPlayback(audioListener);
-		setUpAudioMetadata();
+		BusProvider.getBus().post(new AudioPreparedEvent());
 	}
 
 	private void setUpAudioMetadata() {
@@ -234,7 +209,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 	}
 
 	private void setUpAudioPlayerNotification(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
-		Intent audioIntent = Intents.Builder.with(this).buildServerFileIntent(audioShare, audioFile);
+		Intent audioIntent = Intents.Builder.with(this).buildServerFileIntent(audioShare, audioFiles, audioFile);
 		PendingIntent audioPendingIntent = PendingIntent.getActivity(this, 0, audioIntent, 0);
 
 		Notification notification = new NotificationCompat.Builder(this)
@@ -247,7 +222,7 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 			.setContentIntent(audioPendingIntent)
 			.build();
 
-		startForeground(AUDIO_PLAYER_NOTIFICATION, notification);
+		startForeground(Notifications.AUDIO_PLAYER, notification);
 	}
 
 	private int getAudioPlayerNotificationIcon() {
@@ -288,6 +263,16 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		pauseAudio();
 	}
 
+	@Subscribe
+	public void onAudioControlNext(AudioControlNextEvent event) {
+		startNextAudio();
+	}
+
+	@Subscribe
+	public void onAudioControlPrevious(AudioControlPreviousEvent event) {
+		startPreviousAudio();
+	}
+
 	public void playAudio() {
 		audioPlayer.start();
 
@@ -298,6 +283,48 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 		audioPlayer.pause();
 
 		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
+	}
+
+	private void startNextAudio() {
+		this.audioFile = getNextAudioFile();
+
+		tearDownAudioPlayback();
+
+		setUpAudioPlayback();
+		setUpAudioMetadata();
+	}
+
+	private ServerFile getNextAudioFile() {
+		int currentAudioFilePosition = audioFiles.indexOf(audioFile);
+
+		if (currentAudioFilePosition == audioFiles.size() - 1) {
+			return audioFiles.get(0);
+		}
+
+		return audioFiles.get(currentAudioFilePosition + 1);
+	}
+
+	private void tearDownAudioPlayback() {
+		audioPlayer.reset();
+	}
+
+	private void startPreviousAudio() {
+		this.audioFile = getPreviousAudioFile();
+
+		tearDownAudioPlayback();
+
+		setUpAudioPlayback();
+		setUpAudioMetadata();
+	}
+
+	private ServerFile getPreviousAudioFile() {
+		int currentAudioFilePosition = audioFiles.indexOf(audioFile);
+
+		if (currentAudioFilePosition == 0) {
+			return audioFiles.get(audioFiles.size() - 1);
+		}
+
+		return audioFiles.get(currentAudioFilePosition - 1);
 	}
 
 	@Override
@@ -345,7 +372,9 @@ public class AudioService extends Service implements MediaPlayer.OnCompletionLis
 
 	@Override
 	public void onCompletion(MediaPlayer audioPlayer) {
-		pauseAudio();
+		startNextAudio();
+
+		BusProvider.getBus().post(new AudioCompletedEvent());
 	}
 
 	@Override

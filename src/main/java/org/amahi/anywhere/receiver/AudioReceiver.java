@@ -25,9 +25,11 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.view.KeyEvent;
 
+import org.amahi.anywhere.bus.AudioControlNextEvent;
 import org.amahi.anywhere.bus.AudioControlPauseEvent;
 import org.amahi.anywhere.bus.AudioControlPlayEvent;
 import org.amahi.anywhere.bus.AudioControlPlayPauseEvent;
+import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.BusProvider;
 
 public class AudioReceiver extends BroadcastReceiver
@@ -64,7 +66,15 @@ public class AudioReceiver extends BroadcastReceiver
 				break;
 
 			case KeyEvent.KEYCODE_MEDIA_PAUSE:
-				BusProvider.getBus().post(new AudioControlPlayPauseEvent());
+				BusProvider.getBus().post(new AudioControlPauseEvent());
+				break;
+
+			case KeyEvent.KEYCODE_MEDIA_NEXT:
+				BusProvider.getBus().post(new AudioControlNextEvent());
+				break;
+
+			case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+				BusProvider.getBus().post(new AudioControlPreviousEvent());
 				break;
 
 			default:

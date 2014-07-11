@@ -81,6 +81,9 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	private List<ServerFile> audioFiles;
 	private ServerFile audioFile;
 
+	private AudioMetadataFormatter audioMetadataFormatter;
+	private Bitmap audioAlbumArt;
+
 	@Inject
 	ServerClient serverClient;
 
@@ -178,11 +181,12 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-		AudioMetadataFormatter audioMetadataFormatter = new AudioMetadataFormatter(
+		this.audioMetadataFormatter = new AudioMetadataFormatter(
 			event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+		this.audioAlbumArt = event.getAudioAlbumArt();
 
-		setUpAudioPlayerRemote(audioMetadataFormatter, event.getAudioAlbumArt());
-		setUpAudioPlayerNotification(audioMetadataFormatter, event.getAudioAlbumArt());
+		setUpAudioPlayerRemote(audioMetadataFormatter, audioAlbumArt);
+		setUpAudioPlayerNotification(audioMetadataFormatter, audioAlbumArt);
 	}
 
 	private void setUpAudioPlayerRemote(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
@@ -242,6 +246,14 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 	public ServerFile getAudioFile() {
 		return audioFile;
+	}
+
+	public AudioMetadataFormatter getAudioMetadataFormatter() {
+		return audioMetadataFormatter;
+	}
+
+	public Bitmap getAudioAlbumArt() {
+		return audioAlbumArt;
 	}
 
 	public MediaPlayer getAudioPlayer() {

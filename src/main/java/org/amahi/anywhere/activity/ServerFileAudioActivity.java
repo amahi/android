@@ -412,12 +412,34 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		showAudioControlsForced();
 
 		BusProvider.getBus().register(this);
+
+		setUpAudioMetadata();
 	}
 
 	private void showAudioControlsForced() {
 		if (areAudioControlsAvailable() && !audioControls.isShowing()) {
 			audioControls.show();
 		}
+	}
+
+	private void setUpAudioMetadata() {
+		if (!isAudioServiceAvailable()) {
+			return;
+		}
+
+		if (!this.audioFile.equals(audioService.getAudioFile())) {
+			this.audioFile = audioService.getAudioFile();
+
+			tearDownAudioTitle();
+			tearDownAudioMetadata();
+
+			setUpAudioTitle();
+			setUpAudioMetadata(audioService.getAudioMetadataFormatter(), audioService.getAudioAlbumArt());
+		}
+	}
+
+	private boolean isAudioServiceAvailable() {
+		return audioService != null;
 	}
 
 	@Override

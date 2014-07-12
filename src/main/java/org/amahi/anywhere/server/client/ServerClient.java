@@ -38,10 +38,10 @@ import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.server.response.ServerConnectionResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
+import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -69,14 +69,14 @@ public class ServerClient
 
 		this.network = Integer.MIN_VALUE;
 
-		setUpEvents();
+		setUpBus();
 	}
 
 	private ProxyApi buildProxyApi() {
 		return apiAdapter.create(ProxyApi.class, Api.getProxyUrl());
 	}
 
-	private void setUpEvents() {
+	private void setUpBus() {
 		BusProvider.getBus().register(this);
 	}
 
@@ -97,7 +97,7 @@ public class ServerClient
 		this.serverAddress = serverRoute.getLocalAddress();
 		this.serverApi = buildServerApi();
 
-		serverApi.getShares(server.getSession(), new ServerConnectionResponse(serverRoute));
+		ServerConnectionDetectingTask.execute(serverRoute);
 	}
 
 	@Subscribe
@@ -118,10 +118,6 @@ public class ServerClient
 
 	public boolean isConnected(Server server) {
 		return (this.server != null) && (this.server.getSession().equals(server.getSession()));
-	}
-
-	public boolean isConnectionLocal() {
-		return !isConnected() || serverRoute.getLocalAddress().equals(serverAddress);
 	}
 
 	public void connect(Server server) {

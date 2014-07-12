@@ -188,7 +188,7 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	private void setUpFilesContentRefreshing() {
 		SwipeRefreshLayout refreshLayout = getRefreshLayout();
 
-		refreshLayout.setColorScheme(
+		refreshLayout.setColorSchemeResources(
 			android.R.color.holo_blue_light,
 			android.R.color.holo_orange_light,
 			android.R.color.holo_green_light,

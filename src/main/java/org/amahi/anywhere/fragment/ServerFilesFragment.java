@@ -22,12 +22,14 @@ package org.amahi.anywhere.fragment;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ViewAnimator;
 
@@ -37,7 +39,8 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.FileSelectedEvent;
+import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -52,7 +55,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class ServerFilesFragment extends ListFragment implements SwipeRefreshLayout.OnRefreshListener
+public class ServerFilesFragment extends ListFragment implements SwipeRefreshLayout.OnRefreshListener,
+	AdapterView.OnItemLongClickListener,
+	ActionMode.Callback
 {
 	private static enum FilesSort
 	{
@@ -60,6 +65,8 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	}
 
 	private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
+
+	private ActionMode filesActions;
 
 	@Inject
 	ServerClient serverClient;
@@ -84,6 +91,7 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 
 	private void setUpFiles() {
 		setUpFilesMenu();
+		setUpFilesActions();
 		setUpFilesAdapter();
 		setUpFilesContent();
 		setUpFilesContentRefreshing();
@@ -91,6 +99,82 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 
 	private void setUpFilesMenu() {
 		setHasOptionsMenu(true);
+	}
+
+	private void setUpFilesActions() {
+		getListView().setOnItemLongClickListener(this);
+	}
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> filesListView, View fileView, int filePosition, long fileId) {
+		if (!areFilesActionsAvailable()) {
+			getListView().clearChoices();
+			getListView().setItemChecked(filePosition, true);
+
+			getListView().startActionMode(this);
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean areFilesActionsAvailable() {
+		return filesActions != null;
+	}
+
+	@Override
+	public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+		this.filesActions = actionMode;
+
+		actionMode.getMenuInflater().inflate(R.menu.action_mode_server_files, menu);
+
+		return true;
+	}
+
+	@Override
+	public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+		return false;
+	}
+
+	@Override
+	public void onDestroyActionMode(ActionMode actionMode) {
+		this.filesActions = null;
+
+		clearFileChoices();
+	}
+
+	private void clearFileChoices() {
+		getListView().clearChoices();
+		getListView().requestLayout();
+	}
+
+	@Override
+	public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+		switch (menuItem.getItemId()) {
+			case R.id.menu_share:
+				startFileSharing(getCheckedFile());
+				break;
+
+			default:
+				return false;
+		}
+
+		actionMode.finish();
+
+		return true;
+	}
+
+	private void startFileSharing(ServerFile file) {
+		BusProvider.getBus().post(new ServerFileSharingEvent(getShare(), file));
+	}
+
+	private ServerFile getCheckedFile() {
+		return getFilesAdapter().getItem(getListView().getCheckedItemPosition());
+	}
+
+	private ServerFilesAdapter getFilesAdapter() {
+		return (ServerFilesAdapter) getListAdapter();
 	}
 
 	private void setUpFilesAdapter() {
@@ -128,10 +212,6 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 
 	private void setUpFilesContent(List<ServerFile> files) {
 		getFilesAdapter().replaceWith(sortFiles(files));
-	}
-
-	private ServerFilesAdapter getFilesAdapter() {
-		return (ServerFilesAdapter) getListAdapter();
 	}
 
 	private List<ServerFile> sortFiles(List<ServerFile> files) {
@@ -203,18 +283,22 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	}
 
 	@Override
-	public void onListItemClick(ListView listView, View view, int position, long id) {
-		super.onListItemClick(listView, view, position, id);
+	public void onListItemClick(ListView filesListView, View fileView, int filePosition, long fileId) {
+		super.onListItemClick(filesListView, fileView, filePosition, fileId);
 
-		BusProvider.getBus().post(new FileSelectedEvent(getShare(), getFiles(), getFile(position)));
+		if (!areFilesActionsAvailable()) {
+			clearFileChoices();
+
+			startFileOpening(getFilesAdapter().getItem(filePosition));
+		}
+	}
+
+	private void startFileOpening(ServerFile file) {
+		BusProvider.getBus().post(new FileOpeningEvent(getShare(), getFiles(), file));
 	}
 
 	private List<ServerFile> getFiles() {
 		return getFilesAdapter().getItems();
-	}
-
-	private ServerFile getFile(int position) {
-		return getFilesAdapter().getItem(position);
 	}
 
 	@Override

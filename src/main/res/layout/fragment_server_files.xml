@@ -43,6 +43,7 @@
 
 			<ListView
 				android:id="@android:id/list"
+				android:choiceMode="singleChoice"
 				android:scrollbarStyle="outsideOverlay"
 				android:paddingLeft="16dp"
 				android:paddingRight="16dp"

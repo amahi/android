@@ -22,26 +22,18 @@ package org.amahi.anywhere.bus;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 
-import java.util.List;
-
-public class FileSelectedEvent implements BusEvent
+public class ServerFileSharingEvent implements BusEvent
 {
 	private final ServerShare share;
-	private final List<ServerFile> files;
 	private final ServerFile file;
 
-	public FileSelectedEvent(ServerShare share, List<ServerFile> files, ServerFile file) {
+	public ServerFileSharingEvent(ServerShare share, ServerFile file) {
 		this.share = share;
-		this.files = files;
 		this.file = file;
 	}
 
 	public ServerShare getShare() {
 		return share;
-	}
-
-	public List<ServerFile> getFiles() {
-		return files;
 	}
 
 	public ServerFile getFile() {

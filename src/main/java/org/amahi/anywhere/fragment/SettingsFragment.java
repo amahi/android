@@ -25,16 +25,15 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
@@ -79,7 +78,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
 
 		applicationVersion.setSummary(getApplicationVersionSummary());
-		serverConnection.setSummary(getServerConnection());
+		serverConnection.setSummary(getServerConnectionSummary());
 	}
 
 	private <T extends Preference> T getPreference(int settingId) {
@@ -90,7 +89,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		return Android.getApplicationVersion();
 	}
 
-	private String getServerConnection() {
+	private String getServerConnectionSummary() {
 		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
 
 		return String.format("Use %s", serverConnection.getEntry());
@@ -162,56 +161,49 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 			setUpSettingsSummary();
 
 			setUpServerConnection();
-			setUpServerConnectionIndicator();
 		}
 	}
 
 	private void setUpServerConnection() {
-		if (isServerConnectionLocal()) {
-			serverClient.connectLocal();
-		} else {
-			serverClient.connectRemote();
+		switch (getServerConnection()) {
+			case AUTO:
+				serverClient.connectAuto();
+				break;
+
+			case LOCAL:
+				serverClient.connectLocal();
+				break;
+
+			case REMOTE:
+				serverClient.connectRemote();
+				break;
+
+			default:
+				break;
 		}
 	}
 
-	private boolean isServerConnectionLocal() {
+	private ApiConnection getServerConnection() {
 		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
 
-		return serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_local));
-	}
-
-	private void setUpServerConnectionIndicator() {
-		if (isConnectionAvailable()) {
-			getActivity().getActionBar().setBackgroundDrawable(getServerConnectionIndicator());
+		if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_auto))) {
+			return ApiConnection.AUTO;
 		}
-	}
 
-	private boolean isConnectionAvailable() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-		return preferences.contains(getString(R.string.preference_key_server_connection));
-	}
-
-	private Drawable getServerConnectionIndicator() {
-		if (isConnectionLocal()) {
-			return getResources().getDrawable(R.drawable.bg_action_bar);
-		} else {
-			return getResources().getDrawable(R.drawable.bg_action_bar_warning);
+		if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_local))) {
+			return ApiConnection.LOCAL;
 		}
-	}
 
-	private boolean isConnectionLocal() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+		if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_remote))) {
+			return ApiConnection.REMOTE;
+		}
 
-		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+		return ApiConnection.AUTO;
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		setUpServerConnectionIndicator();
 
 		setUpSettingsPreferenceListener();
 	}

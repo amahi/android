@@ -21,15 +21,18 @@
 <resources>
 
 	<string name="preference_key_server_connection">server_connection</string>
+	<string name="preference_key_server_connection_auto">auto</string>
 	<string name="preference_key_server_connection_remote">remote</string>
 	<string name="preference_key_server_connection_local">local</string>
 
 	<string-array translatable="false" name="preference_entries_keys_server_connection">
+		<item>@string/preference_key_server_connection_auto</item>
 		<item>@string/preference_key_server_connection_remote</item>
 		<item>@string/preference_key_server_connection_local</item>
 	</string-array>
 
 	<string-array name="preference_entries_server_connection">
+		<item>Auto</item>
 		<item>Remote</item>
 		<item>LAN</item>
 	</string-array>

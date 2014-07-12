@@ -424,6 +424,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		ComponentName audioReceiver = new ComponentName(getPackageName(), AudioReceiver.class.getName());
 
+		audioManager.abandonAudioFocus(this);
 		audioManager.unregisterMediaButtonEventReceiver(audioReceiver);
 		audioManager.unregisterRemoteControlClient(audioPlayerRemote);
 	}

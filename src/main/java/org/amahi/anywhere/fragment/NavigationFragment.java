@@ -28,7 +28,6 @@ import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
 import android.app.Fragment;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -265,7 +264,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	private void setUpServerConnection(Server server) {
 		if (serverClient.isConnected(server)) {
 			setUpServerConnection();
-			setUpServerConnectionIndicator();
 		} else {
 			serverClient.connect(server);
 		}
@@ -274,7 +272,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	@Subscribe
 	public void onServerConnected(ServerConnectedEvent event) {
 		setUpServerConnection();
-		setUpServerConnectionIndicator();
 	}
 
 	private void setUpServerConnection() {
@@ -295,20 +292,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		return preferences.contains(getString(R.string.preference_key_server_connection));
 	}
 
-	private void setUpServerConnectionIndicator() {
-		if (isConnectionAvailable()) {
-			getActivity().getActionBar().setBackgroundDrawable(getServerConnectionIndicator());
-		}
-	}
-
-	private Drawable getServerConnectionIndicator() {
-		if (serverClient.isConnectionLocal()) {
-			return getResources().getDrawable(R.drawable.bg_action_bar);
-		} else {
-			return getResources().getDrawable(R.drawable.bg_action_bar_warning);
-		}
-	}
-
 	private boolean isConnectionAuto() {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
@@ -325,8 +308,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 	@Subscribe
 	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
-		setUpServerConnectionIndicator();
-
 		setUpSharesContent();
 	}
 
@@ -400,8 +381,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		setUpServerConnectionIndicator();
 
 		BusProvider.getBus().register(this);
 	}

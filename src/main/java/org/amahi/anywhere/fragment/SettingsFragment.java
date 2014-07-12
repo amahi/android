@@ -25,20 +25,14 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-
-import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
-import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
@@ -167,7 +161,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 			setUpSettingsSummary();
 
 			setUpServerConnection();
-			setUpServerConnectionIndicator();
 		}
 	}
 
@@ -208,42 +201,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		return ApiConnection.AUTO;
 	}
 
-	private void setUpServerConnectionIndicator() {
-		if (isConnectionAvailable()) {
-			getActivity().getActionBar().setBackgroundDrawable(getServerConnectionIndicator());
-		}
-	}
-
-	private boolean isConnectionAvailable() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-		return preferences.contains(getString(R.string.preference_key_server_connection));
-	}
-
-	private Drawable getServerConnectionIndicator() {
-		if (isConnectionLocal()) {
-			return getResources().getDrawable(R.drawable.bg_action_bar);
-		} else {
-			return getResources().getDrawable(R.drawable.bg_action_bar_warning);
-		}
-	}
-
-	private boolean isConnectionLocal() {
-		return serverClient.isConnectionLocal();
-	}
-
-	@Subscribe
-	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
-		setUpServerConnectionIndicator();
-	}
-
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		BusProvider.getBus().register(this);
-
-		setUpServerConnectionIndicator();
 
 		setUpSettingsPreferenceListener();
 	}
@@ -255,8 +215,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	@Override
 	public void onPause() {
 		super.onPause();
-
-		BusProvider.getBus().unregister(this);
 
 		tearDownSettingsPreferenceListener();
 	}

@@ -128,11 +128,19 @@ public final class Intents
 			return intent;
 		}
 
-		public Intent buildServerFileShareIntent(ServerFile file, Uri fileUri) {
+		public Intent buildServerFileOpeningIntent(ServerFile file, Uri fileUri) {
 			Intent intent = new Intent(Intent.ACTION_VIEW);
 			intent.setDataAndType(fileUri, file.getMime());
 
-			return intent;
+			return Intent.createChooser(intent, null);
+		}
+
+		public Intent buildServerFileSharingIntent(ServerFile file, Uri fileUri) {
+			Intent intent = new Intent(Intent.ACTION_SEND);
+			intent.setType(file.getMime());
+			intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+
+			return Intent.createChooser(intent, null);
 		}
 
 		public Intent buildSettingsIntent() {

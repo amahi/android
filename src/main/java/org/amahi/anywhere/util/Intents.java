@@ -31,6 +31,7 @@ import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
 import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
+import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.activity.SettingsActivity;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -76,6 +77,13 @@ public final class Intents
 			this.context = context;
 		}
 
+		public Intent buildServerFilesActivity(ServerShare share) {
+			Intent intent = new Intent(context, ServerFilesActivity.class);
+			intent.putExtra(Extras.SERVER_SHARE, share);
+
+			return intent;
+		}
+
 		public boolean isServerFileSupported(ServerFile file) {
 			return getServerFileActivity(file) != null;
 		}
@@ -111,7 +119,7 @@ public final class Intents
 			return intent;
 		}
 
-		public boolean isServerFileShareSupported(ServerFile file) {
+		public boolean isServerFileOpeningSupported(ServerFile file) {
 			PackageManager packageManager = context.getPackageManager();
 
 			List<ResolveInfo> applications = packageManager.queryIntentActivities(

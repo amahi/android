@@ -62,7 +62,7 @@ public class ServerFileWebActivity extends Activity
 
 		setUpHomeNavigation();
 
-		setUpWebResource();
+		setUpWebResource(savedInstanceState);
 	}
 
 	private void setUpInjections() {
@@ -73,17 +73,23 @@ public class ServerFileWebActivity extends Activity
 		getActionBar().setHomeButtonEnabled(true);
 	}
 
-	private void setUpWebResource() {
+	private void setUpWebResource(Bundle state) {
 		setUpWebResourceTitle();
-		setUpWebResourceContent();
+		setUpWebResourceContent(state);
 	}
 
 	private void setUpWebResourceTitle() {
 		getActionBar().setTitle(getFile().getName());
 	}
 
-	private void setUpWebResourceContent() {
-		getWebView().loadUrl(getWebResourceUri().toString());
+	private void setUpWebResourceContent(Bundle state) {
+		if (!isWebResourceStateValid(state)) {
+			getWebView().loadUrl(getWebResourceUri().toString());
+		}
+	}
+
+	private boolean isWebResourceStateValid(Bundle state) {
+		return state != null;
 	}
 
 	private WebView getWebView() {
@@ -103,6 +109,17 @@ public class ServerFileWebActivity extends Activity
 	}
 
 	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+
+		setUpWebResourceState(savedInstanceState);
+	}
+
+	private void setUpWebResourceState(Bundle state) {
+		getWebView().restoreState(state);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
 			case android.R.id.home:
@@ -112,5 +129,16 @@ public class ServerFileWebActivity extends Activity
 			default:
 				return super.onOptionsItemSelected(menuItem);
 		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		tearDownWebResourceState(outState);
+	}
+
+	private void tearDownWebResourceState(Bundle state) {
+		getWebView().saveState(state);
 	}
 }

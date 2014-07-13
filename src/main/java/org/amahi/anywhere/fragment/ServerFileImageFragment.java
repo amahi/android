@@ -105,4 +105,17 @@ public class ServerFileImageFragment extends Fragment implements Callback
 	@Override
 	public void onError() {
 	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+
+		tearDownImageContent();
+	}
+
+	private void tearDownImageContent() {
+		Picasso
+			.with(getActivity())
+			.cancelRequest(getImageView());
+	}
 }

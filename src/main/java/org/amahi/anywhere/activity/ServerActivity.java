@@ -36,6 +36,7 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
@@ -170,7 +171,7 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 	}
 
 	private void setUpShares() {
-		Fragments.Operator.at(this).set(buildSharesFragment(), R.id.container_shares);
+		Fragments.Operator.at(this).replace(buildSharesFragment(), R.id.container_content);
 	}
 
 	private Fragment buildSharesFragment() {
@@ -179,6 +180,23 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 
 	private void hideNavigationDrawer() {
 		getDrawer().closeDrawers();
+	}
+
+	@Subscribe
+	public void onAppsSelected(AppsSelectedEvent event) {
+		setUpApps();
+
+		if (isNavigationDrawerAvailable()) {
+			hideNavigationDrawer();
+		}
+	}
+
+	private void setUpApps() {
+		Fragments.Operator.at(this).replace(buildAppsFragment(), R.id.container_content);
+	}
+
+	private Fragment buildAppsFragment() {
+		return Fragments.Builder.buildServerAppsFragment();
 	}
 
 	@Subscribe

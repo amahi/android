@@ -48,9 +48,9 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.adapter.NavigationAdapter;
 import org.amahi.anywhere.adapter.ServersAdapter;
+import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
-import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
@@ -231,16 +231,16 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	public void onItemClick(AdapterView<?> navigationListView, View navigationView, int navigationPosition, long navigationId) {
 		switch (navigationPosition) {
 			case NavigationAdapter.NavigationItems.SHARES:
-				setUpShares();
+				BusProvider.getBus().post(new SharesSelectedEvent());
+				break;
+
+			case NavigationAdapter.NavigationItems.APPS:
+				BusProvider.getBus().post(new AppsSelectedEvent());
 				break;
 
 			default:
 				break;
 		}
-	}
-
-	private void setUpShares() {
-		BusProvider.getBus().post(new SharesSelectedEvent());
 	}
 
 	private void showContent() {

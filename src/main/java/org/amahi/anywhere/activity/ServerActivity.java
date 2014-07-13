@@ -21,11 +21,9 @@ package org.amahi.anywhere.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -39,41 +37,23 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.FileDownloadedEvent;
-import org.amahi.anywhere.bus.FileOpeningEvent;
-import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
-import org.amahi.anywhere.fragment.FileDownloadingFragment;
-import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
+import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
-import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.task.FileDownloadingTask;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.util.Mimes;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 public class ServerActivity extends Activity implements DrawerLayout.DrawerListener
 {
-	private static enum FileAction
-	{
-		OPEN, SHARE
-	}
-
 	@Inject
 	ServerClient serverClient;
 
 	private ActionBarDrawerToggle navigationDrawerToggle;
-
-	private ServerShare selectedShare;
-
-	private FileAction fileAction;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -154,14 +134,8 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 	public void onDrawerClosed(View drawer) {
 		navigationDrawerToggle.onDrawerClosed(drawer);
 
-		setUpTitle(selectedShare);
+		setUpTitle("Shares");
 		setUpMenu();
-	}
-
-	private void setUpTitle(ServerShare share) {
-		if (share != null) {
-			getActionBar().setTitle(share.getName());
-		}
 	}
 
 	@Override
@@ -187,26 +161,20 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 	}
 
 	@Subscribe
-	public void onShareSelected(ShareSelectedEvent event) {
-		setUpShare(event.getShare());
+	public void onSharesSelected(SharesSelectedEvent event) {
+		setUpShares();
 
 		if (isNavigationDrawerAvailable()) {
 			hideNavigationDrawer();
 		}
 	}
 
-	private void setUpShare(ServerShare share) {
-		this.selectedShare = share;
-
-		setUpFilesFragment(share);
+	private void setUpShares() {
+		Fragments.Operator.at(this).set(buildSharesFragment(), R.id.container_shares);
 	}
 
-	private void setUpFilesFragment(ServerShare share) {
-		Fragments.Operator.at(this).replace(buildFilesFragment(share, null), R.id.container_files);
-	}
-
-	private Fragment buildFilesFragment(ServerShare share, ServerFile directory) {
-		return Fragments.Builder.buildServerFilesFragment(share, directory);
+	private Fragment buildSharesFragment() {
+		return Fragments.Builder.buildServerSharesFragment();
 	}
 
 	private void hideNavigationDrawer() {
@@ -214,109 +182,13 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 	}
 
 	@Subscribe
-	public void onFileOpening(FileOpeningEvent event) {
-		this.fileAction = FileAction.OPEN;
-
-		setUpFile(event.getShare(), event.getFiles(), event.getFile());
+	public void onShareSelected(ShareSelectedEvent event) {
+		setUpShare(event.getShare());
 	}
 
-	private void setUpFile(ServerShare share, List<ServerFile> files, ServerFile file) {
-		if (isDirectory(file)) {
-			setUpFilesFragment(share, file);
-		} else {
-			setUpFileActivity(share, files, file);
-		}
-	}
-
-	private boolean isDirectory(ServerFile file) {
-		return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
-	}
-
-	private void setUpFilesFragment(ServerShare share, ServerFile directory) {
-		Fragments.Operator.at(this).replaceBackstacked(buildFilesFragment(share, directory), R.id.container_files);
-	}
-
-	private void setUpFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
-		if (Intents.Builder.with(this).isServerFileSupported(file)) {
-			startFileActivity(share, files, file);
-			return;
-		}
-
-		if (Intents.Builder.with(this).isServerFileOpeningSupported(file)) {
-			startFileShareActivity(share, file);
-			return;
-		}
-
-		showGooglePlaySearchFragment(file);
-	}
-
-	private void startFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
-		Intent intent = Intents.Builder.with(this).buildServerFileIntent(share, files, file);
+	private void setUpShare(ServerShare share) {
+		Intent intent = Intents.Builder.with(this).buildServerFilesActivity(share);
 		startActivity(intent);
-	}
-
-	private void startFileShareActivity(ServerShare share, ServerFile file) {
-		showFileDownloadingFragment();
-
-		startFileDownloading(share, file);
-	}
-
-	private void showFileDownloadingFragment() {
-		DialogFragment fragment = new FileDownloadingFragment();
-		fragment.show(getFragmentManager(), FileDownloadingFragment.TAG);
-	}
-
-	private void startFileDownloading(ServerShare share, ServerFile file) {
-		FileDownloadingTask.execute(this, file, getFileUri(share, file));
-	}
-
-	private Uri getFileUri(ServerShare share, ServerFile file) {
-		return serverClient.getFileUri(share, file);
-	}
-
-	@Subscribe
-	public void onFileDownloaded(FileDownloadedEvent event) {
-		hideFileDownloadingFragment();
-
-		switch (fileAction) {
-			case OPEN:
-				startFileOpeningActivity(event.getFile(), event.getFileUri());
-				break;
-
-			case SHARE:
-				startFileSharingActivity(event.getFile(), event.getFileUri());
-				break;
-
-			default:
-				break;
-		}
-	}
-
-	private void hideFileDownloadingFragment() {
-		DialogFragment fragment = (DialogFragment) Fragments.Operator.at(this).find(FileDownloadingFragment.TAG);
-		fragment.dismiss();
-	}
-
-	private void startFileOpeningActivity(ServerFile file, Uri fileUri) {
-		Intent intent = Intents.Builder.with(this).buildServerFileOpeningIntent(file, fileUri);
-		startActivity(intent);
-	}
-
-	private void startFileSharingActivity(ServerFile file, Uri fileUri) {
-		Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
-		startActivity(intent);
-	}
-
-	private void showGooglePlaySearchFragment(ServerFile file) {
-		GooglePlaySearchFragment fragment = GooglePlaySearchFragment.newInstance(file);
-		fragment.show(getFragmentManager(), GooglePlaySearchFragment.TAG);
-	}
-
-	@Subscribe
-	public void onFileSharing(ServerFileSharingEvent event) {
-		this.fileAction = FileAction.SHARE;
-
-		startFileShareActivity(event.getShare(), event.getFile());
 	}
 
 	@Subscribe

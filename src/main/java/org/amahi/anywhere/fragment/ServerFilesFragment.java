@@ -254,7 +254,7 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	}
 
 	@Subscribe
-	public void onServerFilesLoadFailed(ServerFilesLoadFailedEvent event) {
+	public void onFilesLoadFailed(ServerFilesLoadFailedEvent event) {
 		showFilesError();
 
 		hideFilesContentRefreshing();

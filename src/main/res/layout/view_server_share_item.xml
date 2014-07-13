@@ -24,6 +24,6 @@
 	android:textSize="@dimen/text_medium"
 	android:background="?android:attr/activatedBackgroundIndicator"
 	android:gravity="center_vertical"
-	android:padding="16dp"
+	android:padding="8dp"
 	android:layout_width="match_parent"
 	android:layout_height="?android:attr/listPreferredItemHeight"/>

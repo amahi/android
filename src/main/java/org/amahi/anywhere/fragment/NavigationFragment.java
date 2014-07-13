@@ -46,21 +46,18 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
-import org.amahi.anywhere.adapter.ServerSharesAdapter;
+import org.amahi.anywhere.adapter.NavigationAdapter;
 import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
-import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
-import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
-import org.amahi.anywhere.bus.ShareSelectedEvent;
+import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
-import org.amahi.anywhere.server.model.ServerShare;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -70,9 +67,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
+	OnAccountsUpdateListener,
 	AdapterView.OnItemSelectedListener,
-	AdapterView.OnItemClickListener,
-	OnAccountsUpdateListener
+	AdapterView.OnItemClickListener
 {
 	@Inject
 	AmahiClient amahiClient;
@@ -188,6 +185,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	@Subscribe
 	public void onServersLoaded(ServersLoadedEvent event) {
 		setUpServersContent(event.getServers());
+		setUpNavigation();
 
 		showContent();
 	}
@@ -210,6 +208,39 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		}
 
 		return activeServers;
+	}
+
+	private void setUpNavigation() {
+		setUpNavigationAdapter();
+		setUpNavigationListener();
+	}
+
+	private void setUpNavigationAdapter() {
+		getNavigationListView().setAdapter(new NavigationAdapter(getActivity()));
+	}
+
+	private ListView getNavigationListView() {
+		return (ListView) getView().findViewById(R.id.list_navigation);
+	}
+
+	private void setUpNavigationListener() {
+		getNavigationListView().setOnItemClickListener(this);
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> navigationListView, View navigationView, int navigationPosition, long navigationId) {
+		switch (navigationPosition) {
+			case NavigationAdapter.NavigationItems.SHARES:
+				setUpShares();
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	private void setUpShares() {
+		BusProvider.getBus().post(new SharesSelectedEvent());
 	}
 
 	private void showContent() {
@@ -239,26 +270,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	public void onItemSelected(AdapterView<?> spinnerView, View view, int position, long id) {
 		Server server = getServersAdapter().getItem(position);
 
-		setUpShares(server);
-	}
-
-	private void setUpShares(Server server) {
-		setUpSharesAdapter();
-		setUpSharesListener();
-
 		setUpServerConnection(server);
-	}
-
-	private void setUpSharesAdapter() {
-		getSharesList().setAdapter(new ServerSharesAdapter(getActivity()));
-	}
-
-	private ListView getSharesList() {
-		return (ListView) getView().findViewById(R.id.list_shares);
-	}
-
-	private void setUpSharesListener() {
-		getSharesList().setOnItemClickListener(this);
 	}
 
 	private void setUpServerConnection(Server server) {
@@ -282,8 +294,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		} else {
 			serverClient.connectRemote();
 		}
-
-		setUpSharesContent();
 	}
 
 	private boolean isConnectionAvailable() {
@@ -304,59 +314,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
 		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
-	}
-
-	@Subscribe
-	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
-		setUpSharesContent();
-	}
-
-	private void setUpSharesContent() {
-		serverClient.getShares();
-	}
-
-	@Subscribe
-	public void onSharesLoaded(ServerSharesLoadedEvent event) {
-		setUpSharesContent(event.getServerShares());
-
-		showSharesContent();
-	}
-
-	private void setUpSharesContent(List<ServerShare> shares) {
-		getSharesAdapter().replaceWith(shares);
-	}
-
-	private ServerSharesAdapter getSharesAdapter() {
-		return (ServerSharesAdapter) getSharesList().getAdapter();
-	}
-
-	private void showSharesContent() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator_shares);
-
-		View content = getView().findViewById(R.id.list_shares);
-
-		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
-			animator.setDisplayedChild(animator.indexOfChild(content));
-		}
-	}
-
-	@Subscribe
-	public void onSharesLoadFailed(ServerSharesLoadFailedEvent event) {
-		showSharesError();
-	}
-
-	private void showSharesError() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator_shares);
-		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.layout_shares_error)));
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
-		getSharesList().setItemChecked(position, true);
-
-		ServerShare share = getSharesAdapter().getItem(position);
-
-		BusProvider.getBus().post(new ShareSelectedEvent(share));
 	}
 
 	@Override

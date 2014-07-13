@@ -19,20 +19,13 @@
 
 package org.amahi.anywhere.activity;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.widget.DrawerLayout;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.squareup.otto.Subscribe;
 
@@ -42,15 +35,12 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
-import org.amahi.anywhere.bus.SettingsSelectedEvent;
-import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.fragment.FileDownloadingFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.FileDownloadingTask;
-import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -59,7 +49,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class ServerFilesActivity extends Activity implements DrawerLayout.DrawerListener
+public class ServerFilesActivity extends Activity
 {
 	private static enum FileAction
 	{
@@ -68,10 +58,6 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 
 	@Inject
 	ServerClient serverClient;
-
-	private ActionBarDrawerToggle navigationDrawerToggle;
-
-	private ServerShare selectedShare;
 
 	private FileAction fileAction;
 
@@ -84,7 +70,7 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 
 		setUpHomeNavigation();
 
-		setUpNavigation();
+		setUpFiles();
 	}
 
 	private void setUpInjections() {
@@ -92,125 +78,28 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 	}
 
 	private void setUpHomeNavigation() {
-		ActionBar actionBar = getActionBar();
-
-		actionBar.setHomeButtonEnabled(isNavigationDrawerAvailable());
-		actionBar.setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
+		getActionBar().setHomeButtonEnabled(true);
 	}
 
-	private boolean isNavigationDrawerAvailable() {
-		return !Android.isTablet(this);
+	private void setUpFiles() {
+		setUpFilesTitle();
+		setUpFilesFragment();
 	}
 
-	private void setUpNavigation() {
-		if (isNavigationDrawerAvailable()) {
-			setUpNavigationDrawer();
-		}
-
-		setUpNavigationFragment();
-
-		if (isNavigationDrawerAvailable()) {
-			showNavigationDrawer();
-		}
+	private void setUpFilesTitle() {
+		getActionBar().setTitle(getShare().getName());
 	}
 
-	private void setUpNavigationDrawer() {
-		this.navigationDrawerToggle = buildNavigationDrawerToggle();
-
-		getDrawer().setDrawerListener(this);
-		getDrawer().setDrawerShadow(R.drawable.bg_shadow_drawer, Gravity.START);
+	private ServerShare getShare() {
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
-	private ActionBarDrawerToggle buildNavigationDrawerToggle() {
-		return new ActionBarDrawerToggle(
-			this,
-			getDrawer(),
-			R.drawable.ic_drawer,
-			R.string.menu_navigation_open,
-			R.string.menu_navigation_close);
-	}
-
-	private DrawerLayout getDrawer() {
-		return (DrawerLayout) findViewById(R.id.drawer_content);
-	}
-
-	@Override
-	public void onDrawerOpened(View drawer) {
-		navigationDrawerToggle.onDrawerOpened(drawer);
-
-		setUpTitle(getString(R.string.application_name));
-		setUpMenu();
-	}
-
-	private void setUpTitle(String title) {
-		getActionBar().setTitle(title);
-	}
-
-	private void setUpMenu() {
-		invalidateOptionsMenu();
-	}
-
-	@Override
-	public void onDrawerClosed(View drawer) {
-		navigationDrawerToggle.onDrawerClosed(drawer);
-
-		setUpTitle(selectedShare);
-		setUpMenu();
-	}
-
-	private void setUpTitle(ServerShare share) {
-		if (share != null) {
-			getActionBar().setTitle(share.getName());
-		}
-	}
-
-	@Override
-	public void onDrawerSlide(View drawer, float slideOffset) {
-		navigationDrawerToggle.onDrawerSlide(drawer, slideOffset);
-	}
-
-	@Override
-	public void onDrawerStateChanged(int state) {
-		navigationDrawerToggle.onDrawerStateChanged(state);
-	}
-
-	private void setUpNavigationFragment() {
-		Fragments.Operator.at(this).set(buildNavigationFragment(), R.id.container_navigation);
-	}
-
-	private Fragment buildNavigationFragment() {
-		return Fragments.Builder.buildNavigationFragment();
-	}
-
-	private void showNavigationDrawer() {
-		getDrawer().openDrawer(findViewById(R.id.container_navigation));
-	}
-
-	@Subscribe
-	public void onShareSelected(ShareSelectedEvent event) {
-		setUpShare(event.getShare());
-
-		if (isNavigationDrawerAvailable()) {
-			hideNavigationDrawer();
-		}
-	}
-
-	private void setUpShare(ServerShare share) {
-		this.selectedShare = share;
-
-		setUpFilesFragment(share);
-	}
-
-	private void setUpFilesFragment(ServerShare share) {
-		Fragments.Operator.at(this).replace(buildFilesFragment(share, null), R.id.container_files);
+	private void setUpFilesFragment() {
+		Fragments.Operator.at(this).set(buildFilesFragment(getShare(), null), R.id.container_files);
 	}
 
 	private Fragment buildFilesFragment(ServerShare share, ServerFile directory) {
 		return Fragments.Builder.buildServerFilesFragment(share, directory);
-	}
-
-	private void hideNavigationDrawer() {
-		getDrawer().closeDrawers();
 	}
 
 	@Subscribe
@@ -242,8 +131,8 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 			return;
 		}
 
-		if (Intents.Builder.with(this).isServerFileShareSupported(file)) {
-			startFileShareActivity(share, file);
+		if (Intents.Builder.with(this).isServerFileOpeningSupported(file)) {
+			startFileOpeningActivity(share, file);
 			return;
 		}
 
@@ -255,19 +144,19 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 		startActivity(intent);
 	}
 
-	private void startFileShareActivity(ServerShare share, ServerFile file) {
+	private void startFileOpeningActivity(ServerShare share, ServerFile file) {
+		startFileDownloading(share, file);
+	}
+
+	private void startFileDownloading(ServerShare share, ServerFile file) {
 		showFileDownloadingFragment();
 
-		startFileDownloading(share, file);
+		FileDownloadingTask.execute(this, file, getFileUri(share, file));
 	}
 
 	private void showFileDownloadingFragment() {
 		DialogFragment fragment = new FileDownloadingFragment();
 		fragment.show(getFragmentManager(), FileDownloadingFragment.TAG);
-	}
-
-	private void startFileDownloading(ServerShare share, ServerFile file) {
-		FileDownloadingTask.execute(this, file, getFileUri(share, file));
 	}
 
 	private Uri getFileUri(ServerShare share, ServerFile file) {
@@ -276,15 +165,19 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 
 	@Subscribe
 	public void onFileDownloaded(FileDownloadedEvent event) {
+		finishFileDownloading(event.getFile(), event.getFileUri());
+	}
+
+	private void finishFileDownloading(ServerFile file, Uri fileUri) {
 		hideFileDownloadingFragment();
 
 		switch (fileAction) {
 			case OPEN:
-				startFileOpeningActivity(event.getFile(), event.getFileUri());
+				startFileOpeningActivity(file, fileUri);
 				break;
 
 			case SHARE:
-				startFileSharingActivity(event.getFile(), event.getFileUri());
+				startFileSharingActivity(file, fileUri);
 				break;
 
 			default:
@@ -316,64 +209,22 @@ public class ServerFilesActivity extends Activity implements DrawerLayout.Drawer
 	public void onFileSharing(ServerFileSharingEvent event) {
 		this.fileAction = FileAction.SHARE;
 
-		startFileShareActivity(event.getShare(), event.getFile());
+		startFileSharingActivity(event.getShare(), event.getFile());
 	}
 
-	@Subscribe
-	public void onSettingsSelected(SettingsSelectedEvent event) {
-		setUpSettingsActivity();
-	}
-
-	private void setUpSettingsActivity() {
-		Intent intent = Intents.Builder.with(this).buildSettingsIntent();
-		startActivity(intent);
-	}
-
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-
-		if (isNavigationDrawerAvailable()) {
-			navigationDrawerToggle.syncState();
-		}
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (isNavigationDrawerAvailable()) {
-			setUpMenu(menu);
-		}
-
-		return super.onPrepareOptionsMenu(menu);
-	}
-
-	private void setUpMenu(Menu menu) {
-		MenuItem sortMenuItem = menu.findItem(R.id.menu_sort);
-
-		if (sortMenuItem != null) {
-			sortMenuItem.setVisible(!isNavigationDrawerOpen());
-		}
-	}
-
-	private boolean isNavigationDrawerOpen() {
-		return getDrawer().isDrawerOpen(findViewById(R.id.container_navigation));
+	private void startFileSharingActivity(ServerShare share, ServerFile file) {
+		startFileDownloading(share, file);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		if (isNavigationDrawerAvailable() && navigationDrawerToggle.onOptionsItemSelected(menuItem)) {
-			return true;
-		}
+		switch (menuItem.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
 
-		return super.onOptionsItemSelected(menuItem);
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration configuration) {
-		super.onConfigurationChanged(configuration);
-
-		if (isNavigationDrawerAvailable()) {
-			navigationDrawerToggle.onConfigurationChanged(configuration);
+			default:
+				return super.onOptionsItemSelected(menuItem);
 		}
 	}
 

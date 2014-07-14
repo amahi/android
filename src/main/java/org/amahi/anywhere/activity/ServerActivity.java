@@ -51,6 +51,14 @@ import javax.inject.Inject;
 
 public class ServerActivity extends Activity implements DrawerLayout.DrawerListener
 {
+	private static final class State
+	{
+		private State() {
+		}
+
+		public static final String NAVIGATION_DRAWER_VISIBLE = "navigation_drawer_visible";
+	}
+
 	@Inject
 	ServerClient serverClient;
 
@@ -65,7 +73,7 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 
 		setUpHomeNavigation();
 
-		setUpNavigation();
+		setUpNavigation(savedInstanceState);
 	}
 
 	private void setUpInjections() {
@@ -83,14 +91,14 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 		return !Android.isTablet(this);
 	}
 
-	private void setUpNavigation() {
+	private void setUpNavigation(Bundle state) {
 		if (isNavigationDrawerAvailable()) {
 			setUpNavigationDrawer();
 		}
 
 		setUpNavigationFragment();
 
-		if (isNavigationDrawerAvailable()) {
+		if (isNavigationDrawerAvailable() && isNavigationDrawerRequired(state)) {
 			showNavigationDrawer();
 		}
 	}
@@ -155,6 +163,10 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 
 	private Fragment buildNavigationFragment() {
 		return Fragments.Builder.buildNavigationFragment();
+	}
+
+	private boolean isNavigationDrawerRequired(Bundle state) {
+		return (state == null) || state.getBoolean(State.NAVIGATION_DRAWER_VISIBLE);
 	}
 
 	private void showNavigationDrawer() {
@@ -265,6 +277,17 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 		if (isNavigationDrawerAvailable()) {
 			navigationDrawerToggle.onConfigurationChanged(configuration);
 		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		tearDownNavigationDrawerState(outState);
+	}
+
+	private void tearDownNavigationDrawerState(Bundle state) {
+		state.putBoolean(State.NAVIGATION_DRAWER_VISIBLE, isNavigationDrawerAvailable() && isNavigationDrawerOpen());
 	}
 
 	@Override

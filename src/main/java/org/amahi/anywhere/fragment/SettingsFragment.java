@@ -165,6 +165,10 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void setUpServerConnection() {
+		if (!serverClient.isConnected()) {
+			return;
+		}
+
 		switch (getServerConnection()) {
 			case AUTO:
 				serverClient.connectAuto();

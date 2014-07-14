@@ -34,6 +34,7 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerSharesAdapter;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
@@ -124,6 +125,15 @@ public class ServerSharesFragment extends ListFragment
 	}
 
 	private void setUpSharesContent() {
+		if (serverClient.isConnected()) {
+			serverClient.getShares();
+		} else {
+			showSharesError();
+		}
+	}
+
+	@Subscribe
+	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
 		serverClient.getShares();
 	}
 

@@ -143,7 +143,6 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 	public void onDrawerClosed(View drawer) {
 		navigationDrawerToggle.onDrawerClosed(drawer);
 
-		setUpTitle("Shares");
 		setUpMenu();
 	}
 
@@ -175,6 +174,8 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 
 	@Subscribe
 	public void onSharesSelected(SharesSelectedEvent event) {
+		setUpTitle("Shares");
+
 		setUpShares();
 
 		if (isNavigationDrawerAvailable()) {
@@ -196,6 +197,8 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 
 	@Subscribe
 	public void onAppsSelected(AppsSelectedEvent event) {
+		setUpTitle("Apps");
+
 		setUpApps();
 
 		if (isNavigationDrawerAvailable()) {

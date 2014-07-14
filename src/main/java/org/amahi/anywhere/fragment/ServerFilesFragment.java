@@ -21,6 +21,7 @@ package org.amahi.anywhere.fragment;
 
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -59,6 +60,15 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	AdapterView.OnItemLongClickListener,
 	ActionMode.Callback
 {
+	private static final class State
+	{
+		private State() {
+		}
+
+		public static final String FILES = "files";
+		public static final String FILES_SORT = "files_sort";
+	}
+
 	private static enum FilesSort
 	{
 		NAME, MODIFICATION_TIME
@@ -82,18 +92,18 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 
 		setUpInjections();
 
-		setUpFiles();
+		setUpFiles(savedInstanceState);
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
 	}
 
-	private void setUpFiles() {
+	private void setUpFiles(Bundle state) {
 		setUpFilesMenu();
 		setUpFilesActions();
 		setUpFilesAdapter();
-		setUpFilesContent();
+		setUpFilesContent(state);
 		setUpFilesContentRefreshing();
 	}
 
@@ -181,6 +191,48 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 		setListAdapter(new ServerFilesAdapter(getActivity()));
 	}
 
+	private void setUpFilesContent(Bundle state) {
+		if (isFilesStateValid(state)) {
+			setUpFilesState(state);
+		} else {
+			setUpFilesContent();
+		}
+	}
+
+	private boolean isFilesStateValid(Bundle state) {
+		return (state != null) && state.containsKey(State.FILES) && state.containsKey(State.FILES_SORT) ;
+	}
+
+	private void setUpFilesState(Bundle state) {
+		List<ServerFile> files = state.getParcelableArrayList(State.FILES);
+		FilesSort filesSort = (FilesSort) state.getSerializable(State.FILES_SORT);
+
+		setUpFilesContent(files);
+		setUpFilesContentSort(filesSort);
+
+		showFilesContent();
+	}
+
+	private void setUpFilesContent(List<ServerFile> files) {
+		getFilesAdapter().replaceWith(files);
+	}
+
+	private void setUpFilesContentSort(FilesSort filesSort) {
+		this.filesSort = filesSort;
+
+		getActivity().invalidateOptionsMenu();
+	}
+
+	private void showFilesContent() {
+		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
+
+		View content = getView().findViewById(R.id.content);
+
+		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
+			animator.setDisplayedChild(animator.indexOfChild(content));
+		}
+	}
+
 	private void setUpFilesContent() {
 		if (!isDirectoryAvailable()) {
 			serverClient.getFiles(getShare());
@@ -203,15 +255,11 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 
 	@Subscribe
 	public void onFilesLoaded(ServerFilesLoadedEvent event) {
-		setUpFilesContent(event.getServerFiles());
+		setUpFilesContent(sortFiles(event.getServerFiles()));
 
 		showFilesContent();
 
 		hideFilesContentRefreshing();
-	}
-
-	private void setUpFilesContent(List<ServerFile> files) {
-		getFilesAdapter().replaceWith(sortFiles(files));
 	}
 
 	private List<ServerFile> sortFiles(List<ServerFile> files) {
@@ -232,16 +280,6 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 
 			default:
 				return null;
-		}
-	}
-
-	private void showFilesContent() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
-
-		View content = getView().findViewById(R.id.content);
-
-		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
-			animator.setDisplayedChild(animator.indexOfChild(content));
 		}
 	}
 
@@ -376,6 +414,25 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		tearDownFilesState(outState);
+	}
+
+	private void tearDownFilesState(Bundle state) {
+		if (areFilesLoaded()) {
+			state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFilesAdapter().getItems()));
+		}
+
+		state.putSerializable(State.FILES_SORT, filesSort);
+	}
+
+	private boolean areFilesLoaded() {
+		return getFilesAdapter() != null;
 	}
 
 	private static final class FileNameComparator implements Comparator<ServerFile>

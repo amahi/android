@@ -55,6 +55,10 @@ public class ServerSharesAdapter extends BaseAdapter
 		return shares.size();
 	}
 
+	public List<ServerShare> getItems() {
+		return shares;
+	}
+
 	@Override
 	public ServerShare getItem(int position) {
 		return shares.get(position);

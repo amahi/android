@@ -21,6 +21,7 @@ package org.amahi.anywhere.fragment;
 
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,12 +40,21 @@ import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerShare;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 public class ServerSharesFragment extends ListFragment
 {
+	private static final class State
+	{
+		private State() {
+		}
+
+		public static final String SHARES = "shares";
+	}
+
 	@Inject
 	ServerClient serverClient;
 
@@ -59,29 +69,38 @@ public class ServerSharesFragment extends ListFragment
 
 		setUpInjections();
 
-		setUpShares();
+		setUpShares(savedInstanceState);
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
 	}
 
-	private void setUpShares() {
+	private void setUpShares(Bundle state) {
 		setUpSharesAdapter();
-		setUpSharesContent();
+		setUpSharesContent(state);
 	}
 
 	private void setUpSharesAdapter() {
 		setListAdapter(new ServerSharesAdapter(getActivity()));
 	}
 
-	private void setUpSharesContent() {
-		serverClient.getShares();
+	private void setUpSharesContent(Bundle state) {
+		if (isSharesStateValid(state)) {
+			setUpSharesState(state);
+		} else {
+			setUpSharesContent();
+		}
 	}
 
-	@Subscribe
-	public void onSharesLoaded(ServerSharesLoadedEvent event) {
-		setUpSharesContent(event.getServerShares());
+	private boolean isSharesStateValid(Bundle state) {
+		return (state != null) && (state.containsKey(State.SHARES));
+	}
+
+	private void setUpSharesState(Bundle state) {
+		List<ServerShare> shares = state.getParcelableArrayList(State.SHARES);
+
+		setUpSharesContent(shares);
 
 		showSharesContent();
 	}
@@ -102,6 +121,17 @@ public class ServerSharesFragment extends ListFragment
 		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
 			animator.setDisplayedChild(animator.indexOfChild(content));
 		}
+	}
+
+	private void setUpSharesContent() {
+		serverClient.getShares();
+	}
+
+	@Subscribe
+	public void onSharesLoaded(ServerSharesLoadedEvent event) {
+		setUpSharesContent(event.getServerShares());
+
+		showSharesContent();
 	}
 
 	@Subscribe
@@ -142,5 +172,22 @@ public class ServerSharesFragment extends ListFragment
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		tearDownSharesState(outState);
+	}
+
+	private void tearDownSharesState(Bundle state) {
+		if (areSharesLoaded()) {
+			state.putParcelableArrayList(State.SHARES, new ArrayList<Parcelable>(getSharesAdapter().getItems()));
+		}
+	}
+
+	private boolean areSharesLoaded() {
+		return getSharesAdapter() != null;
 	}
 }

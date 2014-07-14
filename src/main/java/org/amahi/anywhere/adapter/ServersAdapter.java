@@ -54,6 +54,10 @@ public class ServersAdapter extends BaseAdapter
 		return servers.size();
 	}
 
+	public List<Server> getItems() {
+		return servers;
+	}
+
 	@Override
 	public Server getItem(int position) {
 		return servers.get(position);

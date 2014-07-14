@@ -29,6 +29,7 @@ import android.accounts.OperationCanceledException;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,6 +52,7 @@ import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
@@ -71,6 +73,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	AdapterView.OnItemSelectedListener,
 	AdapterView.OnItemClickListener
 {
+	private static final class State
+	{
+		private State() {
+		}
+
+		public static final String SERVERS = "servers";
+	}
+
 	@Inject
 	AmahiClient amahiClient;
 
@@ -90,8 +100,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 		setUpSettingsMenu();
 
-		setUpAuthentication();
 		setUpAuthenticationListener();
+
+		setUpServers(savedInstanceState);
 	}
 
 	private void setUpInjections() {
@@ -102,16 +113,12 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setHasOptionsMenu(true);
 	}
 
-	private void setUpAuthentication() {
-		if (getAccounts().isEmpty()) {
-			setUpAccount();
-		} else {
-			setUpAuthenticationToken();
-		}
-	}
-
 	private void setUpAuthenticationListener() {
 		getAccountManager().addOnAccountsUpdatedListener(this, null, false);
+	}
+
+	private AccountManager getAccountManager() {
+		return AccountManager.get(getActivity());
 	}
 
 	@Override
@@ -123,10 +130,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 	private List<Account> getAccounts() {
 		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE_ACCOUNT));
-	}
-
-	private AccountManager getAccountManager() {
-		return AccountManager.get(getActivity());
 	}
 
 	private void setUpAccount() {
@@ -164,9 +167,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		getActivity().finish();
 	}
 
-	private void setUpServers(String authenticationToken) {
+	private void setUpServers(Bundle state) {
 		setUpServersAdapter();
-		setUpServersContent(authenticationToken);
+		setUpServersContent(state);
 		setUpServersListener();
 	}
 
@@ -178,14 +181,23 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		return (Spinner) getView().findViewById(R.id.spinner_servers);
 	}
 
-	private void setUpServersContent(String authenticationToken) {
-		amahiClient.getServers(authenticationToken);
+	private void setUpServersContent(Bundle state) {
+		if (isServersStateValid(state)) {
+			setUpServersState(state);
+			setUpNavigation();
+		} else {
+			setUpAuthentication();
+		}
 	}
 
-	@Subscribe
-	public void onServersLoaded(ServersLoadedEvent event) {
-		setUpServersContent(event.getServers());
-		setUpNavigation();
+	private boolean isServersStateValid(Bundle state) {
+		return (state != null) && state.containsKey(State.SERVERS);
+	}
+
+	private void setUpServersState(Bundle state) {
+		List<Server> servers = state.getParcelableArrayList(State.SERVERS);
+
+		setUpServersContent(servers);
 
 		showContent();
 	}
@@ -208,6 +220,38 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		}
 
 		return activeServers;
+	}
+
+	private void showContent() {
+		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator_content);
+		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.layout_content)));
+	}
+
+	private void setUpAuthentication() {
+		if (getAccounts().isEmpty()) {
+			setUpAccount();
+		} else {
+			setUpAuthenticationToken();
+		}
+	}
+
+	private void setUpServers(String authenticationToken) {
+		setUpServersAdapter();
+		setUpServersContent(authenticationToken);
+		setUpServersListener();
+	}
+
+	private void setUpServersContent(String authenticationToken) {
+		amahiClient.getServers(authenticationToken);
+	}
+
+	@Subscribe
+	public void onServersLoaded(ServersLoadedEvent event) {
+		setUpServersContent(event.getServers());
+
+		setUpNavigation();
+
+		showContent();
 	}
 
 	private void setUpNavigation() {
@@ -241,11 +285,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 			default:
 				break;
 		}
-	}
-
-	private void showContent() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator_content);
-		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.layout_content)));
 	}
 
 	@Subscribe
@@ -289,7 +328,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	private void setUpServerConnection() {
 		if (!isConnectionAvailable() || isConnectionAuto()) {
 			serverClient.connectAuto();
-		} else if (isConnectionLocal()) {
+			return;
+		}
+
+		if (isConnectionLocal()) {
 			serverClient.connectLocal();
 		} else {
 			serverClient.connectRemote();
@@ -347,6 +389,23 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		tearDownServersState(outState);
+	}
+
+	private void tearDownServersState(Bundle state) {
+		if (areServersLoaded()) {
+			state.putParcelableArrayList(State.SERVERS, new ArrayList<Parcelable>(getServersAdapter().getItems()));
+		}
+	}
+
+	private boolean areServersLoaded() {
+		return getServersAdapter() != null;
 	}
 
 	@Override

@@ -47,16 +47,20 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 	protected BusEvent doInBackground(Void... parameters) {
 		MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
 
-		audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
+		try {
+			audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
 
-		String audioTitle = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-		String audioArtist = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-		String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-		Bitmap audioAlbumArt = extractAlbumArt(audioMetadataRetriever);
+			String audioTitle = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+			String audioArtist = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+			String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+			Bitmap audioAlbumArt = extractAlbumArt(audioMetadataRetriever);
 
-		audioMetadataRetriever.release();
-
-		return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt);
+			return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt);
+		} catch (RuntimeException e) {
+			return new AudioMetadataRetrievedEvent(null, null, null, null);
+		} finally {
+			audioMetadataRetriever.release();
+		}
 	}
 
 	private Bitmap extractAlbumArt(MediaMetadataRetriever audioMetadataRetriever) {

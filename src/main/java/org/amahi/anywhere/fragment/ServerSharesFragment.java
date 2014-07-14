@@ -127,8 +127,6 @@ public class ServerSharesFragment extends ListFragment
 	private void setUpSharesContent() {
 		if (serverClient.isConnected()) {
 			serverClient.getShares();
-		} else {
-			showSharesError();
 		}
 	}
 

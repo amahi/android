@@ -33,7 +33,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
-import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
 
@@ -51,6 +50,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.ViewDirector;
 import org.amahi.anywhere.view.MediaControls;
 
 import java.util.ArrayList;
@@ -161,13 +161,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	}
 
 	private void showAudioMetadata() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
-
-		View content = findViewById(R.id.layout_content);
-
-		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
-			animator.setDisplayedChild(animator.indexOfChild(content));
-		}
+		ViewDirector.of(this, R.id.animator).show(R.id.layout_content);
 	}
 
 	@Subscribe
@@ -323,13 +317,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	}
 
 	private void hideAudioMetadata() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
-
-		View progress = findViewById(android.R.id.progress);
-
-		if (animator.getDisplayedChild() != animator.indexOfChild(progress)) {
-			animator.setDisplayedChild(animator.indexOfChild(progress));
-		}
+		ViewDirector.of(this, R.id.animator).show(android.R.id.progress);
 	}
 
 	private void hideAudioControls() {

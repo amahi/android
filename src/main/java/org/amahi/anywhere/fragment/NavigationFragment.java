@@ -40,7 +40,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
 
@@ -52,7 +51,6 @@ import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
-import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
@@ -60,6 +58,7 @@ import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.util.ViewDirector;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -223,8 +222,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void showContent() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator_content);
-		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.layout_content)));
+		ViewDirector.of(this, R.id.animator_content).show(R.id.layout_content);
 	}
 
 	private void setUpAuthentication() {
@@ -293,8 +291,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void showError() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator_content);
-		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.layout_error)));
+		ViewDirector.of(this, R.id.animator_content).show(R.id.layout_error);
 	}
 
 	private void setUpServersListener() {

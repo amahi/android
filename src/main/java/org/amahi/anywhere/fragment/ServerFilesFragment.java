@@ -32,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
 
@@ -48,6 +47,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.ViewDirector;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -224,13 +224,7 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	}
 
 	private void showFilesContent() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
-
-		View content = getView().findViewById(R.id.content);
-
-		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
-			animator.setDisplayedChild(animator.indexOfChild(content));
-		}
+		ViewDirector.of(this, R.id.animator).show(R.id.content);
 	}
 
 	private void setUpFilesContent() {
@@ -299,8 +293,7 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	}
 
 	private void showFilesError() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
-		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.error)));
+		ViewDirector.of(this, R.id.animator).show(R.id.error);
 	}
 
 	private void setUpFilesContentRefreshing() {

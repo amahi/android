@@ -26,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ViewAnimator;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -37,6 +36,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.ViewDirector;
 
 import javax.inject.Inject;
 
@@ -98,8 +98,7 @@ public class ServerFileImageFragment extends Fragment implements Callback
 	}
 
 	private void showImageContent() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
-		animator.setDisplayedChild(animator.indexOfChild(getView().findViewById(R.id.image)));
+		ViewDirector.of(this, R.id.animator).show(R.id.image);
 	}
 
 	@Override

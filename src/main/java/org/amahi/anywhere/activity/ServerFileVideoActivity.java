@@ -34,7 +34,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.MediaController;
-import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
 
@@ -50,6 +49,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.ViewDirector;
 import org.amahi.anywhere.view.MediaControls;
 
 import java.util.Arrays;
@@ -290,13 +290,7 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	}
 
 	private void showVideo() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator);
-
-		View contentLayout = findViewById(R.id.layout_content);
-
-		if (animator.getDisplayedChild() != animator.indexOfChild(contentLayout)) {
-			animator.setDisplayedChild(animator.indexOfChild(contentLayout));
-		}
+		ViewDirector.of(this, R.id.animator).show(R.id.layout_content);
 	}
 
 	private ServerShare getVideoShare() {

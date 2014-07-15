@@ -26,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
 
@@ -40,6 +39,7 @@ import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.ViewDirector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,13 +115,7 @@ public class ServerSharesFragment extends ListFragment
 	}
 
 	private void showSharesContent() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
-
-		View content = getView().findViewById(R.id.content);
-
-		if (animator.getDisplayedChild() != animator.indexOfChild(content)) {
-			animator.setDisplayedChild(animator.indexOfChild(content));
-		}
+		ViewDirector.of(this, R.id.animator).show(R.id.content);
 	}
 
 	private void setUpSharesContent() {
@@ -148,13 +142,7 @@ public class ServerSharesFragment extends ListFragment
 	}
 
 	private void showSharesError() {
-		ViewAnimator animator = (ViewAnimator) getView().findViewById(R.id.animator);
-
-		View error = getView().findViewById(R.id.error);
-
-		if (animator.getDisplayedChild() != animator.indexOfChild(error)) {
-			animator.setDisplayedChild(animator.indexOfChild(error));
-		}
+		ViewDirector.of(this, R.id.animator).show(R.id.error);
 	}
 
 	@Override

@@ -31,6 +31,9 @@ import android.text.TextUtils;
 
 import org.amahi.anywhere.activity.AuthenticationActivity;
 
+import java.util.Arrays;
+import java.util.List;
+
 class AmahiAuthenticator extends AbstractAccountAuthenticator
 {
 	private final Context context;
@@ -43,12 +46,23 @@ class AmahiAuthenticator extends AbstractAccountAuthenticator
 
 	@Override
 	public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
-		Intent accountIntent = new Intent(context, AuthenticationActivity.class);
-		accountIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+		if (getAccounts().isEmpty()) {
+			Intent accountIntent = new Intent(context, AuthenticationActivity.class);
+			accountIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
-		Bundle accountBundle = new Bundle();
-		accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);
-		return accountBundle;
+			Bundle accountBundle = new Bundle();
+			accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);
+			return accountBundle;
+		} else {
+			Bundle accountBundle = new Bundle();
+			accountBundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_CANCELED);
+			accountBundle.putString(AccountManager.KEY_ERROR_MESSAGE, "Account already exists.");
+			return accountBundle;
+		}
+	}
+
+	private List<Account> getAccounts() {
+		return Arrays.asList(AccountManager.get(context).getAccountsByType(AmahiAccount.TYPE_ACCOUNT));
 	}
 
 	@Override

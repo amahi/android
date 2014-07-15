@@ -9,7 +9,7 @@ You will need JDK 1.6, Android SDK 22 and Gradle 1.12 installed.
 1. Install Android components.
 
   ```
-  $ android update sdk --no-ui --force --all --filter build-tools-20
+  $ android update sdk --no-ui --force --all --filter build-tools-20.0.0
   $ android update sdk --no-ui --force --all --filter android-19
   $ android update sdk --no-ui --force --all --filter extra-android-m2repository
   ```

@@ -123,13 +123,13 @@ public final class Intents
 			PackageManager packageManager = context.getPackageManager();
 
 			List<ResolveInfo> applications = packageManager.queryIntentActivities(
-				buildServerFileShareIntent(file),
+				buildServerFileOpeningIntent(file),
 				PackageManager.MATCH_DEFAULT_ONLY);
 
 			return !applications.isEmpty();
 		}
 
-		private Intent buildServerFileShareIntent(ServerFile file) {
+		private Intent buildServerFileOpeningIntent(ServerFile file) {
 			Intent intent = new Intent(Intent.ACTION_VIEW);
 			intent.setType(file.getMime());
 
@@ -165,9 +165,7 @@ public final class Intents
 		}
 
 		public Intent buildGooglePlayIntent() {
-			String packageName = context.getPackageName();
-
-			String googlePlayUri = String.format(Uris.GOOGLE_PLAY, packageName);
+			String googlePlayUri = String.format(Uris.GOOGLE_PLAY, context.getPackageName());
 
 			return new Intent(Intent.ACTION_VIEW, Uri.parse(googlePlayUri));
 		}

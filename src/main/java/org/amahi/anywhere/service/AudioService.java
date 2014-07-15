@@ -183,8 +183,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-		this.audioMetadataFormatter = new AudioMetadataFormatter(
-			event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+		this.audioMetadataFormatter = new AudioMetadataFormatter(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
 		this.audioAlbumArt = event.getAudioAlbumArt();
 
 		setUpAudioPlayerRemote(audioMetadataFormatter, audioAlbumArt);

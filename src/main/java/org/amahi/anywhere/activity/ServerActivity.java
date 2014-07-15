@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -56,6 +55,7 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 		private State() {
 		}
 
+		public static final String NAVIGATION_TITLE = "navigation_title";
 		public static final String NAVIGATION_DRAWER_VISIBLE = "navigation_drawer_visible";
 	}
 
@@ -63,6 +63,7 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 	ServerClient serverClient;
 
 	private ActionBarDrawerToggle navigationDrawerToggle;
+	private String navigationTitle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +97,7 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 			setUpNavigationDrawer();
 		}
 
+		setUpNavigationTitle(state);
 		setUpNavigationFragment();
 
 		if (isNavigationDrawerAvailable() && isNavigationDrawerRequired(state)) {
@@ -128,22 +130,17 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 		navigationDrawerToggle.onDrawerOpened(drawer);
 
 		setUpTitle(getString(R.string.application_name));
-		setUpMenu();
 	}
 
 	private void setUpTitle(String title) {
 		getActionBar().setTitle(title);
 	}
 
-	private void setUpMenu() {
-		invalidateOptionsMenu();
-	}
-
 	@Override
 	public void onDrawerClosed(View drawer) {
 		navigationDrawerToggle.onDrawerClosed(drawer);
 
-		setUpMenu();
+		setUpTitle();
 	}
 
 	@Override
@@ -154,6 +151,24 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 	@Override
 	public void onDrawerStateChanged(int state) {
 		navigationDrawerToggle.onDrawerStateChanged(state);
+	}
+
+	private void setUpNavigationTitle(Bundle state) {
+		this.navigationTitle = getNavigationTitle(state);
+
+		setUpTitle();
+	}
+
+	private String getNavigationTitle(Bundle state) {
+		if (isNavigationStateValid(state)) {
+			return state.getString(State.NAVIGATION_TITLE);
+		} else {
+			return getString(R.string.application_name);
+		}
+	}
+
+	private boolean isNavigationStateValid(Bundle state) {
+		return (state != null) && state.containsKey(State.NAVIGATION_TITLE);
 	}
 
 	private void setUpNavigationFragment() {
@@ -174,13 +189,19 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 
 	@Subscribe
 	public void onSharesSelected(SharesSelectedEvent event) {
-		setUpTitle("Shares");
+		this.navigationTitle = "Shares";
+
+		setUpTitle();
 
 		setUpShares();
 
 		if (isNavigationDrawerAvailable()) {
 			hideNavigationDrawer();
 		}
+	}
+
+	private void setUpTitle() {
+		setUpTitle(navigationTitle);
 	}
 
 	private void setUpShares() {
@@ -197,7 +218,9 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 
 	@Subscribe
 	public void onAppsSelected(AppsSelectedEvent event) {
-		setUpTitle("Apps");
+		this.navigationTitle = "Apps";
+
+		setUpTitle();
 
 		setUpApps();
 
@@ -244,27 +267,6 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (isNavigationDrawerAvailable()) {
-			setUpMenu(menu);
-		}
-
-		return super.onPrepareOptionsMenu(menu);
-	}
-
-	private void setUpMenu(Menu menu) {
-		MenuItem sortMenuItem = menu.findItem(R.id.menu_sort);
-
-		if (sortMenuItem != null) {
-			sortMenuItem.setVisible(!isNavigationDrawerOpen());
-		}
-	}
-
-	private boolean isNavigationDrawerOpen() {
-		return getDrawer().isDrawerOpen(findViewById(R.id.container_navigation));
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		if (isNavigationDrawerAvailable() && navigationDrawerToggle.onOptionsItemSelected(menuItem)) {
 			return true;
@@ -286,11 +288,16 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		tearDownNavigationDrawerState(outState);
+		tearDownNavigationState(outState);
 	}
 
-	private void tearDownNavigationDrawerState(Bundle state) {
+	private void tearDownNavigationState(Bundle state) {
+		state.putString(State.NAVIGATION_TITLE, navigationTitle);
 		state.putBoolean(State.NAVIGATION_DRAWER_VISIBLE, isNavigationDrawerAvailable() && isNavigationDrawerOpen());
+	}
+
+	private boolean isNavigationDrawerOpen() {
+		return getDrawer().isDrawerOpen(findViewById(R.id.container_navigation));
 	}
 
 	@Override

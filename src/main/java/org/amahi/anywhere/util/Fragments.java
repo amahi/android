@@ -29,6 +29,7 @@ import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.ServerSharesFragment;
+import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 
@@ -86,6 +87,10 @@ public final class Fragments
 
 			return fileFragment;
 		}
+
+		public static Fragment buildSettingsFragment() {
+			return new SettingsFragment();
+		}
 	}
 
 	public static final class Operator
@@ -132,10 +137,6 @@ public final class Fragments
 				.replace(fragmentContainerId, fragment)
 				.addToBackStack(null)
 				.commit();
-		}
-
-		public void removeBackstaced() {
-			fragmentManager.popBackStack();
 		}
 	}
 }

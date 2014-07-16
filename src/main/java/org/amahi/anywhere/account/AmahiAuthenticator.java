@@ -46,19 +46,19 @@ class AmahiAuthenticator extends AbstractAccountAuthenticator
 
 	@Override
 	public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
+		Bundle accountBundle = new Bundle();
+
 		if (getAccounts().isEmpty()) {
 			Intent accountIntent = new Intent(context, AuthenticationActivity.class);
 			accountIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
-			Bundle accountBundle = new Bundle();
 			accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);
-			return accountBundle;
 		} else {
-			Bundle accountBundle = new Bundle();
 			accountBundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_CANCELED);
 			accountBundle.putString(AccountManager.KEY_ERROR_MESSAGE, "Account already exists.");
-			return accountBundle;
 		}
+
+		return accountBundle;
 	}
 
 	private List<Account> getAccounts() {

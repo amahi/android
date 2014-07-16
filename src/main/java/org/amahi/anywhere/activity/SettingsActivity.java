@@ -24,7 +24,6 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.util.Fragments;
 
 public class SettingsActivity extends Activity
@@ -47,7 +46,7 @@ public class SettingsActivity extends Activity
 	}
 
 	private Fragment buildSettingsFragment() {
-		return new SettingsFragment();
+		return Fragments.Builder.buildSettingsFragment();
 	}
 
 	@Override

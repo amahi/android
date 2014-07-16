@@ -81,6 +81,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		serverConnection.setSummary(getServerConnectionSummary());
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T extends Preference> T getPreference(int settingId) {
 		return (T) findPreference(getString(settingId));
 	}

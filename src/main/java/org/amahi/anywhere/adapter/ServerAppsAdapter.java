@@ -20,6 +20,7 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,13 +94,17 @@ public class ServerAppsAdapter extends BaseAdapter
 		ImageView appLogoView = (ImageView) view.findViewById(R.id.logo);
 		TextView appTextView = (TextView) view.findViewById(R.id.text);
 
-		Picasso
-			.with(view.getContext())
-			.load(app.getLogoUrl())
-			.fit()
-			.centerInside()
-			.error(R.drawable.ic_app_logo)
-			.into(appLogoView);
+		if (TextUtils.isEmpty(app.getLogoUrl())) {
+			appLogoView.setImageResource(R.drawable.ic_app_logo);
+		} else {
+			Picasso
+				.with(view.getContext())
+				.load(app.getLogoUrl())
+				.fit()
+				.centerInside()
+				.error(R.drawable.ic_app_logo)
+				.into(appLogoView);
+		}
 
 		appTextView.setText(app.getName());
 	}

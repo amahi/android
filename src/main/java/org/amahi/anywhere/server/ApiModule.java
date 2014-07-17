@@ -19,7 +19,7 @@
 
 package org.amahi.anywhere.server;
 
-import android.app.Application;
+import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -51,12 +51,6 @@ public class ApiModule
 {
 	@Provides
 	@Singleton
-	ApiAdapter provideApiAdapter(Client client, ApiHeaders headers, Converter converter, Log log, LogLevel logLevel) {
-		return new ApiAdapter(client, headers, converter, log, logLevel);
-	}
-
-	@Provides
-	@Singleton
 	Client provideClient(OkHttpClient httpClient) {
 		return new OkClient(httpClient);
 	}
@@ -69,9 +63,9 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	OkResponseCache provideHttpCache(Application application) {
+	OkResponseCache provideHttpCache(Context context) {
 		try {
-			File cacheDirectory = new File(application.getCacheDir(), "http-cache");
+			File cacheDirectory = new File(context.getCacheDir(), "http-cache");
 			int cacheSize = 5 * 1024 * 1024;
 
 			return new HttpResponseCache(cacheDirectory, cacheSize);
@@ -82,8 +76,8 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	ApiHeaders provideHeaders(Application application) {
-		return new ApiHeaders(application);
+	ApiHeaders provideHeaders(Context context) {
+		return new ApiHeaders(context);
 	}
 
 	@Provides

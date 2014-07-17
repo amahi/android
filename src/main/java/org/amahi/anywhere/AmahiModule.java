@@ -76,12 +76,6 @@ class AmahiModule
 
 	@Provides
 	@Singleton
-	Application provideApplication() {
-		return application;
-	}
-
-	@Provides
-	@Singleton
 	Context provideContext() {
 		return application;
 	}

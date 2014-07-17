@@ -20,6 +20,7 @@
 package org.amahi.anywhere;
 
 import android.app.Application;
+import android.content.Context;
 
 import org.amahi.anywhere.activity.AuthenticationActivity;
 import org.amahi.anywhere.activity.ServerActivity;
@@ -28,6 +29,7 @@ import org.amahi.anywhere.activity.ServerFileImageActivity;
 import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
+import org.amahi.anywhere.fragment.FileDownloadingFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
@@ -58,6 +60,7 @@ import dagger.Provides;
 		ServerSharesFragment.class,
 		ServerFilesFragment.class,
 		ServerFileImageFragment.class,
+		FileDownloadingFragment.class,
 		SettingsFragment.class,
 		AudioService.class,
 		VideoService.class
@@ -74,6 +77,12 @@ class AmahiModule
 	@Provides
 	@Singleton
 	Application provideApplication() {
+		return application;
+	}
+
+	@Provides
+	@Singleton
+	Context provideContext() {
 		return application;
 	}
 }

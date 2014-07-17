@@ -19,17 +19,6 @@
 
 package org.amahi.anywhere.bus;
 
-import android.net.Uri;
-
-public class FileDownloadedEvent implements BusEvent
+public class FileDownloadFailedEvent implements BusEvent
 {
-	private final Uri fileUri;
-
-	public FileDownloadedEvent(Uri fileUri) {
-		this.fileUri = fileUri;
-	}
-
-	public Uri getFileUri() {
-		return fileUri;
-	}
 }

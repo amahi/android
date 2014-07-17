@@ -40,7 +40,6 @@ import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.task.FileDownloadingTask;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -51,6 +50,15 @@ import javax.inject.Inject;
 
 public class ServerFilesActivity extends Activity
 {
+	private static final class State
+	{
+		private State() {
+		}
+
+		public static final String FILE = "file";
+		public static final String FILE_ACTION = "file_action";
+	}
+
 	private static enum FileAction
 	{
 		OPEN, SHARE
@@ -59,6 +67,7 @@ public class ServerFilesActivity extends Activity
 	@Inject
 	ServerClient serverClient;
 
+	private ServerFile file;
 	private FileAction fileAction;
 
 	@Override
@@ -70,7 +79,7 @@ public class ServerFilesActivity extends Activity
 
 		setUpHomeNavigation();
 
-		setUpFiles();
+		setUpFiles(savedInstanceState);
 	}
 
 	private void setUpInjections() {
@@ -81,9 +90,10 @@ public class ServerFilesActivity extends Activity
 		getActionBar().setHomeButtonEnabled(true);
 	}
 
-	private void setUpFiles() {
+	private void setUpFiles(Bundle state) {
 		setUpFilesTitle();
 		setUpFilesFragment();
+		setUpFilesState(state);
 	}
 
 	private void setUpFilesTitle() {
@@ -102,8 +112,20 @@ public class ServerFilesActivity extends Activity
 		return Fragments.Builder.buildServerFilesFragment(share, directory);
 	}
 
+	private void setUpFilesState(Bundle state) {
+		if (isFilesStateValid(state)) {
+			this.file = state.getParcelable(State.FILE);
+			this.fileAction = (FileAction) state.getSerializable(State.FILE_ACTION);
+		}
+	}
+
+	private boolean isFilesStateValid(Bundle state) {
+		return (state != null) && state.containsKey(State.FILE) && state.containsKey(State.FILE_ACTION);
+	}
+
 	@Subscribe
 	public void onFileOpening(FileOpeningEvent event) {
+		this.file = event.getFile();
 		this.fileAction = FileAction.OPEN;
 
 		setUpFile(event.getShare(), event.getFiles(), event.getFile());
@@ -149,28 +171,20 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private void startFileDownloading(ServerShare share, ServerFile file) {
-		showFileDownloadingFragment();
-
-		FileDownloadingTask.execute(this, file, getFileUri(share, file));
+		showFileDownloadingFragment(share, file);
 	}
 
-	private void showFileDownloadingFragment() {
-		DialogFragment fragment = new FileDownloadingFragment();
+	private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
+		DialogFragment fragment = FileDownloadingFragment.newInstance(share, file);
 		fragment.show(getFragmentManager(), FileDownloadingFragment.TAG);
-	}
-
-	private Uri getFileUri(ServerShare share, ServerFile file) {
-		return serverClient.getFileUri(share, file);
 	}
 
 	@Subscribe
 	public void onFileDownloaded(FileDownloadedEvent event) {
-		finishFileDownloading(event.getFile(), event.getFileUri());
+		finishFileDownloading(event.getFileUri());
 	}
 
-	private void finishFileDownloading(ServerFile file, Uri fileUri) {
-		hideFileDownloadingFragment();
-
+	private void finishFileDownloading(Uri fileUri) {
 		switch (fileAction) {
 			case OPEN:
 				startFileOpeningActivity(file, fileUri);
@@ -183,11 +197,6 @@ public class ServerFilesActivity extends Activity
 			default:
 				break;
 		}
-	}
-
-	private void hideFileDownloadingFragment() {
-		DialogFragment fragment = (DialogFragment) Fragments.Operator.at(this).find(FileDownloadingFragment.TAG);
-		fragment.dismiss();
 	}
 
 	private void startFileOpeningActivity(ServerFile file, Uri fileUri) {
@@ -207,6 +216,7 @@ public class ServerFilesActivity extends Activity
 
 	@Subscribe
 	public void onFileSharing(ServerFileSharingEvent event) {
+		this.file = event.getFile();
 		this.fileAction = FileAction.SHARE;
 
 		startFileSharingActivity(event.getShare(), event.getFile());
@@ -240,5 +250,17 @@ public class ServerFilesActivity extends Activity
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		tearDownFilesState(outState);
+	}
+
+	private void tearDownFilesState(Bundle state) {
+		state.putParcelable(State.FILE, file);
+		state.putSerializable(State.FILE_ACTION, fileAction);
 	}
 }

@@ -22,11 +22,44 @@ package org.amahi.anywhere.fragment;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
+
+import com.squareup.otto.Subscribe;
+
+import org.amahi.anywhere.AmahiApplication;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileDownloadFailedEvent;
+import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Downloader;
+import org.amahi.anywhere.util.Fragments;
+
+import javax.inject.Inject;
 
 public class FileDownloadingFragment extends DialogFragment
 {
 	public static final String TAG = "file_downloading";
+
+	@Inject
+	Downloader downloader;
+
+	@Inject
+	ServerClient serverClient;
+
+	public static FileDownloadingFragment newInstance(ServerShare share, ServerFile file) {
+		FileDownloadingFragment fragment = new FileDownloadingFragment();
+
+		Bundle arguments = new Bundle();
+		arguments.putParcelable(Fragments.Arguments.SERVER_SHARE, share);
+		arguments.putParcelable(Fragments.Arguments.SERVER_FILE, file);
+		fragment.setArguments(arguments);
+
+		return fragment;
+	}
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -35,5 +68,71 @@ public class FileDownloadingFragment extends DialogFragment
 		dialog.setMessage("Downloading file...");
 
 		return dialog;
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setUpInjections();
+
+		startFileDownloading(savedInstanceState);
+	}
+
+	private void setUpInjections() {
+		AmahiApplication.from(getActivity()).inject(this);
+	}
+
+	private void startFileDownloading(Bundle state) {
+		if (state == null) {
+			downloader.startFileDownloading(getFileUri(), getFile().getName());
+		}
+	}
+
+	private Uri getFileUri() {
+		return serverClient.getFileUri(getShare(), getFile());
+	}
+
+	private ServerShare getShare() {
+		return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
+	}
+
+	private ServerFile getFile() {
+		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+	}
+
+	@Subscribe
+	public void onFileDownloaded(FileDownloadedEvent event) {
+		dismiss();
+	}
+
+	@Subscribe
+	public void onFileDownloadFailed(FileDownloadFailedEvent event) {
+		dismiss();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		BusProvider.getBus().register(this);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		BusProvider.getBus().unregister(this);
+	}
+
+	@Override
+	public void onCancel(DialogInterface dialog) {
+		super.onCancel(dialog);
+
+		finishFileDownloading();
+	}
+
+	private void finishFileDownloading() {
+		downloader.finishFileDownloading();
 	}
 }

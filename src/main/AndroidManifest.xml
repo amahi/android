@@ -25,6 +25,8 @@
 	<uses-permission
 		android:name="android.permission.ACCESS_NETWORK_STATE"/>
 	<uses-permission
+		android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
+	<uses-permission
 		android:name="android.permission.INTERNET"/>
 
 	<uses-permission

@@ -38,6 +38,7 @@ import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.server.response.ServerAppsResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
@@ -183,5 +184,9 @@ public class ServerClient
 			.appendQueryParameter("p", file.getPath())
 			.appendQueryParameter("Session", server.getSession())
 			.build();
+	}
+
+	public void getApps() {
+		serverApi.getApps(server.getSession(), new ServerAppsResponse());
 	}
 }

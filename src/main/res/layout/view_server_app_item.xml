@@ -18,12 +18,24 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/text"
-	android:singleLine="true"
-	android:textSize="@dimen/text_medium"
-	android:background="?android:attr/activatedBackgroundIndicator"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
 	android:gravity="center_vertical"
 	android:padding="8dp"
 	android:layout_width="match_parent"
-	android:layout_height="?android:attr/listPreferredItemHeight"/>
+	android:layout_height="?android:attr/listPreferredItemHeight">
+
+	<ImageView
+		android:id="@+id/logo"
+		android:layout_marginRight="8dp"
+		android:layout_width="40dp"
+		android:layout_height="40dp"/>
+
+	<TextView
+		android:id="@+id/text"
+		android:singleLine="true"
+		android:textSize="@dimen/text_medium"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"/>
+
+</LinearLayout>

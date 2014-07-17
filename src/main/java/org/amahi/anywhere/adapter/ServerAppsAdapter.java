@@ -24,7 +24,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerApp;
@@ -87,12 +90,16 @@ public class ServerAppsAdapter extends BaseAdapter
 	}
 
 	private void bindView(ServerApp app, View view) {
-		TextView appView = (TextView) view;
+		ImageView appLogoView = (ImageView) view.findViewById(R.id.logo);
+		TextView appTextView = (TextView) view.findViewById(R.id.text);
 
-		appView.setText(getAppName(app));
-	}
+		Picasso
+			.with(view.getContext())
+			.load(app.getLogoUrl())
+			.fit()
+			.centerInside()
+			.into(appLogoView);
 
-	private String getAppName(ServerApp app) {
-		return app.getName();
+		appTextView.setText(app.getName());
 	}
 }

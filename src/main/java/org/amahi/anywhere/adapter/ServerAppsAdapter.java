@@ -98,6 +98,7 @@ public class ServerAppsAdapter extends BaseAdapter
 			.load(app.getLogoUrl())
 			.fit()
 			.centerInside()
+			.error(R.drawable.ic_app_logo)
 			.into(appLogoView);
 
 		appTextView.setText(app.getName());

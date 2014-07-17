@@ -32,6 +32,7 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerAppsAdapter;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerAppsLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerAppsLoadedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -134,7 +135,7 @@ public class ServerAppsFragment extends ListFragment
 	}
 
 	@Subscribe
-	public void onAppsLoadFailed(ServerAppsLoadedEvent event) {
+	public void onAppsLoadFailed(ServerAppsLoadFailedEvent event) {
 		showAppsError();
 	}
 

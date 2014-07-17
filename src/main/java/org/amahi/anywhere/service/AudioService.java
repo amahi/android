@@ -119,6 +119,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		audioPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
 
+		audioPlayer.setOnPreparedListener(this);
 		audioPlayer.setOnCompletionListener(this);
 		audioPlayer.setOnErrorListener(this);
 	}
@@ -159,7 +160,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	private void setUpAudioPlayback() {
 		try {
 			audioPlayer.setDataSource(this, getAudioUri());
-			audioPlayer.setOnPreparedListener(this);
 			audioPlayer.prepareAsync();
 		} catch (IOException e) {
 			throw new RuntimeException(e);

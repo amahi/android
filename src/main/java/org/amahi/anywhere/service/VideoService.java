@@ -151,14 +151,14 @@ public class VideoService extends Service implements IVideoPlayer
 		super.onDestroy();
 
 		tearDownVideoEvents();
-		tearDownVideoPlayer();
+		tearDownVideoPlayback();
 	}
 
 	private void tearDownVideoEvents() {
 		EventHandler.getInstance().removeHandler(videoEventsHandler);
 	}
 
-	private void tearDownVideoPlayer() {
+	private void tearDownVideoPlayback() {
 		videoPlayer.stop();
 		videoPlayer.destroy();
 	}

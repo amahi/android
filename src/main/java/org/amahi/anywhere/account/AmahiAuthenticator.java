@@ -96,7 +96,7 @@ class AmahiAuthenticator extends AbstractAccountAuthenticator
 	}
 
 	@Override
-	public String getAuthTokenLabel(String s) {
+	public String getAuthTokenLabel(String authTokenType) {
 		return null;
 	}
 

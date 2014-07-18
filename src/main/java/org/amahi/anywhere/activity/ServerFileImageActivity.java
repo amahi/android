@@ -26,7 +26,7 @@ import android.view.MenuItem;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.adapter.ServerFileImagePagerAdapter;
+import org.amahi.anywhere.adapter.ServerFilesImagePagerAdapter;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -97,7 +97,7 @@ public class ServerFileImageActivity extends Activity implements ViewPager.OnPag
 	}
 
 	private void setUpImageAdapter() {
-		getImagePager().setAdapter(new ServerFileImagePagerAdapter(getFragmentManager(), getShare(), getImageFiles()));
+		getImagePager().setAdapter(new ServerFilesImagePagerAdapter(getFragmentManager(), getShare(), getImageFiles()));
 	}
 
 	private ViewPager getImagePager() {

@@ -35,7 +35,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
-import org.amahi.anywhere.fragment.FileDownloadingFragment;
+import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -175,8 +175,8 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
-		DialogFragment fragment = FileDownloadingFragment.newInstance(share, file);
-		fragment.show(getFragmentManager(), FileDownloadingFragment.TAG);
+		DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
+		fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
 	}
 
 	@Subscribe

@@ -29,25 +29,25 @@ import org.amahi.anywhere.util.Fragments;
 
 import java.util.List;
 
-public class ServerFileImagePagerAdapter extends FragmentStatePagerAdapter
+public class ServerFilesImagePagerAdapter extends FragmentStatePagerAdapter
 {
-	private final ServerShare imageShare;
-	private final List<ServerFile> imageFiles;
+	private final ServerShare share;
+	private final List<ServerFile> files;
 
-	public ServerFileImagePagerAdapter(FragmentManager fragmentManager, ServerShare imageShare, List<ServerFile> imageFiles) {
+	public ServerFilesImagePagerAdapter(FragmentManager fragmentManager, ServerShare share, List<ServerFile> files) {
 		super(fragmentManager);
 
-		this.imageShare = imageShare;
-		this.imageFiles = imageFiles;
+		this.share = share;
+		this.files = files;
 	}
 
 	@Override
 	public int getCount() {
-		return imageFiles.size();
+		return files.size();
 	}
 
 	@Override
-	public Fragment getItem(int imagePosition) {
-		return Fragments.Builder.buildServerFileImageFragment(imageShare, imageFiles.get(imagePosition));
+	public Fragment getItem(int position) {
+		return Fragments.Builder.buildServerFileImageFragment(share, files.get(position));
 	}
 }

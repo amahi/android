@@ -40,9 +40,9 @@ import org.amahi.anywhere.util.Fragments;
 
 import javax.inject.Inject;
 
-public class FileDownloadingFragment extends DialogFragment
+public class ServerFileDownloadingFragment extends DialogFragment
 {
-	public static final String TAG = "file_downloading";
+	public static final String TAG = "server_file_downloading";
 
 	@Inject
 	Downloader downloader;
@@ -50,8 +50,8 @@ public class FileDownloadingFragment extends DialogFragment
 	@Inject
 	ServerClient serverClient;
 
-	public static FileDownloadingFragment newInstance(ServerShare share, ServerFile file) {
-		FileDownloadingFragment fragment = new FileDownloadingFragment();
+	public static ServerFileDownloadingFragment newInstance(ServerShare share, ServerFile file) {
+		ServerFileDownloadingFragment fragment = new ServerFileDownloadingFragment();
 
 		Bundle arguments = new Bundle();
 		arguments.putParcelable(Fragments.Arguments.SERVER_SHARE, share);

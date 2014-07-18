@@ -48,7 +48,7 @@ import org.amahi.anywhere.util.Intents;
 
 import javax.inject.Inject;
 
-public class ServerActivity extends Activity implements DrawerLayout.DrawerListener
+public class NavigationActivity extends Activity implements DrawerLayout.DrawerListener
 {
 	private static final class State
 	{
@@ -249,10 +249,10 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 
 	@Subscribe
 	public void onSettingsSelected(SettingsSelectedEvent event) {
-		setUpSettingsActivity();
+		setUpSettings();
 	}
 
-	private void setUpSettingsActivity() {
+	private void setUpSettings() {
 		Intent intent = Intents.Builder.with(this).buildSettingsIntent();
 		startActivity(intent);
 	}

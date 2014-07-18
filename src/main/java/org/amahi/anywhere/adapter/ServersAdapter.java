@@ -88,7 +88,11 @@ public class ServersAdapter extends BaseAdapter
 	private void bindView(Server server, View view) {
 		TextView serverView = (TextView) view;
 
-		serverView.setText(server.getName());
+		serverView.setText(getServerName(server));
+	}
+
+	private String getServerName(Server server) {
+		return server.getName();
 	}
 
 	@Override
@@ -111,6 +115,6 @@ public class ServersAdapter extends BaseAdapter
 	private void bindDropDownView(Server server, View view) {
 		TextView serverView = (TextView) view;
 
-		serverView.setText(server.getName());
+		serverView.setText(getServerName(server));
 	}
 }

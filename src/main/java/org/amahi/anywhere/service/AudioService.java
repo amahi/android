@@ -189,7 +189,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-		this.audioMetadataFormatter = new AudioMetadataFormatter(event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+		this.audioMetadataFormatter = new AudioMetadataFormatter(
+			event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
 		this.audioAlbumArt = event.getAudioAlbumArt();
 
 		setUpAudioPlayerRemote(audioMetadataFormatter, audioAlbumArt);
@@ -391,6 +392,10 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		}
 	}
 
+	private void setUpAudioVolume() {
+		audioPlayer.setVolume(1.0f, 1.0f);
+	}
+
 	private void handleAudioFocusLoss() {
 		if (isAudioPlaying()) {
 			pauseAudio();
@@ -403,10 +408,6 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		if (isAudioPlaying()) {
 			tearDownAudioVolume();
 		}
-	}
-
-	private void setUpAudioVolume() {
-		audioPlayer.setVolume(1.0f, 1.0f);
 	}
 
 	private void tearDownAudioVolume() {

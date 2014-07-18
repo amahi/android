@@ -19,17 +19,16 @@
 
 package org.amahi.anywhere.server;
 
-import retrofit.RestAdapter;
+import retrofit.RestAdapter.Log;
 import timber.log.Timber;
 
-class ApiLog implements RestAdapter.Log
+class ApiLog implements Log
 {
 	private static final String TAG = "API";
 
 	@Override
 	public void log(String message) {
 		Timber.tag(TAG);
-
 		Timber.d(message);
 	}
 }

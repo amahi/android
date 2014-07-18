@@ -53,7 +53,7 @@
 		android:theme="@style/Theme.Amahi">
 
 		<activity
-			android:name=".activity.ServerActivity">
+			android:name=".activity.NavigationActivity">
 
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>

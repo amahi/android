@@ -75,8 +75,14 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		public static final int AUDIO_PLAYER = 42;
 	}
 
+	private static enum AudioFocus
+	{
+		GAIN, LOSS
+	}
+
 	private MediaPlayer audioPlayer;
 	private RemoteControlClient audioPlayerRemote;
+	private AudioFocus audioFocus;
 
 	private ServerShare audioShare;
 	private List<ServerFile> audioFiles;
@@ -348,22 +354,16 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	public void onAudioFocusChange(int audioFocus) {
 		switch (audioFocus) {
 			case AudioManager.AUDIOFOCUS_GAIN:
-				if (isAudioPlaying()) {
-					setUpAudioVolume();
-				} else {
-					playAudio();
-				}
+				handleAudioFocusGain();
 				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS:
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-				if (isAudioPlaying()) {
-					pauseAudio();
-				}
+				handleAudioFocusLoss();
 				break;
 
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-				tearDownAudioVolume();
+				handleAudioFocusDuck();
 				break;
 
 			default:
@@ -371,11 +371,37 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		}
 	}
 
+	private void handleAudioFocusGain() {
+		if (isAudioPlaying()) {
+			setUpAudioVolume();
+		} else {
+			if (audioFocus == AudioFocus.LOSS) {
+				playAudio();
+			}
+		}
+
+		this.audioFocus = AudioFocus.GAIN;
+	}
+
 	private boolean isAudioPlaying() {
 		try {
 			return isAudioStarted() && audioPlayer.isPlaying();
 		} catch (IllegalStateException e) {
 			return false;
+		}
+	}
+
+	private void handleAudioFocusLoss() {
+		if (isAudioPlaying()) {
+			pauseAudio();
+		}
+
+		this.audioFocus = AudioFocus.LOSS;
+	}
+
+	private void handleAudioFocusDuck() {
+		if (isAudioPlaying()) {
+			tearDownAudioVolume();
 		}
 	}
 

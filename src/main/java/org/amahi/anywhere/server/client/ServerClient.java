@@ -33,6 +33,7 @@ import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.ApiResource;
+import org.amahi.anywhere.server.ApiResourceFetcher;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.model.Server;
@@ -60,6 +61,8 @@ public class ServerClient
 	private final ProxyApi proxyApi;
 	private ServerApi serverApi;
 
+	private ApiResourceFetcher apiResourceFetcher;
+
 	private Server server;
 	private ServerRoute serverRoute;
 	private String serverAddress;
@@ -68,9 +71,11 @@ public class ServerClient
 	private int network;
 
 	@Inject
-	public ServerClient(ApiAdapter apiAdapter) {
+	public ServerClient(ApiAdapter apiAdapter, ApiResourceFetcher apiResourceFetcher) {
 		this.apiAdapter = apiAdapter;
 		this.proxyApi = buildProxyApi();
+
+		this.apiResourceFetcher = apiResourceFetcher;
 
 		this.serverConnection = ApiConnection.AUTO;
 
@@ -196,11 +201,9 @@ public class ServerClient
 		serverApi.getApps(server.getSession(), new ServerAppsResponse());
 	}
 
-	public ApiResource getAppResource(ServerApp app) {
+	public ApiResource getAppResource(ServerApp app, String appResourceUrl) {
 		try {
-			Response appResponse = serverApi.getAppResource(server.getSession(), app.getHost());
-
-			return new ApiResource(appResponse.getBody().in(), appResponse.getBody().mimeType());
+			return apiResourceFetcher.fetch(server, app, appResourceUrl);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

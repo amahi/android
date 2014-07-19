@@ -35,10 +35,14 @@ public class ApiResource
 	private final String mime;
 	private final String encoding;
 
-	public ApiResource(InputStream content, String mime) {
+	public ApiResource(InputStream content, String mime, String encoding) {
 		this.content = content;
 		this.mime = mime;
-		this.encoding = Encodings.UTF_8;
+		this.encoding = encoding;
+	}
+
+	public ApiResource(InputStream content, String mime) {
+		this(content, mime, Encodings.UTF_8);
 	}
 
 	public InputStream getContent() {

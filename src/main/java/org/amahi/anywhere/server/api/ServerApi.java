@@ -26,7 +26,6 @@ import org.amahi.anywhere.server.model.ServerShare;
 import java.util.List;
 
 import retrofit.Callback;
-import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Query;
@@ -49,8 +48,4 @@ public interface ServerApi
 	public void getApps(
 		@Header("Session") String session,
 		Callback<List<ServerApp>> callback);
-
-	public Response getAppResource(
-		@Header("Session") String session,
-		@Header("Vhost") String host);
 }

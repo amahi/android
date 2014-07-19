@@ -96,7 +96,7 @@ public class ServerAppActivity extends Activity
 
 		@Override
 		public WebResourceResponse shouldInterceptRequest(WebView appWebView, String appResourceUrl) {
-			ApiResource appResource = serverClient.getAppResource(serverApp);
+			ApiResource appResource = serverClient.getAppResource(serverApp, appResourceUrl);
 
 			return new WebResourceResponse(appResource.getMime(), appResource.getEncoding(), appResource.getContent());
 		}

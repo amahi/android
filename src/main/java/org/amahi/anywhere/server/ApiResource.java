@@ -23,26 +23,17 @@ import java.io.InputStream;
 
 public class ApiResource
 {
-	private static final class Encodings
-	{
-		private Encodings() {
-		}
-
-		public static final String UTF_8 = "UTF-8";
-	}
-
 	private final InputStream content;
 	private final String mime;
 	private final String encoding;
 
-	public ApiResource(InputStream content, String mime, String encoding) {
+	private final boolean isRedirect;
+
+	public ApiResource(InputStream content, String mime, String encoding, boolean isRedirect) {
 		this.content = content;
 		this.mime = mime;
 		this.encoding = encoding;
-	}
-
-	public ApiResource(InputStream content, String mime) {
-		this(content, mime, Encodings.UTF_8);
+		this.isRedirect = isRedirect;
 	}
 
 	public InputStream getContent() {
@@ -55,5 +46,9 @@ public class ApiResource
 
 	public String getEncoding() {
 		return encoding;
+	}
+
+	public boolean isRedirect() {
+		return isRedirect;
 	}
 }

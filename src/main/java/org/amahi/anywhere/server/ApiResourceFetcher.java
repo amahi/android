@@ -27,6 +27,7 @@ import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerApp;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
@@ -54,11 +55,13 @@ public class ApiResourceFetcher
 			.newCall(apiRequest)
 			.execute();
 
-		return new ApiResource(
-			apiResponse.body().byteStream(),
-			String.format(Locale.US, "%s/%s",
-				apiResponse.body().contentType().type(),
-				apiResponse.body().contentType().subtype()),
-			apiResponse.body().contentType().charset(Charset.defaultCharset()).name());
+		InputStream resourceContent = apiResponse.body().byteStream();
+		String resourceMime = String.format(Locale.US, "%s/%s",
+			apiResponse.body().contentType().type(),
+			apiResponse.body().contentType().subtype());
+		String resourceEncoding = apiResponse.body().contentType().charset(Charset.defaultCharset()).name();
+		boolean resourceRedirected = apiResponse.priorResponse() != null;
+
+		return new ApiResource(resourceContent, resourceMime, resourceEncoding, resourceRedirected);
 	}
 }

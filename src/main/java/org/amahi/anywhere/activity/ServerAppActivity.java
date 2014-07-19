@@ -98,7 +98,11 @@ public class ServerAppActivity extends Activity
 		public WebResourceResponse shouldInterceptRequest(WebView appWebView, String appResourceUrl) {
 			ApiResource appResource = serverClient.getAppResource(serverApp, appResourceUrl);
 
-			return new WebResourceResponse(appResource.getMime(), appResource.getEncoding(), appResource.getContent());
+			if (!appResource.isRedirect()) {
+				return new WebResourceResponse(appResource.getMime(), appResource.getEncoding(), appResource.getContent());
+			} else {
+				return super.shouldInterceptRequest(appWebView, appResourceUrl);
+			}
 		}
 	}
 }

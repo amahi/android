@@ -32,9 +32,11 @@ import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.ApiConnection;
+import org.amahi.anywhere.server.ApiResource;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -44,8 +46,12 @@ import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import retrofit.client.Response;
 
 @Singleton
 public class ServerClient
@@ -188,5 +194,15 @@ public class ServerClient
 
 	public void getApps() {
 		serverApi.getApps(server.getSession(), new ServerAppsResponse());
+	}
+
+	public ApiResource getAppResource(ServerApp app) {
+		try {
+			Response appResponse = serverApi.getAppResource(server.getSession(), app.getHost());
+
+			return new ApiResource(appResponse.getBody().in(), appResponse.getBody().mimeType());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

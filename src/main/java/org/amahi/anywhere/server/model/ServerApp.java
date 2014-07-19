@@ -32,12 +32,19 @@ public class ServerApp implements Parcelable
 	@SerializedName("logo")
 	private String logoUrl;
 
+	@SerializedName("vhost")
+	private String host;
+
 	public String getName() {
 		return name;
 	}
 
 	public String getLogoUrl() {
 		return logoUrl;
+	}
+
+	public String getHost() {
+		return host;
 	}
 
 	public static final Creator<ServerApp> CREATOR = new Creator<ServerApp>()
@@ -56,11 +63,14 @@ public class ServerApp implements Parcelable
 	private ServerApp(Parcel parcel) {
 		this.name = parcel.readString();
 		this.logoUrl = parcel.readString();
+		this.host = parcel.readString();
 	}
 
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
 		parcel.writeString(name);
+		parcel.writeString(logoUrl);
+		parcel.writeString(host);
 	}
 
 	@Override

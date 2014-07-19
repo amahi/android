@@ -23,6 +23,7 @@ import android.app.Application;
 
 import org.amahi.anywhere.activity.AuthenticationActivity;
 import org.amahi.anywhere.activity.ServerActivity;
+import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
 import org.amahi.anywhere.activity.ServerFileVideoActivity;
@@ -50,6 +51,7 @@ import dagger.Provides;
 	injects = {
 		AuthenticationActivity.class,
 		ServerActivity.class,
+		ServerAppActivity.class,
 		ServerFilesActivity.class,
 		ServerFileAudioActivity.class,
 		ServerFileImageActivity.class,

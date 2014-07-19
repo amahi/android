@@ -35,12 +35,14 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.AppSelectedEvent;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
@@ -244,6 +246,16 @@ public class ServerActivity extends Activity implements DrawerLayout.DrawerListe
 
 	private void setUpShare(ServerShare share) {
 		Intent intent = Intents.Builder.with(this).buildServerFilesActivity(share);
+		startActivity(intent);
+	}
+
+	@Subscribe
+	public void onAppSelected(AppSelectedEvent event) {
+		setUpApp(event.getApp());
+	}
+
+	private void setUpApp(ServerApp app) {
+		Intent intent = Intents.Builder.with(this).buildServerAppAcitivity(app);
 		startActivity(intent);
 	}
 

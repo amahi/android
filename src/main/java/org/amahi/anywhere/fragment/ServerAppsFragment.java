@@ -25,12 +25,14 @@ import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerAppsAdapter;
+import org.amahi.anywhere.bus.AppSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerAppsLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerAppsLoadedEvent;
@@ -141,6 +143,17 @@ public class ServerAppsFragment extends ListFragment
 
 	private void showAppsError() {
 		ViewDirector.of(this, R.id.animator).show(R.id.error);
+	}
+
+	@Override
+	public void onListItemClick(ListView appsListView, View appView, int appPosition, long appId) {
+		super.onListItemClick(appsListView, appView, appPosition, appId);
+
+		startAppOpening(getAppsAdapter().getItem(appPosition));
+	}
+
+	private void startAppOpening(ServerApp app) {
+		BusProvider.getBus().post(new AppSelectedEvent(app));
 	}
 
 	@Override

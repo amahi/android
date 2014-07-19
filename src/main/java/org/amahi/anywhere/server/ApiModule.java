@@ -23,9 +23,8 @@ import android.app.Application;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.okhttp.HttpResponseCache;
+import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkResponseCache;
 
 import org.amahi.anywhere.util.Time;
 
@@ -69,12 +68,12 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	OkResponseCache provideHttpCache(Application application) {
+	Cache provideHttpCache(Application application) {
 		try {
 			File cacheDirectory = new File(application.getCacheDir(), "http-cache");
 			int cacheSize = 5 * 1024 * 1024;
 
-			return new HttpResponseCache(cacheDirectory, cacheSize);
+			return new Cache(cacheDirectory, cacheSize);
 		} catch (IOException e) {
 			return null;
 		}

@@ -23,6 +23,8 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,7 +58,15 @@ public final class FileDownloader
 		try {
 			URL remoteFileUrl = new URL(remoteFileUri.toString());
 
-			return new OkHttpClient().open(remoteFileUrl).getInputStream();
+			Request fileRequest = new Request.Builder()
+				.url(remoteFileUrl)
+				.build();
+
+			Response fileResponse = new OkHttpClient()
+				.newCall(fileRequest)
+				.execute();
+
+			return fileResponse.body().byteStream();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

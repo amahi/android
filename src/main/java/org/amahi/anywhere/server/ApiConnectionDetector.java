@@ -22,6 +22,8 @@ package org.amahi.anywhere.server;
 import android.net.Uri;
 
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.amahi.anywhere.server.model.ServerRoute;
 
@@ -45,7 +47,13 @@ public class ApiConnectionDetector
 		Timber.tag("CONNECTION");
 
 		try {
-			getHttpClient().open(getConnectionUrl(serverRoute.getLocalAddress())).getResponseCode();
+			Request request = new Request.Builder()
+				.url(getConnectionUrl(serverRoute.getLocalAddress()))
+				.build();
+
+			Response response = getHttpClient()
+				.newCall(request)
+				.execute();
 
 			Timber.d("Using local address.");
 

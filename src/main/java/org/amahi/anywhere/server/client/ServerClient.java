@@ -175,6 +175,10 @@ public class ServerClient
 		this.serverApi = buildServerApi();
 	}
 
+	public String getServerAddress() {
+		return serverAddress;
+	}
+
 	public void getShares() {
 		serverApi.getShares(server.getSession(), new ServerSharesResponse());
 	}

@@ -81,7 +81,7 @@ public class ServerAppActivity extends Activity
 	}
 
 	private void setUpAppWebContent() {
-		getWebView().loadUrl("http://httpbin.org/headers");
+		getWebView().loadUrl(serverClient.getServerAddress());
 	}
 
 	private static final class AppWebClient extends WebViewClient

@@ -87,21 +87,26 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private String getApplicationVersionSummary() {
-		return Android.getApplicationVersion();
+		return String.format("Amahi for Android, Version %s\n" +
+                        "© 2014, Amahi, https://www.amahi.org/android",
+                Android.getApplicationVersion()
+        );
 	}
 
 	private String getServerConnectionSummary() {
 		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
 
-		return String.format("Use %s", serverConnection.getEntry());
+		return String.format("%s", serverConnection.getEntry());
 	}
 
 	private void setUpSettingsListeners() {
 		Preference accountSignOut = getPreference(R.string.preference_key_account_sign_out);
+        Preference applicationVersion = getPreference(R.string.preference_key_application_version);
 		Preference applicationFeedback = getPreference(R.string.preference_key_application_feedback);
 		Preference applicationRating = getPreference(R.string.preference_key_application_rating);
 
 		accountSignOut.setOnPreferenceClickListener(this);
+        applicationVersion.setOnPreferenceClickListener(this);
 		applicationFeedback.setOnPreferenceClickListener(this);
 		applicationRating.setOnPreferenceClickListener(this);
 	}
@@ -112,7 +117,11 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 			tearDownAccount();
 		}
 
-		if (preference.getKey().equals(getString(R.string.preference_key_application_feedback))) {
+        if (preference.getKey().equals(getString(R.string.preference_key_application_version))) {
+            setUpApplicationVersion();
+        }
+
+        if (preference.getKey().equals(getString(R.string.preference_key_application_feedback))) {
 			setUpApplicationFeedback();
 		}
 
@@ -146,7 +155,12 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		getActivity().finish();
 	}
 
-	private void setUpApplicationFeedback() {
+    private void setUpApplicationVersion() {
+        Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent();
+        startActivity(intent);
+    }
+
+    private void setUpApplicationFeedback() {
 		Intent intent = Intents.Builder.with(getActivity()).buildFeedbackIntent();
 		startActivity(intent);
 	}

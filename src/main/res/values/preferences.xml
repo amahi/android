@@ -32,7 +32,7 @@
 	</string-array>
 
 	<string-array name="preference_entries_server_connection">
-		<item>Auto</item>
+		<item>Autodetect</item>
 		<item>Remote</item>
 		<item>LAN</item>
 	</string-array>

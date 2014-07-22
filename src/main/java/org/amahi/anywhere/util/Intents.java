@@ -155,7 +155,13 @@ public final class Intents
 			return new Intent(context, SettingsActivity.class);
 		}
 
-		public Intent buildFeedbackIntent() {
+        public Intent buildVersionIntent() {
+            String versionUri = String.format("https://www.amahi.org/android");
+
+            return new Intent(Intent.ACTION_VIEW, Uri.parse(versionUri));
+        }
+
+        public Intent buildFeedbackIntent() {
 			String feedbackAddress = "support@amahi.org";
 			String feedbackSubject = "Android Amahi Anywhere";
 
@@ -164,7 +170,7 @@ public final class Intents
 			return new Intent(Intent.ACTION_SENDTO, Uri.parse(feedbackUri));
 		}
 
-		public Intent buildGooglePlayIntent() {
+        public Intent buildGooglePlayIntent() {
 			String googlePlayUri = String.format(Uris.GOOGLE_PLAY, context.getPackageName());
 
 			return new Intent(Intent.ACTION_VIEW, Uri.parse(googlePlayUri));

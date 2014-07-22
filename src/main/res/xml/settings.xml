@@ -20,7 +20,15 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<PreferenceCategory android:title="Server">
+	<PreferenceCategory android:title="Account">
+
+		<Preference
+			android:key="account_sign_out"
+			android:title="Sign out"/>
+
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="Settings">
 
 		<ListPreference
 			android:key="server_connection"
@@ -31,27 +39,18 @@
 
 	</PreferenceCategory>
 
-	<PreferenceCategory android:title="Account">
-
-		<Preference
-			android:key="account_sign_out"
-			android:title="Sign out"/>
-
-	</PreferenceCategory>
-
 	<PreferenceCategory android:title="About">
+		<Preference
+			android:key="@string/preference_key_application_version"
+			android:title="Version"/>
 
 		<Preference
 			android:key="@string/preference_key_application_feedback"
-			android:title="Send feedback"/>
+			android:title="Feedback"/>
 
 		<Preference
 			android:key="application_rating"
-			android:title="Rate the application"/>
-
-		<Preference
-			android:key="@string/preference_key_application_version"
-			android:title="Application version"/>
+			android:title="Rate"/>
 
 	</PreferenceCategory>
 

@@ -26,11 +26,21 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content">
 
+	<ImageView
+		android:src="@drawable/ic_banner"
+		android:paddingLeft="32dp"
+		android:paddingRight="32dp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"/>
+
+	<Space
+		android:layout_width="match_parent"
+		android:layout_height="8dp"/>
+
 	<EditText
 		android:id="@+id/edit_username"
 		android:hint="Username"
 		android:singleLine="true"
-		android:background="@android:drawable/editbox_background_normal"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"/>
 
@@ -43,7 +53,6 @@
 		android:hint="Password"
 		android:inputType="textPassword"
 		android:fontFamily="sans-serif"
-		android:background="@android:drawable/editbox_background_normal"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"/>
 
@@ -51,27 +60,12 @@
 		android:layout_width="match_parent"
 		android:layout_height="16dp"/>
 
-	<ViewAnimator
-		android:id="@+id/animator_button"
-		android:inAnimation="@android:anim/fade_in"
-		android:outAnimation="@android:anim/fade_out"
+	<com.dd.processbutton.iml.ActionProcessButton
+		android:id="@+id/button_authentication"
+		android:text="Sign in"
+		android:textColor="@android:color/white"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
-
-		<Button
-			android:id="@+id/button_authentication"
-			android:text="Sign in"
-			android:background="@android:drawable/btn_default"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
-
-		<ProgressBar
-			android:id="@android:id/progress"
-			android:layout_gravity="center"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
-
-	</ViewAnimator>
+		android:layout_height="wrap_content"/>
 
 	<Space
 		android:layout_width="match_parent"

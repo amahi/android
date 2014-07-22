@@ -58,6 +58,7 @@ dependencies {
     compile "com.android.support:support-v4:20.+"
     compile "com.android.support:support-v13:20.+"
     compile "com.crashlytics.android:crashlytics:1.+"
+    compile "com.github.dmytrodanylyk.android-process-button:library:1.0.+"
     compile "com.jakewharton.timber:timber:2.3.+"
     compile "com.squareup.dagger:dagger:1.2.+"
     compile "com.squareup.okhttp:okhttp:1.5.+"

@@ -74,23 +74,16 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void setUpSettingsSummary() {
-		Preference applicationVersion = getPreference(R.string.preference_key_application_version);
 		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
+		Preference applicationVersion = getPreference(R.string.preference_key_application_version);
 
-		applicationVersion.setSummary(getApplicationVersionSummary());
 		serverConnection.setSummary(getServerConnectionSummary());
+		applicationVersion.setSummary(getApplicationVersionSummary());
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T extends Preference> T getPreference(int settingId) {
 		return (T) findPreference(getString(settingId));
-	}
-
-	private String getApplicationVersionSummary() {
-		return String.format("Amahi for Android, Version %s\n" +
-                        "© 2014, Amahi, https://www.amahi.org/android",
-                Android.getApplicationVersion()
-        );
 	}
 
 	private String getServerConnectionSummary() {
@@ -99,14 +92,20 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		return String.format("%s", serverConnection.getEntry());
 	}
 
+	private String getApplicationVersionSummary() {
+		return String.format(
+			"Amahi for Android, Version %s\n © 2014, Amahi, https://www.amahi.org/android",
+			Android.getApplicationVersion());
+	}
+
 	private void setUpSettingsListeners() {
 		Preference accountSignOut = getPreference(R.string.preference_key_account_sign_out);
-        Preference applicationVersion = getPreference(R.string.preference_key_application_version);
+		Preference applicationVersion = getPreference(R.string.preference_key_application_version);
 		Preference applicationFeedback = getPreference(R.string.preference_key_application_feedback);
 		Preference applicationRating = getPreference(R.string.preference_key_application_rating);
 
 		accountSignOut.setOnPreferenceClickListener(this);
-        applicationVersion.setOnPreferenceClickListener(this);
+		applicationVersion.setOnPreferenceClickListener(this);
 		applicationFeedback.setOnPreferenceClickListener(this);
 		applicationRating.setOnPreferenceClickListener(this);
 	}
@@ -117,11 +116,11 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 			tearDownAccount();
 		}
 
-        if (preference.getKey().equals(getString(R.string.preference_key_application_version))) {
-            setUpApplicationVersion();
-        }
+		if (preference.getKey().equals(getString(R.string.preference_key_application_version))) {
+			setUpApplicationVersion();
+		}
 
-        if (preference.getKey().equals(getString(R.string.preference_key_application_feedback))) {
+		if (preference.getKey().equals(getString(R.string.preference_key_application_feedback))) {
 			setUpApplicationFeedback();
 		}
 
@@ -155,12 +154,12 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		getActivity().finish();
 	}
 
-    private void setUpApplicationVersion() {
-        Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent();
-        startActivity(intent);
-    }
+	private void setUpApplicationVersion() {
+		Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent();
+		startActivity(intent);
+	}
 
-    private void setUpApplicationFeedback() {
+	private void setUpApplicationFeedback() {
 		Intent intent = Intents.Builder.with(getActivity()).buildFeedbackIntent();
 		startActivity(intent);
 	}

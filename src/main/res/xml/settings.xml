@@ -40,6 +40,7 @@
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="About">
+
 		<Preference
 			android:key="@string/preference_key_application_version"
 			android:title="Version"/>

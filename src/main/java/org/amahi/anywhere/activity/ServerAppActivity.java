@@ -21,16 +21,16 @@ package org.amahi.anywhere.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.server.ApiResource;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerApp;
+import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
+
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -54,18 +54,29 @@ public class ServerAppActivity extends Activity
 	}
 
 	private void setUpApp() {
-		setUpAppWebClient();
+		setUpAppWebAgent();
 		setUpAppWebSettings();
 		setUpAppWebTitle();
 		setUpAppWebContent();
 	}
 
-	private void setUpAppWebClient() {
-		getWebView().setWebViewClient(new AppWebClient(serverClient, getApp()));
+	private void setUpAppWebAgent() {
+		getWebView().getSettings().setUserAgentString(getAppWebAgent());
 	}
 
 	private WebView getWebView() {
 		return (WebView) findViewById(R.id.web_content);
+	}
+
+	private String getAppWebAgent() {
+		return String.format(Locale.US, "AmahiAnywhere/%s (Android %s; %s) Size/%.1f Resolution/%dx%d Vhost/%s",
+			Android.getApplicationVersion(),
+			Android.getVersion(),
+			Android.getDeviceName(),
+			Android.getDeviceScreenSize(this),
+			Android.getDeviceScreenHeight(this),
+			Android.getDeviceScreenWidth(this),
+			getApp().getHost());
 	}
 
 	private ServerApp getApp() {
@@ -82,27 +93,5 @@ public class ServerAppActivity extends Activity
 
 	private void setUpAppWebContent() {
 		getWebView().loadUrl(serverClient.getServerAddress());
-	}
-
-	private static final class AppWebClient extends WebViewClient
-	{
-		private final ServerClient serverClient;
-		private final ServerApp serverApp;
-
-		public AppWebClient(ServerClient serverClient, ServerApp serverApp) {
-			this.serverClient = serverClient;
-			this.serverApp = serverApp;
-		}
-
-		@Override
-		public WebResourceResponse shouldInterceptRequest(WebView appWebView, String appResourceUrl) {
-			ApiResource appResource = serverClient.getAppResource(serverApp, appResourceUrl);
-
-			if (!appResource.isRedirect()) {
-				return new WebResourceResponse(appResource.getMime(), appResource.getEncoding(), appResource.getContent());
-			} else {
-				return super.shouldInterceptRequest(appWebView, appResourceUrl);
-			}
-		}
 	}
 }

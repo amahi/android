@@ -22,6 +22,7 @@ package org.amahi.anywhere.activity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -55,6 +56,7 @@ public class ServerAppActivity extends Activity
 
 	private void setUpApp() {
 		setUpAppWebAgent();
+		setUpAppWebClient();
 		setUpAppWebSettings();
 		setUpAppWebTitle();
 		setUpAppWebContent();
@@ -81,6 +83,10 @@ public class ServerAppActivity extends Activity
 
 	private ServerApp getApp() {
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_APP);
+	}
+
+	private void setUpAppWebClient() {
+		getWebView().setWebViewClient(new WebViewClient());
 	}
 
 	private void setUpAppWebSettings() {

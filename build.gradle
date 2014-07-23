@@ -22,8 +22,12 @@ android {
     buildToolsVersion "20"
 
     defaultConfig {
-        versionName "0.3.1"
-        versionCode 31
+        def versionMajor = 0
+        def versionMinor = 3
+        def versionPatch = 1
+
+        versionName buildVersionName(versionMajor, versionMinor, versionPatch)
+        versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
 
         minSdkVersion 14
         targetSdkVersion 19
@@ -42,8 +46,16 @@ android {
     }
 }
 
+def buildVersionName(versionMajor, versionMinor, versionPatch) {
+    return "${versionMajor}.${versionMinor}.${versionPatch}"
+}
+
+def buildVersionCode(versionMajor, versionMinor, versionPatch) {
+    return versionMajor * 10 ** 2 + versionMinor * 10 ** 1 + versionPatch * 10 ** 0
+}
+
 def formatStringField(field) {
-    return String.format("\"%s\"", field)
+    return "\"${field}\""
 }
 
 dependencies {

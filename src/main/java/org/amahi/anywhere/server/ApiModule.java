@@ -23,6 +23,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jakewharton.byteunits.BinaryByteUnit;
 import com.squareup.okhttp.HttpResponseCache;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkResponseCache;
@@ -57,8 +58,12 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	OkHttpClient provideHttpClient() {
-		return new OkHttpClient();
+	OkHttpClient provideHttpClient(OkResponseCache httpCache) {
+		OkHttpClient httpClient =  new OkHttpClient();
+
+		httpClient.setOkResponseCache(httpCache);
+
+		return httpClient;
 	}
 
 	@Provides
@@ -66,7 +71,7 @@ public class ApiModule
 	OkResponseCache provideHttpCache(Context context) {
 		try {
 			File cacheDirectory = new File(context.getCacheDir(), "http-cache");
-			int cacheSize = 5 * 1024 * 1024;
+			long cacheSize = BinaryByteUnit.MEBIBYTES.toBytes(10);
 
 			return new HttpResponseCache(cacheDirectory, cacheSize);
 		} catch (IOException e) {

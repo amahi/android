@@ -100,4 +100,18 @@ public class ServerAppActivity extends Activity
 	private void setUpAppWebContent() {
 		getWebView().loadUrl(serverClient.getServerAddress());
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		getWebView().onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		getWebView().onPause();
+	}
 }

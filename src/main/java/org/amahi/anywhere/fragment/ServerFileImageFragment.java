@@ -71,8 +71,6 @@ public class ServerFileImageFragment extends Fragment implements Callback
 		Picasso
 			.with(getActivity())
 			.load(getImageUri())
-			.fit()
-			.centerInside()
 			.into(getImageView(), this);
 	}
 

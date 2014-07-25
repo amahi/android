@@ -21,6 +21,8 @@ package org.amahi.anywhere.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -122,5 +124,18 @@ public class ServerAppActivity extends Activity
 		super.onDestroy();
 
 		getWebView().destroy();
+
+		if (isFinishing()) {
+			tearDownAppWebViewState();
+		}
+	}
+
+	private void tearDownAppWebViewState() {
+		CookieSyncManager.createInstance(this);
+
+		CookieManager cookieManager = CookieManager.getInstance();
+
+		cookieManager.removeAllCookie();
+		cookieManager.setAcceptCookie(false);
 	}
 }

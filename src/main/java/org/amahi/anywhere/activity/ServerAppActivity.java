@@ -106,6 +106,7 @@ public class ServerAppActivity extends Activity
 		super.onResume();
 
 		getWebView().onResume();
+		getWebView().resumeTimers();
 	}
 
 	@Override
@@ -113,5 +114,13 @@ public class ServerAppActivity extends Activity
 		super.onPause();
 
 		getWebView().onPause();
+		getWebView().pauseTimers();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		getWebView().destroy();
 	}
 }

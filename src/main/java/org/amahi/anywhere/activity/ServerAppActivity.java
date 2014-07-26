@@ -136,6 +136,5 @@ public class ServerAppActivity extends Activity
 		CookieManager cookieManager = CookieManager.getInstance();
 
 		cookieManager.removeAllCookie();
-		cookieManager.setAcceptCookie(false);
 	}
 }

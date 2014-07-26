@@ -20,13 +20,22 @@
 package org.amahi.anywhere.activity;
 
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
 import android.view.MenuItem;
+
+import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerFilesImagePagerAdapter;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -146,14 +155,70 @@ public class ServerFileImageActivity extends Activity implements ViewPager.OnPag
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.action_bar_server_file_image, menu);
+
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
 			case android.R.id.home:
 				finish();
 				return true;
 
+			case R.id.menu_share:
+				startFileSharingActivity();
+				return true;
+
 			default:
 				return super.onOptionsItemSelected(menuItem);
 		}
+	}
+
+	private void startFileSharingActivity() {
+		startFileDownloading(getShare(), getCurrentFile());
+	}
+
+	private ServerFile getCurrentFile() {
+		return getImageFiles().get(getImagePager().getCurrentItem());
+	}
+
+	private void startFileDownloading(ServerShare share, ServerFile file) {
+		showFileDownloadingFragment(share, file);
+	}
+
+	private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
+		DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
+		fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
+	}
+
+	@Subscribe
+	public void onFileDownloaded(FileDownloadedEvent event) {
+		finishFileDownloading(event.getFileUri());
+	}
+
+	private void finishFileDownloading(Uri fileUri) {
+		startFileSharingActivity(getCurrentFile(), fileUri);
+	}
+
+	private void startFileSharingActivity(ServerFile file, Uri fileUri) {
+		Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
+		startActivity(intent);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		BusProvider.getBus().register(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		BusProvider.getBus().unregister(this);
 	}
 }

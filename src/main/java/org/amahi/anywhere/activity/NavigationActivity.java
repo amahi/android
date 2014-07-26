@@ -97,12 +97,13 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 			setUpNavigationDrawer();
 		}
 
-		setUpNavigationTitle(state);
 		setUpNavigationFragment();
 
 		if (isNavigationDrawerAvailable() && isNavigationDrawerRequired(state)) {
 			showNavigationDrawer();
 		}
+
+		setUpNavigationTitle(state);
 	}
 
 	private void setUpNavigationDrawer() {
@@ -133,7 +134,9 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	}
 
 	private void setUpTitle(String title) {
-		getActionBar().setTitle(title);
+		if (isNavigationDrawerAvailable()) {
+			getActionBar().setTitle(title);
+		}
 	}
 
 	@Override
@@ -156,7 +159,9 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	private void setUpNavigationTitle(Bundle state) {
 		this.navigationTitle = getNavigationTitle(state);
 
-		setUpTitle();
+		if (!isNavigationDrawerOpen()) {
+			setUpTitle();
+		}
 	}
 
 	private String getNavigationTitle(Bundle state) {
@@ -191,8 +196,6 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	public void onSharesSelected(SharesSelectedEvent event) {
 		this.navigationTitle = "Shares";
 
-		setUpTitle();
-
 		setUpShares();
 
 		if (isNavigationDrawerAvailable()) {
@@ -219,8 +222,6 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	@Subscribe
 	public void onAppsSelected(AppsSelectedEvent event) {
 		this.navigationTitle = "Apps";
-
-		setUpTitle();
 
 		setUpApps();
 

@@ -19,7 +19,7 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -30,7 +30,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.squareup.otto.Subscribe;
@@ -56,7 +58,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class ServerFilesFragment extends ListFragment implements SwipeRefreshLayout.OnRefreshListener,
+public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
+	AdapterView.OnItemClickListener,
 	AdapterView.OnItemLongClickListener,
 	ActionMode.Callback
 {
@@ -112,7 +115,12 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	}
 
 	private void setUpFilesActions() {
+		getListView().setOnItemClickListener(this);
 		getListView().setOnItemLongClickListener(this);
+	}
+
+	private AbsListView getListView() {
+		return (AbsListView) getView().findViewById(android.R.id.list);
 	}
 
 	@Override
@@ -187,8 +195,16 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 		return (ServerFilesAdapter) getListAdapter();
 	}
 
+	private ListAdapter getListAdapter() {
+		return getListView().getAdapter();
+	}
+
 	private void setUpFilesAdapter() {
 		setListAdapter(new ServerFilesAdapter(getActivity()));
+	}
+
+	private void setListAdapter(ListAdapter adapter) {
+		getListView().setAdapter(adapter);
 	}
 
 	private void setUpFilesContent(Bundle state) {
@@ -200,7 +216,7 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	}
 
 	private boolean isFilesStateValid(Bundle state) {
-		return (state != null) && state.containsKey(State.FILES) && state.containsKey(State.FILES_SORT) ;
+		return (state != null) && state.containsKey(State.FILES) && state.containsKey(State.FILES_SORT);
 	}
 
 	private void setUpFilesState(Bundle state) {
@@ -224,7 +240,19 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	}
 
 	private void showFilesContent() {
+		if (areFilesAvailable()) {
+			getView().findViewById(android.R.id.list).setVisibility(View.VISIBLE);
+			getView().findViewById(android.R.id.empty).setVisibility(View.INVISIBLE);
+		} else {
+			getView().findViewById(android.R.id.list).setVisibility(View.INVISIBLE);
+			getView().findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
+		}
+
 		ViewDirector.of(this, R.id.animator).show(R.id.content);
+	}
+
+	private boolean areFilesAvailable() {
+		return !getFilesAdapter().isEmpty();
 	}
 
 	private void setUpFilesContent() {
@@ -314,9 +342,7 @@ public class ServerFilesFragment extends ListFragment implements SwipeRefreshLay
 	}
 
 	@Override
-	public void onListItemClick(ListView filesListView, View fileView, int filePosition, long fileId) {
-		super.onListItemClick(filesListView, fileView, filePosition, fileId);
-
+	public void onItemClick(AdapterView<?> filesListView, View fileView, int filePosition, long fileId) {
 		if (!areFilesActionsAvailable()) {
 			clearFileChoices();
 

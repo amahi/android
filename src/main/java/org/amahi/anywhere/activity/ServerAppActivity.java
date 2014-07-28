@@ -21,6 +21,8 @@ package org.amahi.anywhere.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
@@ -101,6 +103,37 @@ public class ServerAppActivity extends Activity
 
 	private void setUpAppWebContent() {
 		getWebView().loadUrl(serverClient.getServerAddress());
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.action_bar_server_app, menu);
+
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		switch (menuItem.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
+
+			case R.id.menu_back:
+				if (getWebView().canGoBack()) {
+					getWebView().goBack();
+				}
+				return true;
+
+			case R.id.menu_forward:
+				if (getWebView().canGoForward()) {
+					getWebView().goForward();
+				}
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(menuItem);
+		}
 	}
 
 	@Override

@@ -159,7 +159,7 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	private void setUpNavigationTitle(Bundle state) {
 		this.navigationTitle = getNavigationTitle(state);
 
-		if (!isNavigationDrawerOpen()) {
+		if (isNavigationDrawerAvailable() && !isNavigationDrawerOpen()) {
 			setUpTitle();
 		}
 	}

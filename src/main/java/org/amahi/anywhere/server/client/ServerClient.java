@@ -36,6 +36,7 @@ import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
@@ -183,5 +184,9 @@ public class ServerClient
 			.appendQueryParameter("p", file.getPath())
 			.appendQueryParameter("Session", server.getSession())
 			.build();
+	}
+
+	public ServerFileMetadata getFileMetadata(ServerShare share, ServerFile file) {
+		return serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag());
 	}
 }

@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -94,7 +95,16 @@ public class ServerAppActivity extends Activity
 	}
 
 	private void setUpAppWebSettings() {
-		getWebView().getSettings().setJavaScriptEnabled(true);
+		WebSettings settings = getWebView().getSettings();
+
+		settings.setJavaScriptEnabled(true);
+
+		settings.setUseWideViewPort(true);
+		settings.setLoadWithOverviewMode(true);
+
+		settings.setSupportZoom(true);
+		settings.setBuiltInZoomControls(true);
+		settings.setDisplayZoomControls(false);
 	}
 
 	private void setUpAppWebTitle() {

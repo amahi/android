@@ -36,6 +36,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.ViewDirector;
 
 import java.util.Locale;
@@ -54,11 +55,28 @@ public class ServerAppActivity extends Activity
 
 		setUpInjections();
 
+		setUpAppHistory();
 		setUpApp(savedInstanceState);
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpAppHistory() {
+		String previousAppHost = Preferences.with(this).getLatestOpenedAppHost();
+		String currentAppHost = getApp().getHost();
+
+		if (!previousAppHost.equals(currentAppHost)) {
+			tearDownAppState();
+		}
+	}
+
+	private void tearDownAppState() {
+		CookieSyncManager.createInstance(this);
+
+		CookieManager cookieManager = CookieManager.getInstance();
+		cookieManager.removeAllCookie();
 	}
 
 	private void setUpApp(Bundle state) {
@@ -186,16 +204,14 @@ public class ServerAppActivity extends Activity
 		getWebView().destroy();
 
 		if (isFinishing()) {
-			tearDownAppWebViewState();
+			tearDownAppHistory();
 		}
 	}
 
-	private void tearDownAppWebViewState() {
-		CookieSyncManager.createInstance(this);
+	private void tearDownAppHistory() {
+		String currentAppHost = getApp().getHost();
 
-		CookieManager cookieManager = CookieManager.getInstance();
-
-		cookieManager.removeAllCookie();
+		Preferences.with(this).setLatestOpenedAppHost(currentAppHost);
 	}
 
 	private static final class AppWebClient extends WebViewClient

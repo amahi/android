@@ -132,6 +132,10 @@ public class ServerClient
 		return (this.server != null) && (this.server.getSession().equals(server.getSession()));
 	}
 
+	public boolean isConnectedLocal() {
+		return serverAddress.equals(serverRoute.getLocalAddress());
+	}
+
 	public void connect(Server server) {
 		this.server = server;
 

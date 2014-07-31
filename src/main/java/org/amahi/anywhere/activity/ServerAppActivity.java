@@ -20,6 +20,7 @@
 package org.amahi.anywhere.activity;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +36,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.ViewDirector;
 
 import java.util.Locale;
 
@@ -48,23 +50,23 @@ public class ServerAppActivity extends Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_server_file_web);
+		setContentView(R.layout.activity_server_app);
 
 		setUpInjections();
 
-		setUpApp();
+		setUpApp(savedInstanceState);
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
 	}
 
-	private void setUpApp() {
+	private void setUpApp(Bundle state) {
 		setUpAppWebAgent();
 		setUpAppWebClient();
 		setUpAppWebSettings();
 		setUpAppWebTitle();
-		setUpAppWebContent();
+		setUpAppWebContent(state);
 	}
 
 	private void setUpAppWebAgent() {
@@ -91,7 +93,7 @@ public class ServerAppActivity extends Activity
 	}
 
 	private void setUpAppWebClient() {
-		getWebView().setWebViewClient(new WebViewClient());
+		getWebView().setWebViewClient(new AppWebClient(this));
 	}
 
 	private void setUpAppWebSettings() {
@@ -100,7 +102,6 @@ public class ServerAppActivity extends Activity
 		settings.setJavaScriptEnabled(true);
 
 		settings.setUseWideViewPort(true);
-		settings.setLoadWithOverviewMode(true);
 
 		settings.setSupportZoom(true);
 		settings.setBuiltInZoomControls(true);
@@ -111,8 +112,10 @@ public class ServerAppActivity extends Activity
 		getActionBar().setTitle(getApp().getName());
 	}
 
-	private void setUpAppWebContent() {
-		getWebView().loadUrl(serverClient.getServerAddress());
+	private void setUpAppWebContent(Bundle state) {
+		if (state == null) {
+			getWebView().loadUrl(serverClient.getServerAddress());
+		}
 	}
 
 	@Override
@@ -147,6 +150,13 @@ public class ServerAppActivity extends Activity
 	}
 
 	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+
+		getWebView().restoreState(savedInstanceState);
+	}
+
+	@Override
 	protected void onResume() {
 		super.onResume();
 
@@ -160,6 +170,13 @@ public class ServerAppActivity extends Activity
 
 		getWebView().onPause();
 		getWebView().pauseTimers();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		getWebView().saveState(outState);
 	}
 
 	@Override
@@ -179,5 +196,36 @@ public class ServerAppActivity extends Activity
 		CookieManager cookieManager = CookieManager.getInstance();
 
 		cookieManager.removeAllCookie();
+	}
+
+	private static final class AppWebClient extends WebViewClient
+	{
+		private final ServerAppActivity activity;
+
+		public AppWebClient(ServerAppActivity activity) {
+			this.activity = activity;
+		}
+
+		@Override
+		public void onPageStarted(WebView appWebView, String appUrl, Bitmap appFavicon) {
+			super.onPageStarted(appWebView, appUrl, appFavicon);
+
+			activity.showProgress();
+		}
+
+		@Override
+		public void onPageFinished(WebView appWebView, String appUrl) {
+			super.onPageFinished(appWebView, appUrl);
+
+			activity.showApp();
+		}
+	}
+
+	private void showProgress() {
+		ViewDirector.of(this, R.id.animator).show(android.R.id.progress);
+	}
+
+	private void showApp() {
+		ViewDirector.of(this, R.id.animator).show(R.id.web_content);
 	}
 }

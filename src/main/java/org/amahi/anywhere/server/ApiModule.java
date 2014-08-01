@@ -24,9 +24,8 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jakewharton.byteunits.BinaryByteUnit;
-import com.squareup.okhttp.HttpResponseCache;
+import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkResponseCache;
 
 import org.amahi.anywhere.util.Time;
 
@@ -58,22 +57,22 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	OkHttpClient provideHttpClient(OkResponseCache httpCache) {
+	OkHttpClient provideHttpClient(Cache httpCache) {
 		OkHttpClient httpClient =  new OkHttpClient();
 
-		httpClient.setOkResponseCache(httpCache);
+		httpClient.setCache(httpCache);
 
 		return httpClient;
 	}
 
 	@Provides
 	@Singleton
-	OkResponseCache provideHttpCache(Context context) {
+	Cache provideHttpCache(Context context) {
 		try {
 			File cacheDirectory = new File(context.getCacheDir(), "http-cache");
 			long cacheSize = BinaryByteUnit.MEBIBYTES.toBytes(10);
 
-			return new HttpResponseCache(cacheDirectory, cacheSize);
+			return new Cache(cacheDirectory, cacheSize);
 		} catch (IOException e) {
 			return null;
 		}

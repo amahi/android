@@ -28,6 +28,9 @@ import android.widget.TextView;
 
 import org.amahi.anywhere.R;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class NavigationAdapter extends BaseAdapter
 {
 	public static final class NavigationItems
@@ -43,13 +46,25 @@ public class NavigationAdapter extends BaseAdapter
 
 	private final LayoutInflater layoutInflater;
 
-	public NavigationAdapter(Context context) {
+	private List<Integer> navigationItems;
+
+	public static NavigationAdapter newLocalAdapter(Context context) {
+		return new NavigationAdapter(context, Arrays.asList(NavigationItems.SHARES, NavigationItems.APPS));
+	}
+
+	public static NavigationAdapter newRemoteAdapter(Context context) {
+		return new NavigationAdapter(context, Arrays.asList(NavigationItems.SHARES));
+	}
+
+	private NavigationAdapter(Context context, List<Integer> navigationItems) {
 		this.layoutInflater = LayoutInflater.from(context);
+
+		this.navigationItems = navigationItems;
 	}
 
 	@Override
 	public int getCount() {
-		return NavigationItems.COUNT;
+		return navigationItems.size();
 	}
 
 	@Override

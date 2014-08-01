@@ -17,35 +17,28 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.api;
+package org.amahi.anywhere.server.response;
 
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerAppsLoadFailedEvent;
+import org.amahi.anywhere.bus.ServerAppsLoadedEvent;
 import org.amahi.anywhere.server.model.ServerApp;
-import org.amahi.anywhere.server.model.ServerFile;
-import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.List;
 
 import retrofit.Callback;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Query;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
-public interface ServerApi
+public class ServerAppsResponse implements Callback<List<ServerApp>>
 {
-	@GET("/shares")
-	public void getShares(
-		@Header("Session") String session,
-		Callback<List<ServerShare>> callback);
+	@Override
+	public void success(List<ServerApp> serverApps, Response response) {
+		BusProvider.getBus().post(new ServerAppsLoadedEvent(serverApps));
+	}
 
-	@GET("/files")
-	public void getFiles(
-		@Header("Session") String session,
-		@Query("s") String share,
-		@Query("p") String path,
-		Callback<List<ServerFile>> callback);
-
-	@GET("/apps")
-	public void getApps(
-		@Header("Session") String session,
-		Callback<List<ServerApp>> callback);
+	@Override
+	public void failure(RetrofitError error) {
+		BusProvider.getBus().post(new ServerAppsLoadFailedEvent());
+	}
 }

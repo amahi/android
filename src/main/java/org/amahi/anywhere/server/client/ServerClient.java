@@ -32,19 +32,27 @@ import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.ApiConnection;
+import org.amahi.anywhere.server.ApiResource;
+import org.amahi.anywhere.server.ApiResourceFetcher;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.server.response.ServerAppsResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import retrofit.client.Response;
 
 @Singleton
 public class ServerClient
@@ -52,6 +60,8 @@ public class ServerClient
 	private final ApiAdapter apiAdapter;
 	private final ProxyApi proxyApi;
 	private ServerApi serverApi;
+
+	private ApiResourceFetcher apiResourceFetcher;
 
 	private Server server;
 	private ServerRoute serverRoute;
@@ -61,9 +71,11 @@ public class ServerClient
 	private int network;
 
 	@Inject
-	public ServerClient(ApiAdapter apiAdapter) {
+	public ServerClient(ApiAdapter apiAdapter, ApiResourceFetcher apiResourceFetcher) {
 		this.apiAdapter = apiAdapter;
 		this.proxyApi = buildProxyApi();
+
+		this.apiResourceFetcher = apiResourceFetcher;
 
 		this.serverConnection = ApiConnection.AUTO;
 
@@ -120,6 +132,10 @@ public class ServerClient
 		return (this.server != null) && (this.server.getSession().equals(server.getSession()));
 	}
 
+	public boolean isConnectedLocal() {
+		return serverAddress.equals(serverRoute.getLocalAddress());
+	}
+
 	public void connect(Server server) {
 		this.server = server;
 
@@ -163,6 +179,10 @@ public class ServerClient
 		this.serverApi = buildServerApi();
 	}
 
+	public String getServerAddress() {
+		return serverAddress;
+	}
+
 	public void getShares() {
 		serverApi.getShares(server.getSession(), new ServerSharesResponse());
 	}
@@ -183,5 +203,17 @@ public class ServerClient
 			.appendQueryParameter("p", file.getPath())
 			.appendQueryParameter("Session", server.getSession())
 			.build();
+	}
+
+	public void getApps() {
+		serverApi.getApps(server.getSession(), new ServerAppsResponse());
+	}
+
+	public ApiResource getAppResource(ServerApp app, String appResourceUrl) {
+		try {
+			return apiResourceFetcher.fetch(server, app, appResourceUrl);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

@@ -27,12 +27,14 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 
+import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
 import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.activity.SettingsActivity;
+import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 
@@ -49,6 +51,7 @@ public final class Intents
 		private Extras() {
 		}
 
+		public static final String SERVER_APP = "server_app";
 		public static final String SERVER_FILE = "server_file";
 		public static final String SERVER_FILES = "server_files";
 		public static final String SERVER_SHARE = "server_share";
@@ -75,6 +78,13 @@ public final class Intents
 
 		private Builder(Context context) {
 			this.context = context;
+		}
+
+		public Intent buildServerAppAcitivity(ServerApp app) {
+			Intent intent = new Intent(context, ServerAppActivity.class);
+			intent.putExtra(Extras.SERVER_APP, app);
+
+			return intent;
 		}
 
 		public Intent buildServerFilesActivity(ServerShare share) {

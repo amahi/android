@@ -63,6 +63,10 @@
 		</activity>
 
 		<activity
+			android:name=".activity.ServerAppActivity">
+		</activity>
+
+		<activity
 			android:name=".activity.ServerFilesActivity">
 		</activity>
 

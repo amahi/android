@@ -51,6 +51,7 @@ import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
@@ -258,7 +259,16 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void setUpNavigationAdapter() {
-		getNavigationListView().setAdapter(new NavigationAdapter(getActivity()));
+		if (!serverClient.isConnected()) {
+			getNavigationListView().setAdapter(NavigationAdapter.newRemoteAdapter(getActivity()));
+			return;
+		}
+
+		if (serverClient.isConnectedLocal()) {
+			getNavigationListView().setAdapter(NavigationAdapter.newLocalAdapter(getActivity()));
+		} else {
+			getNavigationListView().setAdapter(NavigationAdapter.newRemoteAdapter(getActivity()));
+		}
 	}
 
 	private ListView getNavigationListView() {
@@ -312,6 +322,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	private void setUpServerConnection(Server server) {
 		if (serverClient.isConnected(server)) {
 			setUpServerConnection();
+			setUpServerNavigation();
 		} else {
 			serverClient.connect(server);
 		}
@@ -320,6 +331,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	@Subscribe
 	public void onServerConnected(ServerConnectedEvent event) {
 		setUpServerConnection();
+		setUpServerNavigation();
 	}
 
 	private void setUpServerConnection() {
@@ -353,6 +365,15 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
 		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+	}
+
+	private void setUpServerNavigation() {
+		setUpNavigationAdapter();
+	}
+
+	@Subscribe
+	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+		setUpServerNavigation();
 	}
 
 	@Override

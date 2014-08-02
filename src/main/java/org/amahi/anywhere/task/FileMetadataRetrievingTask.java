@@ -39,6 +39,10 @@ public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 	private final ServerShare share;
 	private final List<ServerFile> files;
 
+	public static void execute(ServerClient serverClient, ServerShare share, List<ServerFile> files) {
+		new FileMetadataRetrievingTask(serverClient, share, files).execute();
+	}
+
 	private FileMetadataRetrievingTask(ServerClient serverClient, ServerShare share, List<ServerFile> files) {
 		this.serverClient = serverClient;
 

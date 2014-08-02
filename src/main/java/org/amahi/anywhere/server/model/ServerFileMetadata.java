@@ -19,9 +19,12 @@
 
 package org.amahi.anywhere.server.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class ServerFileMetadata
+public class ServerFileMetadata implements Parcelable
 {
 	@SerializedName("title")
 	private String title;
@@ -35,5 +38,34 @@ public class ServerFileMetadata
 
 	public String getArtworkUrl() {
 		return artworkUrl;
+	}
+
+	public static final Creator<ServerFileMetadata> CREATOR = new Creator<ServerFileMetadata>()
+	{
+		@Override
+		public ServerFileMetadata createFromParcel(Parcel parcel) {
+			return new ServerFileMetadata(parcel);
+		}
+
+		@Override
+		public ServerFileMetadata[] newArray(int size) {
+			return new ServerFileMetadata[size];
+		}
+	};
+
+	private ServerFileMetadata(Parcel parcel) {
+		this.title = parcel.readString();
+		this.artworkUrl = parcel.readString();
+	}
+
+	@Override
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeString(title);
+		parcel.writeString(artworkUrl);
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
 	}
 }

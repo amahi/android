@@ -31,7 +31,6 @@ import com.squareup.picasso.Picasso;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerFile;
-import org.amahi.anywhere.server.model.ServerFileMetadata;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,19 +41,16 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 	private final LayoutInflater layoutInflater;
 
 	private List<ServerFile> files;
-	private List<ServerFileMetadata> filesMetadata;
 
 	public ServerFilesMetadataAdapter(Context context) {
 		this.context = context;
 		this.layoutInflater = LayoutInflater.from(context);
 
 		this.files = Collections.emptyList();
-		this.filesMetadata = Collections.emptyList();
 	}
 
-	public void replaceWith(List<ServerFile> files, List<ServerFileMetadata> filesMetadata) {
+	public void replaceWith(List<ServerFile> files) {
 		this.files = files;
-		this.filesMetadata = filesMetadata;
 
 		notifyDataSetChanged();
 	}
@@ -68,17 +64,9 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 		return files;
 	}
 
-	public List<ServerFileMetadata> getExtraItems() {
-		return filesMetadata;
-	}
-
 	@Override
 	public ServerFile getItem(int position) {
 		return files.get(position);
-	}
-
-	public ServerFileMetadata getExtraItem(int position) {
-		return filesMetadata.get(position);
 	}
 
 	@Override
@@ -89,13 +77,12 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View view, ViewGroup container) {
 		ServerFile file = getItem(position);
-		ServerFileMetadata fileMetadata = getExtraItem(position);
 
 		if (view == null) {
 			view = newView(container);
 		}
 
-		bindView(file, fileMetadata, view);
+		bindView(file, view);
 
 		return view;
 	}
@@ -104,11 +91,11 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 		return layoutInflater.inflate(R.layout.view_server_file_metadata_item, container, false);
 	}
 
-	private void bindView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
-		if (fileMetadata == null) {
+	private void bindView(ServerFile file, View fileView) {
+		if (file.getMetadata() == null) {
 			bindFileView(file, fileView);
 		} else {
-			bindFileMetadataView(fileMetadata, fileView);
+			bindFileMetadataView(file, fileView);
 		}
 	}
 
@@ -120,16 +107,16 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 		fileTextView.setText(file.getName());
 	}
 
-	private void bindFileMetadataView(ServerFileMetadata fileMetadata, View fileView) {
+	private void bindFileMetadataView(ServerFile file, View fileView) {
 		ImageView fileIconView = (ImageView) fileView.findViewById(R.id.icon);
 		TextView fileTextView = (TextView) fileView.findViewById(R.id.text);
 
 		Picasso.with(context)
-			.load(fileMetadata.getArtworkUrl())
+			.load(file.getMetadata().getArtworkUrl())
 			.centerCrop()
 			.fit()
 			.into(fileIconView);
 
-		fileTextView.setText(fileMetadata.getTitle());
+		fileTextView.setText(file.getMetadata().getTitle());
 	}
 }

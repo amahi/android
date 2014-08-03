@@ -26,7 +26,6 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesMetadataLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
-import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.ArrayList;
@@ -52,13 +51,13 @@ public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 
 	@Override
 	protected BusEvent doInBackground(Void... parameters) {
-		List<ServerFileMetadata> filesMetadata = new ArrayList<ServerFileMetadata>();
+		List<ServerFile> filesMetadata = new ArrayList<ServerFile>(files);
 
-		for (ServerFile file : files) {
-			filesMetadata.add(serverClient.getFileMetadata(share, file));
+		for (ServerFile fileMetadata : filesMetadata) {
+			fileMetadata.setMetadata(serverClient.getFileMetadata(share, fileMetadata));
 		}
 
-		return new ServerFilesMetadataLoadedEvent(files, filesMetadata);
+		return new ServerFilesMetadataLoadedEvent(filesMetadata);
 	}
 
 	@Override

@@ -31,6 +31,8 @@ public class ServerFile implements Parcelable
 {
 	private ServerFile parentFile;
 
+	private ServerFileMetadata metadata;
+
 	@SerializedName("name")
 	private String name;
 
@@ -46,6 +48,14 @@ public class ServerFile implements Parcelable
 
 	public ServerFile getParentFile() {
 		return parentFile;
+	}
+
+	public void setMetadata(ServerFileMetadata metadata) {
+		this.metadata = metadata;
+	}
+
+	public ServerFileMetadata getMetadata() {
+		return metadata;
 	}
 
 	public String getName() {
@@ -86,7 +96,8 @@ public class ServerFile implements Parcelable
 	};
 
 	private ServerFile(Parcel parcel) {
-		this.parentFile = parcel.readParcelable(this.getClass().getClassLoader());
+		this.parentFile = parcel.readParcelable(ServerFile.class.getClassLoader());
+		this.metadata = parcel.readParcelable(ServerFileMetadata.class.getClassLoader());
 		this.name = parcel.readString();
 		this.mime = parcel.readString();
 		this.modificationTime = new Date(parcel.readLong());
@@ -95,6 +106,7 @@ public class ServerFile implements Parcelable
 	@Override
 	public void writeToParcel(Parcel parcel, int flags) {
 		parcel.writeParcelable(parentFile, flags);
+		parcel.writeParcelable(metadata, flags);
 		parcel.writeString(name);
 		parcel.writeString(mime);
 		parcel.writeLong(modificationTime.getTime());

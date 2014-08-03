@@ -48,7 +48,6 @@ import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.bus.ServerFilesMetadataLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
-import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.FileMetadataRetrievingTask;
 import org.amahi.anywhere.util.Fragments;
@@ -72,7 +71,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		}
 
 		public static final String FILES = "files";
-		public static final String FILES_METADATA = "files_metadata";
 		public static final String FILES_SORT = "files_sort";
 	}
 
@@ -249,13 +247,12 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void setUpFilesState(Bundle state) {
 		List<ServerFile> files = state.getParcelableArrayList(State.FILES);
-		List<ServerFileMetadata> filesMetadata = state.getParcelableArrayList(State.FILES_METADATA);
 		FilesSort filesSort = (FilesSort) state.getSerializable(State.FILES_SORT);
 
 		if (!isMetadataAvailable()) {
 			setUpFilesContent(files);
 		} else {
-			setUpFilesContent(files, filesMetadata);
+			setUpFilesMetadataContent(files);
 		}
 
 		setUpFilesContentSort(filesSort);
@@ -265,10 +262,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void setUpFilesContent(List<ServerFile> files) {
 		getFilesAdapter().replaceWith(files);
-	}
-
-	private void setUpFilesContent(List<ServerFile> files, List<ServerFileMetadata> filesMetadata) {
-		getFilesMetadataAdapter().replaceWith(files, filesMetadata);
 	}
 
 	private void setUpFilesContentSort(FilesSort filesSort) {
@@ -397,15 +390,19 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	@Subscribe
 	public void onFilesMedataLoaded(ServerFilesMetadataLoadedEvent event) {
-		showFilesContent(event.getFiles(), event.getFilesMetadata());
+		showFilesMetadataContent(event.getFiles());
 	}
 
-	private void showFilesContent(List<ServerFile> files, List<ServerFileMetadata> filesMetadata) {
-		setUpFilesContent(sortFiles(files), filesMetadata);
+	private void showFilesMetadataContent(List<ServerFile> files) {
+		setUpFilesMetadataContent(sortFiles(files));
 
 		showFilesContent();
 
 		hideFilesContentRefreshing();
+	}
+
+	private void setUpFilesMetadataContent(List<ServerFile> files) {
+		getFilesMetadataAdapter().replaceWith(files);
 	}
 
 	@Override
@@ -490,14 +487,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void setUpFilesContentSort() {
 		if (!isMetadataAvailable()) {
-			List<ServerFile> files = sortFiles(getFilesAdapter().getItems());
-
-			getFilesAdapter().replaceWith(files);
+			getFilesAdapter().replaceWith(sortFiles(getFiles()));
 		} else {
-			List<ServerFile> files = sortFiles(getFilesMetadataAdapter().getItems());
-			List<ServerFileMetadata> filesMetadata = getFilesMetadataAdapter().getExtraItems();
-
-			getFilesMetadataAdapter().replaceWith(files, filesMetadata);
+			getFilesMetadataAdapter().replaceWith(sortFiles(getFiles()));
 		}
 	}
 
@@ -523,23 +515,19 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void tearDownFilesState(Bundle state) {
-		if (!isMetadataAvailable() && areFilesLoaded()) {
-			state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFilesAdapter().getItems()));
-		}
-
-		if (isMetadataAvailable() && isFilesMetadataLoaded()) {
-			state.putParcelableArrayList(State.FILES_METADATA, new ArrayList<Parcelable>(getFilesMetadataAdapter().getExtraItems()));
+		if (areFilesLoaded()) {
+			state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFiles()));
 		}
 
 		state.putSerializable(State.FILES_SORT, filesSort);
 	}
 
 	private boolean areFilesLoaded() {
-		return getFilesAdapter() != null;
-	}
-
-	private boolean isFilesMetadataLoaded() {
-		return getFilesMetadataAdapter() != null;
+		if (!isMetadataAvailable()) {
+			return getFilesAdapter() != null;
+		} else {
+			return getFilesMetadataAdapter() != null;
+		}
 	}
 
 	private static final class FileNameComparator implements Comparator<ServerFile>

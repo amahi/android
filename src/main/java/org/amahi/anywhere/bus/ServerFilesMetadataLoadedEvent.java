@@ -20,25 +20,18 @@
 package org.amahi.anywhere.bus;
 
 import org.amahi.anywhere.server.model.ServerFile;
-import org.amahi.anywhere.server.model.ServerFileMetadata;
 
 import java.util.List;
 
 public class ServerFilesMetadataLoadedEvent implements BusEvent
 {
 	private final List<ServerFile> files;
-	private final List<ServerFileMetadata> filesMetadata;
 
-	public ServerFilesMetadataLoadedEvent(List<ServerFile> files, List<ServerFileMetadata> filesMetadata) {
+	public ServerFilesMetadataLoadedEvent(List<ServerFile> files) {
 		this.files = files;
-		this.filesMetadata = filesMetadata;
 	}
 
 	public List<ServerFile> getFiles() {
 		return files;
-	}
-
-	public List<ServerFileMetadata> getFilesMetadata() {
-		return filesMetadata;
 	}
 }

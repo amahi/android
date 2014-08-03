@@ -77,6 +77,10 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 		return files.get(position);
 	}
 
+	public ServerFileMetadata getExtraItem(int position) {
+		return filesMetadata.get(position);
+	}
+
 	@Override
 	public long getItemId(int position) {
 		return position;
@@ -84,27 +88,46 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 
 	@Override
 	public View getView(int position, View view, ViewGroup container) {
-		ServerFileMetadata fileMetadata = filesMetadata.get(position);
+		ServerFile file = getItem(position);
+		ServerFileMetadata fileMetadata = getExtraItem(position);
 
 		if (view == null) {
 			view = newView(container);
 		}
 
-		bindView(fileMetadata, view);
+		bindView(file, fileMetadata, view);
 
 		return view;
 	}
 
 	private View newView(ViewGroup container) {
-		return layoutInflater.inflate(R.layout.view_server_file_item, container, false);
+		return layoutInflater.inflate(R.layout.view_server_file_metadata_item, container, false);
 	}
 
-	private void bindView(ServerFileMetadata fileMetadata, View view) {
-		ImageView fileIconView = (ImageView) view.findViewById(R.id.icon);
-		TextView fileTextView = (TextView) view.findViewById(R.id.text);
+	private void bindView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
+		if (fileMetadata == null) {
+			bindFileView(file, fileView);
+		} else {
+			bindFileMetadataView(fileMetadata, fileView);
+		}
+	}
+
+	private void bindFileView(ServerFile file, View fileView) {
+		ImageView fileIconView = (ImageView) fileView.findViewById(R.id.icon);
+		TextView fileTextView = (TextView) fileView.findViewById(R.id.text);
+
+		fileIconView.setImageResource(R.drawable.ic_file_video);
+		fileTextView.setText(file.getName());
+	}
+
+	private void bindFileMetadataView(ServerFileMetadata fileMetadata, View fileView) {
+		ImageView fileIconView = (ImageView) fileView.findViewById(R.id.icon);
+		TextView fileTextView = (TextView) fileView.findViewById(R.id.text);
 
 		Picasso.with(context)
 			.load(fileMetadata.getArtworkUrl())
+			.centerCrop()
+			.fit()
 			.into(fileIconView);
 
 		fileTextView.setText(fileMetadata.getTitle());

@@ -43,7 +43,7 @@
 
 			<GridView
 				android:id="@android:id/list"
-				android:numColumns="3"
+				android:numColumns="2"
 				android:choiceMode="singleChoice"
 				android:scrollbarStyle="outsideOverlay"
 				android:divider="@null"

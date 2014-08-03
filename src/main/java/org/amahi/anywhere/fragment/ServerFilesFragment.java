@@ -397,7 +397,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	@Subscribe
 	public void onFilesMedataLoaded(ServerFilesMetadataLoadedEvent event) {
-		showFilesContent(getFiles(), event.getFilesMetadata());
+		showFilesContent(event.getFiles(), event.getFilesMetadata());
 	}
 
 	private void showFilesContent(List<ServerFile> files, List<ServerFileMetadata> filesMetadata) {
@@ -523,7 +523,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void tearDownFilesState(Bundle state) {
-		if (areFilesLoaded()) {
+		if (!isMetadataAvailable() && areFilesLoaded()) {
 			state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFilesAdapter().getItems()));
 		}
 

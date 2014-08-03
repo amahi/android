@@ -47,6 +47,8 @@ import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import retrofit.RetrofitError;
+
 @Singleton
 public class ServerClient
 {
@@ -187,6 +189,10 @@ public class ServerClient
 	}
 
 	public ServerFileMetadata getFileMetadata(ServerShare share, ServerFile file) {
-		return serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag());
+		try {
+			return serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag());
+		} catch (RetrofitError error) {
+			return null;
+		}
 	}
 }

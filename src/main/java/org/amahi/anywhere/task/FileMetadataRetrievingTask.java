@@ -58,7 +58,7 @@ public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 			filesMetadata.add(serverClient.getFileMetadata(share, file));
 		}
 
-		return new ServerFilesMetadataLoadedEvent(filesMetadata);
+		return new ServerFilesMetadataLoadedEvent(files, filesMetadata);
 	}
 
 	@Override

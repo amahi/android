@@ -50,7 +50,7 @@ public final class Preferences
 		this.preferences = context.getSharedPreferences(location, Context.MODE_PRIVATE);
 	}
 
-	public String getAppCookie(String appHost) {
+	public String getAppCookies(String appHost) {
 		return getString(appHost);
 	}
 
@@ -58,11 +58,11 @@ public final class Preferences
 		return preferences.getString(key, Defaults.STRING);
 	}
 
-	private void setString(String key, String value) {
-		preferences.edit().putString(key, value).apply();
+	public void setAppCookies(String appHost, String appCookies) {
+		setString(appHost, appCookies);
 	}
 
-	public void setAppCookie(String appHost, String appCookie) {
-		setString(appHost, appCookie);
+	private void setString(String key, String value) {
+		preferences.edit().putString(key, value).apply();
 	}
 }

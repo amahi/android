@@ -22,6 +22,7 @@ package org.amahi.anywhere.activity;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
@@ -72,9 +73,11 @@ public class ServerAppActivity extends Activity
 
 	private void setUpAppWebCookie() {
 		String appHost = getApp().getHost();
-		String appCookie = Preferences.ofCookie(this).getAppCookie(appHost);
+		String appCookies = Preferences.ofCookie(this).getAppCookies(appHost);
 
-		CookieManager.getInstance().setCookie(getAppUrl(), appCookie);
+		for (String appCookie : TextUtils.split(appCookies, ";")) {
+			CookieManager.getInstance().setCookie(getAppUrl(), appCookie);
+		}
 	}
 
 	private void setUpAppWebAgent() {
@@ -204,9 +207,9 @@ public class ServerAppActivity extends Activity
 
 	private void tearDownAppWebCookie() {
 		String appHost = getApp().getHost();
-		String appCookie = CookieManager.getInstance().getCookie(getAppUrl());
+		String appCookies = CookieManager.getInstance().getCookie(getAppUrl());
 
-		Preferences.ofCookie(this).setAppCookie(appHost, appCookie);
+		Preferences.ofCookie(this).setAppCookies(appHost, appCookies);
 
 		CookieManager.getInstance().removeAllCookie();
 	}

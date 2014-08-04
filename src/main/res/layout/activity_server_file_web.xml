@@ -18,7 +18,22 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<WebView xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/web_content"
+<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/animator"
+	android:inAnimation="@android:anim/fade_in"
+	android:outAnimation="@android:anim/fade_out"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"/>
+	android:layout_height="match_parent">
+
+	<ProgressBar
+		android:id="@android:id/progress"
+		android:layout_gravity="center"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"/>
+
+	<WebView
+		android:id="@+id/web_content"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"/>
+
+</ViewAnimator>

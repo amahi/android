@@ -27,6 +27,7 @@ import org.amahi.anywhere.bus.ServerFilesMetadataLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Mimes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,9 @@ public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 		List<ServerFile> filesMetadata = new ArrayList<ServerFile>(files);
 
 		for (ServerFile fileMetadata : filesMetadata) {
-			fileMetadata.setMetadata(serverClient.getFileMetadata(share, fileMetadata));
+			if (Mimes.match(fileMetadata.getMime()) == Mimes.Type.VIDEO) {
+				fileMetadata.setMetadata(serverClient.getFileMetadata(share, fileMetadata));
+			}
 		}
 
 		return new ServerFilesMetadataLoadedEvent(filesMetadata);

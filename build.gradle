@@ -83,3 +83,7 @@ dependencies {
 
     provided "com.squareup.dagger:dagger-compiler:1.2.+"
 }
+
+task generateWrapper(type: Wrapper) {
+    gradleVersion = "1.12"
+}

@@ -41,7 +41,7 @@ public class ServerConnectionDetectingTask extends AsyncTask<Void, Void, BusEven
 
 	@Override
 	protected BusEvent doInBackground(Void... parameters) {
-		return new ServerConnectionDetectedEvent(new ApiConnectionDetector(serverRoute).detect());
+		return new ServerConnectionDetectedEvent(new ApiConnectionDetector().detect(serverRoute));
 	}
 
 	@Override

@@ -35,24 +35,38 @@ import timber.log.Timber;
 
 public class ApiConnectionDetector
 {
-	private static final int CONNECTION_TIMEOUT = 1;
+	private static final class Connection
+	{
+		private Connection() {
+		}
 
-	private final ServerRoute serverRoute;
-
-	public ApiConnectionDetector(ServerRoute serverRoute) {
-		this.serverRoute = serverRoute;
+		public static final int TIMEOUT = 1;
 	}
 
-	public String detect() {
+	private final OkHttpClient httpClient;
+
+	public ApiConnectionDetector() {
+		this.httpClient = buildHttpClient();
+	}
+
+	private OkHttpClient buildHttpClient() {
+		OkHttpClient httpClient = new OkHttpClient();
+
+		httpClient.setConnectTimeout(Connection.TIMEOUT, TimeUnit.SECONDS);
+
+		return httpClient;
+	}
+
+	public String detect(ServerRoute serverRoute) {
 		Timber.tag("CONNECTION");
 
 		try {
-			Request request = new Request.Builder()
+			Request httpRequest = new Request.Builder()
 				.url(getConnectionUrl(serverRoute.getLocalAddress()))
 				.build();
 
-			Response response = getHttpClient()
-				.newCall(request)
+			Response httpResponse = httpClient
+				.newCall(httpRequest)
 				.execute();
 
 			Timber.d("Using local address.");
@@ -63,14 +77,6 @@ public class ApiConnectionDetector
 
 			return serverRoute.getRemoteAddress();
 		}
-	}
-
-	private OkHttpClient getHttpClient() {
-		OkHttpClient httpClient = new OkHttpClient();
-
-		httpClient.setConnectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS);
-
-		return httpClient;
 	}
 
 	private URL getConnectionUrl(String serverAddress) throws IOException {

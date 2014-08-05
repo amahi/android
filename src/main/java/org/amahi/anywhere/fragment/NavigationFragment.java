@@ -129,17 +129,17 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private List<Account> getAccounts() {
-		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE_ACCOUNT));
+		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
 	}
 
 	private void setUpAccount() {
-		getAccountManager().addAccount(AmahiAccount.TYPE_ACCOUNT, AmahiAccount.TYPE_TOKEN, null, null, getActivity(), this, null);
+		getAccountManager().addAccount(AmahiAccount.TYPE, AmahiAccount.TYPE_TOKEN, null, null, getActivity(), this, null);
 	}
 
 	private void setUpAuthenticationToken() {
 		Account account = getAccounts().get(0);
 
-		getAccountManager().getAuthToken(account, AmahiAccount.TYPE_ACCOUNT, null, getActivity(), this, null);
+		getAccountManager().getAuthToken(account, AmahiAccount.TYPE, null, getActivity(), this, null);
 	}
 
 	@Override

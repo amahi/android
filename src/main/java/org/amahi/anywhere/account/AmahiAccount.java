@@ -23,10 +23,11 @@ import android.accounts.Account;
 
 public class AmahiAccount extends Account
 {
-	public static final String TYPE_ACCOUNT = "org.amahi";
-	public static final String TYPE_TOKEN = "org.amahi.FULL";
+	public static final String TYPE = "org.amahi";
+
+	public static final String TYPE_TOKEN = String.format("%s.FULL", TYPE);
 
 	public AmahiAccount(String name) {
-		super(name, TYPE_ACCOUNT);
+		super(name, TYPE);
 	}
 }

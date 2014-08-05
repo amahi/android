@@ -62,7 +62,7 @@ class AmahiAuthenticator extends AbstractAccountAuthenticator
 	}
 
 	private List<Account> getAccounts() {
-		return Arrays.asList(AccountManager.get(context).getAccountsByType(AmahiAccount.TYPE_ACCOUNT));
+		return Arrays.asList(AccountManager.get(context).getAccountsByType(AmahiAccount.TYPE));
 	}
 
 	@Override

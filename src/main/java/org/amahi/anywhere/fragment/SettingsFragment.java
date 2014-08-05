@@ -138,7 +138,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private List<Account> getAccounts() {
-		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE_ACCOUNT));
+		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
 	}
 
 	private AccountManager getAccountManager() {

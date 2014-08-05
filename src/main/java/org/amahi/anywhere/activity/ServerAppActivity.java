@@ -35,11 +35,14 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Identifier;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.ViewDirector;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -89,14 +92,10 @@ public class ServerAppActivity extends Activity
 	}
 
 	private String getAppWebAgent() {
-		return String.format(Locale.US, "AmahiAnywhere/%s (Android %s; %s) Size/%.1f Resolution/%dx%d Vhost/%s",
-			Android.getApplicationVersion(),
-			Android.getVersion(),
-			Android.getDeviceName(),
-			Android.getDeviceScreenSize(this),
-			Android.getDeviceScreenHeight(this),
-			Android.getDeviceScreenWidth(this),
-			getApp().getHost());
+		Map<String, String> agentFields = new HashMap<String, String>();
+		agentFields.put("Vhost", getApp().getHost());
+
+		return Identifier.getUserAgent(this, agentFields);
 	}
 
 	private ServerApp getApp() {

@@ -29,15 +29,7 @@ public final class Preferences
 		private Locations() {
 		}
 
-		public static final String STATE = "state";
-	}
-
-	private static final class Keys
-	{
-		private Keys() {
-		}
-
-		public static final String LATEST_OPENED_APP_HOST = "latest_opened_app_host";
+		public static final String COOKIE = "cookie";
 	}
 
 	private static final class Defaults
@@ -50,24 +42,24 @@ public final class Preferences
 
 	private final SharedPreferences preferences;
 
-	public static Preferences with(Context context) {
-		return new Preferences(context);
+	public static Preferences ofCookie(Context context) {
+		return new Preferences(context, Locations.COOKIE);
 	}
 
-	private Preferences(Context context) {
-		this.preferences = context.getSharedPreferences(Locations.STATE, Context.MODE_PRIVATE);
+	private Preferences(Context context, String location) {
+		this.preferences = context.getSharedPreferences(location, Context.MODE_PRIVATE);
 	}
 
-	public String getLatestOpenedAppHost() {
-		return getString(Keys.LATEST_OPENED_APP_HOST);
+	public String getAppCookies(String appHost) {
+		return getString(appHost);
 	}
 
 	private String getString(String key) {
 		return preferences.getString(key, Defaults.STRING);
 	}
 
-	public void setLatestOpenedAppHost(String appHost) {
-		setString(Keys.LATEST_OPENED_APP_HOST, appHost);
+	public void setAppCookies(String appHost, String appCookies) {
+		setString(appHost, appCookies);
 	}
 
 	private void setString(String key, String value) {

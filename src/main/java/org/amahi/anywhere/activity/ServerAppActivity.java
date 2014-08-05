@@ -22,10 +22,10 @@ package org.amahi.anywhere.activity;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -55,7 +55,6 @@ public class ServerAppActivity extends Activity
 
 		setUpInjections();
 
-		setUpAppHistory();
 		setUpApp(savedInstanceState);
 	}
 
@@ -63,28 +62,22 @@ public class ServerAppActivity extends Activity
 		AmahiApplication.from(this).inject(this);
 	}
 
-	private void setUpAppHistory() {
-		String previousAppHost = Preferences.with(this).getLatestOpenedAppHost();
-		String currentAppHost = getApp().getHost();
-
-		if (!previousAppHost.equals(currentAppHost)) {
-			tearDownAppState();
-		}
-	}
-
-	private void tearDownAppState() {
-		CookieSyncManager.createInstance(this);
-
-		CookieManager cookieManager = CookieManager.getInstance();
-		cookieManager.removeAllCookie();
-	}
-
 	private void setUpApp(Bundle state) {
+		setUpAppWebCookie();
 		setUpAppWebAgent();
 		setUpAppWebClient();
 		setUpAppWebSettings();
 		setUpAppWebTitle();
 		setUpAppWebContent(state);
+	}
+
+	private void setUpAppWebCookie() {
+		String appHost = getApp().getHost();
+		String appCookies = Preferences.ofCookie(this).getAppCookies(appHost);
+
+		for (String appCookie : TextUtils.split(appCookies, ";")) {
+			CookieManager.getInstance().setCookie(getAppUrl(), appCookie);
+		}
 	}
 
 	private void setUpAppWebAgent() {
@@ -132,8 +125,12 @@ public class ServerAppActivity extends Activity
 
 	private void setUpAppWebContent(Bundle state) {
 		if (state == null) {
-			getWebView().loadUrl(serverClient.getServerAddress());
+			getWebView().loadUrl(getAppUrl());
 		}
+	}
+
+	private String getAppUrl() {
+		return serverClient.getServerAddress();
 	}
 
 	@Override
@@ -204,14 +201,17 @@ public class ServerAppActivity extends Activity
 		getWebView().destroy();
 
 		if (isFinishing()) {
-			tearDownAppHistory();
+			tearDownAppWebCookie();
 		}
 	}
 
-	private void tearDownAppHistory() {
-		String currentAppHost = getApp().getHost();
+	private void tearDownAppWebCookie() {
+		String appHost = getApp().getHost();
+		String appCookies = CookieManager.getInstance().getCookie(getAppUrl());
 
-		Preferences.with(this).setLatestOpenedAppHost(currentAppHost);
+		Preferences.ofCookie(this).setAppCookies(appHost, appCookies);
+
+		CookieManager.getInstance().removeAllCookie();
 	}
 
 	private static final class AppWebClient extends WebViewClient

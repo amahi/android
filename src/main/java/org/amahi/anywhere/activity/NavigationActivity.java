@@ -193,7 +193,9 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	public void onSharesSelected(SharesSelectedEvent event) {
 		this.navigationTitle = getString(R.string.title_shares);
 
-		setUpTitle();
+		if (isNavigationDrawerAvailable()) {
+			setUpTitle();
+		}
 
 		setUpShares();
 
@@ -222,7 +224,9 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	public void onAppsSelected(AppsSelectedEvent event) {
 		this.navigationTitle = getString(R.string.title_apps);
 
-		setUpTitle();
+		if (isNavigationDrawerAvailable()) {
+			setUpTitle();
+		}
 
 		setUpApps();
 

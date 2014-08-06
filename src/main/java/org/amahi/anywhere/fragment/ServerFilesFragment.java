@@ -523,6 +523,10 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private boolean areFilesLoaded() {
+		if (getView() == null) {
+			return false;
+		}
+
 		if (!isMetadataAvailable()) {
 			return getFilesAdapter() != null;
 		} else {

@@ -91,7 +91,7 @@
 		</activity>
 
 		<activity
-			android:label="Settings"
+			android:label="@string/title_settings"
 			android:name=".activity.SettingsActivity">
 		</activity>
 

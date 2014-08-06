@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.AuthenticationActivity;
 
 import java.util.Arrays;
@@ -55,7 +56,7 @@ class AmahiAuthenticator extends AbstractAccountAuthenticator
 			accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);
 		} else {
 			accountBundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_CANCELED);
-			accountBundle.putString(AccountManager.KEY_ERROR_MESSAGE, "Account already exists.");
+			accountBundle.putString(AccountManager.KEY_ERROR_MESSAGE, context.getString(R.string.message_error_account_exists));
 		}
 
 		return accountBundle;

@@ -23,13 +23,13 @@
 	<item
 		android:id="@+id/menu_back"
 		android:icon="@drawable/ic_menu_back"
-		android:title="Back"
+		android:title="@string/menu_back"
 		android:showAsAction="always"/>
 
 	<item
 		android:id="@+id/menu_forward"
 		android:icon="@drawable/ic_menu_forward"
-		android:title="Forward"
+		android:title="@string/menu_forward"
 		android:showAsAction="always"/>
 
 </menu>

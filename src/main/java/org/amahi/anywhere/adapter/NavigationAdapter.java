@@ -93,16 +93,16 @@ public class NavigationAdapter extends BaseAdapter
 	private void bindView(int navigationItem, View view) {
 		TextView navigationView = (TextView) view;
 
-		navigationView.setText(getNavigationName(navigationItem));
+		navigationView.setText(getNavigationName(view.getContext(), navigationItem));
 	}
 
-	private String getNavigationName(int navigationItem) {
+	private String getNavigationName(Context context, int navigationItem) {
 		switch (navigationItem) {
 			case NavigationItems.SHARES:
-				return "Shares";
+				return context.getString(R.string.title_shares);
 
 			case NavigationItems.APPS:
-				return "Apps";
+				return context.getString(R.string.title_apps);
 
 			default:
 				return null;

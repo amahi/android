@@ -40,13 +40,11 @@ public class NavigationAdapter extends BaseAdapter
 
 		public static final int SHARES = 0;
 		public static final int APPS = 1;
-
-		private static final int COUNT = 1;
 	}
 
 	private final LayoutInflater layoutInflater;
 
-	private List<Integer> navigationItems;
+	private final List<Integer> navigationItems;
 
 	public static NavigationAdapter newLocalAdapter(Context context) {
 		return new NavigationAdapter(context, Arrays.asList(NavigationItems.SHARES, NavigationItems.APPS));

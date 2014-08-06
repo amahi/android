@@ -28,7 +28,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
@@ -59,13 +58,17 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
 		setUpInjections();
 
-		setUpAuthenticationAction();
-		setUpAuthenticationMessages();
-		setUpAuthenticationListeners();
+		setUpAuthentication();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpAuthentication() {
+		setUpAuthenticationAction();
+		setUpAuthenticationMessages();
+		setUpAuthenticationListeners();
 	}
 
 	private void setUpAuthenticationAction() {
@@ -140,12 +143,12 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
 	@Override
 	public void onClick(View view) {
-		setUpAuthentication();
-
 		startAuthentication();
+
+		authenticate();
 	}
 
-	private void setUpAuthentication() {
+	private void startAuthentication() {
 		hideAuthenticationText();
 
 		showProgress();
@@ -165,18 +168,18 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		authenticationButton.setProgress(1);
 	}
 
-	private void startAuthentication() {
+	private void authenticate() {
 		amahiClient.authenticate(getUsername(), getPassword());
 	}
 
 	@Subscribe
 	public void onAuthenticationFailed(AuthenticationFailedEvent event) {
-		tearDownAuthentication();
+		finishAuthentication();
 
 		showAuthenticationFailureMessage();
 	}
 
-	private void tearDownAuthentication() {
+	private void finishAuthentication() {
 		showAuthenticationText();
 
 		hideProgress();
@@ -198,7 +201,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
 	@Subscribe
 	public void onAuthenticationConnectionFailed(AuthenticationConnectionFailedEvent event) {
-		tearDownAuthentication();
+		finishAuthentication();
 
 		showAuthenticationConnectionFailureMessage();
 	}

@@ -46,6 +46,14 @@ import javax.inject.Inject;
 
 public class ServerAppActivity extends Activity
 {
+	private static final class AppWebAgentField
+	{
+		private AppWebAgentField() {
+		}
+
+		public static final String HOST = "Vhost";
+	}
+
 	@Inject
 	ServerClient serverClient;
 
@@ -81,6 +89,14 @@ public class ServerAppActivity extends Activity
 		}
 	}
 
+	private ServerApp getApp() {
+		return getIntent().getParcelableExtra(Intents.Extras.SERVER_APP);
+	}
+
+	private String getAppUrl() {
+		return serverClient.getServerAddress();
+	}
+
 	private void setUpAppWebAgent() {
 		getWebView().getSettings().setUserAgentString(getAppWebAgent());
 	}
@@ -91,13 +107,9 @@ public class ServerAppActivity extends Activity
 
 	private String getAppWebAgent() {
 		Map<String, String> agentFields = new HashMap<String, String>();
-		agentFields.put("Vhost", getApp().getHost());
+		agentFields.put(AppWebAgentField.HOST, getApp().getHost());
 
 		return Identifier.getUserAgent(this, agentFields);
-	}
-
-	private ServerApp getApp() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_APP);
 	}
 
 	private void setUpAppWebClient() {
@@ -124,10 +136,6 @@ public class ServerAppActivity extends Activity
 		if (state == null) {
 			getWebView().loadUrl(getAppUrl());
 		}
-	}
-
-	private String getAppUrl() {
-		return serverClient.getServerAddress();
 	}
 
 	@Override

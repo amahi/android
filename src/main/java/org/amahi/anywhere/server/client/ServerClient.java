@@ -87,6 +87,10 @@ public class ServerClient
 			return;
 		}
 
+		if (!isServerRouteLoaded()) {
+			return;
+		}
+
 		if (this.network != event.getNetwork()) {
 			this.network = event.getNetwork();
 
@@ -94,11 +98,19 @@ public class ServerClient
 		}
 	}
 
+	private boolean isServerRouteLoaded() {
+		return serverRoute != null;
+	}
+
 	private void startServerConnectionDetection() {
 		this.serverAddress = serverRoute.getLocalAddress();
 		this.serverApi = buildServerApi();
 
 		ServerConnectionDetectingTask.execute(serverRoute);
+	}
+
+	private ServerApi buildServerApi() {
+		return apiAdapter.create(ServerApi.class, serverAddress);
 	}
 
 	@Subscribe
@@ -156,10 +168,6 @@ public class ServerClient
 		this.serverConnection = ApiConnection.LOCAL;
 		this.serverAddress = serverRoute.getLocalAddress();
 		this.serverApi = buildServerApi();
-	}
-
-	private ServerApi buildServerApi() {
-		return apiAdapter.create(ServerApi.class, serverAddress);
 	}
 
 	public void connectRemote() {

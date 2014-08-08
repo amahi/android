@@ -44,6 +44,32 @@ android {
             buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
         }
     }
+
+    signingConfigs {
+        release {
+            def signingFile = file("signing.properties")
+            def signingProperties = new Properties()
+
+            if (signingFile.exists()) {
+                signingProperties.load(signingFile.newInputStream())
+
+                storeFile file(signingProperties["keystore.file"])
+                storePassword signingProperties["keystore.password"]
+                keyAlias signingProperties["key.alias"]
+                keyPassword signingProperties["key.password"]
+            }
+        }
+    }
+
+    buildTypes {
+        betaRelease {
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 def buildVersionName(versionMajor, versionMinor, versionPatch) {

@@ -18,11 +18,7 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/animator"
-	android:inAnimation="@android:anim/fade_in"
-	android:outAnimation="@android:anim/fade_out"
-	android:animateFirstView="false"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
@@ -34,7 +30,8 @@
 
 	<ImageView
 		android:id="@+id/image"
+		android:visibility="invisible"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 
-</ViewAnimator>
+</FrameLayout>

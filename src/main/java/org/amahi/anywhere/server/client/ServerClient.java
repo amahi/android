@@ -185,6 +185,9 @@ public class ServerClient
 	}
 
 	public void getFiles(ServerShare share) {
+		// protect against possibly empty share structure
+		// seen in the field a few times https://bugs.amahi.org/issues/1447
+		if (share == null) return;
 		serverApi.getFiles(server.getSession(), share.getName(), null, new ServerFilesResponse(null));
 	}
 

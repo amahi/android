@@ -36,7 +36,6 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
-import org.amahi.anywhere.util.ViewDirector;
 
 import javax.inject.Inject;
 
@@ -71,6 +70,8 @@ public class ServerFileImageFragment extends Fragment implements Callback
 		Picasso
 			.with(getActivity())
 			.load(getImageUri())
+			.fit()
+			.centerInside()
 			.into(getImageView(), this);
 	}
 
@@ -96,7 +97,7 @@ public class ServerFileImageFragment extends Fragment implements Callback
 	}
 
 	private void showImageContent() {
-		ViewDirector.of(this, R.id.animator).show(R.id.image);
+		getImageView().setVisibility(View.VISIBLE);
 	}
 
 	@Override

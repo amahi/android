@@ -24,7 +24,7 @@ android {
     defaultConfig {
         def versionMajor = 0
         def versionMinor = 4
-        def versionPatch = 1
+        def versionPatch = 2
 
         versionName buildVersionName(versionMajor, versionMinor, versionPatch)
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)

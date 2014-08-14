@@ -18,21 +18,10 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/drawer_content"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+<resources>
 
-	<FrameLayout
-		android:id="@+id/container_content"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+	<color name="background_primary">#1a1a1a</color>
+	<color name="background_secondary">#333333</color>
+	<color name="background_transparent">#cc000000</color>
 
-	<FrameLayout
-		android:id="@+id/container_navigation"
-		android:background="@color/background_secondary"
-		android:layout_gravity="start"
-		android:layout_width="240dp"
-		android:layout_height="match_parent"/>
-
-</android.support.v4.widget.DrawerLayout>
+</resources>

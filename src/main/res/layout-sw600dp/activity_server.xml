@@ -26,7 +26,7 @@
 
 	<FrameLayout
 		android:id="@+id/container_navigation"
-		android:background="@android:color/white"
+		android:background="@color/background_secondary"
 		android:layout_weight="1"
 		android:layout_width="0dp"
 		android:layout_height="match_parent"/>

@@ -31,6 +31,7 @@
 	<string name="button_connection">Connection</string>
 	<string name="button_feedback">Feedback</string>
 	<string name="button_rate">Rate</string>
+	<string name="button_search_application">Search Google Play</string>
 	<string name="button_sign_in">Sign in</string>
 	<string name="button_sign_out">Sign out</string>
 	<string name="button_version">Version</string>
@@ -51,11 +52,14 @@
 	<string name="message_empty_shares">No Shares</string>
 
 	<string name="message_error_account_exists">Account already exists.</string>
+	<string name="message_error_search_application">We haven’t found any supported apps for this file.</string>
 	<string name="message_error_authentication">The username or password are not correct. Please try again. <a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
 	<string name="message_error_authentication_connection">Connection error. Check your settings and try again.</string>
 	<string name="message_error_connection">Connection Error</string>
 
 	<string name="message_notice_check_settings">Check your settings and try again</string>
 	<string name="message_notice_create_some">Create some and try again</string>
+
+	<string name="message_progress_file_downloading">Downloading file...</string>
 
 </resources>

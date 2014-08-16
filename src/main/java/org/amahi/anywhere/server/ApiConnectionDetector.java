@@ -33,6 +33,10 @@ import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
 
+/**
+ * API connection guesser. Tries to connect to the server address to determine if it is available
+ * and returns it if succeed or another one otherwise.
+ */
 public class ApiConnectionDetector
 {
 	private static final class Connection

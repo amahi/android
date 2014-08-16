@@ -61,6 +61,11 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+/**
+ * Audio activity. Shows audio, supports basic operations such as pausing, resuming, audio changing.
+ * The playback itself is done via {@link org.amahi.anywhere.service.AudioService}.
+ * Backed up by {@link android.media.MediaPlayer}.
+ */
 public class ServerFileAudioActivity extends Activity implements ServiceConnection, MediaController.MediaPlayerControl
 {
 	public static final Set<String> SUPPORTED_FORMATS;

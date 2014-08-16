@@ -31,6 +31,10 @@ import org.amahi.anywhere.server.model.Server;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Servers adapter. Visualizes servers
+ * for the {@link org.amahi.anywhere.fragment.NavigationFragment}.
+ */
 public class ServersAdapter extends BaseAdapter
 {
 	private final LayoutInflater layoutInflater;

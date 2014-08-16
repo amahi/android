@@ -68,6 +68,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+/**
+ * Navigation fragments. Shows main application sections and servers list as well.
+ */
 public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
 	OnAccountsUpdateListener,
 	AdapterView.OnItemSelectedListener,

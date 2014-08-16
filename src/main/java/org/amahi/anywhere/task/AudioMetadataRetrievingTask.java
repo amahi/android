@@ -31,6 +31,10 @@ import org.amahi.anywhere.bus.BusProvider;
 
 import java.util.HashMap;
 
+/**
+ * Async wrapper for audio metadata retrieving.
+ * The retrieving itself is done via {@link android.media.MediaMetadataRetriever}.
+ */
 public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 {
 	private final Uri audioUri;

@@ -28,6 +28,10 @@ import com.crashlytics.android.Crashlytics;
 import dagger.ObjectGraph;
 import timber.log.Timber;
 
+/**
+ * Application declaration. Basically sets things up at the startup time,
+ * such as dependency injection, logging, crash reporting and possible ANR detecting.
+ */
 public class AmahiApplication extends Application
 {
 	private ObjectGraph injector;

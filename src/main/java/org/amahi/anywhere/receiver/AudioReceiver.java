@@ -32,6 +32,10 @@ import org.amahi.anywhere.bus.AudioControlPlayPauseEvent;
 import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.BusProvider;
 
+/**
+ * Audio system events receiver. Proxies system audio events such as changing track
+ * or audio focus to the local {@link com.squareup.otto.Bus} as {@link org.amahi.anywhere.bus.BusEvent}.
+ */
 public class AudioReceiver extends BroadcastReceiver
 {
 	@Override

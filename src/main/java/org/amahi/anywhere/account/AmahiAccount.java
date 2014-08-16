@@ -21,6 +21,9 @@ package org.amahi.anywhere.account;
 
 import android.accounts.Account;
 
+/**
+ * Amahi account declaration.
+ */
 public class AmahiAccount extends Account
 {
 	public static final String TYPE = "org.amahi";

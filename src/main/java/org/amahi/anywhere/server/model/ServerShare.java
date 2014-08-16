@@ -24,6 +24,9 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Share API resource.
+ */
 public class ServerShare implements Parcelable
 {
 	@SerializedName("name")

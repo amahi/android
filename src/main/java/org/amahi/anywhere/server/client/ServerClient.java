@@ -47,6 +47,10 @@ import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/**
+ * Server API implementation. Wraps {@link org.amahi.anywhere.server.api.ProxyApi} and
+ * {@link org.amahi.anywhere.server.api.ServerApi}. Reacts to network connection changes as well.
+ */
 @Singleton
 public class ServerClient
 {
@@ -185,9 +189,10 @@ public class ServerClient
 	}
 
 	public void getFiles(ServerShare share) {
-		// protect against possibly empty share structure
-		// seen in the field a few times https://bugs.amahi.org/issues/1447
-		if (share == null) return;
+		if (share == null) {
+			return;
+		}
+
 		serverApi.getFiles(server.getSession(), share.getName(), null, new ServerFilesResponse(null));
 	}
 

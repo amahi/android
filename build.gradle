@@ -118,8 +118,8 @@ android.applicationVariants.all { variant ->
     task ("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
         source = files(variant.javaCompile.source)
 
-        androidClasspath = android.getBootClasspath().join(File.pathSeparator)
-        classpath = files(variant.javaCompile.classpath, androidClasspath)
+        ext.androidClasspath = android.getBootClasspath().join(File.pathSeparator)
+        classpath = files(variant.javaCompile.classpath, ext.androidClasspath)
 
         options {
             linksOffline "http://d.android.com/reference", "${android.sdkDirectory}/docs/reference"

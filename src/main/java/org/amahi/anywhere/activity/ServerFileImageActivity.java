@@ -49,6 +49,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+/**
+ * Image activity. Shows images as a slide show.
+ * Backed up by {@link android.widget.ImageView}.
+ */
 public class ServerFileImageActivity extends Activity implements ViewPager.OnPageChangeListener
 {
 	public static final Set<String> SUPPORTED_FORMATS;

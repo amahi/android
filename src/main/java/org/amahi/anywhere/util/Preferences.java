@@ -22,6 +22,9 @@ package org.amahi.anywhere.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+/**
+ * Application {@link android.content.SharedPreferences} accessor.
+ */
 public final class Preferences
 {
 	private static final class Locations

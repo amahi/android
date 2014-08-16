@@ -27,6 +27,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
+/**
+ * File API resource.
+ */
 public class ServerFile implements Parcelable
 {
 	private ServerFile parentFile;

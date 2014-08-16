@@ -41,6 +41,9 @@ import org.amahi.anywhere.server.model.ServerShare;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Intents factory.
+ */
 public final class Intents
 {
 	private Intents() {

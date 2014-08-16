@@ -21,6 +21,9 @@ package org.amahi.anywhere.server.model;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Server route API resource.
+ */
 public class ServerRoute
 {
 	@SerializedName("local_addr")

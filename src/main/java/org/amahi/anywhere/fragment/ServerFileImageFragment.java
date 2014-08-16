@@ -39,6 +39,9 @@ import org.amahi.anywhere.util.Fragments;
 
 import javax.inject.Inject;
 
+/**
+ * Image fragment. Shows a single image.
+ */
 public class ServerFileImageFragment extends Fragment implements Callback
 {
 	@Inject

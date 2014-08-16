@@ -44,6 +44,10 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+/**
+ * App activity. Shows web apps contents and allows basic navigation inside them.
+ * Backed up by {@link android.webkit.WebView}.
+ */
 public class ServerAppActivity extends Activity
 {
 	private static final class AppWebAgentField

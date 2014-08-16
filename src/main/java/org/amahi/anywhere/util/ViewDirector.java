@@ -24,6 +24,9 @@ import android.app.Fragment;
 import android.view.View;
 import android.widget.ViewAnimator;
 
+/**
+ * {@link android.widget.ViewAnimator} high-level operator.
+ */
 public final class ViewDirector
 {
 	private final Activity activity;

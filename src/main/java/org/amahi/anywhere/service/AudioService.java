@@ -62,6 +62,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+/**
+ * Audio server. Does all the work related to the audio playback.
+ * Places information at {@link android.app.Notification} and {@link android.media.RemoteControlClient},
+ * handles audio focus changes as well.
+ */
 public class AudioService extends Service implements AudioManager.OnAudioFocusChangeListener,
 	MediaPlayer.OnPreparedListener,
 	MediaPlayer.OnCompletionListener,

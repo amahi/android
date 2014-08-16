@@ -48,6 +48,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+/**
+ * Files activity. Shows files navigation and operates basic file actions,
+ * such as opening and sharing.
+ * The files navigation itself is done via {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
+ */
 public class ServerFilesActivity extends Activity
 {
 	private static final class State

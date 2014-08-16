@@ -43,6 +43,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+/**
+ * Settings fragment. Shows application's settings.
+ */
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener,
 	SharedPreferences.OnSharedPreferenceChangeListener,
 	AccountManagerCallback<Boolean>

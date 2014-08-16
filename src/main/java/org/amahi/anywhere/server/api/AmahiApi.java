@@ -31,6 +31,9 @@ import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Query;
 
+/**
+ * Amahi API declaration.
+ */
 public interface AmahiApi
 {
 	@FormUrlEncoded

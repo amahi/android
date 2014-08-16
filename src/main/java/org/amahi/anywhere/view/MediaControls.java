@@ -28,6 +28,12 @@ import android.widget.MediaController;
 
 import org.amahi.anywhere.R;
 
+/**
+ * Media controls view. Does the same as {@link android.widget.MediaController}
+ * with a couple of modifications. Media controls do not auto-hide, back button do not hide
+ * controls but finishes parent {@link android.app.Activity}, there are methods to show and hide
+ * controls animated.
+ */
 public class MediaControls extends MediaController implements Animation.AnimationListener
 {
 	public MediaControls(Context context) {

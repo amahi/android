@@ -26,6 +26,10 @@ import android.view.MenuItem;
 
 import org.amahi.anywhere.util.Fragments;
 
+/**
+ * Settings activity. Shows application's settings.
+ * Settings itself are provided via {@link org.amahi.anywhere.fragment.SettingsFragment}.
+ */
 public class SettingsActivity extends Activity
 {
 	@Override

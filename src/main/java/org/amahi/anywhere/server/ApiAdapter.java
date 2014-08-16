@@ -28,6 +28,10 @@ import retrofit.RestAdapter.LogLevel;
 import retrofit.client.Client;
 import retrofit.converter.Converter;
 
+/**
+ * API adapter. Wraps {@link retrofit.RestAdapter}, building API implementations using
+ * dependency injection provided components.
+ */
 @Singleton
 public class ApiAdapter
 {

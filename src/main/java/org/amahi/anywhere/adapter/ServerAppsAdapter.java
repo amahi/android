@@ -36,6 +36,10 @@ import org.amahi.anywhere.server.model.ServerApp;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Apps adapter. Visualizes web apps
+ * for the {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
+ */
 public class ServerAppsAdapter extends BaseAdapter
 {
 	private final LayoutInflater layoutInflater;

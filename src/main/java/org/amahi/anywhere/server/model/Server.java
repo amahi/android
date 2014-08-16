@@ -24,6 +24,9 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Server API resource.
+ */
 public class Server implements Parcelable
 {
 	@SerializedName("name")

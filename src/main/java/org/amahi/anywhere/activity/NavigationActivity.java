@@ -70,7 +70,7 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_server);
+		setContentView(R.layout.activity_navigation);
 
 		setUpInjections();
 

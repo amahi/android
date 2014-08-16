@@ -20,38 +20,38 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<PreferenceCategory android:title="@string/title_account">
+	<PreferenceCategory android:title="@string/preference_category_account">
 
 		<Preference
 			android:key="@string/preference_key_account_sign_out"
-			android:title="@string/button_sign_out"/>
+			android:title="@string/preference_title_account_sign_out"/>
 
 	</PreferenceCategory>
 
-	<PreferenceCategory android:title="@string/title_settings">
+	<PreferenceCategory android:title="@string/preference_category_settings">
 
 		<ListPreference
 			android:key="@string/preference_key_server_connection"
-			android:title="@string/button_connection"
+			android:title="@string/preference_title_server_connection"
 			android:entries="@array/preference_entries_server_connection"
 			android:entryValues="@array/preference_entries_keys_server_connection"
 			android:defaultValue="@string/preference_key_server_connection_auto"/>
 
 	</PreferenceCategory>
 
-	<PreferenceCategory android:title="@string/title_about">
+	<PreferenceCategory android:title="@string/preference_category_about">
 
 		<Preference
-			android:key="@string/preference_key_application_version"
-			android:title="@string/button_version"/>
+			android:key="@string/preference_key_about_version"
+			android:title="@string/preference_title_about_version"/>
 
 		<Preference
-			android:key="@string/preference_key_application_feedback"
-			android:title="@string/button_feedback"/>
+			android:key="@string/preference_key_about_feedback"
+			android:title="@string/preference_title_about_feedback"/>
 
 		<Preference
-			android:key="@string/preference_key_application_rating"
-			android:title="@string/button_rate"/>
+			android:key="@string/preference_key_about_rating"
+			android:title="@string/preference_title_about_rating"/>
 
 	</PreferenceCategory>
 

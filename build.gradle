@@ -111,11 +111,15 @@ dependencies {
 }
 
 task generateWrapper(type: Wrapper) {
+    description "Generates Gradle wrapper"
+
     gradleVersion = "1.12"
 }
 
 android.applicationVariants.all { variant ->
-    task ("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
+    task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
+        description "Generates ${variant.name.capitalize()} documentation."
+
         source = files(variant.javaCompile.source)
 
         ext.androidClasspath = android.getBootClasspath().join(File.pathSeparator)

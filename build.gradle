@@ -111,7 +111,7 @@ dependencies {
 }
 
 task generateWrapper(type: Wrapper) {
-    description "Generates Gradle wrapper"
+    description "Generates Gradle wrapper."
 
     gradleVersion = "1.12"
 }

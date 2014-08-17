@@ -2,7 +2,7 @@
 
 This repository contains the source code for the Amahi Android app.
 
-You will need JDK 1.6, Android SDK 22 and Gradle 1.12 installed to work with it.
+You will need JDK 1.6 and Android SDK 22 installed to work with it.
 
 ## Building the app
 
@@ -31,7 +31,7 @@ You will need JDK 1.6, Android SDK 22 and Gradle 1.12 installed to work with it.
 4. Build the application.
 
   ```
-  $ gradle clean assembleDebug
+  $ ./gradlew clean assembleDebug
   ```
 
 ## Generating the documentation
@@ -45,5 +45,5 @@ You will need JDK 1.6, Android SDK 22 and Gradle 1.12 installed to work with it.
 2. Generate the documentation.
 
   ```
-  $ gradle clean generateDebugJavadoc
+  $ ./gradlew clean generateDebugJavadoc
   ```

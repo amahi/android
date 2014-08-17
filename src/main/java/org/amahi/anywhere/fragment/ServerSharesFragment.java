@@ -46,6 +46,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+/**
+ * Shares fragment. Shows shares list.
+ */
 public class ServerSharesFragment extends ListFragment
 {
 	private static final class State

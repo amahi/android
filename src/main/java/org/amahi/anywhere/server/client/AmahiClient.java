@@ -28,6 +28,9 @@ import org.amahi.anywhere.server.response.ServersResponse;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/**
+ * Amahi API implementation. Wraps {@link org.amahi.anywhere.server.api.AmahiApi}.
+ */
 @Singleton
 public class AmahiClient
 {

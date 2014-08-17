@@ -27,6 +27,9 @@ import android.view.WindowManager;
 import org.amahi.anywhere.BuildConfig;
 import org.amahi.anywhere.R;
 
+/**
+ * Android properties accessor.
+ */
 public final class Android
 {
 	private Android() {

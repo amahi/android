@@ -35,6 +35,10 @@ import org.amahi.anywhere.bus.FileDownloadedEvent;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/**
+ * File downloader. Uses system {@link android.app.DownloadManager}
+ * for downloads placing and cancelling.
+ */
 @Singleton
 public class Downloader extends BroadcastReceiver
 {

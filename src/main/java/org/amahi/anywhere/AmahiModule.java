@@ -46,6 +46,10 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
+/**
+ * Application dependency injection module. Includes {@link org.amahi.anywhere.server.ApiModule} and
+ * provides application's {@link android.content.Context} for possible consumers.
+ */
 @Module(
 	includes = {
 		ApiModule.class

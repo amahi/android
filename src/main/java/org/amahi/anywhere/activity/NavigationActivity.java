@@ -50,6 +50,13 @@ import org.amahi.anywhere.util.Intents;
 
 import javax.inject.Inject;
 
+/**
+ * Navigation activity. This is an entry point of the application. Shows navigation between
+ * main application sections (shares, apps) and shares and apps lists itself. On phones the activity
+ * uses the navigation drawer, on tablets drawer is always visible.
+ * The navigation itself is done via {@link org.amahi.anywhere.fragment.NavigationFragment},
+ * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
+ */
 public class NavigationActivity extends Activity implements DrawerLayout.DrawerListener
 {
 	private static final class State

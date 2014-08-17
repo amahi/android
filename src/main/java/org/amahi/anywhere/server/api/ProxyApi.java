@@ -25,6 +25,9 @@ import retrofit.Callback;
 import retrofit.http.Header;
 import retrofit.http.PUT;
 
+/**
+ * Proxy API declaration.
+ */
 public interface ProxyApi
 {
 	@PUT("/client")

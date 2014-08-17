@@ -33,6 +33,9 @@ import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 
+/**
+ * Fragments accessor. Provides a factory for building fragments and an operator for placing them.
+ */
 public final class Fragments
 {
 	private Fragments() {

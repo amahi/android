@@ -28,6 +28,10 @@ import android.net.NetworkInfo;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.NetworkChangedEvent;
 
+/**
+ * Network system events receiver. Proxies system network events such as changing network connection
+ * to the local {@link com.squareup.otto.Bus} as {@link org.amahi.anywhere.bus.BusEvent}.
+ */
 public class NetworkReceiver extends BroadcastReceiver
 {
 	@Override

@@ -32,6 +32,10 @@ import org.amahi.anywhere.server.model.ServerShare;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Shares adapter. Visualizes shares
+ * for the {@link org.amahi.anywhere.fragment.ServerSharesFragment}.
+ */
 public class ServerSharesAdapter extends BaseAdapter
 {
 	private final LayoutInflater layoutInflater;

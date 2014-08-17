@@ -35,6 +35,11 @@ import org.amahi.anywhere.activity.AuthenticationActivity;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Amahi authenticator. Performs basic account and auth token manipulations.
+ *
+ * The current implementation allows only single account exist on a device.
+ */
 class AmahiAuthenticator extends AbstractAccountAuthenticator
 {
 	private final Context context;

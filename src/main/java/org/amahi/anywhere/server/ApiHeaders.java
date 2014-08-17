@@ -25,6 +25,9 @@ import org.amahi.anywhere.util.Identifier;
 
 import retrofit.RequestInterceptor;
 
+/**
+ * API headers accessor.
+ */
 class ApiHeaders implements RequestInterceptor
 {
 	private static final class HeaderFields

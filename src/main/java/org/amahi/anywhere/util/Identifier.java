@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Application identifiers accessor.
+ */
 public class Identifier
 {
 	private static final class Format

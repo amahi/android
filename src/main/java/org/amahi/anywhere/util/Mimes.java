@@ -23,6 +23,10 @@ import android.support.v4.util.ArrayMap;
 
 import java.util.Map;
 
+/**
+ * MIME type guesser. Provides {@link org.amahi.anywhere.util.Mimes.Type}
+ * for its {@link java.lang.String} declaration.
+ */
 public class Mimes
 {
 	public static final class Type

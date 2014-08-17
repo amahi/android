@@ -42,6 +42,9 @@ import org.videolan.libvlc.LibVlcException;
 
 import javax.inject.Inject;
 
+/**
+ * Video service. Does all the work related to the video playback.
+ */
 public class VideoService extends Service implements IVideoPlayer
 {
 	private static enum VideoStatus

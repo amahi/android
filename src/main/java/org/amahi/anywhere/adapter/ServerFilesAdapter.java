@@ -33,6 +33,10 @@ import org.amahi.anywhere.util.Mimes;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Files adapter. Visualizes files
+ * for the {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
+ */
 public class ServerFilesAdapter extends BaseAdapter
 {
 	private final LayoutInflater layoutInflater;

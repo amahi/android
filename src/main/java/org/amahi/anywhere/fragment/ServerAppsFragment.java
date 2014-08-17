@@ -46,6 +46,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+/**
+ * Apps fragment. Shows apps list.
+ */
 public class ServerAppsFragment extends ListFragment
 {
 	private static final class State

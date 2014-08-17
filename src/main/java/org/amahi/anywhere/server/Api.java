@@ -21,6 +21,9 @@ package org.amahi.anywhere.server;
 
 import org.amahi.anywhere.BuildConfig;
 
+/**
+ * API properties accessor.
+ */
 public final class Api
 {
 	private Api() {

@@ -27,6 +27,10 @@ import org.amahi.anywhere.bus.ServerConnectionDetectedEvent;
 import org.amahi.anywhere.server.ApiConnectionDetector;
 import org.amahi.anywhere.server.model.ServerRoute;
 
+/**
+ * Async wrapper for server connection detecting.
+ * The detecting itself is done via {@link org.amahi.anywhere.server.ApiConnectionDetector}.
+ */
 public class ServerConnectionDetectingTask extends AsyncTask<Void, Void, BusEvent>
 {
 	private final ServerRoute serverRoute;

@@ -31,6 +31,10 @@ import org.amahi.anywhere.R;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Navigation adapter. Visualizes predefined values
+ * for the {@link org.amahi.anywhere.fragment.NavigationFragment}.
+ */
 public class NavigationAdapter extends BaseAdapter
 {
 	public static final class NavigationItems

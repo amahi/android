@@ -43,6 +43,10 @@ import retrofit.client.OkClient;
 import retrofit.converter.Converter;
 import retrofit.converter.GsonConverter;
 
+/**
+ * API dependency injection module. Provides resources such as HTTP client and JSON converter
+ * for possible consumers.
+ */
 @Module(
 	complete = false,
 	library = true

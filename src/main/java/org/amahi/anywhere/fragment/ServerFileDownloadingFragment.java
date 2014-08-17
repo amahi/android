@@ -29,6 +29,7 @@ import android.os.Bundle;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
@@ -40,6 +41,9 @@ import org.amahi.anywhere.util.Fragments;
 
 import javax.inject.Inject;
 
+/**
+ * File downloading dialog.
+ */
 public class ServerFileDownloadingFragment extends DialogFragment
 {
 	public static final String TAG = "server_file_downloading";
@@ -65,7 +69,7 @@ public class ServerFileDownloadingFragment extends DialogFragment
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		ProgressDialog dialog = new ProgressDialog(getActivity());
 
-		dialog.setMessage("Downloading file...");
+		dialog.setMessage(getString(R.string.message_progress_file_downloading));
 
 		return dialog;
 	}

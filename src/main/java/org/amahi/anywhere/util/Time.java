@@ -19,6 +19,9 @@
 
 package org.amahi.anywhere.util;
 
+/**
+ * Time formats accessor.
+ */
 public class Time
 {
 	public static final class Format

@@ -33,13 +33,13 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerFilesAdapter;
+import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
@@ -86,7 +86,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_server_files, container, false);
+		if (!isMetadataAvailable()) {
+			return layoutInflater.inflate(R.layout.fragment_server_files, container, false);
+		} else {
+			return layoutInflater.inflate(R.layout.fragment_server_files_metadata, container, false);
+		}
 	}
 
 	@Override
@@ -188,11 +192,27 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private ServerFile getCheckedFile() {
-		return getFilesAdapter().getItem(getListView().getCheckedItemPosition());
+		return getFile(getListView().getCheckedItemPosition());
+	}
+
+	private ServerFile getFile(int position) {
+		if (!isMetadataAvailable()) {
+			return getFilesAdapter().getItem(position);
+		} else {
+			return getFilesMetadataAdapter().getItem(position);
+		}
+	}
+
+	private boolean isMetadataAvailable() {
+		return ServerShare.Tag.MOVIES.equals(getShare().getTag());
 	}
 
 	private ServerFilesAdapter getFilesAdapter() {
 		return (ServerFilesAdapter) getListAdapter();
+	}
+
+	private ServerFilesMetadataAdapter getFilesMetadataAdapter() {
+		return (ServerFilesMetadataAdapter) getListAdapter();
 	}
 
 	private ListAdapter getListAdapter() {
@@ -200,7 +220,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setUpFilesAdapter() {
-		setListAdapter(new ServerFilesAdapter(getActivity()));
+		if (!isMetadataAvailable()) {
+			setListAdapter(new ServerFilesAdapter(getActivity()));
+		} else {
+			setListAdapter(new ServerFilesMetadataAdapter(getActivity(), serverClient));
+		}
 	}
 
 	private void setListAdapter(ListAdapter adapter) {
@@ -230,7 +254,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setUpFilesContent(List<ServerFile> files) {
-		getFilesAdapter().replaceWith(files);
+		if (!isMetadataAvailable()) {
+			getFilesAdapter().replaceWith(files);
+		} else {
+			getFilesMetadataAdapter().replaceWith(getShare(), files);
+		}
 	}
 
 	private void setUpFilesContentSort(FilesSort filesSort) {
@@ -252,7 +280,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private boolean areFilesAvailable() {
-		return !getFilesAdapter().isEmpty();
+		if (!isMetadataAvailable()) {
+			return !getFilesAdapter().isEmpty();
+		} else {
+			return !getFilesMetadataAdapter().isEmpty();
+		}
 	}
 
 	private void setUpFilesContent() {
@@ -277,7 +309,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	@Subscribe
 	public void onFilesLoaded(ServerFilesLoadedEvent event) {
-		setUpFilesContent(sortFiles(event.getServerFiles()));
+		showFilesContent(event.getServerFiles());
+	}
+
+	private void showFilesContent(List<ServerFile> files) {
+		setUpFilesContent(sortFiles(files));
 
 		showFilesContent();
 
@@ -346,7 +382,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		if (!areFilesActionsAvailable()) {
 			clearFileChoices();
 
-			startFileOpening(getFilesAdapter().getItem(filePosition));
+			startFileOpening(getFile(filePosition));
 		}
 	}
 
@@ -355,7 +391,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private List<ServerFile> getFiles() {
-		return getFilesAdapter().getItems();
+		if (!isMetadataAvailable()) {
+			return getFilesAdapter().getItems();
+		} else {
+			return getFilesMetadataAdapter().getItems();
+		}
 	}
 
 	@Override
@@ -418,7 +458,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setUpFilesContentSort() {
-		getFilesAdapter().replaceWith(sortFiles(getFilesAdapter().getItems()));
+		if (!isMetadataAvailable()) {
+			getFilesAdapter().replaceWith(sortFiles(getFiles()));
+		} else {
+			getFilesMetadataAdapter().replaceWith(getShare(), sortFiles(getFiles()));
+		}
 	}
 
 	@Override
@@ -444,14 +488,22 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void tearDownFilesState(Bundle state) {
 		if (areFilesLoaded()) {
-			state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFilesAdapter().getItems()));
+			state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFiles()));
 		}
 
 		state.putSerializable(State.FILES_SORT, filesSort);
 	}
 
 	private boolean areFilesLoaded() {
-		return getFilesAdapter() != null;
+		if (getView() == null) {
+			return false;
+		}
+
+		if (!isMetadataAvailable()) {
+			return getFilesAdapter() != null;
+		} else {
+			return getFilesMetadataAdapter() != null;
+		}
 	}
 
 	private static final class FileNameComparator implements Comparator<ServerFile>

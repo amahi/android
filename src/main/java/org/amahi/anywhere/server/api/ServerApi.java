@@ -20,6 +20,7 @@
 package org.amahi.anywhere.server.api;
 
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.List;
@@ -42,4 +43,10 @@ public interface ServerApi
 		@Query("s") String share,
 		@Query("p") String path,
 		Callback<List<ServerFile>> callback);
+
+	@GET("/md")
+	public ServerFileMetadata getFileMetadata(
+		@Header("Session") String session,
+		@Query("f") String fileName,
+		@Query("h") String hint);
 }

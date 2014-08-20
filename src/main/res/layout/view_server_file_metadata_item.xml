@@ -19,32 +19,26 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:background="@drawable/bg_card"
 	android:foreground="?android:attr/activatedBackgroundIndicator"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_width="170dp"
+	android:layout_height="270dp">
 
-	<LinearLayout
-		android:orientation="vertical"
+	<ImageView
+		android:id="@+id/icon"
+		android:scaleType="centerInside"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="match_parent"/>
 
-		<ImageView
-			android:id="@+id/icon"
-			android:scaleType="centerInside"
-			android:layout_gravity="center"
-			android:layout_width="48dp"
-			android:layout_height="48dp"/>
-
-		<TextView
-			android:id="@+id/text"
-			android:textSize="@dimen/text_medium"
-			android:singleLine="true"
-			android:gravity="center"
-			android:padding="8dp"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
-
-	</LinearLayout>
+	<TextView
+		android:id="@+id/text"
+		android:textColor="@android:color/white"
+		android:textSize="@dimen/text_small"
+		android:singleLine="true"
+		android:background="#80000000"
+		android:gravity="center"
+		android:layout_gravity="bottom"
+		android:padding="4dp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"/>
 
 </FrameLayout>

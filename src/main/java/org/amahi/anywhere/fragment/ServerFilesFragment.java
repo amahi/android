@@ -45,11 +45,9 @@ import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
-import org.amahi.anywhere.bus.ServerFilesMetadataLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.task.FileMetadataRetrievingTask;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.ViewDirector;
 
@@ -225,7 +223,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		if (!isMetadataAvailable()) {
 			setListAdapter(new ServerFilesAdapter(getActivity()));
 		} else {
-			setListAdapter(new ServerFilesMetadataAdapter(getActivity()));
+			setListAdapter(new ServerFilesMetadataAdapter(getActivity(), serverClient));
 		}
 	}
 
@@ -249,19 +247,18 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		List<ServerFile> files = state.getParcelableArrayList(State.FILES);
 		FilesSort filesSort = (FilesSort) state.getSerializable(State.FILES_SORT);
 
-		if (!isMetadataAvailable()) {
-			setUpFilesContent(files);
-		} else {
-			setUpFilesMetadataContent(files);
-		}
-
+		setUpFilesContent(files);
 		setUpFilesContentSort(filesSort);
 
 		showFilesContent();
 	}
 
 	private void setUpFilesContent(List<ServerFile> files) {
-		getFilesAdapter().replaceWith(files);
+		if (!isMetadataAvailable()) {
+			getFilesAdapter().replaceWith(files);
+		} else {
+			getFilesMetadataAdapter().replaceWith(getShare(), files);
+		}
 	}
 
 	private void setUpFilesContentSort(FilesSort filesSort) {
@@ -312,11 +309,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	@Subscribe
 	public void onFilesLoaded(ServerFilesLoadedEvent event) {
-		if (!isMetadataAvailable()) {
-			showFilesContent(event.getServerFiles());
-		} else {
-			setUpFilesMetadata(event.getServerFiles());
-		}
+		showFilesContent(event.getServerFiles());
 	}
 
 	private void showFilesContent(List<ServerFile> files) {
@@ -382,27 +375,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	@Override
 	public void onRefresh() {
 		setUpFilesContent();
-	}
-
-	private void setUpFilesMetadata(List<ServerFile> files) {
-		FileMetadataRetrievingTask.execute(serverClient, getShare(), files);
-	}
-
-	@Subscribe
-	public void onFilesMedataLoaded(ServerFilesMetadataLoadedEvent event) {
-		showFilesMetadataContent(event.getFiles());
-	}
-
-	private void showFilesMetadataContent(List<ServerFile> files) {
-		setUpFilesMetadataContent(sortFiles(files));
-
-		showFilesContent();
-
-		hideFilesContentRefreshing();
-	}
-
-	private void setUpFilesMetadataContent(List<ServerFile> files) {
-		getFilesMetadataAdapter().replaceWith(files);
 	}
 
 	@Override
@@ -489,7 +461,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		if (!isMetadataAvailable()) {
 			getFilesAdapter().replaceWith(sortFiles(getFiles()));
 		} else {
-			getFilesMetadataAdapter().replaceWith(sortFiles(getFiles()));
+			getFilesMetadataAdapter().replaceWith(getShare(), sortFiles(getFiles()));
 		}
 	}
 

@@ -20,53 +20,58 @@
 package org.amahi.anywhere.task;
 
 import android.os.AsyncTask;
+import android.view.View;
 
-import org.amahi.anywhere.bus.BusEvent;
-import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.ServerFilesMetadataLoadedEvent;
+import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.util.Mimes;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 
-public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
+public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, ServerFileMetadata>
 {
 	private final ServerClient serverClient;
 
-	private final ServerShare share;
-	private final List<ServerFile> files;
+	private final Reference<View> fileViewReference;
 
-	public static void execute(ServerClient serverClient, ServerShare share, List<ServerFile> files) {
-		new FileMetadataRetrievingTask(serverClient, share, files).execute();
+	private final ServerShare share;
+	private final ServerFile file;
+
+	public static void execute(ServerClient serverClient, View fileView) {
+		new FileMetadataRetrievingTask(serverClient, fileView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
-	private FileMetadataRetrievingTask(ServerClient serverClient, ServerShare share, List<ServerFile> files) {
+	private FileMetadataRetrievingTask(ServerClient serverClient, View fileView) {
 		this.serverClient = serverClient;
 
-		this.share = share;
-		this.files = files;
+		this.fileViewReference = new WeakReference<View>(fileView);
+
+		this.share = (ServerShare) fileView.getTag(ServerFilesMetadataAdapter.Tags.SHARE);
+		this.file = (ServerFile) fileView.getTag(ServerFilesMetadataAdapter.Tags.FILE);
 	}
 
 	@Override
-	protected BusEvent doInBackground(Void... parameters) {
-		List<ServerFile> filesMetadata = new ArrayList<ServerFile>(files);
+	protected ServerFileMetadata doInBackground(Void... parameters) {
+		return serverClient.getFileMetadata(share, file);
+	}
 
-		for (ServerFile fileMetadata : filesMetadata) {
-			if (Mimes.match(fileMetadata.getMime()) == Mimes.Type.VIDEO) {
-				fileMetadata.setMetadata(serverClient.getFileMetadata(share, fileMetadata));
-			}
+	@Override
+	protected void onPostExecute(ServerFileMetadata fileMetadata) {
+		super.onPostExecute(fileMetadata);
+
+		View fileView = fileViewReference.get();
+
+		if (fileView == null) {
+			return;
 		}
 
-		return new ServerFilesMetadataLoadedEvent(filesMetadata);
-	}
+		if (!file.equals(fileView.getTag(ServerFilesMetadataAdapter.Tags.FILE))) {
+			return;
+		}
 
-	@Override
-	protected void onPostExecute(BusEvent busEvent) {
-		super.onPostExecute(busEvent);
-
-		BusProvider.getBus().post(busEvent);
+		ServerFilesMetadataAdapter.bindView(file, fileMetadata, fileView);
 	}
 }

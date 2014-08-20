@@ -20,6 +20,7 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,11 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerFileMetadata;
+import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.task.FileMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
 
 import java.util.Collections;
@@ -38,19 +43,35 @@ import java.util.List;
 
 public class ServerFilesMetadataAdapter extends BaseAdapter
 {
-	private final Context context;
+	public static final class Tags
+	{
+		private Tags() {
+		}
+
+		public static final int SHARE = R.id.container_files;
+		public static final int FILE = R.attr.server_share;
+
+		public static final int FILE_TITLE = R.id.text;
+		public static final int FILE_ICON = R.id.icon;
+	}
+
 	private final LayoutInflater layoutInflater;
 
+	private final ServerClient serverClient;
+
+	private ServerShare share;
 	private List<ServerFile> files;
 
-	public ServerFilesMetadataAdapter(Context context) {
-		this.context = context;
+	public ServerFilesMetadataAdapter(Context context, ServerClient serverClient) {
 		this.layoutInflater = LayoutInflater.from(context);
+
+		this.serverClient = serverClient;
 
 		this.files = Collections.emptyList();
 	}
 
-	public void replaceWith(List<ServerFile> files) {
+	public void replaceWith(ServerShare share, List<ServerFile> files) {
+		this.share = share;
 		this.files = files;
 
 		notifyDataSetChanged();
@@ -89,26 +110,47 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 	}
 
 	private View newView(ViewGroup container) {
-		return layoutInflater.inflate(R.layout.view_server_file_metadata_item, container, false);
+		View fileView = layoutInflater.inflate(R.layout.view_server_file_metadata_item, container, false);
+
+		fileView.setTag(Tags.FILE_TITLE, fileView.findViewWithTag(R.id.text));
+		fileView.setTag(Tags.FILE_ICON, fileView.findViewWithTag(R.id.icon));
+
+		return fileView;
 	}
 
 	private void bindView(ServerFile file, View fileView) {
-		if (file.getMetadata() == null) {
-			bindFileView(file, fileView);
-		} else {
+		bindFileView(file, fileView);
+
+		if (Mimes.match(file.getMime()) == Mimes.Type.VIDEO) {
 			bindFileMetadataView(file, fileView);
 		}
 	}
 
-	private void bindFileView(ServerFile file, View fileView) {
-		ImageView fileIconView = (ImageView) fileView.findViewById(R.id.icon);
-		TextView fileTextView = (TextView) fileView.findViewById(R.id.text);
+	private void bindFileMetadataView(ServerFile file, View fileView) {
+		fileView.setTag(Tags.SHARE, share);
+		fileView.setTag(Tags.FILE, file);
 
-		fileIconView.setImageResource(getFileIcon(file));
-		fileTextView.setText(file.getName());
+		FileMetadataRetrievingTask.execute(serverClient, fileView);
 	}
 
-	private int getFileIcon(ServerFile file) {
+	public static void bindView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
+		if (fileMetadata == null) {
+			bindFileView(file, fileView);
+		} else {
+			bindFileMetadataView(file, fileMetadata, fileView);
+		}
+	}
+
+	private static void bindFileView(ServerFile file, View fileView) {
+		TextView fileTitle = (TextView) fileView.findViewById(R.id.text);
+		ImageView fileIcon = (ImageView) fileView.findViewById(R.id.icon);
+
+		fileTitle.setText(file.getName());
+		fileIcon.setImageResource(getFileIcon(file));
+	}
+
+	@DrawableRes
+	private static int getFileIcon(ServerFile file) {
 		switch (Mimes.match(file.getMime())) {
 			case Mimes.Type.ARCHIVE:
 				return R.drawable.ic_file_archive;
@@ -142,16 +184,18 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 		}
 	}
 
-	private void bindFileMetadataView(ServerFile file, View fileView) {
-		ImageView fileIconView = (ImageView) fileView.findViewById(R.id.icon);
-		TextView fileTextView = (TextView) fileView.findViewById(R.id.text);
+	private static void bindFileMetadataView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
+		TextView fileTitle = (TextView) fileView.findViewById(R.id.text);
+		ImageView fileIcon = (ImageView) fileView.findViewById(R.id.icon);
 
-		Picasso.with(context)
-			.load(file.getMetadata().getArtworkUrl())
+		fileTitle.setText(fileMetadata.getTitle());
+
+		Picasso.with(fileView.getContext())
+			.load(fileMetadata.getArtworkUrl())
 			.centerCrop()
 			.fit()
-			.into(fileIconView);
-
-		fileTextView.setText(file.getMetadata().getTitle());
+			.placeholder(getFileIcon(file))
+			.error(getFileIcon(file))
+			.into(fileIcon);
 	}
 }

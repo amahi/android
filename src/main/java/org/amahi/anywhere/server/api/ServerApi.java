@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.server.api;
 
+import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -30,6 +31,9 @@ import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Query;
 
+/**
+ * Server API declaration.
+ */
 public interface ServerApi
 {
 	@GET("/shares")
@@ -49,4 +53,9 @@ public interface ServerApi
 		@Header("Session") String session,
 		@Query("f") String fileName,
 		@Query("h") String hint);
+
+	@GET("/apps")
+	public void getApps(
+		@Header("Session") String session,
+		Callback<List<ServerApp>> callback);
 }

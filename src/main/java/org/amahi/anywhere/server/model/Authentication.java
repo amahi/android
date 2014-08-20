@@ -21,6 +21,9 @@ package org.amahi.anywhere.server.model;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Authentication API resource.
+ */
 public class Authentication
 {
 	@SerializedName("access_token")

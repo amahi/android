@@ -30,6 +30,10 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
+/**
+ * Shares response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
+ * as {@link org.amahi.anywhere.bus.BusEvent}.
+ */
 public class ServerSharesResponse implements Callback<List<ServerShare>>
 {
 	@Override

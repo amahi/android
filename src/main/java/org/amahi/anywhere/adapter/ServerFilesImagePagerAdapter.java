@@ -29,6 +29,10 @@ import org.amahi.anywhere.util.Fragments;
 
 import java.util.List;
 
+/**
+ * Image files adapter. Maps {@link org.amahi.anywhere.fragment.ServerFileImageFragment}
+ * for the {@link org.amahi.anywhere.activity.ServerFileImageActivity}.
+ */
 public class ServerFilesImagePagerAdapter extends FragmentStatePagerAdapter
 {
 	private final ServerShare share;

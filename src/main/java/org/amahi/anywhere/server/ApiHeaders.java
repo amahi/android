@@ -21,12 +21,13 @@ package org.amahi.anywhere.server;
 
 import android.content.Context;
 
-import org.amahi.anywhere.util.Android;
-
-import java.util.Locale;
+import org.amahi.anywhere.util.Identifier;
 
 import retrofit.RequestInterceptor;
 
+/**
+ * API headers accessor.
+ */
 class ApiHeaders implements RequestInterceptor
 {
 	private static final class HeaderFields
@@ -38,15 +39,6 @@ class ApiHeaders implements RequestInterceptor
 		public static final String USER_AGENT = "User-Agent";
 	}
 
-	private static final class HeaderValues
-	{
-		private HeaderValues() {
-		}
-
-		public static final String ACCEPT = "application/json";
-		public static final String USER_AGENT = "AmahiAnywhere/%s (Android %s; %s) Size/%.1f Resolution/%dx%d";
-	}
-
 	private final String acceptHeader;
 	private final String userAgentHeader;
 
@@ -56,17 +48,11 @@ class ApiHeaders implements RequestInterceptor
 	}
 
 	private String getAcceptHeader() {
-		return HeaderValues.ACCEPT;
+		return "application/json";
 	}
 
 	private String getUserAgentHeader(Context context) {
-		return String.format(Locale.US, HeaderValues.USER_AGENT,
-			Android.getApplicationVersion(),
-			Android.getVersion(),
-			Android.getDeviceName(),
-			Android.getDeviceScreenSize(context),
-			Android.getDeviceScreenHeight(context),
-			Android.getDeviceScreenWidth(context));
+		return Identifier.getUserAgent(context);
 	}
 
 	@Override

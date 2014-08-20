@@ -26,10 +26,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 
+/**
+ * Application search dialog.
+ */
 public class GooglePlaySearchFragment extends DialogFragment implements DialogInterface.OnClickListener
 {
 	public static final String TAG = "google_play_search";
@@ -58,8 +62,8 @@ public class GooglePlaySearchFragment extends DialogFragment implements DialogIn
 	private Dialog buildDialog() {
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
-		dialogBuilder.setMessage("We haven’t found any supported apps for this file.");
-		dialogBuilder.setPositiveButton("Search Google Play", this);
+		dialogBuilder.setMessage(getString(R.string.message_error_search_application));
+		dialogBuilder.setPositiveButton(getString(R.string.button_search_application), this);
 
 		return dialogBuilder.create();
 	}

@@ -22,6 +22,9 @@ package org.amahi.anywhere.server;
 import retrofit.RestAdapter.Log;
 import timber.log.Timber;
 
+/**
+ * API log writer.
+ */
 class ApiLog implements Log
 {
 	private static final String TAG = "API";

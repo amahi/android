@@ -35,6 +35,10 @@ import org.amahi.anywhere.bus.FileDownloadedEvent;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/**
+ * File downloader. Uses system {@link android.app.DownloadManager}
+ * for downloads placing and cancelling.
+ */
 @Singleton
 public class Downloader extends BroadcastReceiver
 {
@@ -99,14 +103,16 @@ public class Downloader extends BroadcastReceiver
 		int downloadStatus = downloadInformation.getInt(
 			downloadInformation.getColumnIndex(DownloadManager.COLUMN_STATUS));
 
-		if (downloadStatus != DownloadManager.STATUS_SUCCESSFUL) {
+		if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) {
+			String downloadUri = downloadInformation.getString(
+				downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+
+			BusProvider.getBus().post(new FileDownloadedEvent(Uri.parse(downloadUri)));
+		} else {
 			BusProvider.getBus().post(new FileDownloadFailedEvent());
 		}
 
-		String downloadUri = downloadInformation.getString(
-			downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-
-		BusProvider.getBus().post(new FileDownloadedEvent(Uri.parse(downloadUri)));
+		downloadInformation.close();
 	}
 
 	private void tearDownDownloadReceiver() {

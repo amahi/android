@@ -23,6 +23,10 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+/**
+ * Amahi authenticator service.
+ * Allows {@link android.accounts.AccountManager} to interact with{@link AmahiAuthenticator}.
+ */
 public class AmahiAuthenticatorService extends Service
 {
 	private AmahiAuthenticator authenticator;

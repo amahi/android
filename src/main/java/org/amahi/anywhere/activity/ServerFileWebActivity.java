@@ -20,10 +20,12 @@
 package org.amahi.anywhere.activity;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -31,6 +33,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.ViewDirector;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -38,6 +41,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+/**
+ * Web activity. Shows web resources such as SVG and HTML files.
+ * Backed up by {@link android.webkit.WebView}.
+ */
 public class ServerFileWebActivity extends Activity
 {
 	public static final Set<String> SUPPORTED_FORMATS;
@@ -75,11 +82,16 @@ public class ServerFileWebActivity extends Activity
 
 	private void setUpWebResource(Bundle state) {
 		setUpWebResourceTitle();
+		setUpWebResourceClient();
 		setUpWebResourceContent(state);
 	}
 
 	private void setUpWebResourceTitle() {
 		getActionBar().setTitle(getFile().getName());
+	}
+
+	private void setUpWebResourceClient() {
+		getWebView().setWebViewClient(new WebResourceClient(this));
 	}
 
 	private void setUpWebResourceContent(Bundle state) {
@@ -140,5 +152,36 @@ public class ServerFileWebActivity extends Activity
 
 	private void tearDownWebResourceState(Bundle state) {
 		getWebView().saveState(state);
+	}
+
+	private static final class WebResourceClient extends WebViewClient
+	{
+		private final ServerFileWebActivity activity;
+
+		public WebResourceClient(ServerFileWebActivity activity) {
+			this.activity = activity;
+		}
+
+		@Override
+		public void onPageStarted(WebView appWebView, String appUrl, Bitmap appFavicon) {
+			super.onPageStarted(appWebView, appUrl, appFavicon);
+
+			activity.showProgress();
+		}
+
+		@Override
+		public void onPageFinished(WebView appWebView, String appUrl) {
+			super.onPageFinished(appWebView, appUrl);
+
+			activity.showApp();
+		}
+	}
+
+	private void showProgress() {
+		ViewDirector.of(this, R.id.animator).show(android.R.id.progress);
+	}
+
+	private void showApp() {
+		ViewDirector.of(this, R.id.animator).show(R.id.web_content);
 	}
 }

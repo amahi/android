@@ -16,3 +16,6 @@ api.properties
 crashlytics.properties
 crashlytics-build.properties
 com_crashlytics_export_strings.xml
+
+signing.properties
+android-release-tools

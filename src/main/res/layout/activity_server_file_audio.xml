@@ -39,14 +39,16 @@
 
 		<ImageView
 			android:id="@+id/image_album_art"
-			android:alpha="0.5"
 			android:scaleType="centerCrop"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"/>
 
 		<LinearLayout
 			android:orientation="vertical"
-			android:paddingBottom="112dp"
+			android:background="#80000000"
+			android:paddingTop="12dp"
+			android:paddingBottom="12dp"
+			android:layout_marginBottom="88dp"
 			android:layout_gravity="bottom|center_horizontal"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">

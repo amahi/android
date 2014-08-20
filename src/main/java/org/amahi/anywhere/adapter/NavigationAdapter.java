@@ -28,6 +28,13 @@ import android.widget.TextView;
 
 import org.amahi.anywhere.R;
 
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Navigation adapter. Visualizes predefined values
+ * for the {@link org.amahi.anywhere.fragment.NavigationFragment}.
+ */
 public class NavigationAdapter extends BaseAdapter
 {
 	public static final class NavigationItems
@@ -37,19 +44,29 @@ public class NavigationAdapter extends BaseAdapter
 
 		public static final int SHARES = 0;
 		public static final int APPS = 1;
-
-		private static final int COUNT = 1;
 	}
 
 	private final LayoutInflater layoutInflater;
 
-	public NavigationAdapter(Context context) {
+	private final List<Integer> navigationItems;
+
+	public static NavigationAdapter newLocalAdapter(Context context) {
+		return new NavigationAdapter(context, Arrays.asList(NavigationItems.SHARES, NavigationItems.APPS));
+	}
+
+	public static NavigationAdapter newRemoteAdapter(Context context) {
+		return new NavigationAdapter(context, Arrays.asList(NavigationItems.SHARES));
+	}
+
+	private NavigationAdapter(Context context, List<Integer> navigationItems) {
 		this.layoutInflater = LayoutInflater.from(context);
+
+		this.navigationItems = navigationItems;
 	}
 
 	@Override
 	public int getCount() {
-		return NavigationItems.COUNT;
+		return navigationItems.size();
 	}
 
 	@Override
@@ -80,16 +97,16 @@ public class NavigationAdapter extends BaseAdapter
 	private void bindView(int navigationItem, View view) {
 		TextView navigationView = (TextView) view;
 
-		navigationView.setText(getNavigationName(navigationItem));
+		navigationView.setText(getNavigationName(view.getContext(), navigationItem));
 	}
 
-	private String getNavigationName(int navigationItem) {
+	private String getNavigationName(Context context, int navigationItem) {
 		switch (navigationItem) {
 			case NavigationItems.SHARES:
-				return "Shares";
+				return context.getString(R.string.title_shares);
 
 			case NavigationItems.APPS:
-				return "Apps";
+				return context.getString(R.string.title_apps);
 
 			default:
 				return null;

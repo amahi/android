@@ -23,9 +23,9 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.okhttp.HttpResponseCache;
+import com.jakewharton.byteunits.BinaryByteUnit;
+import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkResponseCache;
 
 import org.amahi.anywhere.util.Time;
 
@@ -43,6 +43,10 @@ import retrofit.client.OkClient;
 import retrofit.converter.Converter;
 import retrofit.converter.GsonConverter;
 
+/**
+ * API dependency injection module. Provides resources such as HTTP client and JSON converter
+ * for possible consumers.
+ */
 @Module(
 	complete = false,
 	library = true
@@ -57,18 +61,22 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	OkHttpClient provideHttpClient() {
-		return new OkHttpClient();
+	OkHttpClient provideHttpClient(Cache httpCache) {
+		OkHttpClient httpClient =  new OkHttpClient();
+
+		httpClient.setCache(httpCache);
+
+		return httpClient;
 	}
 
 	@Provides
 	@Singleton
-	OkResponseCache provideHttpCache(Context context) {
+	Cache provideHttpCache(Context context) {
 		try {
 			File cacheDirectory = new File(context.getCacheDir(), "http-cache");
-			int cacheSize = 5 * 1024 * 1024;
+			long cacheSize = BinaryByteUnit.MEBIBYTES.toBytes(10);
 
-			return new HttpResponseCache(cacheDirectory, cacheSize);
+			return new Cache(cacheDirectory, cacheSize);
 		} catch (IOException e) {
 			return null;
 		}

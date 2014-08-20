@@ -24,6 +24,10 @@ import android.text.TextUtils;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 
+/**
+ * Audio metadata formatter. Formats audio metadata in a safe way taking in mind all variations
+ * of not complete metadata.
+ */
 public final class AudioMetadataFormatter
 {
 	private final String audioTitle;

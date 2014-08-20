@@ -39,6 +39,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.server.response.ServerAppsResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
@@ -49,6 +50,10 @@ import javax.inject.Singleton;
 
 import retrofit.RetrofitError;
 
+/**
+ * Server API implementation. Wraps {@link org.amahi.anywhere.server.api.ProxyApi} and
+ * {@link org.amahi.anywhere.server.api.ServerApi}. Reacts to network connection changes as well.
+ */
 @Singleton
 public class ServerClient
 {
@@ -89,6 +94,10 @@ public class ServerClient
 			return;
 		}
 
+		if (!isServerRouteLoaded()) {
+			return;
+		}
+
 		if (this.network != event.getNetwork()) {
 			this.network = event.getNetwork();
 
@@ -96,11 +105,19 @@ public class ServerClient
 		}
 	}
 
+	private boolean isServerRouteLoaded() {
+		return serverRoute != null;
+	}
+
 	private void startServerConnectionDetection() {
 		this.serverAddress = serverRoute.getLocalAddress();
 		this.serverApi = buildServerApi();
 
 		ServerConnectionDetectingTask.execute(serverRoute);
+	}
+
+	private ServerApi buildServerApi() {
+		return apiAdapter.create(ServerApi.class, serverAddress);
 	}
 
 	@Subscribe
@@ -121,6 +138,10 @@ public class ServerClient
 
 	public boolean isConnected(Server server) {
 		return (this.server != null) && (this.server.getSession().equals(server.getSession()));
+	}
+
+	public boolean isConnectedLocal() {
+		return serverAddress.equals(serverRoute.getLocalAddress());
 	}
 
 	public void connect(Server server) {
@@ -156,14 +177,14 @@ public class ServerClient
 		this.serverApi = buildServerApi();
 	}
 
-	private ServerApi buildServerApi() {
-		return apiAdapter.create(ServerApi.class, serverAddress);
-	}
-
 	public void connectRemote() {
 		this.serverConnection = ApiConnection.REMOTE;
 		this.serverAddress = serverRoute.getRemoteAddress();
 		this.serverApi = buildServerApi();
+	}
+
+	public String getServerAddress() {
+		return serverAddress;
 	}
 
 	public void getShares() {
@@ -171,6 +192,10 @@ public class ServerClient
 	}
 
 	public void getFiles(ServerShare share) {
+		if (share == null) {
+			return;
+		}
+
 		serverApi.getFiles(server.getSession(), share.getName(), null, new ServerFilesResponse(null));
 	}
 
@@ -194,5 +219,9 @@ public class ServerClient
 		} catch (RetrofitError error) {
 			return null;
 		}
+	}
+
+	public void getApps() {
+		serverApi.getApps(server.getSession(), new ServerAppsResponse());
 	}
 }

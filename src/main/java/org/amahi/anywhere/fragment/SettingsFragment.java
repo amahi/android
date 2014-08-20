@@ -43,6 +43,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+/**
+ * Settings fragment. Shows application's settings.
+ */
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener,
 	SharedPreferences.OnSharedPreferenceChangeListener,
 	AccountManagerCallback<Boolean>
@@ -75,7 +78,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	private void setUpSettingsSummary() {
 		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
-		Preference applicationVersion = getPreference(R.string.preference_key_application_version);
+		Preference applicationVersion = getPreference(R.string.preference_key_about_version);
 
 		serverConnection.setSummary(getServerConnectionSummary());
 		applicationVersion.setSummary(getApplicationVersionSummary());
@@ -100,9 +103,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	private void setUpSettingsListeners() {
 		Preference accountSignOut = getPreference(R.string.preference_key_account_sign_out);
-		Preference applicationVersion = getPreference(R.string.preference_key_application_version);
-		Preference applicationFeedback = getPreference(R.string.preference_key_application_feedback);
-		Preference applicationRating = getPreference(R.string.preference_key_application_rating);
+		Preference applicationVersion = getPreference(R.string.preference_key_about_version);
+		Preference applicationFeedback = getPreference(R.string.preference_key_about_feedback);
+		Preference applicationRating = getPreference(R.string.preference_key_about_rating);
 
 		accountSignOut.setOnPreferenceClickListener(this);
 		applicationVersion.setOnPreferenceClickListener(this);
@@ -116,15 +119,15 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 			tearDownAccount();
 		}
 
-		if (preference.getKey().equals(getString(R.string.preference_key_application_version))) {
+		if (preference.getKey().equals(getString(R.string.preference_key_about_version))) {
 			setUpApplicationVersion();
 		}
 
-		if (preference.getKey().equals(getString(R.string.preference_key_application_feedback))) {
+		if (preference.getKey().equals(getString(R.string.preference_key_about_feedback))) {
 			setUpApplicationFeedback();
 		}
 
-		if (preference.getKey().equals(getString(R.string.preference_key_application_rating))) {
+		if (preference.getKey().equals(getString(R.string.preference_key_about_rating))) {
 			setUpApplicationRating();
 		}
 
@@ -138,7 +141,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private List<Account> getAccounts() {
-		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE_ACCOUNT));
+		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
 	}
 
 	private AccountManager getAccountManager() {

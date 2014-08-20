@@ -21,6 +21,9 @@ package org.amahi.anywhere.bus;
 
 import com.squareup.otto.Bus;
 
+/**
+ * {@link com.squareup.otto.Bus} holder, which allows to use a single instance everywhere.
+ */
 public final class BusProvider
 {
 	private static final class BusHolder

@@ -18,21 +18,22 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/drawer_content"
+<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/animator"
+	android:inAnimation="@android:anim/fade_in"
+	android:outAnimation="@android:anim/fade_out"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<FrameLayout
-		android:id="@+id/container_content"
+	<ProgressBar
+		android:id="@android:id/progress"
+		android:layout_gravity="center"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"/>
+
+	<WebView
+		android:id="@+id/web_content"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 
-	<FrameLayout
-		android:id="@+id/container_navigation"
-		android:background="@android:color/white"
-		android:layout_gravity="start"
-		android:layout_width="240dp"
-		android:layout_height="match_parent"/>
-
-</android.support.v4.widget.DrawerLayout>
+</ViewAnimator>

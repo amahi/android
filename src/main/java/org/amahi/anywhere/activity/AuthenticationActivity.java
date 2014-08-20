@@ -28,10 +28,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.ViewAnimator;
 
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.squareup.otto.Subscribe;
@@ -44,9 +42,14 @@ import org.amahi.anywhere.bus.AuthenticationFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationSucceedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.server.client.AmahiClient;
+import org.amahi.anywhere.util.ViewDirector;
 
 import javax.inject.Inject;
 
+/**
+ * Authentication activity. Allows user authentication. If operation succeed
+ * the authentication token is saved at the {@link android.accounts.AccountManager}.
+ */
 public class AuthenticationActivity extends AccountAuthenticatorActivity implements TextWatcher, View.OnClickListener
 {
 	@Inject
@@ -59,13 +62,17 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
 		setUpInjections();
 
-		setUpAuthenticationAction();
-		setUpAuthenticationMessages();
-		setUpAuthenticationListeners();
+		setUpAuthentication();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpAuthentication() {
+		setUpAuthenticationAction();
+		setUpAuthenticationMessages();
+		setUpAuthenticationListeners();
 	}
 
 	private void setUpAuthenticationAction() {
@@ -80,8 +87,16 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		return getUsernameEdit().getText().toString();
 	}
 
+	private EditText getUsernameEdit() {
+		return (EditText) findViewById(R.id.edit_username);
+	}
+
 	private String getPassword() {
 		return getPasswordEdit().getText().toString();
+	}
+
+	private EditText getPasswordEdit() {
+		return (EditText) findViewById(R.id.edit_password);
 	}
 
 	private ActionProcessButton getAuthenticationButton() {
@@ -106,14 +121,6 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		getPasswordEdit().addTextChangedListener(this);
 	}
 
-	private EditText getUsernameEdit() {
-		return (EditText) findViewById(R.id.edit_username);
-	}
-
-	private EditText getPasswordEdit() {
-		return (EditText) findViewById(R.id.edit_password);
-	}
-
 	@Override
 	public void onTextChanged(CharSequence text, int after, int before, int count) {
 		setUpAuthenticationAction();
@@ -122,8 +129,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private void hideAuthenticationFailureMessage() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator_message);
-		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.view_message_empty)));
+		ViewDirector.of(this, R.id.animator_message).show(R.id.view_message_empty);
 	}
 
 	@Override
@@ -140,12 +146,12 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
 	@Override
 	public void onClick(View view) {
-		setUpAuthentication();
-
 		startAuthentication();
+
+		authenticate();
 	}
 
-	private void setUpAuthentication() {
+	private void startAuthentication() {
 		hideAuthenticationText();
 
 		showProgress();
@@ -165,18 +171,18 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		authenticationButton.setProgress(1);
 	}
 
-	private void startAuthentication() {
+	private void authenticate() {
 		amahiClient.authenticate(getUsername(), getPassword());
 	}
 
 	@Subscribe
 	public void onAuthenticationFailed(AuthenticationFailedEvent event) {
-		tearDownAuthentication();
+		finishAuthentication();
 
 		showAuthenticationFailureMessage();
 	}
 
-	private void tearDownAuthentication() {
+	private void finishAuthentication() {
 		showAuthenticationText();
 
 		hideProgress();
@@ -192,20 +198,18 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private void showAuthenticationFailureMessage() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator_message);
-		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.text_message_authentication)));
+		ViewDirector.of(this, R.id.animator_message).show(R.id.text_message_authentication);
 	}
 
 	@Subscribe
 	public void onAuthenticationConnectionFailed(AuthenticationConnectionFailedEvent event) {
-		tearDownAuthentication();
+		finishAuthentication();
 
 		showAuthenticationConnectionFailureMessage();
 	}
 
 	private void showAuthenticationConnectionFailureMessage() {
-		ViewAnimator animator = (ViewAnimator) findViewById(R.id.animator_message);
-		animator.setDisplayedChild(animator.indexOfChild(findViewById(R.id.text_message_authentication_connection)));
+		ViewDirector.of(this, R.id.animator_message).show(R.id.text_message_authentication_connection);
 	}
 
 	@Subscribe

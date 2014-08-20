@@ -59,6 +59,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+/**
+ * Video activity. Shows videos, supports basic operations such as pausing, resuming, scrolling.
+ * The playback itself is done via {@link org.amahi.anywhere.service.VideoService}.
+ * Backed up by {@link android.view.SurfaceView} and {@link org.videolan.libvlc.LibVLC}.
+ */
 public class ServerFileVideoActivity extends Activity implements ServiceConnection,
 	SurfaceHolder.Callback,
 	Runnable,

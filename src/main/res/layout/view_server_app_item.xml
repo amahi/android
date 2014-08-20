@@ -20,21 +20,22 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="horizontal"
-	android:baselineAligned="false"
+	android:gravity="center_vertical"
+	android:padding="8dp"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="?android:attr/listPreferredItemHeight">
 
-	<FrameLayout
-		android:id="@+id/container_navigation"
-		android:background="@android:color/white"
-		android:layout_weight="1"
-		android:layout_width="0dp"
-		android:layout_height="match_parent"/>
+	<ImageView
+		android:id="@+id/logo"
+		android:layout_marginRight="8dp"
+		android:layout_width="40dp"
+		android:layout_height="40dp"/>
 
-	<FrameLayout
-		android:id="@+id/container_content"
-		android:layout_weight="2"
-		android:layout_width="0dp"
-		android:layout_height="match_parent"/>
+	<TextView
+		android:id="@+id/text"
+		android:singleLine="true"
+		android:textSize="@dimen/text_medium"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"/>
 
 </LinearLayout>

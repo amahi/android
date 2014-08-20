@@ -52,7 +52,7 @@
 			android:layout_height="wrap_content">
 
 			<TextView
-				android:text="No Shares"
+				android:text="@string/message_empty_shares"
 				android:textSize="@dimen/text_large"
 				android:textStyle="bold"
 				android:gravity="center_horizontal"
@@ -64,7 +64,7 @@
 				android:layout_height="8dp"/>
 
 			<TextView
-				android:text="Create some and try again"
+				android:text="@string/message_notice_create_some"
 				android:textSize="@dimen/text_small"
 				android:gravity="center_horizontal"
 				android:layout_width="match_parent"
@@ -82,7 +82,7 @@
 		android:layout_height="wrap_content">
 
 		<TextView
-			android:text="Connection Error"
+			android:text="@string/message_error_connection"
 			android:textSize="@dimen/text_large"
 			android:textStyle="bold"
 			android:gravity="center_horizontal"
@@ -94,7 +94,7 @@
 			android:layout_height="8dp"/>
 
 		<TextView
-			android:text="Check your settings and try again"
+			android:text="@string/message_notice_check_settings"
 			android:textSize="@dimen/text_small"
 			android:gravity="center_horizontal"
 			android:layout_width="match_parent"

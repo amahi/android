@@ -18,12 +18,12 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-	android:shape="rectangle">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<gradient
-		android:startColor="#91dafa"
-		android:endColor="#19b4f4"
-		android:angle="90"/>
+	<item
+		android:id="@+id/menu_share"
+		android:icon="@drawable/ic_menu_share"
+		android:title="@string/menu_share"
+		android:showAsAction="always"/>
 
-</shape>
+</menu>

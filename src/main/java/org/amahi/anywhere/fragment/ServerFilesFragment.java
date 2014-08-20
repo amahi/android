@@ -58,6 +58,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+/**
+ * Files fragment. Shows files list.
+ */
 public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
 	AdapterView.OnItemClickListener,
 	AdapterView.OnItemLongClickListener,

@@ -35,12 +35,14 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.AppSelectedEvent;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
@@ -48,6 +50,13 @@ import org.amahi.anywhere.util.Intents;
 
 import javax.inject.Inject;
 
+/**
+ * Navigation activity. This is an entry point of the application. Shows navigation between
+ * main application sections (shares, apps) and shares and apps lists itself. On phones the activity
+ * uses the navigation drawer, on tablets drawer is always visible.
+ * The navigation itself is done via {@link org.amahi.anywhere.fragment.NavigationFragment},
+ * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
+ */
 public class NavigationActivity extends Activity implements DrawerLayout.DrawerListener
 {
 	private static final class State
@@ -68,7 +77,7 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_server);
+		setContentView(R.layout.activity_navigation);
 
 		setUpInjections();
 
@@ -194,7 +203,11 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 
 	@Subscribe
 	public void onSharesSelected(SharesSelectedEvent event) {
-		this.navigationTitle = "Shares";
+		this.navigationTitle = getString(R.string.title_shares);
+
+		if (isNavigationDrawerAvailable()) {
+			setUpTitle();
+		}
 
 		setUpShares();
 
@@ -221,7 +234,11 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 
 	@Subscribe
 	public void onAppsSelected(AppsSelectedEvent event) {
-		this.navigationTitle = "Apps";
+		this.navigationTitle = getString(R.string.title_apps);
+
+		if (isNavigationDrawerAvailable()) {
+			setUpTitle();
+		}
 
 		setUpApps();
 
@@ -245,6 +262,16 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 
 	private void setUpShare(ServerShare share) {
 		Intent intent = Intents.Builder.with(this).buildServerFilesActivity(share);
+		startActivity(intent);
+	}
+
+	@Subscribe
+	public void onAppSelected(AppSelectedEvent event) {
+		setUpApp(event.getApp());
+	}
+
+	private void setUpApp(ServerApp app) {
+		Intent intent = Intents.Builder.with(this).buildServerAppAcitivity(app);
 		startActivity(intent);
 	}
 

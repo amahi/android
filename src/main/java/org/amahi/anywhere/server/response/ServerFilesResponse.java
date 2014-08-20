@@ -24,12 +24,17 @@ import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.model.ServerFile;
 
+import java.util.Collections;
 import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
+/**
+ * Files response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
+ * as {@link org.amahi.anywhere.bus.BusEvent}.
+ */
 public class ServerFilesResponse implements Callback<List<ServerFile>>
 {
 	private final ServerFile serverDirectory;
@@ -40,6 +45,10 @@ public class ServerFilesResponse implements Callback<List<ServerFile>>
 
 	@Override
 	public void success(List<ServerFile> serverFiles, Response response) {
+		if (serverFiles == null) {
+			serverFiles = Collections.emptyList();
+		}
+
 		for (ServerFile serverFile : serverFiles) {
 			serverFile.setParentFile(serverDirectory);
 		}

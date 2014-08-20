@@ -19,6 +19,11 @@
 
 package org.amahi.anywhere.bus;
 
+/**
+ * Base interface for all bus events. Useful for a very basic polymorphism, for example
+ * to declare a result object of {@link android.os.AsyncTask} not actually knowing which result
+ * will be produced.
+ */
 public interface BusEvent
 {
 }

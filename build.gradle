@@ -23,8 +23,8 @@ android {
 
     defaultConfig {
         def versionMajor = 0
-        def versionMinor = 3
-        def versionPatch = 1
+        def versionMinor = 6
+        def versionPatch = 0
 
         versionName buildVersionName(versionMajor, versionMinor, versionPatch)
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
@@ -42,6 +42,32 @@ android {
             buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
             buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
             buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
+        }
+    }
+
+    signingConfigs {
+        release {
+            def signingFile = file("signing.properties")
+            def signingProperties = new Properties()
+
+            if (signingFile.exists()) {
+                signingProperties.load(signingFile.newInputStream())
+
+                storeFile file(signingProperties["keystore.file"])
+                storePassword signingProperties["keystore.password"]
+                keyAlias signingProperties["key.alias"]
+                keyPassword signingProperties["key.password"]
+            }
+        }
+    }
+
+    buildTypes {
+        betaRelease {
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            signingConfig signingConfigs.release
         }
     }
 }
@@ -71,13 +97,39 @@ dependencies {
     compile "com.android.support:support-v13:20.+"
     compile "com.crashlytics.android:crashlytics:1.+"
     compile "com.github.dmytrodanylyk.android-process-button:library:1.0.+"
-    compile "com.jakewharton.timber:timber:2.3.+"
+    compile "com.jakewharton.byteunits:byteunits:0.9.+"
+    compile "com.jakewharton.timber:timber:2.4.+"
     compile "com.squareup.dagger:dagger:1.2.+"
-    compile "com.squareup.okhttp:okhttp:1.5.+"
+    compile "com.squareup.okhttp:okhttp:2.0.+"
+    compile "com.squareup.okhttp:okhttp-urlconnection:2.0.+"
     compile "com.squareup:otto:1.3.+"
-    compile "com.squareup.picasso:picasso:2.2.+"
-    compile "com.squareup.retrofit:retrofit:1.5.+"
+    compile "com.squareup.picasso:picasso:2.3.+"
+    compile "com.squareup.retrofit:retrofit:1.6.+"
     compile "org.videolan:libvlc:0.9.+"
 
     provided "com.squareup.dagger:dagger-compiler:1.2.+"
+}
+
+task generateWrapper(type: Wrapper) {
+    description "Generates Gradle wrapper."
+
+    gradleVersion = "1.12"
+}
+
+android.applicationVariants.all { variant ->
+    task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
+        description "Generates ${variant.name.capitalize()} documentation."
+
+        source = files(variant.javaCompile.source)
+
+        ext.androidClasspath = android.getBootClasspath().join(File.pathSeparator)
+        classpath = files(variant.javaCompile.classpath, ext.androidClasspath)
+
+        options {
+            linksOffline "http://d.android.com/reference", "${android.sdkDirectory}/docs/reference"
+        }
+
+        exclude "**/BuildConfig.java"
+        exclude "**/R.java"
+    }
 }

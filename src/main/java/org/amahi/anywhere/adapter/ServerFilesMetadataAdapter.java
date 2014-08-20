@@ -119,34 +119,24 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 	}
 
 	private void bindView(ServerFile file, View fileView) {
-		bindFileView(file, fileView);
+		unbindFileView(file, fileView);
 
-		if (Mimes.match(file.getMime()) == Mimes.Type.VIDEO) {
+		if (Mimes.match(file.getMime()) != Mimes.Type.VIDEO) {
+			bindFileView(file, fileView);
+		} else {
 			bindFileMetadataView(file, fileView);
 		}
 	}
 
-	private void bindFileMetadataView(ServerFile file, View fileView) {
-		fileView.setTag(Tags.SHARE, share);
-		fileView.setTag(Tags.FILE, file);
-
-		FileMetadataRetrievingTask.execute(serverClient, fileView);
-	}
-
-	public static void bindView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
-		if (fileMetadata == null) {
-			bindFileView(file, fileView);
-		} else {
-			bindFileMetadataView(file, fileMetadata, fileView);
-		}
-	}
-
-	private static void bindFileView(ServerFile file, View fileView) {
+	private void unbindFileView(ServerFile file, View fileView) {
 		TextView fileTitle = (TextView) fileView.findViewById(R.id.text);
 		ImageView fileIcon = (ImageView) fileView.findViewById(R.id.icon);
 
-		fileTitle.setText(file.getName());
+		fileTitle.setText(null);
+		fileTitle.setBackgroundResource(android.R.color.transparent);
+
 		fileIcon.setImageResource(getFileIcon(file));
+		fileIcon.setBackgroundResource(R.color.background_secondary);
 	}
 
 	@DrawableRes
@@ -184,11 +174,38 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 		}
 	}
 
+	private static void bindFileView(ServerFile file, View fileView) {
+		TextView fileTitle = (TextView) fileView.findViewById(R.id.text);
+		ImageView fileIcon = (ImageView) fileView.findViewById(R.id.icon);
+
+		fileTitle.setText(file.getName());
+		fileTitle.setBackgroundResource(R.color.background_transparent_secondary);
+
+		fileIcon.setImageResource(getFileIcon(file));
+		fileIcon.setBackgroundResource(R.color.background_secondary);
+	}
+
+	private void bindFileMetadataView(ServerFile file, View fileView) {
+		fileView.setTag(Tags.SHARE, share);
+		fileView.setTag(Tags.FILE, file);
+
+		FileMetadataRetrievingTask.execute(serverClient, fileView);
+	}
+
+	public static void bindView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
+		if (fileMetadata == null) {
+			bindFileView(file, fileView);
+		} else {
+			bindFileMetadataView(file, fileMetadata, fileView);
+		}
+	}
+
 	private static void bindFileMetadataView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
 		TextView fileTitle = (TextView) fileView.findViewById(R.id.text);
 		ImageView fileIcon = (ImageView) fileView.findViewById(R.id.icon);
 
-		fileTitle.setText(fileMetadata.getTitle());
+		fileTitle.setText(null);
+		fileTitle.setBackgroundResource(android.R.color.transparent);
 
 		Picasso.with(fileView.getContext())
 			.load(fileMetadata.getArtworkUrl())
@@ -197,5 +214,6 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 			.placeholder(getFileIcon(file))
 			.error(getFileIcon(file))
 			.into(fileIcon);
+		fileTitle.setBackgroundResource(android.R.color.transparent);
 	}
 }

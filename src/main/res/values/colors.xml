@@ -22,6 +22,7 @@
 
 	<color name="background_primary">#1a1a1a</color>
 	<color name="background_secondary">#333333</color>
-	<color name="background_transparent">#cc000000</color>
+	<color name="background_transparent_primary">#cc000000</color>
+	<color name="background_transparent_secondary">#80000000</color>
 
 </resources>

@@ -34,7 +34,6 @@
 		android:textColor="@android:color/white"
 		android:textSize="@dimen/text_small"
 		android:singleLine="true"
-		android:background="#80000000"
 		android:gravity="center"
 		android:layout_gravity="bottom"
 		android:padding="4dp"

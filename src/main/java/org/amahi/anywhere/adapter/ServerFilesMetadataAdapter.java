@@ -112,8 +112,8 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 	private View newView(ViewGroup container) {
 		View fileView = layoutInflater.inflate(R.layout.view_server_file_metadata_item, container, false);
 
-		fileView.setTag(Tags.FILE_TITLE, fileView.findViewWithTag(R.id.text));
-		fileView.setTag(Tags.FILE_ICON, fileView.findViewWithTag(R.id.icon));
+		fileView.setTag(Tags.FILE_TITLE, fileView.findViewById(R.id.text));
+		fileView.setTag(Tags.FILE_ICON, fileView.findViewById(R.id.icon));
 
 		return fileView;
 	}
@@ -129,8 +129,8 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 	}
 
 	private void unbindFileView(ServerFile file, View fileView) {
-		TextView fileTitle = (TextView) fileView.findViewById(R.id.text);
-		ImageView fileIcon = (ImageView) fileView.findViewById(R.id.icon);
+		TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
+		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
 
 		fileTitle.setText(null);
 		fileTitle.setBackgroundResource(android.R.color.transparent);
@@ -175,8 +175,8 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 	}
 
 	private static void bindFileView(ServerFile file, View fileView) {
-		TextView fileTitle = (TextView) fileView.findViewById(R.id.text);
-		ImageView fileIcon = (ImageView) fileView.findViewById(R.id.icon);
+		TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
+		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
 
 		fileTitle.setText(file.getName());
 		fileTitle.setBackgroundResource(R.color.background_transparent_secondary);
@@ -201,8 +201,8 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 	}
 
 	private static void bindFileMetadataView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
-		TextView fileTitle = (TextView) fileView.findViewById(R.id.text);
-		ImageView fileIcon = (ImageView) fileView.findViewById(R.id.icon);
+		TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
+		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
 
 		fileTitle.setText(null);
 		fileTitle.setBackgroundResource(android.R.color.transparent);

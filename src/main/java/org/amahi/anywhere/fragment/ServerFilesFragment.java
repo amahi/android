@@ -49,6 +49,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.ViewDirector;
 
 import java.util.ArrayList;
@@ -260,8 +261,24 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		if (!isMetadataAvailable()) {
 			getFilesAdapter().replaceWith(files);
 		} else {
-			getFilesMetadataAdapter().replaceWith(getShare(), files);
+			getFilesMetadataAdapter().replaceWith(getShare(), getMetadataFiles(files));
 		}
+	}
+
+	private List<ServerFile> getMetadataFiles(List<ServerFile> files) {
+		List<ServerFile> metadataFiles = new ArrayList<ServerFile>();
+
+		for (ServerFile file : files) {
+			if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
+				metadataFiles.add(file);
+			}
+
+			if (Mimes.match(file.getMime()) == Mimes.Type.VIDEO) {
+				metadataFiles.add(file);
+			}
+		}
+
+		return metadataFiles;
 	}
 
 	private void setUpFilesContentSort(FilesSort filesSort) {

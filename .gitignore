@@ -1,21 +1,27 @@
 # Gradle
+
 .gradle/
 build/
 
 # Android Studio
+
 .idea/
 *.iml
 
-# Local configuration
+# Android SDK
+
 local.properties
 
-# API information
+# API
+
 api.properties
 
-# Crashlytics information
+# Crashlytics
+
 crashlytics.properties
 crashlytics-build.properties
 com_crashlytics_export_strings.xml
 
+# Key
+
 signing.properties
-android-release-tools

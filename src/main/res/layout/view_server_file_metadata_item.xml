@@ -19,30 +19,25 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:background="?android:attr/activatedBackgroundIndicator"
-	android:layout_width="match_parent"
-	android:layout_height="?android:attr/listPreferredItemHeight">
+	android:foreground="?android:attr/activatedBackgroundIndicator"
+	android:layout_width="170dp"
+	android:layout_height="270dp">
 
-	<LinearLayout
-		android:orientation="horizontal"
-		android:gravity="center_vertical"
-		android:padding="8dp"
+	<ImageView
+		android:id="@+id/icon"
+		android:scaleType="centerInside"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="match_parent"/>
 
-		<ImageView
-			android:id="@+id/icon"
-			android:layout_marginRight="8dp"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
-
-		<TextView
-			android:id="@+id/text"
-			android:singleLine="true"
-			android:textSize="@dimen/text_medium"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
-
-	</LinearLayout>
+	<TextView
+		android:id="@+id/text"
+		android:textColor="@android:color/white"
+		android:textSize="@dimen/text_small"
+		android:singleLine="true"
+		android:gravity="center"
+		android:layout_gravity="bottom"
+		android:padding="4dp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"/>
 
 </FrameLayout>

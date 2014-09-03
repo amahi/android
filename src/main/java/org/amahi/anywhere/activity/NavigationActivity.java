@@ -106,12 +106,13 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 			setUpNavigationDrawer();
 		}
 
-		setUpNavigationTitle(state);
 		setUpNavigationFragment();
 
 		if (isNavigationDrawerAvailable() && isNavigationDrawerRequired(state)) {
 			showNavigationDrawer();
 		}
+
+		setUpNavigationTitle(state);
 	}
 
 	private void setUpNavigationDrawer() {
@@ -142,7 +143,9 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	}
 
 	private void setUpTitle(String title) {
-		getActionBar().setTitle(title);
+		if (isNavigationDrawerAvailable()) {
+			getActionBar().setTitle(title);
+		}
 	}
 
 	@Override
@@ -165,7 +168,9 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	private void setUpNavigationTitle(Bundle state) {
 		this.navigationTitle = getNavigationTitle(state);
 
-		setUpTitle();
+		if (isNavigationDrawerAvailable() && !isNavigationDrawerOpen()) {
+			setUpTitle();
+		}
 	}
 
 	private String getNavigationTitle(Bundle state) {

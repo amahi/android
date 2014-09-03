@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.amahi.anywhere.R;
@@ -92,10 +93,11 @@ public class ServerFilesAdapter extends BaseAdapter
 	}
 
 	private void bindView(ServerFile file, View view) {
-		TextView fileView = (TextView) view;
+		ImageView fileIconView = (ImageView) view.findViewById(R.id.icon);
+		TextView fileTextView = (TextView) view.findViewById(R.id.text);
 
-		fileView.setText(getFileName(file));
-		fileView.setCompoundDrawablesWithIntrinsicBounds(getFileIcon(file), 0, 0, 0);
+		fileIconView.setImageResource(getFileIcon(file));
+		fileTextView.setText(getFileName(file));
 	}
 
 	private String getFileName(ServerFile file) {

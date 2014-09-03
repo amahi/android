@@ -89,7 +89,7 @@ public class ServerFile implements Parcelable
 	};
 
 	private ServerFile(Parcel parcel) {
-		this.parentFile = parcel.readParcelable(this.getClass().getClassLoader());
+		this.parentFile = parcel.readParcelable(ServerFile.class.getClassLoader());
 		this.name = parcel.readString();
 		this.mime = parcel.readString();
 		this.modificationTime = new Date(parcel.readLong());

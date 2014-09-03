@@ -36,6 +36,7 @@ import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.server.response.ServerAppsResponse;
@@ -46,6 +47,8 @@ import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import retrofit.RetrofitError;
 
 /**
  * Server API implementation. Wraps {@link org.amahi.anywhere.server.api.ProxyApi} and
@@ -208,6 +211,14 @@ public class ServerClient
 			.appendQueryParameter("p", file.getPath())
 			.appendQueryParameter("Session", server.getSession())
 			.build();
+	}
+
+	public ServerFileMetadata getFileMetadata(ServerShare share, ServerFile file) {
+		try {
+			return serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag());
+		} catch (RetrofitError error) {
+			return null;
+		}
 	}
 
 	public void getApps() {

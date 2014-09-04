@@ -47,7 +47,7 @@ import javax.inject.Inject;
  */
 public class ServerFileWebActivity extends Activity
 {
-	public static final Set<String> SUPPORTED_FORMATS;
+	private static final Set<String> SUPPORTED_FORMATS;
 
 	static {
 		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
@@ -152,6 +152,10 @@ public class ServerFileWebActivity extends Activity
 
 	private void tearDownWebResourceState(Bundle state) {
 		getWebView().saveState(state);
+	}
+
+	public static boolean supports(String mime_type) {
+		return SUPPORTED_FORMATS.contains(mime_type);
 	}
 
 	private static final class WebResourceClient extends WebViewClient

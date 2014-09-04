@@ -70,18 +70,6 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	MediaController.MediaPlayerControl,
 	View.OnSystemUiVisibilityChangeListener
 {
-	public static final Set<String> SUPPORTED_FORMATS;
-
-	static {
-		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
-			"video/avi",
-			"video/divx",
-			"video/mp4",
-			"video/x-matroska",
-			"video/x-m4v"
-		));
-	}
-
 	@Inject
 	ServerClient serverClient;
 
@@ -495,5 +483,11 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	private void tearDownVideoService() {
 		Intent intent = new Intent(this, VideoService.class);
 		stopService(intent);
+	}
+
+	public static boolean supports(String mime_type) {
+		String type = mime_type.split("/")[0];
+
+		return "video".equals(type);
 	}
 }

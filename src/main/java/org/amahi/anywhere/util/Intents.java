@@ -104,19 +104,19 @@ public final class Intents
 		private Class<? extends Activity> getServerFileActivity(ServerFile file) {
 			String fileFormat = file.getMime();
 
-			if (ServerFileAudioActivity.SUPPORTED_FORMATS.contains(fileFormat)) {
+			if (ServerFileAudioActivity.supports(fileFormat)) {
 				return ServerFileAudioActivity.class;
 			}
 
-			if (ServerFileImageActivity.SUPPORTED_FORMATS.contains(fileFormat)) {
+			if (ServerFileImageActivity.supports(fileFormat)) {
 				return ServerFileImageActivity.class;
 			}
 
-			if (ServerFileVideoActivity.SUPPORTED_FORMATS.contains(fileFormat)) {
+			if (ServerFileVideoActivity.supports(fileFormat)) {
 				return ServerFileVideoActivity.class;
 			}
 
-			if (ServerFileWebActivity.SUPPORTED_FORMATS.contains(fileFormat)) {
+			if (ServerFileWebActivity.supports(fileFormat)) {
 				return ServerFileWebActivity.class;
 			}
 

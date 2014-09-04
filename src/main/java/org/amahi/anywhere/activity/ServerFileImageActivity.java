@@ -55,7 +55,7 @@ import javax.inject.Inject;
  */
 public class ServerFileImageActivity extends Activity implements ViewPager.OnPageChangeListener
 {
-	public static final Set<String> SUPPORTED_FORMATS;
+	private static final Set<String> SUPPORTED_FORMATS;
 
 	static {
 		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
@@ -224,5 +224,9 @@ public class ServerFileImageActivity extends Activity implements ViewPager.OnPag
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	public static boolean supports(String mime_type) {
+		return SUPPORTED_FORMATS.contains(mime_type);
 	}
 }

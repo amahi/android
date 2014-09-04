@@ -68,7 +68,7 @@ import javax.inject.Inject;
  */
 public class ServerFileAudioActivity extends Activity implements ServiceConnection, MediaController.MediaPlayerControl
 {
-	public static final Set<String> SUPPORTED_FORMATS;
+	private static final Set<String> SUPPORTED_FORMATS;
 
 	static {
 		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
@@ -77,6 +77,10 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 			"audio/mpeg",
 			"audio/ogg"
 		));
+	}
+
+	public static boolean supports(String mime_type) {
+		return SUPPORTED_FORMATS.contains(mime_type);
 	}
 
 	private static final class State

@@ -167,7 +167,9 @@ public class ServerClient
 
 	public void connectAuto() {
 		this.serverConnection = ApiConnection.AUTO;
-
+		if (!isServerRouteLoaded()) {
+			return;
+		}
 		startServerConnectionDetection();
 	}
 

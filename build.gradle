@@ -18,8 +18,8 @@ apply plugin: "android"
 apply plugin: "crashlytics"
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "20"
+    compileSdkVersion 21
+    buildToolsVersion "21.0.1"
 
     defaultConfig {
         def versionMajor = 1
@@ -30,7 +30,7 @@ android {
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
 
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 21
 
         def apiFile = file("api.properties")
         def apiProperties = new Properties()

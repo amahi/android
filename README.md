@@ -2,15 +2,15 @@
 
 This repository contains the source code for the Amahi Android app.
 
-You will need JDK 1.6 and Android SDK 22 installed to work with it.
+You will need JDK 1.7 and Android SDK 21 installed to work with it.
 
 ## Building the app
 
 1. Install Android components.
 
   ```
-  $ android update sdk --no-ui --force --all --filter build-tools-20.0.0
-  $ android update sdk --no-ui --force --all --filter android-19
+  $ android update sdk --no-ui --force --all --filter build-tools-21.0.1
+  $ android update sdk --no-ui --force --all --filter android-21
   $ android update sdk --no-ui --force --all --filter extra-android-m2repository
   ```
 

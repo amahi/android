@@ -144,8 +144,7 @@ public class VideoService extends Service implements IVideoPlayer
 		changeVideoSize(width, height);
 	}
 	public void eventHardwareAccelerationError(){
-		//TODO
-
+		// FIXME -- handle this error
 	}
 
 	private void changeVideoSize(int width, int height) {

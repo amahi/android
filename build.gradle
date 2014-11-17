@@ -18,8 +18,8 @@ apply plugin: "android"
 apply plugin: "crashlytics"
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "20"
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         def versionMajor = 1
@@ -30,7 +30,7 @@ android {
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
 
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 21
 
         def apiFile = file("api.properties")
         def apiProperties = new Properties()
@@ -93,7 +93,7 @@ dependencies {
         }
     }
 
-    compile "com.android.support:support-v4:20.+"
+    compile "com.android.support:support-v4:21.+"
     compile "com.android.support:support-v13:20.+"
     compile "com.crashlytics.android:crashlytics:1.+"
     compile "com.github.dmytrodanylyk.android-process-button:library:1.0.+"
@@ -105,7 +105,7 @@ dependencies {
     compile "com.squareup:otto:1.3.+"
     compile "com.squareup.picasso:picasso:2.3.+"
     compile "com.squareup.retrofit:retrofit:1.6.+"
-    compile "org.videolan:libvlc:0.9.+"
+    compile "org.videolan:libvlc:1.0.0"
 
     provided "com.squareup.dagger:dagger-compiler:1.2.+"
 }

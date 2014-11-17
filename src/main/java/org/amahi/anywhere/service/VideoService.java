@@ -143,6 +143,9 @@ public class VideoService extends Service implements IVideoPlayer
 	public void setSurfaceSize(int width, int height, int visibleWidth, int visibleHeight, int sarNumber, int sarDensity) {
 		changeVideoSize(width, height);
 	}
+	public void eventHardwareAccelerationError(){
+		// FIXME -- handle this error
+	}
 
 	private void changeVideoSize(int width, int height) {
 		Message message = Message.obtain(videoEventsHandler, VideoEvent.CHANGE_VIDEO_SIZE, width, height);

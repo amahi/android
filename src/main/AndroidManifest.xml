@@ -47,6 +47,7 @@
 		android:name="android.permission.WAKE_LOCK"/>
 
 	<application
+		android:allowBackup="false"
 		android:icon="@drawable/ic_launcher"
 		android:label="@string/application_name"
 		android:name=".AmahiApplication"

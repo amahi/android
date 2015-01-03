@@ -308,12 +308,15 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setUpFilesContent() {
-		if (!isDirectoryAvailable()) {
-			serverClient.getFiles(getShare());
-		} else {
-			serverClient.getFiles(getShare(), getDirectory());
-		}
-	}
+        if (serverClient.isConnected()){
+            if (!isDirectoryAvailable()) {
+                serverClient.getFiles(getShare());
+            } else {
+                    serverClient.getFiles(getShare(), getDirectory());
+            }
+        }
+
+    }
 
 	private boolean isDirectoryAvailable() {
 		return getDirectory() != null;

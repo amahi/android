@@ -175,12 +175,18 @@ public class ServerClient
 
 	public void connectLocal() {
 		this.serverConnection = ApiConnection.LOCAL;
+        if (!isServerRouteLoaded()) {
+            return;
+        }
 		this.serverAddress = serverRoute.getLocalAddress();
 		this.serverApi = buildServerApi();
 	}
 
 	public void connectRemote() {
 		this.serverConnection = ApiConnection.REMOTE;
+        if (!isServerRouteLoaded()) {
+            return;
+        }
 		this.serverAddress = serverRoute.getRemoteAddress();
 		this.serverApi = buildServerApi();
 	}

@@ -48,7 +48,7 @@ public class Downloader extends BroadcastReceiver
 
 	@Inject
 	public Downloader(Context context) {
-		this.context = context;
+		this.context = context.getApplicationContext();
 
 		this.downloadId = Integer.MIN_VALUE;
 	}
@@ -116,7 +116,11 @@ public class Downloader extends BroadcastReceiver
 	}
 
 	private void tearDownDownloadReceiver() {
-		context.unregisterReceiver(this);
+		try {
+			context.unregisterReceiver(this);
+		} catch (IllegalArgumentException e) {
+			// False alarm, no need to unregister.
+		}
 	}
 
 	public void finishFileDownloading() {

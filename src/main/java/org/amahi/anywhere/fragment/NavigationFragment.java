@@ -126,6 +126,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 	@Override
 	public void onAccountsUpdated(Account[] accounts) {
+		if (isVisible()) {
+			return;
+		}
+
 		if (getAccounts().isEmpty()) {
 			setUpAccount();
 		}

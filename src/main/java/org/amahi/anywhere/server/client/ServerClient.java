@@ -222,9 +222,10 @@ public class ServerClient
 	}
 
 	public ServerFileMetadata getFileMetadata(ServerShare share, ServerFile file) {
-        if (share == null || file == null){
+        if ((server == null) || (share == null) || (file == null)){
             return null;
         }
+
 		try {
 			return serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag());
 		} catch (RetrofitError error) {

@@ -220,7 +220,9 @@ public class ServerAppActivity extends Activity
 
 		Preferences.ofCookie(this).setAppCookies(appHost, appCookies);
 
-		CookieManager.getInstance().removeAllCookie();
+		if (CookieManager.getInstance().hasCookies()) {
+			CookieManager.getInstance().removeAllCookie();
+		}
 	}
 
 	private static final class AppWebClient extends WebViewClient

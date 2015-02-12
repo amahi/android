@@ -135,9 +135,13 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void tearDownAccount() {
-		Account account = getAccounts().get(0);
+		if (!getAccounts().isEmpty()) {
+			Account account = getAccounts().get(0);
 
-		getAccountManager().removeAccount(account, this, null);
+			getAccountManager().removeAccount(account, this, null);
+		} else {
+			tearDownActivity();
+		}
 	}
 
 	private List<Account> getAccounts() {

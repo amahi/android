@@ -1,6 +1,5 @@
-
 debug:
-	gradle assembleDebug
+	./gradlew assembleDebug
 
 release:
-	gradle assembleRelease
+	./gradlew assembleRelease

@@ -7,9 +7,9 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:1.0.0"
-        classpath "com.crashlytics.tools.gradle:crashlytics-gradle:1.+"
-        classpath "com.jakewharton.sdkmanager:gradle-plugin:0.12.+"
+        classpath "com.android.tools.build:gradle:1.0.1"
+        classpath "com.crashlytics.tools.gradle:crashlytics-gradle:1.14.7"
+        classpath "com.jakewharton.sdkmanager:gradle-plugin:0.12.0"
     }
 }
 
@@ -19,7 +19,7 @@ apply plugin: "crashlytics"
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         def versionMajor = 1
@@ -93,27 +93,27 @@ dependencies {
         }
     }
 
-    compile "com.android.support:support-v4:21.+"
-    compile "com.android.support:support-v13:20.+"
-    compile "com.crashlytics.android:crashlytics:1.+"
-    compile "com.github.dmytrodanylyk.android-process-button:library:1.0.+"
-    compile "com.jakewharton.byteunits:byteunits:0.9.+"
-    compile "com.jakewharton.timber:timber:2.4.+"
-    compile "com.squareup.dagger:dagger:1.2.+"
-    compile "com.squareup.okhttp:okhttp:2.0.+"
-    compile "com.squareup.okhttp:okhttp-urlconnection:2.0.+"
-    compile "com.squareup:otto:1.3.+"
-    compile "com.squareup.picasso:picasso:2.3.+"
-    compile "com.squareup.retrofit:retrofit:1.6.+"
+    compile "com.android.support:support-v4:21.0.3"
+    compile "com.android.support:support-v13:21.0.3"
+    compile "com.crashlytics.android:crashlytics:1.1.13"
+    compile "com.github.dmytrodanylyk.android-process-button:library:1.0.3"
+    compile "com.jakewharton.byteunits:byteunits:0.9.0"
+    compile "com.jakewharton.timber:timber:2.5.1"
+    compile "com.squareup.dagger:dagger:1.2.2"
+    compile "com.squareup.okhttp:okhttp:2.0.0"
+    compile "com.squareup.okhttp:okhttp-urlconnection:2.0.0"
+    compile "com.squareup:otto:1.3.6"
+    compile "com.squareup.picasso:picasso:2.3.0"
+    compile "com.squareup.retrofit:retrofit:1.6.1"
     compile "org.videolan:libvlc:1.0.0"
 
-    provided "com.squareup.dagger:dagger-compiler:1.2.+"
+    provided "com.squareup.dagger:dagger-compiler:1.2.2"
 }
 
 task generateWrapper(type: Wrapper) {
     description "Generates Gradle wrapper."
 
-    gradleVersion = "1.12"
+    gradleVersion = "2.2.1"
 }
 
 android.applicationVariants.all { variant ->

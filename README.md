@@ -43,5 +43,5 @@ Gradle, Android SDK and project dependencies will be downloaded automatically.
 2. Generate the documentation.
 
   ```
-  $ ./gradlew clean generateDebugJavadoc
+  $ ./gradlew clean assembleDebug generateDebugJavadoc
   ```

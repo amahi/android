@@ -117,8 +117,10 @@ task generateWrapper(type: Wrapper) {
 }
 
 android.applicationVariants.all { variant ->
-    task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
-        description "Generates ${variant.name.capitalize()} documentation."
+    def variantName = variant.name.capitalize()
+
+    task("generate${variantName}Javadoc", type: Javadoc) {
+        description "Generates ${variantName} documentation."
 
         source = files(variant.javaCompile.source)
 
@@ -128,8 +130,5 @@ android.applicationVariants.all { variant ->
         options {
             linksOffline "http://d.android.com/reference", "${android.sdkDirectory}/docs/reference"
         }
-
-        exclude "**/BuildConfig.java"
-        exclude "**/R.java"
     }
 }

@@ -40,11 +40,17 @@ public class AudioReceiver extends BroadcastReceiver
 {
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (intent.getAction().equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+		if (intent == null) {
+			return;
+		}
+
+		String action = intent.getAction();
+
+		if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
 			handleAudioChangeEvent();
 		}
 
-		if (intent.getAction().equals(Intent.ACTION_MEDIA_BUTTON)) {
+		if (Intent.ACTION_MEDIA_BUTTON.equals(action)) {
 			handleAudioControlEvent(intent);
 		}
 	}
@@ -55,6 +61,10 @@ public class AudioReceiver extends BroadcastReceiver
 
 	private void handleAudioControlEvent(Intent intent) {
 		KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+
+		if (event == null) {
+			return;
+		}
 
 		if (event.getAction() != KeyEvent.ACTION_DOWN) {
 			return;

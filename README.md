@@ -10,7 +10,7 @@ Gradle, Android SDK and project dependencies will be downloaded automatically.
 1. Install the [LibVLC](https://github.com/amahi/libvlc-android).
 
     We have a pre-compiled
-    [tarball of LibVLC for Android](https://dl.dropboxusercontent.com/u/364883/Amahi/maven-1.2.tar.bz2)
+    [tarball of LibVLC for Android](https://dl.dropboxusercontent.com/u/364883/Amahi/maven-2.0.tar.gz)
     if you rather not have to compile the whole library.
     It contains a `.m2` folder that should be placed in your `${HOME}` directory.
 

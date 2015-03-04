@@ -26,6 +26,7 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.view.Surface;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.bus.BusProvider;
@@ -140,11 +141,20 @@ public class VideoService extends Service implements IVideoPlayer
 	}
 
 	@Override
-	public void setSurfaceSize(int width, int height, int visibleWidth, int visibleHeight, int sarNumber, int sarDensity) {
+	public void setSurfaceLayout(int width, int height, int visibleWidth, int visibleHeight, int sarNumber, int sarDensity) {
 		changeVideoSize(width, height);
 	}
-	public void eventHardwareAccelerationError(){
-		// FIXME -- handle this error
+
+	@Override
+	public int configureSurface(Surface surface, int width, int height, int hal) {
+		// Poor API design
+		// This method is used for Gingerbread and before according to LibVLC source code
+
+		return -1;
+	}
+
+	@Override
+	public void eventHardwareAccelerationError() {
 	}
 
 	private void changeVideoSize(int width, int height) {

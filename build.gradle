@@ -18,8 +18,8 @@ apply plugin: "android"
 apply plugin: "crashlytics"
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "22"
 
     defaultConfig {
         def versionMajor = 1
@@ -30,7 +30,7 @@ android {
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
 
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 22
 
         def apiFile = file("api.properties")
         def apiProperties = new Properties()
@@ -93,8 +93,8 @@ dependencies {
         }
     }
 
-    compile "com.android.support:support-v4:21.0.3"
-    compile "com.android.support:support-v13:21.0.3"
+    compile "com.android.support:support-v4:22.0.0"
+    compile "com.android.support:support-v13:22.0.0"
     compile "com.crashlytics.android:crashlytics:1.1.13"
     compile "com.github.dmytrodanylyk.android-process-button:library:1.0.3"
     compile "com.jakewharton.byteunits:byteunits:0.9.0"

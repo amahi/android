@@ -97,7 +97,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	private String getApplicationVersionSummary() {
 		return String.format(
-			"Amahi for Android, Version %s\n © 2014, Amahi, https://www.amahi.org/android",
+			"Amahi for Android %s\n© 2015, Amahi\nwww.amahi.org/android",
 			Android.getApplicationVersion());
 	}
 

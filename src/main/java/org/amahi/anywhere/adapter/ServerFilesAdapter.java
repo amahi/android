@@ -20,6 +20,7 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +28,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
 
 import java.util.Collections;
@@ -41,17 +46,21 @@ import java.util.List;
 public class ServerFilesAdapter extends BaseAdapter
 {
 	private final LayoutInflater layoutInflater;
+	private	ServerClient serverClient;
 
+	private ServerShare serverShare;
 	private List<ServerFile> files;
 
-	public ServerFilesAdapter(Context context) {
+	public ServerFilesAdapter(Context context, ServerClient serverClient) {
+		this.serverClient = serverClient;
 		this.layoutInflater = LayoutInflater.from(context);
 
 		this.files = Collections.emptyList();
 	}
 
-	public void replaceWith(List<ServerFile> files) {
+	public void replaceWith(ServerShare serverShare, List<ServerFile> files) {
 		this.files = files;
+		this.serverShare = serverShare;
 
 		notifyDataSetChanged();
 	}
@@ -96,8 +105,12 @@ public class ServerFilesAdapter extends BaseAdapter
 		ImageView fileIconView = (ImageView) view.findViewById(R.id.icon);
 		TextView fileTextView = (TextView) view.findViewById(R.id.text);
 
-		fileIconView.setImageResource(getFileIcon(file));
 		fileTextView.setText(getFileName(file));
+		if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
+			setUpImageIcon(file, fileIconView);
+		} else {
+			fileIconView.setImageResource(getFileIcon(file));
+		}
 	}
 
 	private String getFileName(ServerFile file) {
@@ -136,5 +149,19 @@ public class ServerFilesAdapter extends BaseAdapter
 			default:
 				return R.drawable.ic_file_generic;
 		}
+	}
+
+	private void setUpImageIcon(ServerFile file, ImageView fileIconView) {
+		Picasso.with(fileIconView.getContext())
+				.load(getImageUri(file))
+				.centerCrop()
+				.fit()
+				.placeholder(getFileIcon(file))
+				.error(getFileIcon(file))
+				.into(fileIconView);
+	}
+
+	private Uri getImageUri(ServerFile file) {
+		return serverClient.getFileUri(serverShare, file);
 	}
 }

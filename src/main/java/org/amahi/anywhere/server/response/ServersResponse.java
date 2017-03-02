@@ -26,9 +26,10 @@ import org.amahi.anywhere.server.model.Server;
 
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.HttpException;
+import retrofit2.Response;
 
 /**
  * Servers response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
@@ -37,12 +38,15 @@ import retrofit.client.Response;
 public class ServersResponse implements Callback<List<Server>>
 {
 	@Override
-	public void success(List<Server> servers, Response response) {
-		BusProvider.getBus().post(new ServersLoadedEvent(servers));
+	public void onResponse(Call<List<Server>> call, Response<List<Server>> response) {
+		if (response.isSuccessful())
+			BusProvider.getBus().post(new ServersLoadedEvent(response.body()));
+		else
+			this.onFailure(call, new HttpException(response));
 	}
 
 	@Override
-	public void failure(RetrofitError error) {
+	public void onFailure(Call<List<Server>> call, Throwable t) {
 		BusProvider.getBus().post(new ServersLoadFailedEvent());
 	}
 }

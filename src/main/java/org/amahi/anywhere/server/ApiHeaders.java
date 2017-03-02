@@ -23,12 +23,17 @@ import android.content.Context;
 
 import org.amahi.anywhere.util.Identifier;
 
-import retrofit.RequestInterceptor;
+import java.io.IOException;
+
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
+
 
 /**
  * API headers accessor.
  */
-class ApiHeaders implements RequestInterceptor
+class ApiHeaders implements Interceptor
 {
 	private static final class HeaderFields
 	{
@@ -56,8 +61,14 @@ class ApiHeaders implements RequestInterceptor
 	}
 
 	@Override
-	public void intercept(RequestFacade request) {
-		request.addHeader(HeaderFields.ACCEPT, acceptHeader);
-		request.addHeader(HeaderFields.USER_AGENT, userAgentHeader);
+	public Response intercept(Chain chain) throws IOException {
+		Request original = chain.request();
+		Request request = original.newBuilder()
+				.addHeader(HeaderFields.ACCEPT, acceptHeader)
+				.addHeader(HeaderFields.USER_AGENT, userAgentHeader)
+				.method(original.method(), original.body())
+				.build();
+
+		return chain.proceed(request);
 	}
 }

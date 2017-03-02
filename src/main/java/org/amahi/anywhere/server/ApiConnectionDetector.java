@@ -21,9 +21,6 @@ package org.amahi.anywhere.server;
 
 import android.net.Uri;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import org.amahi.anywhere.server.model.ServerRoute;
 
@@ -31,6 +28,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import timber.log.Timber;
 
 /**
@@ -44,20 +44,19 @@ public class ApiConnectionDetector
 		private Connection() {
 		}
 
-		public static final int TIMEOUT = 1;
+		static final int TIMEOUT = 1;
 	}
 
-	private final OkHttpClient httpClient;
+	private OkHttpClient httpClient;
 
 	public ApiConnectionDetector() {
 		this.httpClient = buildHttpClient();
 	}
 
 	private OkHttpClient buildHttpClient() {
-		OkHttpClient httpClient = new OkHttpClient();
-
-		httpClient.setConnectTimeout(Connection.TIMEOUT, TimeUnit.SECONDS);
-
+		OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+		clientBuilder.connectTimeout(Connection.TIMEOUT, TimeUnit.SECONDS);
+		httpClient = clientBuilder.build();
 		return httpClient;
 	}
 

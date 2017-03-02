@@ -21,9 +21,10 @@ package org.amahi.anywhere.server.api;
 
 import org.amahi.anywhere.server.model.ServerRoute;
 
-import retrofit.Callback;
-import retrofit.http.Header;
-import retrofit.http.PUT;
+import retrofit2.Call;
+import retrofit2.http.Header;
+import retrofit2.http.PUT;
+
 
 /**
  * Proxy API declaration.
@@ -31,7 +32,6 @@ import retrofit.http.PUT;
 public interface ProxyApi
 {
 	@PUT("/client")
-	public void getServerRoute(
-		@Header("Session") String session,
-		Callback<ServerRoute> callback);
+	Call<ServerRoute> getServerRoute(
+		@Header("Session") String session);
 }

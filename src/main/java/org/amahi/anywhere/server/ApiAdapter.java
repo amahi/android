@@ -22,36 +22,32 @@ package org.amahi.anywhere.server;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import retrofit.RestAdapter.Builder;
-import retrofit.RestAdapter.Log;
-import retrofit.RestAdapter.LogLevel;
-import retrofit.client.Client;
-import retrofit.converter.Converter;
+import okhttp3.OkHttpClient;
+import retrofit2.Converter.Factory;
+import retrofit2.Retrofit;
+
 
 /**
- * API adapter. Wraps {@link retrofit.RestAdapter}, building API implementations using
+ * API adapter. Wraps {@link retrofit2.Retrofit}, building API implementations using
  * dependency injection provided components.
  */
 @Singleton
 public class ApiAdapter
 {
-	private final Builder apiBuilder;
+	private final Retrofit.Builder apiBuilder;
 
 	@Inject
-	public ApiAdapter(Client client, ApiHeaders headers, Converter converter, Log log, LogLevel logLevel) {
-		this.apiBuilder = buildApiBuilder(client, headers, converter, log, logLevel);
+	public ApiAdapter(OkHttpClient client, Factory factory) {
+		this.apiBuilder = buildApiBuilder(client, factory);
 	}
 
-	private Builder buildApiBuilder(Client client, ApiHeaders headers, Converter converter, Log log, LogLevel logLevel) {
-		return new Builder()
-			.setClient(client)
-			.setRequestInterceptor(headers)
-			.setConverter(converter)
-			.setLog(log)
-			.setLogLevel(logLevel);
+	private Retrofit.Builder buildApiBuilder(OkHttpClient client, Factory factory) {
+		return new Retrofit.Builder()
+			.client(client)
+			.addConverterFactory(factory);
 	}
 
 	public <T> T create(Class<T> api, String apiUrl) {
-		return apiBuilder.setEndpoint(apiUrl).build().create(api);
+		return apiBuilder.baseUrl(apiUrl).build().create(api);
 	}
 }

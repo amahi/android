@@ -26,6 +26,7 @@ import android.os.StrictMode;
 import com.crashlytics.android.Crashlytics;
 
 import dagger.ObjectGraph;
+import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 /**
@@ -63,7 +64,7 @@ public class AmahiApplication extends Application
 
 	private void setUpReporting() {
 		if (!isDebugging()) {
-			Crashlytics.start(this);
+			Fabric.with(this, new Crashlytics());
 		}
 	}
 

@@ -33,6 +33,7 @@ import android.preference.PreferenceFragment;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.activity.AuthenticationActivity;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
@@ -159,6 +160,8 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	private void tearDownActivity() {
 		getActivity().finish();
+		Intent myIntent = new Intent(getActivity().getApplicationContext(), AuthenticationActivity.class);
+		startActivity(myIntent);
 	}
 
 	private void setUpApplicationVersion() {

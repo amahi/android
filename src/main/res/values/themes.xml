@@ -19,31 +19,7 @@
   -->
 
 <resources>
-
-	<style name="Theme.Amahi" parent="@android:style/Theme.Holo">
-		<item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
-		<item name="android:windowBackground">@color/background_primary</item>
-	</style>
-
-	<style name="Theme.Amahi.ActionBar" parent="@android:style/Widget.Holo.ActionBar.Solid">
-		<item name="android:background">@drawable/bg_action_bar</item>
-		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
-	</style>
-
-	<style name="Theme.Amahi.Fullscreen" parent="@android:style/Theme.Holo">
-		<item name="android:actionBarStyle">@style/Theme.Amahi.Fullscreen.ActionBar</item>
-		<item name="android:windowActionBarOverlay">true</item>
-		<item name="android:windowBackground">@android:color/black</item>
-		<item name="android:windowContentOverlay">@null</item>
-	</style>
-
-	<style name="Theme.Amahi.Fullscreen.ActionBar" parent="@android:style/Widget.Holo.ActionBar">
-		<item name="android:background">@color/background_transparent_primary</item>
-		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
-	</style>
-
 	<style name="Theme.Amahi.Authentication" parent="@style/Theme.Amahi">
 		<item name="android:windowNoTitle">true</item>
 	</style>
-
 </resources>

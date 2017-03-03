@@ -27,9 +27,11 @@ import org.amahi.anywhere.server.model.ServerFile;
 import java.util.Collections;
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.HttpException;
+import retrofit2.Response;
+
 
 /**
  * Files response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
@@ -44,20 +46,25 @@ public class ServerFilesResponse implements Callback<List<ServerFile>>
 	}
 
 	@Override
-	public void success(List<ServerFile> serverFiles, Response response) {
-		if (serverFiles == null) {
-			serverFiles = Collections.emptyList();
-		}
+	public void onResponse(Call<List<ServerFile>> call, Response<List<ServerFile>> response) {
+		if (response.isSuccessful()) {
+			List<ServerFile> serverFiles = response.body();
+			if (serverFiles == null) {
+				serverFiles = Collections.emptyList();
+			}
 
-		for (ServerFile serverFile : serverFiles) {
-			serverFile.setParentFile(serverDirectory);
-		}
+			for (ServerFile serverFile : serverFiles) {
+				serverFile.setParentFile(serverDirectory);
+			}
 
-		BusProvider.getBus().post(new ServerFilesLoadedEvent(serverFiles));
+			BusProvider.getBus().post(new ServerFilesLoadedEvent(serverFiles));
+		}
+		else
+			this.onFailure(call, new HttpException(response));
 	}
 
 	@Override
-	public void failure(RetrofitError error) {
+	public void onFailure(Call<List<ServerFile>> call, Throwable t) {
 		BusProvider.getBus().post(new ServerFilesLoadFailedEvent());
 	}
 }

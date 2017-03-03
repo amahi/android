@@ -26,10 +26,10 @@ import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Query;
 
 /**
  * Server API declaration.
@@ -37,25 +37,22 @@ import retrofit.http.Query;
 public interface ServerApi
 {
 	@GET("/shares")
-	public void getShares(
-		@Header("Session") String session,
-		Callback<List<ServerShare>> callback);
+	Call<List<ServerShare>> getShares(
+		@Header("Session") String session);
 
 	@GET("/files")
-	public void getFiles(
+	Call<List<ServerFile>> getFiles(
 		@Header("Session") String session,
 		@Query("s") String share,
-		@Query("p") String path,
-		Callback<List<ServerFile>> callback);
+		@Query("p") String path);
 
 	@GET("/md")
-	public ServerFileMetadata getFileMetadata(
+	Call<ServerFileMetadata> getFileMetadata(
 		@Header("Session") String session,
 		@Query("f") String fileName,
 		@Query("h") String hint);
 
 	@GET("/apps")
-	public void getApps(
-		@Header("Session") String session,
-		Callback<List<ServerApp>> callback);
+	Call<List<ServerApp>> getApps(
+		@Header("Session") String session);
 }

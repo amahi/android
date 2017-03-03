@@ -24,12 +24,13 @@ import org.amahi.anywhere.server.model.Server;
 
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.http.Field;
-import retrofit.http.FormUrlEncoded;
-import retrofit.http.GET;
-import retrofit.http.POST;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
+
 
 /**
  * Amahi API declaration.
@@ -38,15 +39,13 @@ public interface AmahiApi
 {
 	@FormUrlEncoded
 	@POST("/api2/oauth/token?grant_type=password")
-	public void authenticate(
+	Call<Authentication> authenticate(
 		@Field("client_id") String clientId,
 		@Field("client_secret") String clientSecret,
 		@Field("username") String username,
-		@Field("password") String password,
-		Callback<Authentication> callback);
+		@Field("password") String password);
 
 	@GET("/api2/servers")
-	public void getServers(
-		@Query("access_token") String authenticationToken,
-		Callback<List<Server>> callback);
+	Call<List<Server>> getServers(
+		@Query("access_token") String authenticationToken);
 }

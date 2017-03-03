@@ -24,8 +24,6 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jakewharton.byteunits.BinaryByteUnit;
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.OkHttpClient;
 
 import org.amahi.anywhere.util.Time;
 
@@ -36,12 +34,11 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit.RestAdapter.Log;
-import retrofit.RestAdapter.LogLevel;
-import retrofit.client.Client;
-import retrofit.client.OkClient;
-import retrofit.converter.Converter;
-import retrofit.converter.GsonConverter;
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Converter;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * API dependency injection module. Provides resources such as HTTP client and JSON converter
@@ -55,31 +52,20 @@ public class ApiModule
 {
 	@Provides
 	@Singleton
-	Client provideClient(OkHttpClient httpClient) {
-		return new OkClient(httpClient);
-	}
-
-	@Provides
-	@Singleton
-	OkHttpClient provideHttpClient(Cache httpCache) {
-		OkHttpClient httpClient =  new OkHttpClient();
-
-		httpClient.setCache(httpCache);
-
-		return httpClient;
+	OkHttpClient provideHttpClient(Cache httpCache, ApiHeaders headers, HttpLoggingInterceptor logging) {
+		OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+		clientBuilder.addInterceptor(headers);
+		clientBuilder.addInterceptor(logging);
+		clientBuilder.cache(httpCache);
+		return clientBuilder.build();
 	}
 
 	@Provides
 	@Singleton
 	Cache provideHttpCache(Context context) {
-		try {
-			File cacheDirectory = new File(context.getCacheDir(), "http-cache");
-			long cacheSize = BinaryByteUnit.MEBIBYTES.toBytes(10);
-
-			return new Cache(cacheDirectory, cacheSize);
-		} catch (IOException e) {
-			return null;
-		}
+		File cacheDirectory = new File(context.getCacheDir(), "http-cache");
+		long cacheSize = BinaryByteUnit.MEBIBYTES.toBytes(10);
+		return new Cache(cacheDirectory, cacheSize);
 	}
 
 	@Provides
@@ -90,8 +76,8 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	Converter provideJsonConverter(Gson json) {
-		return new GsonConverter(json);
+	Converter.Factory provideJsonConverterFactory(Gson json) {
+		return GsonConverterFactory.create(json);
 	}
 
 	@Provides
@@ -102,13 +88,7 @@ public class ApiModule
 
 	@Provides
 	@Singleton
-	Log provideLog() {
-		return new ApiLog();
-	}
-
-	@Provides
-	@Singleton
-	LogLevel provideLogLevel() {
-		return LogLevel.HEADERS;
+	HttpLoggingInterceptor provideLogging() {
+		return new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
 	}
 }

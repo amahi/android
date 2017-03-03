@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:2.2.3"
+        classpath 'com.android.tools.build:gradle:2.3.0'
         classpath 'io.fabric.tools:gradle:1.22.1'
     }
 }
@@ -89,23 +89,22 @@ dependencies {
         maven { url 'https://maven.fabric.io/public' }
     }
 
-    compile "com.android.support:support-v4:25.2.0"
-    compile "com.android.support:support-v13:25.2.0"
-    compile "com.github.dmytrodanylyk.android-process-button:library:1.0.3"
-    compile "com.squareup.dagger:dagger:1.2.2"
-    compile "com.squareup.okhttp:okhttp:2.2.0"
-    compile "com.squareup.okhttp:okhttp-urlconnection:2.2.0"
-    compile "com.jakewharton.byteunits:byteunits:0.9.0"
-    compile "com.jakewharton.timber:timber:2.5.1"
-    compile "com.squareup:otto:1.3.6"
-    compile "com.squareup.picasso:picasso:2.5.0"
-    compile "com.squareup.retrofit:retrofit:1.9.0"
+    compile "com.android.support:support-v4:25.1.1"
+    compile "com.android.support:support-v13:25.1.1"
+    compile "com.github.dmytrodanylyk.android-process-button:library:1.0.4"
+    compile "com.jakewharton.byteunits:byteunits:0.9.1"
+    compile "com.jakewharton.timber:timber:4.5.1"
+    compile "com.squareup.dagger:dagger:1.2.5"
+    compile "com.squareup:otto:1.3.8"
+    compile "com.squareup.picasso:picasso:2.5.2"
+    compile "com.squareup.retrofit2:retrofit:2.2.0"
+    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
     compile "org.videolan:libvlc:1.0.0"
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }
-
-    provided "com.squareup.dagger:dagger-compiler:1.2.2"
+    provided "com.squareup.dagger:dagger-compiler:1.2.5"
 }
 
 task generateWrapper(type: Wrapper) {

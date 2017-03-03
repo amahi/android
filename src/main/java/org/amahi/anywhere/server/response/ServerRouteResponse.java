@@ -24,9 +24,10 @@ import org.amahi.anywhere.bus.ServerConnectionFailedEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.model.ServerRoute;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.HttpException;
+import retrofit2.Response;
 
 /**
  * Server route response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
@@ -34,13 +35,16 @@ import retrofit.client.Response;
  */
 public class ServerRouteResponse implements Callback<ServerRoute>
 {
-	@Override
-	public void success(ServerRoute serverRoute, Response response) {
-		BusProvider.getBus().post(new ServerRouteLoadedEvent(serverRoute));
-	}
+    @Override
+    public void onResponse(Call<ServerRoute> call, Response<ServerRoute> response) {
+        if (response.isSuccessful())
+            BusProvider.getBus().post(new ServerRouteLoadedEvent(response.body()));
+        else
+            this.onFailure(call, new HttpException(response));
+    }
 
-	@Override
-	public void failure(RetrofitError error) {
-		BusProvider.getBus().post(new ServerConnectionFailedEvent());
-	}
+    @Override
+    public void onFailure(Call<ServerRoute> call, Throwable t) {
+        BusProvider.getBus().post(new ServerConnectionFailedEvent());
+    }
 }

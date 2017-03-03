@@ -25,9 +25,12 @@ import org.amahi.anywhere.bus.AuthenticationSucceedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.server.model.Authentication;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.HttpException;
+import retrofit2.Response;
 
 /**
  * Authentication response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
@@ -36,13 +39,16 @@ import retrofit.client.Response;
 public class AuthenticationResponse implements Callback<Authentication>
 {
 	@Override
-	public void success(Authentication authentication, Response response) {
-		BusProvider.getBus().post(new AuthenticationSucceedEvent(authentication));
+	public void onResponse(Call<Authentication> call, Response<Authentication> response) {
+		if (response.isSuccessful())
+			BusProvider.getBus().post(new AuthenticationSucceedEvent(response.body()));
+		else
+			this.onFailure(call, new HttpException(response));
 	}
 
 	@Override
-	public void failure(RetrofitError error) {
-		if (error.isNetworkError()) {
+	public void onFailure(Call<Authentication> call, Throwable t) {
+		if (t instanceof IOException) { //implies no network connection
 			BusProvider.getBus().post(new AuthenticationConnectionFailedEvent());
 		} else {
 			BusProvider.getBus().post(new AuthenticationFailedEvent());

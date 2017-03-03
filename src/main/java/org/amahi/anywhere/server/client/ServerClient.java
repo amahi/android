@@ -45,10 +45,12 @@ import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import retrofit.RetrofitError;
+
 
 /**
  * Server API implementation. Wraps {@link org.amahi.anywhere.server.api.ProxyApi} and
@@ -151,7 +153,7 @@ public class ServerClient
 	}
 
 	private void startServerConnection() {
-		proxyApi.getServerRoute(server.getSession(), new ServerRouteResponse());
+		proxyApi.getServerRoute(server.getSession()).enqueue(new ServerRouteResponse());
 	}
 
 	@Subscribe
@@ -196,7 +198,7 @@ public class ServerClient
 	}
 
 	public void getShares() {
-		serverApi.getShares(server.getSession(), new ServerSharesResponse());
+		serverApi.getShares(server.getSession()).enqueue(new ServerSharesResponse());
 	}
 
 	public void getFiles(ServerShare share) {
@@ -204,11 +206,11 @@ public class ServerClient
 			return;
 		}
 
-		serverApi.getFiles(server.getSession(), share.getName(), null, new ServerFilesResponse(null));
+		serverApi.getFiles(server.getSession(), share.getName(), null).enqueue(new ServerFilesResponse(null));
 	}
 
 	public void getFiles(ServerShare share, ServerFile directory) {
-		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath(), new ServerFilesResponse(directory));
+		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory));
 	}
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {
@@ -227,13 +229,14 @@ public class ServerClient
         }
 
 		try {
-			return serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag());
-		} catch (RetrofitError error) {
+			return serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag()).execute().body();
+		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
 
 	public void getApps() {
-		serverApi.getApps(server.getSession(), new ServerAppsResponse());
+		serverApi.getApps(server.getSession()).enqueue(new ServerAppsResponse());
 	}
 }

@@ -46,10 +46,10 @@ public class AmahiClient
 	}
 
 	public void authenticate(String username, String password) {
-		api.authenticate(Api.getClientId(), Api.getClientSecret(), username, password, new AuthenticationResponse());
+		api.authenticate(Api.getClientId(), Api.getClientSecret(), username, password).enqueue(new AuthenticationResponse());
 	}
 
 	public void getServers(String authenticationToken) {
-		api.getServers(authenticationToken, new ServersResponse());
+		api.getServers(authenticationToken).enqueue(new ServersResponse());
 	}
 }

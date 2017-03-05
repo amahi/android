@@ -42,8 +42,9 @@
 		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
 	</style>
 
-	<style name="Theme.Amahi.Authentication" parent="@style/Theme.Amahi">
+	<style name="Theme.Amahi.Authentication" parent="Theme.AppCompat">
 		<item name="android:windowNoTitle">true</item>
+		<item name="android:textColorSecondary">@android:color/background_light</item>
 	</style>
 
 </resources>

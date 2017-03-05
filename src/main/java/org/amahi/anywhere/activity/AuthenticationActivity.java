@@ -25,9 +25,12 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -59,10 +62,24 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_authentication);
-
 		setUpInjections();
-
+		checkBoxToggle();
 		setUpAuthentication();
+	}
+
+	private void checkBoxToggle(){
+		CheckBox showPassword = (CheckBox)findViewById(R.id.check_password);
+		final EditText password = (EditText) findViewById(R.id.edit_password);
+		showPassword.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(!isChecked) {
+					password.setInputType(129);
+				} else {
+					password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+				}
+			}
+		});
 	}
 
 	private void setUpInjections() {

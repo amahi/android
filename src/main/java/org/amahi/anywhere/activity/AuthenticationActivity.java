@@ -70,17 +70,8 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private void setUpAuthentication() {
-		setUpAuthenticationAction();
 		setUpAuthenticationMessages();
 		setUpAuthenticationListeners();
-	}
-
-	private void setUpAuthenticationAction() {
-		if (getUsername().isEmpty() || getPassword().isEmpty()) {
-			getAuthenticationButton().setEnabled(false);
-		} else {
-			getAuthenticationButton().setEnabled(true);
-		}
 	}
 
 	private String getUsername() {
@@ -123,8 +114,6 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
 	@Override
 	public void onTextChanged(CharSequence text, int after, int before, int count) {
-		setUpAuthenticationAction();
-
 		hideAuthenticationFailureMessage();
 	}
 
@@ -146,9 +135,14 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
 	@Override
 	public void onClick(View view) {
-		startAuthentication();
+		if(getUsername().trim().isEmpty() || getPassword().trim().isEmpty()){
+			ViewDirector.of(this,R.id.animator_message).show(R.id.text_message_authentication_empty);
+		}
+		else {
+			startAuthentication();
 
-		authenticate();
+			authenticate();
+		}
 	}
 
 	private void startAuthentication() {

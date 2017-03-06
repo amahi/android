@@ -2,6 +2,7 @@ buildscript {
     repositories {
         jcenter()
         maven { url 'https://maven.fabric.io/public' }
+        maven { url  'http://dl.bintray.com/megabitdragon/maven' }
     }
 
     dependencies {
@@ -100,7 +101,7 @@ dependencies {
     compile "com.squareup.retrofit2:retrofit:2.2.0"
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-    compile "org.videolan:libvlc:1.0.0"
+    compile "org.videolan:libvlc:2.1.1"
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }

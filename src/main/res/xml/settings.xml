@@ -53,6 +53,10 @@
 			android:key="@string/preference_key_about_rating"
 			android:title="@string/preference_title_about_rating"/>
 
+		<Preference
+			android:key="@string/preference_key_tell_a_friend"
+			android:title="@string/preference_title_tell_a_friend"/>
+
 	</PreferenceCategory>
 
 </PreferenceScreen>

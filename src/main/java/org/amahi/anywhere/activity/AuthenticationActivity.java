@@ -23,6 +23,7 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -137,6 +138,52 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	public void onClick(View view) {
 		if(getUsername().trim().isEmpty() || getPassword().trim().isEmpty()){
 			ViewDirector.of(this,R.id.animator_message).show(R.id.text_message_authentication_empty);
+
+			if(getUsername().trim().isEmpty())
+				getUsernameEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+			if(getPassword().trim().isEmpty())
+				getPasswordEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+
+			getUsernameEdit().addTextChangedListener(new TextWatcher() {
+				@Override
+				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+				}
+
+				@Override
+				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+					if(!getUsername().trim().isEmpty())
+						getUsernameEdit().getBackground().setColorFilter(getResources().getColor(R.color.blue_normal),PorterDuff.Mode.SRC_ATOP);
+					else
+						getUsernameEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+				}
+
+				@Override
+				public void afterTextChanged(Editable editable) {
+
+				}
+			});
+
+			getPasswordEdit().addTextChangedListener(new TextWatcher() {
+				@Override
+				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+				}
+
+				@Override
+				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+					if(!getPassword().trim().isEmpty())
+						getPasswordEdit().getBackground().setColorFilter(getResources().getColor(R.color.blue_normal),PorterDuff.Mode.SRC_ATOP);
+					else
+						getPasswordEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+				}
+
+				@Override
+				public void afterTextChanged(Editable editable) {
+
+				}
+			});
+
 		}
 		else {
 			startAuthentication();

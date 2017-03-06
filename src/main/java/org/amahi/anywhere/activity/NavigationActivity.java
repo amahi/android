@@ -123,12 +123,7 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	}
 
 	private ActionBarDrawerToggle buildNavigationDrawerToggle() {
-		return new ActionBarDrawerToggle(
-			this,
-			getDrawer(),
-	        R.drawable.ic_ic_ham_menu,
-			R.string.menu_navigation_open,
-			R.string.menu_navigation_close);
+		return new ActionBarDrawerToggle(this,getDrawer(), R.drawable.ic_ic_ham_menu,R.string.menu_navigation_open,R.string.menu_navigation_close);
 	}
 
 	private DrawerLayout getDrawer() {

@@ -221,7 +221,7 @@ public class ServerClient
 			.appendQueryParameter("s", share.getName())
 			.appendQueryParameter("p", file.getPath())
 			.appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
-			.appendQueryParameter("Session", server.getSession())
+			.appendQueryParameter("session", server.getSession())
 			.build();
 	}
 

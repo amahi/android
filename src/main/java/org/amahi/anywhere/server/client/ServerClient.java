@@ -44,6 +44,7 @@ import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
+import org.amahi.anywhere.util.Time;
 
 import java.io.IOException;
 
@@ -219,6 +220,7 @@ public class ServerClient
 			.path("files")
 			.appendQueryParameter("s", share.getName())
 			.appendQueryParameter("p", file.getPath())
+			.appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
 			.appendQueryParameter("Session", server.getSession())
 			.build();
 	}

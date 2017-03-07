@@ -38,10 +38,11 @@
 
 		<TextView
 			android:id="@+id/text"
-			android:singleLine="true"
+			android:maxLines="1"
 			android:textSize="@dimen/text_medium"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
+			android:layout_height="wrap_content"
+			android:ellipsize="end"/>
 
 	</LinearLayout>
 

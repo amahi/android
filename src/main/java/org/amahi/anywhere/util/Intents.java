@@ -34,6 +34,7 @@ import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.activity.SettingsActivity;
+import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -168,10 +169,8 @@ public final class Intents
 			return new Intent(context, SettingsActivity.class);
 		}
 
-		public Intent buildVersionIntent() {
-			String versionUri = "https://www.amahi.org/android";
-
-			return new Intent(Intent.ACTION_VIEW, Uri.parse(versionUri));
+		public Intent buildVersionIntent(Context context) {
+			return new Intent(context, WebViewActivity.class);
 		}
 
 		public Intent buildFeedbackIntent() {

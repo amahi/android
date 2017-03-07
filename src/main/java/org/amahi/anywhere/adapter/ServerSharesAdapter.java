@@ -53,7 +53,7 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
 
 	@Override
 	public ServerShareViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		return new ServerShareViewHolder(layoutInflater.inflate(R.layout.view_server_share_item, parent, false));
+		return new ServerShareViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_share_item, parent, false));
 	}
 
 	@Override
@@ -72,11 +72,7 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
 		return shares.size();
 	}
 
-	private final LayoutInflater layoutInflater;
-
 	public ServerSharesAdapter(Context context) {
-		this.layoutInflater = LayoutInflater.from(context);
-
 		this.shares = Collections.emptyList();
 	}
 

@@ -170,8 +170,8 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	private void sharedIntent(){
 		Intent sendIntent = new Intent();
 		sendIntent.setAction(Intent.ACTION_SEND);
-		sendIntent.putExtra(Intent.EXTRA_TEXT, "Amahi for your android. " +
-				"Download it from Play Store.\n"+"http://play.google.com/store/apps/details?id=" + getActivity().getPackageName());
+		sendIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.share_subject));
+		sendIntent.putExtra(Intent.EXTRA_TEXT,getString(R.string.share_message));
 		sendIntent.setType("text/plain");
 		startActivity(sendIntent);
 	}

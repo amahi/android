@@ -29,19 +29,24 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 
 import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static org.amahi.anywhere.util.Fragments.Builder.buildSettingsFragment;
 
 /**
  * Settings fragment. Shows application's settings.
@@ -177,7 +182,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void setUpApplicationVersion() {
-		Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent();
+		Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent(getActivity());
 		startActivity(intent);
 	}
 

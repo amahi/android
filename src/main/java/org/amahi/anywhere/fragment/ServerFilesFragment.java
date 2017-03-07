@@ -199,31 +199,31 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		return true;
 	}
 	@RequiresApi(api = Build.VERSION_CODES.M)
-		private void checkPermissions(){
-			int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-			if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {
-					// User may have declined earlier, ask Android if we should show him a reason
-							if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-										} else {
-											requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CALLBACK_NUMBER);
-								}
-				} else {
-					startFileSharing(getCheckedFile());
-				}
+	private void checkPermissions(){
+	int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+	
+	if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {					
+		if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+		} else {
+		requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CALLBACK_NUMBER);
 		}
+	} else {
+		startFileSharing(getCheckedFile());
+		}
+	}
 
-				@Override
-		public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-			switch (requestCode) {
-					case 100: {
-						if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-							Toast.makeText(getActivity().getApplicationContext(),"Storage permission has been enabled please reshare to download",Toast.LENGTH_LONG).show();
-						} else {
-							Toast.makeText(getActivity().getApplicationContext(),"You have denied the permission please enable permission in settings for media access",Toast.LENGTH_LONG).show();
-						}
-					}
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+	switch (requestCode) {
+		case 100: {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Toast.makeText(getActivity().getApplicationContext(),"Storage permission has been enabled please reshare to download",Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(getActivity().getApplicationContext(),"You have denied the permission please enable permission in settings for media access",Toast.LENGTH_LONG).show();
 			}
+		   }
 		}
+	}
 
 	private void startFileSharing(ServerFile file) {
 		BusProvider.getBus().post(new ServerFileSharingEvent(getShare(), file));

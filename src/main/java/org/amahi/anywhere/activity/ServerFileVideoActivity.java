@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -35,15 +36,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.MediaController;
 
-import com.squareup.otto.Subscribe;
-
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.VideoFinishedEvent;
-import org.amahi.anywhere.bus.VideoSizeChangedEvent;
-import org.amahi.anywhere.bus.VideoStartedEvent;
-import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
@@ -51,13 +45,10 @@ import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.ViewDirector;
 import org.amahi.anywhere.view.MediaControls;
+import org.videolan.libvlc.IVLCVout;
+import org.videolan.libvlc.MediaPlayer;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
 
 /**
  * Video activity. Shows videos, supports basic operations such as pausing, resuming, scrolling.
@@ -65,13 +56,12 @@ import javax.inject.Inject;
  * Backed up by {@link android.view.SurfaceView} and {@link org.videolan.libvlc.LibVLC}.
  */
 public class ServerFileVideoActivity extends Activity implements ServiceConnection,
-	SurfaceHolder.Callback,
 	Runnable,
 	MediaController.MediaPlayerControl,
-	View.OnSystemUiVisibilityChangeListener
-{
-	@Inject
-	ServerClient serverClient;
+	View.OnSystemUiVisibilityChangeListener,
+	IVLCVout.Callback,
+	IVLCVout.OnNewVideoLayoutListener,
+	MediaPlayer.EventListener {
 
 	private VideoService videoService;
 	private MediaControls videoControls;
@@ -115,6 +105,7 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 		setUpSystemControlsListener();
 
 		showSystemControls();
+		showControls();
 	}
 
 	private void setUpSystemControlsListener() {
@@ -144,10 +135,12 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	}
 
 	private void showSystemControls() {
-		getActivityView().setSystemUiVisibility(
-			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			getActivityView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+		}
 	}
 
 	private void showVideoControls() {
@@ -181,13 +174,19 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	}
 
 	private void hideSystemControls() {
-		getActivityView().setSystemUiVisibility(
-			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-			View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-			View.SYSTEM_UI_FLAG_FULLSCREEN |
-			View.SYSTEM_UI_FLAG_LOW_PROFILE |
-			View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			getActivityView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                View.SYSTEM_UI_FLAG_FULLSCREEN |
+                View.SYSTEM_UI_FLAG_LOW_PROFILE |
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+		} else {
+			getActivityView().setSystemUiVisibility(
+				View.SYSTEM_UI_FLAG_LOW_PROFILE |
+				View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+		}
 	}
 
 	private void hideVideoControls() {
@@ -237,7 +236,11 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 		surfaceHolder.setFormat(PixelFormat.RGBX_8888);
 		surfaceHolder.setKeepScreenOn(true);
 
-		surfaceHolder.addCallback(this);
+		final IVLCVout vout = videoService.getMediaPlayer().getVLCVout();
+		vout.setVideoView(getSurface());
+		vout.addCallback(this);
+		vout.attachViews(this);
+		videoService.getMediaPlayer().setEventListener(this);
 	}
 
 	private SurfaceView getSurface() {
@@ -245,17 +248,11 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	}
 
 	@Override
-	public void surfaceCreated(SurfaceHolder surfaceHolder) {
+	public void onSurfacesCreated(IVLCVout ivlcVout) {
 	}
 
 	@Override
-	public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
-		videoService.getVideoPlayer().attachSurface(surfaceHolder.getSurface(), videoService);
-	}
-
-	@Override
-	public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-		videoService.getVideoPlayer().detachSurface();
+	public void onSurfacesDestroyed(IVLCVout ivlcVout) {
 	}
 
 	private void setUpVideoControls() {
@@ -290,14 +287,6 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
-	@Subscribe
-	public void onVideoStarted(VideoStartedEvent event) {
-		start();
-
-		showVideo();
-		showControls();
-	}
-
 	@Override
 	public void start() {
 		videoService.playVideo();
@@ -325,17 +314,17 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 
 	@Override
 	public void seekTo(int time) {
-		videoService.getVideoPlayer().setTime(time);
+		videoService.getMediaPlayer().setTime(time);
 	}
 
 	@Override
 	public int getDuration() {
-		return (int) videoService.getVideoPlayer().getLength();
+		return (int) videoService.getMediaPlayer().getLength();
 	}
 
 	@Override
 	public int getCurrentPosition() {
-		return (int) videoService.getVideoPlayer().getTime();
+		return (int) videoService.getMediaPlayer().getTime();
 	}
 
 	@Override
@@ -353,48 +342,63 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 		return 0;
 	}
 
-	@Subscribe
-	public void onVideoFinished(VideoFinishedEvent event) {
-		finish();
+	@Override
+	public void onEvent(MediaPlayer.Event event) {
+
+		switch(event.type) {
+			case MediaPlayer.Event.MediaChanged:
+				showVideo();
+				showControls();
+				break;
+			case MediaPlayer.Event.EndReached:
+				finish();
+				break;
+			default:
+				break;
+		}
+
 	}
 
-	@Subscribe
-	public void onVideoSizeChanged(VideoSizeChangedEvent event) {
-		changeSurfaceSize(event.getVideoWidth(), event.getVideoHeight());
+	@Override
+	public void onNewVideoLayout(IVLCVout vout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
+		changeSurfaceSize(width, height);
 	}
 
 	private void changeSurfaceSize(int videoWidth, int videoHeight) {
-		if ((videoWidth == 0) && (videoHeight == 0)) {
-			return;
-		}
-
 		SurfaceView surface = getSurface();
 
-		surface.getHolder().setFixedSize(videoWidth, videoHeight);
+		ViewGroup.LayoutParams params = getSurfaceLayoutParams(videoWidth, videoHeight);
+		surface.getHolder().setFixedSize(params.width, params.height);
 
-		surface.setLayoutParams(getSurfaceLayoutParams(videoWidth, videoHeight));
+		surface.setLayoutParams(params);
 		surface.invalidate();
 	}
 
 	private ViewGroup.LayoutParams getSurfaceLayoutParams(int videoWidth, int videoHeight) {
-		int screenWidth = Android.getDeviceScreenWidth(this);
-		int screenHeight = Android.getDeviceScreenHeight(this);
-
-		float screenAspectRatio = (float) screenWidth / (float) screenHeight;
-		float videoAspectRatio = (float) videoWidth / (float) videoHeight;
-
-		if (screenAspectRatio < videoAspectRatio) {
-			screenHeight = (int) (screenWidth / videoAspectRatio);
+		ViewGroup.LayoutParams surfaceLayoutParams = getSurface().getLayoutParams();
+		if (videoHeight * videoWidth == 0) {
+			surfaceLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+			surfaceLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+			return surfaceLayoutParams;
 		} else {
-			screenWidth = (int) (screenHeight * videoAspectRatio);
+			int screenWidth = Android.getDeviceScreenWidth(this);
+			int screenHeight = Android.getDeviceScreenHeight(this);
+
+			float screenAspectRatio = (float) screenWidth / (float) screenHeight;
+			float videoAspectRatio = (float) videoWidth / (float) videoHeight;
+
+			if (screenAspectRatio < videoAspectRatio) {
+				screenHeight = (int) (screenWidth / videoAspectRatio);
+			} else {
+				screenWidth = (int) (screenHeight * videoAspectRatio);
+			}
+
+			surfaceLayoutParams.width = screenWidth;
+			surfaceLayoutParams.height = screenHeight;
+
+			return surfaceLayoutParams;
 		}
 
-		ViewGroup.LayoutParams surfaceLayoutParams = getSurface().getLayoutParams();
-
-		surfaceLayoutParams.width = screenWidth;
-		surfaceLayoutParams.height = screenHeight;
-
-		return surfaceLayoutParams;
 	}
 
 	@Override
@@ -414,8 +418,6 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 		super.onResume();
 
 		showControlsForced();
-
-		BusProvider.getBus().register(this);
 	}
 
 	private void showControlsForced() {
@@ -446,8 +448,6 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 		if (isFinishing()) {
 			tearDownVideoPlayback();
 		}
-
-		BusProvider.getBus().unregister(this);
 	}
 
 	private void tearDownVideoControlsHandler() {
@@ -457,7 +457,7 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	}
 
 	private void tearDownVideoPlayback() {
-		videoService.getVideoPlayer().stop();
+		videoService.getMediaPlayer().stop();
 	}
 
 	@Override

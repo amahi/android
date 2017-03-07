@@ -82,8 +82,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		public static final String FILES = "files";
 		public static final String FILES_SORT = "files_sort";
 	}
+
 	private static final int CALLBACK_NUMBER = 100;
 	private static enum FilesSort
+
+	private enum FilesSort
 	{
 		NAME, MODIFICATION_TIME
 	}
@@ -259,7 +262,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void setUpFilesAdapter() {
 		if (!isMetadataAvailable()) {
-			setListAdapter(new ServerFilesAdapter(getActivity()));
+			setListAdapter(new ServerFilesAdapter(getActivity(), serverClient));
 		} else {
 			setListAdapter(new ServerFilesMetadataAdapter(getActivity(), serverClient));
 		}
@@ -293,7 +296,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void setUpFilesContent(List<ServerFile> files) {
 		if (!isMetadataAvailable()) {
-			getFilesAdapter().replaceWith(files);
+			getFilesAdapter().replaceWith(getShare(), files);
 		} else {
 			getFilesMetadataAdapter().replaceWith(getShare(), getMetadataFiles(files));
 		}
@@ -516,7 +519,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void setUpFilesContentSort() {
 		if (!isMetadataAvailable()) {
-			getFilesAdapter().replaceWith(sortFiles(getFiles()));
+			getFilesAdapter().replaceWith(getShare(), sortFiles(getFiles()));
 		} else {
 			getFilesMetadataAdapter().replaceWith(getShare(), sortFiles(getFiles()));
 		}

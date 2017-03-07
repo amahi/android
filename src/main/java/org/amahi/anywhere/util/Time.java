@@ -19,6 +19,8 @@
 
 package org.amahi.anywhere.util;
 
+import java.util.Date;
+
 /**
  * Time formats accessor.
  */
@@ -33,5 +35,9 @@ public class Time
 	}
 
 	private Time() {
+	}
+
+	public static String getEpochTimeString(Date date) {
+		return String.valueOf(date.getTime());
 	}
 }

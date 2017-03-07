@@ -52,20 +52,11 @@ public class ApiModule
 {
 	@Provides
 	@Singleton
-	OkHttpClient provideHttpClient(Cache httpCache, ApiHeaders headers, HttpLoggingInterceptor logging) {
+	OkHttpClient provideHttpClient(ApiHeaders headers, HttpLoggingInterceptor logging) {
 		OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
 		clientBuilder.addInterceptor(headers);
 		clientBuilder.addInterceptor(logging);
-		clientBuilder.cache(httpCache);
 		return clientBuilder.build();
-	}
-
-	@Provides
-	@Singleton
-	Cache provideHttpCache(Context context) {
-		File cacheDirectory = new File(context.getCacheDir(), "http-cache");
-		long cacheSize = BinaryByteUnit.MEBIBYTES.toBytes(10);
-		return new Cache(cacheDirectory, cacheSize);
 	}
 
 	@Provides

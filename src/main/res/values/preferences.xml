@@ -29,6 +29,7 @@
 	<string name="preference_title_about_version">Version</string>
 	<string name="preference_title_account_sign_out">Sign out</string>
 	<string name="preference_title_server_connection">Connection</string>
+	<string name="preference_title_tell_a_friend">Tell a friend</string>
 
 	<string name="preference_entry_server_connection_auto">Autodetect</string>
 	<string name="preference_entry_server_connection_remote">Remote</string>
@@ -42,6 +43,7 @@
 	<string name="preference_key_server_connection_auto" translatable="false">auto</string>
 	<string name="preference_key_server_connection_remote" translatable="false">remote</string>
 	<string name="preference_key_server_connection_local" translatable="false">local</string>
+	<string name="preference_key_tell_a_friend" translatable="false">tell_a_friend</string>
 
 	<string-array translatable="false" name="preference_entries_server_connection">
 		<item>@string/preference_entry_server_connection_auto</item>

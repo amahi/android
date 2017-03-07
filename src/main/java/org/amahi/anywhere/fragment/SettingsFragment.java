@@ -106,11 +106,13 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		Preference applicationVersion = getPreference(R.string.preference_key_about_version);
 		Preference applicationFeedback = getPreference(R.string.preference_key_about_feedback);
 		Preference applicationRating = getPreference(R.string.preference_key_about_rating);
+		Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
 
 		accountSignOut.setOnPreferenceClickListener(this);
 		applicationVersion.setOnPreferenceClickListener(this);
 		applicationFeedback.setOnPreferenceClickListener(this);
 		applicationRating.setOnPreferenceClickListener(this);
+		shareApp.setOnPreferenceClickListener(this);
 	}
 
 	@Override
@@ -129,6 +131,10 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 		if (preference.getKey().equals(getString(R.string.preference_key_about_rating))) {
 			setUpApplicationRating();
+		}
+
+		if (preference.getKey().equals(getString(R.string.preference_key_tell_a_friend))){
+			sharedIntent();
 		}
 
 		return true;
@@ -159,6 +165,15 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	private void tearDownActivity() {
 		getActivity().finish();
+	}
+
+	private void sharedIntent(){
+		Intent sendIntent = new Intent();
+		sendIntent.setAction(Intent.ACTION_SEND);
+		sendIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.share_subject));
+		sendIntent.putExtra(Intent.EXTRA_TEXT,getString(R.string.share_message));
+		sendIntent.setType("text/plain");
+		startActivity(sendIntent);
 	}
 
 	private void setUpApplicationVersion() {

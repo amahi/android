@@ -55,4 +55,6 @@
 
 	<string name="message_progress_file_downloading">Downloading file...</string>
 
+	<string name="share_subject">Check out my Amahi home server.</string>
+	<string name="share_message">I am using Amahi home server for storing, backing up and streaming all my files. Check it out!\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
 </resources>

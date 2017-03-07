@@ -25,10 +25,14 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -60,10 +64,16 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_authentication);
-
+		textInputLayout();
 		setUpInjections();
-
 		setUpAuthentication();
+	}
+
+	private void textInputLayout() {
+		final TextInputLayout usernameWrapper = (TextInputLayout) findViewById(R.id.usernameWrapper);
+		final TextInputLayout passwordWrapper = (TextInputLayout) findViewById(R.id.passwordWrapper);
+		usernameWrapper.setHint("Username");
+		passwordWrapper.setHint("Password");
 	}
 
 	private void setUpInjections() {

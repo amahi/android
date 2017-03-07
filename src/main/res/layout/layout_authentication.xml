@@ -19,12 +19,13 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_gravity="center"
-	android:paddingLeft="32dp"
-	android:paddingRight="32dp"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:paddingLeft="32dp"
+    android:paddingRight="32dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
 	<ImageView
 		android:src="@drawable/ic_banner"
@@ -37,6 +38,11 @@
 		android:layout_width="match_parent"
 		android:layout_height="8dp"/>
 
+	<android.support.design.widget.TextInputLayout
+		android:id="@+id/usernameWrapper"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
 	<EditText
 		android:id="@+id/edit_username"
 		android:hint="@string/hint_username"
@@ -44,17 +50,27 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"/>
 
+    </android.support.design.widget.TextInputLayout>
+
 	<Space
 		android:layout_width="match_parent"
 		android:layout_height="8dp"/>
 
-	<EditText
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/passwordWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:passwordToggleEnabled="true">
+    <EditText
 		android:id="@+id/edit_password"
 		android:hint="@string/hint_password"
 		android:inputType="textPassword"
 		android:fontFamily="sans-serif"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"/>
+
+    </android.support.design.widget.TextInputLayout>
 
 	<Space
 		android:layout_width="match_parent"

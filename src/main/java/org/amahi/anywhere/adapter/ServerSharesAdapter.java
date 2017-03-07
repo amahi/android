@@ -20,6 +20,7 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.Collections;
@@ -36,11 +39,40 @@ import java.util.List;
  * Shares adapter. Visualizes shares
  * for the {@link org.amahi.anywhere.fragment.ServerSharesFragment}.
  */
-public class ServerSharesAdapter extends BaseAdapter
+public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapter.ServerShareViewHolder>
 {
-	private final LayoutInflater layoutInflater;
-
 	private List<ServerShare> shares;
+
+	class ServerShareViewHolder extends RecyclerView.ViewHolder{
+		TextView textView;
+		ServerShareViewHolder(View itemView) {
+			super(itemView);
+			textView = (TextView)itemView.findViewById(R.id.text);
+		}
+	}
+
+	@Override
+	public ServerShareViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		return new ServerShareViewHolder(layoutInflater.inflate(R.layout.view_server_share_item, parent, false));
+	}
+
+	@Override
+	public void onBindViewHolder(final ServerShareViewHolder holder, int position) {
+		holder.textView.setText(shares.get(position).getName());
+		holder.itemView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				BusProvider.getBus().post(new ShareSelectedEvent(shares.get(holder.getAdapterPosition())));
+			}
+		});
+	}
+
+	@Override
+	public int getItemCount() {
+		return shares.size();
+	}
+
+	private final LayoutInflater layoutInflater;
 
 	public ServerSharesAdapter(Context context) {
 		this.layoutInflater = LayoutInflater.from(context);
@@ -54,16 +86,10 @@ public class ServerSharesAdapter extends BaseAdapter
 		notifyDataSetChanged();
 	}
 
-	@Override
-	public int getCount() {
-		return shares.size();
-	}
-
 	public List<ServerShare> getItems() {
 		return shares;
 	}
 
-	@Override
 	public ServerShare getItem(int position) {
 		return shares.get(position);
 	}
@@ -71,32 +97,5 @@ public class ServerSharesAdapter extends BaseAdapter
 	@Override
 	public long getItemId(int position) {
 		return position;
-	}
-
-	@Override
-	public View getView(int position, View view, ViewGroup container) {
-		ServerShare share = getItem(position);
-
-		if (view == null) {
-			view = newView(container);
-		}
-
-		bindView(share, view);
-
-		return view;
-	}
-
-	private View newView(ViewGroup container) {
-		return layoutInflater.inflate(R.layout.view_server_share_item, container, false);
-	}
-
-	private void bindView(ServerShare share, View view) {
-		TextView shareView = (TextView) view;
-
-		shareView.setText(getShareName(share));
-	}
-
-	private String getShareName(ServerShare share) {
-		return share.getName();
 	}
 }

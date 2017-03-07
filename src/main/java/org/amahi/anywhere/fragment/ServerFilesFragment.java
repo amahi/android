@@ -84,8 +84,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private static final int CALLBACK_NUMBER = 100;
-	private static enum FilesSort
-
+	
 	private enum FilesSort
 	{
 		NAME, MODIFICATION_TIME

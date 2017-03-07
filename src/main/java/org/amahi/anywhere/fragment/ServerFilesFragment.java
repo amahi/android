@@ -20,23 +20,32 @@
 package org.amahi.anywhere.fragment;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ActionMode;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
@@ -65,6 +74,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static android.support.v4.content.PermissionChecker.checkSelfPermission;
+import static android.view.View.GONE;
 
 /**
  * Files fragment. Shows files list.
@@ -84,7 +94,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private static final int CALLBACK_NUMBER = 100;
-	
+
+	private boolean isSearchOpen = false;
+
 	private enum FilesSort
 	{
 		NAME, MODIFICATION_TIME
@@ -94,15 +106,23 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private ActionMode filesActions;
 
+	private EditText editSearch;
+
+	private TextView noText;
+
 	@Inject
 	ServerClient serverClient;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
 		if (!isMetadataAvailable()) {
-			return layoutInflater.inflate(R.layout.fragment_server_files, container, false);
+			View rootView = layoutInflater.inflate(R.layout.fragment_server_files, container, false);
+			noText = (TextView)rootView.findViewById(R.id.none_text);
+			return rootView;
 		} else {
-			return layoutInflater.inflate(R.layout.fragment_server_files_metadata, container, false);
+			View rootView = layoutInflater.inflate(R.layout.fragment_server_files_metadata, container, false);
+			noText = (TextView)rootView.findViewById(R.id.none_text);
+			return rootView;
 		}
 	}
 
@@ -203,8 +223,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	@RequiresApi(api = Build.VERSION_CODES.M)
 	private void checkPermissions(){
 	int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-	
-	if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {					
+
+	if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {
 		if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 		} else {
 		requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CALLBACK_NUMBER);
@@ -285,6 +305,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void setUpFilesState(Bundle state) {
 		List<ServerFile> files = state.getParcelableArrayList(State.FILES);
+
 		FilesSort filesSort = (FilesSort) state.getSerializable(State.FILES_SORT);
 
 		setUpFilesContent(files);
@@ -313,7 +334,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 				metadataFiles.add(file);
 			}
 		}
-
 		return metadataFiles;
 	}
 
@@ -489,9 +509,65 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
+
 			case R.id.menu_sort:
 				setUpFilesContentSortSwitched();
 				setUpFilesContentSortIcon(menuItem);
+				return true;
+
+			case R.id.menu_search:
+				isSearchOpen = true;
+				ActionBar actionBar = (getActivity()).getActionBar();
+				actionBar.setDisplayShowCustomEnabled(true);
+				final List<ServerFile> allFiles = getFiles();
+				actionBar.setCustomView(R.layout.search_bar);
+				actionBar.setDisplayShowTitleEnabled(false);
+				editSearch = (EditText) actionBar.getCustomView().findViewById(R.id.editSearch);
+				editSearch.setHint("Enter name of file");
+				editSearch.addTextChangedListener(new TextWatcher() {
+					@Override
+					public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+						//Intentionally left blank.
+					}
+
+					@Override
+					public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+						//Intentionally left blank.
+					}
+
+					@Override
+					public void afterTextChanged(Editable editable) {
+						List<ServerFile> searchList = new ArrayList<ServerFile>();
+						searchList.clear();
+						for(int i=0;i<allFiles.size();i++){
+							if(allFiles.get(i).getName().toLowerCase().contains(editable.toString().toLowerCase()))
+								searchList.add(allFiles.get(i));
+						}
+						setUpFilesContent(searchList);
+						if(searchList.size()==0)
+							noText.setVisibility(View.VISIBLE);
+						else
+							noText.setVisibility(View.INVISIBLE);
+					}
+				});
+					editSearch.setOnKeyListener(new View.OnKeyListener() {
+					@Override
+					public boolean onKey(View v, int keyCode, KeyEvent event) {
+						if (keyCode == KeyEvent.KEYCODE_BACK) {
+							editSearch.onKeyPreIme(keyCode, event);
+							if (isSearchOpen) {
+								closeSearch();
+								setUpFilesContent(allFiles);
+							}
+							return true;
+						}
+					return false;
+					}
+				});
+
+				editSearch.requestFocus();
+				InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.showSoftInput(editSearch, InputMethodManager.SHOW_IMPLICIT);
 				return true;
 
 			default:
@@ -578,6 +654,18 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		@Override
 		public int compare(ServerFile firstFile, ServerFile secondFile) {
 			return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
+		}
+	}
+
+	public void closeSearch() {
+		if (isSearchOpen) {
+			editSearch.setText("");
+			ActionBar actionBar = (getActivity()).getActionBar();
+			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(editSearch.getWindowToken(), 0);
+			isSearchOpen = false;
+			actionBar.setDisplayShowCustomEnabled(false);
+			actionBar.setDisplayShowTitleEnabled(true);
 		}
 	}
 }

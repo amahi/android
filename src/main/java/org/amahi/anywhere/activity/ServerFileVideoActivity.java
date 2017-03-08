@@ -24,16 +24,19 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.MediaController;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -41,11 +44,11 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
-import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.ViewDirector;
 import org.amahi.anywhere.view.MediaControls;
 import org.videolan.libvlc.IVLCVout;
+import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
 import java.util.concurrent.TimeUnit;
@@ -55,17 +58,40 @@ import java.util.concurrent.TimeUnit;
  * The playback itself is done via {@link org.amahi.anywhere.service.VideoService}.
  * Backed up by {@link android.view.SurfaceView} and {@link org.videolan.libvlc.LibVLC}.
  */
-public class ServerFileVideoActivity extends Activity implements ServiceConnection,
+public class ServerFileVideoActivity extends Activity implements
+	ServiceConnection,
 	Runnable,
 	MediaController.MediaPlayerControl,
 	View.OnSystemUiVisibilityChangeListener,
-	IVLCVout.Callback,
 	IVLCVout.OnNewVideoLayoutListener,
-	MediaPlayer.EventListener {
+	MediaPlayer.EventListener,
+	View.OnLayoutChangeListener {
 
 	private VideoService videoService;
 	private MediaControls videoControls;
 	private Handler videoControlsHandler;
+
+	private int mVideoHeight = 0;
+	private int mVideoWidth = 0;
+	private int mVideoVisibleHeight = 0;
+	private int mVideoVisibleWidth = 0;
+	private int mVideoSarNum = 0;
+	private int mVideoSarDen = 0;
+
+	private enum SurfaceSizes {
+		SURFACE_BEST_FIT,
+		SURFACE_FIT_SCREEN,
+		SURFACE_FILL,
+		SURFACE_16_9,
+		SURFACE_4_3,
+		SURFACE_ORIGINAL;
+	}
+
+	private static SurfaceSizes CURRENT_SIZE = SurfaceSizes.SURFACE_BEST_FIT;
+	
+	//TODO Add feature for changing the screen size
+
+	private final Handler mHandler = new Handler();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +125,11 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 
 	private ServerFile getVideoFile() {
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
+	}
+
+	private MediaPlayer getMediaPlayer() {
+		assert videoService != null;
+		return videoService.getMediaPlayer();
 	}
 
 	private void setUpSystemControls() {
@@ -235,24 +266,18 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 
 		surfaceHolder.setFormat(PixelFormat.RGBX_8888);
 		surfaceHolder.setKeepScreenOn(true);
-
-		final IVLCVout vout = videoService.getMediaPlayer().getVLCVout();
-		vout.setVideoView(getSurface());
-		vout.addCallback(this);
-		vout.attachViews(this);
-		videoService.getMediaPlayer().setEventListener(this);
+		final IVLCVout vlcVout = getMediaPlayer().getVLCVout();
+		vlcVout.setVideoView(getSurface());
+		vlcVout.attachViews(this);
+		getMediaPlayer().setEventListener(this);
 	}
 
 	private SurfaceView getSurface() {
 		return (SurfaceView) findViewById(R.id.surface);
 	}
 
-	@Override
-	public void onSurfacesCreated(IVLCVout ivlcVout) {
-	}
-
-	@Override
-	public void onSurfacesDestroyed(IVLCVout ivlcVout) {
+	private FrameLayout getSurfaceFrame() {
+		return (FrameLayout) findViewById(R.id.layout_content);
 	}
 
 	private void setUpVideoControls() {
@@ -276,6 +301,7 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 			showControls();
 		} else {
 			videoService.startVideo(getVideoShare(), getVideoFile());
+			addLayoutChangeListener();
 		}
 	}
 
@@ -285,6 +311,190 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 
 	private ServerShare getVideoShare() {
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+	}
+
+	private void addLayoutChangeListener() {
+		getSurfaceFrame().addOnLayoutChangeListener(this);
+	}
+
+	@Override
+	public void onLayoutChange(View v, int left, int top, int right,
+							   int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+		if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
+			mHandler.removeCallbacks(mRunnable);
+			mHandler.post(mRunnable);
+		}
+	}
+
+	private final Runnable mRunnable = new Runnable() {
+		@Override
+		public void run() {
+			updateVideoSurfaces();
+		}
+	};
+
+	@Override
+	public void onNewVideoLayout(IVLCVout vout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
+		mVideoWidth = width;
+		mVideoHeight = height;
+		mVideoVisibleWidth = visibleWidth;
+		mVideoVisibleHeight = visibleHeight;
+		mVideoSarNum = sarNum;
+		mVideoSarDen = sarDen;
+		updateVideoSurfaces();
+	}
+
+	private void updateVideoSurfaces() {
+		int screenWidth = getWindow().getDecorView().getWidth();
+		int screenHeight = getWindow().getDecorView().getHeight();
+
+		// sanity check
+		if (screenWidth * screenHeight == 0) {
+			Log.e("Error", "Invalid surface size");
+			return;
+		}
+
+		getMediaPlayer().getVLCVout().setWindowSize(screenWidth, screenHeight);
+		ViewGroup.LayoutParams lp = getSurface().getLayoutParams();
+		if (mVideoWidth * mVideoHeight == 0) {
+            /* Case of OpenGL vouts: handles the placement of the video using MediaPlayer API */
+			lp.width  = ViewGroup.LayoutParams.MATCH_PARENT;
+			lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+			getSurface().setLayoutParams(lp);
+			lp = getSurfaceFrame().getLayoutParams();
+			lp.width  = ViewGroup.LayoutParams.MATCH_PARENT;
+			lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+			getSurfaceFrame().setLayoutParams(lp);
+			changeMediaPlayerLayout(screenWidth, screenHeight);
+			return;
+		}
+
+		if (lp.width == lp.height && lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
+            /* We handle the placement of the video using Android View LayoutParams */
+			getMediaPlayer().setAspectRatio(null);
+			getMediaPlayer().setScale(0);
+		}
+
+		double dw = screenWidth, dh = screenHeight;
+		final boolean isPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+		if (screenWidth > screenHeight && isPortrait || screenWidth < screenHeight && !isPortrait) {
+			dw = screenHeight;
+			dh = screenWidth;
+		}
+
+		// compute the aspect ratio
+		double ar, vw;
+		if (mVideoSarDen == mVideoSarNum) {
+            /* No indication about the density, assuming 1:1 */
+			vw = mVideoVisibleWidth;
+			ar = (double)mVideoVisibleWidth / (double)mVideoVisibleHeight;
+		} else {
+            /* Use the specified aspect ratio */
+			vw = mVideoVisibleWidth * (double)mVideoSarNum / mVideoSarDen;
+			ar = vw / mVideoVisibleHeight;
+		}
+
+		// compute the display aspect ratio
+		double dar = dw / dh;
+		switch (CURRENT_SIZE) {
+			case SURFACE_BEST_FIT:
+				if (dar < ar)
+					dh = dw / ar;
+				else
+					dw = dh * ar;
+				break;
+			case SURFACE_FIT_SCREEN:
+				if (dar >= ar)
+					dh = dw / ar; /* horizontal */
+				else
+					dw = dh * ar; /* vertical */
+				break;
+			case SURFACE_FILL:
+				break;
+			case SURFACE_16_9:
+				ar = 16.0 / 9.0;
+				if (dar < ar)
+					dh = dw / ar;
+				else
+					dw = dh * ar;
+				break;
+			case SURFACE_4_3:
+				ar = 4.0 / 3.0;
+				if (dar < ar)
+					dh = dw / ar;
+				else
+					dw = dh * ar;
+				break;
+			case SURFACE_ORIGINAL:
+				dh = mVideoVisibleHeight;
+				dw = vw;
+				break;
+		}
+		// set display size
+		lp.width  = (int) Math.ceil(dw * mVideoWidth / mVideoVisibleWidth);
+		lp.height = (int) Math.ceil(dh * mVideoHeight / mVideoVisibleHeight);
+		getSurface().setLayoutParams(lp);
+		// set frame size (crop if necessary)
+		lp = getSurfaceFrame().getLayoutParams();
+		lp.width = (int) Math.floor(dw);
+		lp.height = (int) Math.floor(dh);
+		getSurfaceFrame().setLayoutParams(lp);
+		getSurface().invalidate();
+	}
+
+	private void changeMediaPlayerLayout(int displayW, int displayH) {
+        /* Change the video placement using the MediaPlayer API */
+		switch (CURRENT_SIZE) {
+			case SURFACE_BEST_FIT:
+				getMediaPlayer().setAspectRatio(null);
+				getMediaPlayer().setScale(0);
+				break;
+			case SURFACE_FIT_SCREEN:
+			case SURFACE_FILL: {
+				Media.VideoTrack vtrack = getMediaPlayer().getCurrentVideoTrack();
+				if (vtrack == null)
+					return;
+				final boolean videoSwapped = vtrack.orientation == Media.VideoTrack.Orientation.LeftBottom
+						|| vtrack.orientation == Media.VideoTrack.Orientation.RightTop;
+				if (CURRENT_SIZE == SurfaceSizes.SURFACE_FIT_SCREEN) {
+					int videoW = vtrack.width;
+					int videoH = vtrack.height;
+					if (videoSwapped) {
+						int swap = videoW;
+						videoW = videoH;
+						videoH = swap;
+					}
+					if (vtrack.sarNum != vtrack.sarDen)
+						videoW = videoW * vtrack.sarNum / vtrack.sarDen;
+					float videoAspectRatio = videoW / (float) videoH;
+					float displayAspectRatio = displayW / (float) displayH;
+					float scale;
+					if (displayAspectRatio >= videoAspectRatio)
+						scale = displayW / (float) videoW; /* horizontal */
+					else
+						scale = displayH / (float) videoH; /* vertical */
+					getMediaPlayer().setScale(scale);
+					getMediaPlayer().setAspectRatio(null);
+				} else {
+					getMediaPlayer().setScale(0);
+					getMediaPlayer().setAspectRatio(!videoSwapped ? ""+displayW+":"+displayH
+							: ""+displayH+":"+displayW);
+				}
+				break;
+			}
+			case SURFACE_16_9:
+				getMediaPlayer().setAspectRatio("16:9");
+				getMediaPlayer().setScale(0);
+				break;
+			case SURFACE_4_3:
+				getMediaPlayer().setAspectRatio("4:3");
+				getMediaPlayer().setScale(0);
+				break;
+			case SURFACE_ORIGINAL:
+				getMediaPlayer().setAspectRatio(null);
+				getMediaPlayer().setScale(1);
+				break;
+		}
 	}
 
 	@Override
@@ -314,17 +524,17 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 
 	@Override
 	public void seekTo(int time) {
-		videoService.getMediaPlayer().setTime(time);
+		getMediaPlayer().setTime(time);
 	}
 
 	@Override
 	public int getDuration() {
-		return (int) videoService.getMediaPlayer().getLength();
+		return (int) getMediaPlayer().getLength();
 	}
 
 	@Override
 	public int getCurrentPosition() {
-		return (int) videoService.getMediaPlayer().getTime();
+		return (int) getMediaPlayer().getTime();
 	}
 
 	@Override
@@ -355,48 +565,6 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 				break;
 			default:
 				break;
-		}
-
-	}
-
-	@Override
-	public void onNewVideoLayout(IVLCVout vout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
-		changeSurfaceSize(width, height);
-	}
-
-	private void changeSurfaceSize(int videoWidth, int videoHeight) {
-		SurfaceView surface = getSurface();
-
-		ViewGroup.LayoutParams params = getSurfaceLayoutParams(videoWidth, videoHeight);
-		surface.getHolder().setFixedSize(params.width, params.height);
-
-		surface.setLayoutParams(params);
-		surface.invalidate();
-	}
-
-	private ViewGroup.LayoutParams getSurfaceLayoutParams(int videoWidth, int videoHeight) {
-		ViewGroup.LayoutParams surfaceLayoutParams = getSurface().getLayoutParams();
-		if (videoHeight * videoWidth == 0) {
-			surfaceLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-			surfaceLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-			return surfaceLayoutParams;
-		} else {
-			int screenWidth = Android.getDeviceScreenWidth(this);
-			int screenHeight = Android.getDeviceScreenHeight(this);
-
-			float screenAspectRatio = (float) screenWidth / (float) screenHeight;
-			float videoAspectRatio = (float) videoWidth / (float) videoHeight;
-
-			if (screenAspectRatio < videoAspectRatio) {
-				screenHeight = (int) (screenWidth / videoAspectRatio);
-			} else {
-				screenWidth = (int) (screenHeight * videoAspectRatio);
-			}
-
-			surfaceLayoutParams.width = screenWidth;
-			surfaceLayoutParams.height = screenHeight;
-
-			return surfaceLayoutParams;
 		}
 
 	}
@@ -457,13 +625,15 @@ public class ServerFileVideoActivity extends Activity implements ServiceConnecti
 	}
 
 	private void tearDownVideoPlayback() {
-		videoService.getMediaPlayer().stop();
+		getMediaPlayer().stop();
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-
+		getSurfaceFrame().removeOnLayoutChangeListener(this);
+		getMediaPlayer().stop();
+		getMediaPlayer().getVLCVout().detachViews();
 		tearDownVideoServiceBind();
 	}
 

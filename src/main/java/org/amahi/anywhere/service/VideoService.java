@@ -33,6 +33,8 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 /**
@@ -43,7 +45,7 @@ public class VideoService extends Service
 	private ServerShare videoShare;
 	private ServerFile videoFile;
 
-	private LibVLC libvlc;
+	private LibVLC mLibVLC;
 	private MediaPlayer mMediaPlayer = null;
 
 	@Inject
@@ -68,8 +70,10 @@ public class VideoService extends Service
 	}
 
 	private void setUpVideoPlayer() {
-		libvlc = new LibVLC(this);
-		mMediaPlayer = new MediaPlayer(libvlc);
+		final ArrayList<String> args = new ArrayList<>();
+		args.add("-vvv");
+		mLibVLC = new LibVLC(this, args);
+		mMediaPlayer = new MediaPlayer(mLibVLC);
 	}
 
 	public boolean isVideoStarted() {
@@ -84,8 +88,9 @@ public class VideoService extends Service
 	}
 
 	private void setUpVideoPlayback() {
-		Media media = new Media(libvlc, getVideoUri());
+		Media media = new Media(mLibVLC, getVideoUri());
 		mMediaPlayer.setMedia(media);
+		media.release();
 		mMediaPlayer.play();
 	}
 
@@ -121,6 +126,7 @@ public class VideoService extends Service
 	private void tearDownVideoPlayback() {
 		mMediaPlayer.stop();
 		mMediaPlayer.release();
+		mLibVLC.release();
 	}
 
 

@@ -169,7 +169,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		getActivity().finish();
 		Intent myIntent = new Intent(getActivity().getApplicationContext(), AuthenticationActivity.class);
 		myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(myIntent);
+                startActivity(myIntent);
 	}
 
 	private void sharedIntent(){

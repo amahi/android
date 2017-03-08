@@ -98,6 +98,7 @@
 
 		<activity
 			android:name=".activity.AuthenticationActivity"
+			android:windowSoftInputMode="stateHidden"
 			android:theme="@style/Theme.Amahi.Authentication">
 		</activity>
 

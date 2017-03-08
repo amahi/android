@@ -30,7 +30,11 @@ Gradle, Android SDK and project dependencies will be downloaded automatically.
 
   ```
   $ ./gradlew clean assembleDebug
+
   ```
+4. Once you have build the application, you will be needing credentials to access the application. Go to Amahi website and create your account, once the account is activated, you will see the description of how to setup Amahi server. The process is explained for Fedora 23/25 which are currently supported.
+
+5. If you just want to getting started then initially you can use the demo files provided by community. To access that you have to ask for api related details which due to privacy reasons have been kept private. Ask any of the amahi community member for the same. Make sure you don't share them without permission of the community.
 
 ## Generating the documentation
 

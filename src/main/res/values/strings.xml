@@ -48,6 +48,7 @@
 	<string name="message_error_search_application">We haven’t found any supported apps for this file.</string>
 	<string name="message_error_authentication">The username or password are not correct. Please try again. <a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
 	<string name="message_error_authentication_connection">Connection error. Check your settings and try again.</string>
+	<string name="message_error_authentication_field_empty">Username or Password field cannot be left empty</string>
 	<string name="message_error_connection">Connection Error</string>
 
 	<string name="message_notice_check_settings">Check your settings and try again</string>
@@ -55,4 +56,6 @@
 
 	<string name="message_progress_file_downloading">Downloading file...</string>
 
+	<string name="share_subject">Check out my Amahi home server!</string>
+	<string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
 </resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2014 Amahi
+  ~ Copyright (c) 2017 Amahi
   ~
   ~ This file is part of Amahi.
   ~
@@ -19,19 +19,29 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
+	android:orientation="horizontal"
 	android:layout_gravity="center"
-	android:paddingLeft="32dp"
-	android:paddingRight="32dp"
 	android:layout_width="match_parent"
-	android:layout_height="wrap_content">
+	android:layout_height="match_parent">
 
 	<ImageView
+        android:layout_gravity="center"
+		android:layout_weight="1"
 		android:src="@drawable/ic_banner"
 		android:paddingLeft="32dp"
 		android:paddingRight="32dp"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"/>
+
+	<LinearLayout
+        android:gravity="center"
+		android:layout_weight="1"
+        android:padding="14dp"
+        android:layout_marginRight="10dp"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+        android:layout_gravity="center">
 
 	<Space
 		android:layout_width="match_parent"
@@ -46,7 +56,7 @@
 
 	<Space
 		android:layout_width="match_parent"
-		android:layout_height="8dp"/>
+		android:layout_height="14dp"/>
 
 	<EditText
 		android:id="@+id/edit_password"
@@ -69,7 +79,7 @@
 
 	<Space
 		android:layout_width="match_parent"
-		android:layout_height="16dp"/>
+		android:layout_height="8dp"/>
 
 	<ViewAnimator
 		android:id="@+id/animator_message"
@@ -105,5 +115,7 @@
 			android:layout_height="wrap_content"/>
 
 	</ViewAnimator>
+
+	</LinearLayout>
 
 </LinearLayout>

@@ -17,7 +17,9 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+<ViewAnimator
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/animator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,19 +31,36 @@
         android:id="@android:id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"/>
 
     <FrameLayout
-        android:id="@+id/layout_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/background_dark"
+        android:keepScreenOn="true">
 
-        <SurfaceView
-            android:id="@+id/surface"
+        <FrameLayout
+            android:id="@+id/video_surface_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:fitsSystemWindows="false" />
+            android:foregroundGravity="clip_horizontal|clip_vertical"
+            tools:ignore="true">
+
+            <SurfaceView
+                android:id="@+id/surface"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:fitsSystemWindows="false"/>
+
+            <ViewStub
+                android:id="@+id/subtitles_stub"
+                android:layout_width="1dp"
+                android:layout_height="1dp"
+                android:layout="@layout/subtitles_surface"/>
+
+        </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -51,10 +70,8 @@
             <View
                 android:id="@+id/container_controls"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"/>
 
         </FrameLayout>
-
     </FrameLayout>
-
 </ViewAnimator>

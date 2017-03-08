@@ -19,12 +19,14 @@
 
 package org.amahi.anywhere.activity;
 
+import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -35,6 +37,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.MediaController;
 
@@ -63,6 +66,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	MediaPlayer.EventListener,
 	View.OnLayoutChangeListener {
 
+	private static final boolean ENABLE_SUBTITLES = true;
+
 	private VideoService videoService;
 	private MediaControls videoControls;
 	private FullScreenHelper fullScreen;
@@ -74,6 +79,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	private int mVideoVisibleWidth = 0;
 	private int mVideoSarNum = 0;
 	private int mVideoSarDen = 0;
+
+	private SurfaceView mSubtitlesSurface = null;
 
 	private enum SurfaceSizes {
 		SURFACE_BEST_FIT,
@@ -97,6 +104,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
 		setUpHomeNavigation();
 
+		setUpViews();
+
 		setUpVideo();
 
 		setUpFullScreen();
@@ -111,6 +120,15 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	private void setUpHomeNavigation() {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setIcon(R.drawable.ic_launcher);
+	}
+
+	private void setUpViews() {
+		if (ENABLE_SUBTITLES) {
+			final ViewStub stub = (ViewStub) findViewById(R.id.subtitles_stub);
+			mSubtitlesSurface = (SurfaceView) stub.inflate();
+			mSubtitlesSurface.setZOrderMediaOverlay(true);
+			mSubtitlesSurface.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+		}
 	}
 
 	private void setUpVideo() {
@@ -185,6 +203,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		surfaceHolder.setKeepScreenOn(true);
 		final IVLCVout vlcVout = getMediaPlayer().getVLCVout();
 		vlcVout.setVideoView(getSurface());
+		if (mSubtitlesSurface != null)
+			vlcVout.setSubtitlesView(mSubtitlesSurface);
 		vlcVout.attachViews(this);
 		getMediaPlayer().setEventListener(this);
 	}
@@ -194,7 +214,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	}
 
 	private FrameLayout getSurfaceFrame() {
-		return (FrameLayout) findViewById(R.id.layout_content);
+		return (FrameLayout) findViewById(R.id.video_surface_frame);
 	}
 
 	private void setUpVideoControls() {
@@ -244,7 +264,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	}
 
 	private void showVideo() {
-		ViewDirector.of(this, R.id.animator).show(R.id.layout_content);
+		ViewDirector.of(this, R.id.animator).show(R.id.video_surface_frame);
 	}
 
 	private ServerShare getVideoShare() {
@@ -271,6 +291,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		}
 	};
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	@Override
 	public void onNewVideoLayout(IVLCVout vout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
 		mVideoWidth = width;
@@ -372,12 +393,17 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		lp.width  = (int) Math.ceil(dw * mVideoWidth / mVideoVisibleWidth);
 		lp.height = (int) Math.ceil(dh * mVideoHeight / mVideoVisibleHeight);
 		getSurface().setLayoutParams(lp);
+		if (mSubtitlesSurface != null)
+			mSubtitlesSurface.setLayoutParams(lp);
+
 		// set frame size (crop if necessary)
 		lp = getSurfaceFrame().getLayoutParams();
 		lp.width = (int) Math.floor(dw);
 		lp.height = (int) Math.floor(dh);
 		getSurfaceFrame().setLayoutParams(lp);
 		getSurface().invalidate();
+		if (mSubtitlesSurface != null)
+			mSubtitlesSurface.invalidate();
 	}
 
 	private void changeMediaPlayerLayout(int displayW, int displayH) {

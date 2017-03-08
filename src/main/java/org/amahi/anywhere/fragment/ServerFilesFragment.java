@@ -459,9 +459,13 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	@Override
 	public void onItemClick(AdapterView<?> filesListView, View fileView, int filePosition, long fileId) {
 		if (!areFilesActionsAvailable()) {
-			clearFileChoices();
 
-			startFileOpening(getFile(filePosition));
+				clearFileChoices();
+
+				startFileOpening(getFile(filePosition));
+
+				if(isSearchOpen)
+					closeSearch();
 		}
 	}
 

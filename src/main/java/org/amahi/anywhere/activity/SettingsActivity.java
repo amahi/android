@@ -31,7 +31,7 @@ import org.amahi.anywhere.util.Fragments;
  * Settings activity. Shows application's settings.
  * Settings itself are provided via {@link org.amahi.anywhere.fragment.SettingsFragment}.
  */
-public class SettingsActivity extends AppCompatActivity
+public class SettingsActivity extends Activity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public class SettingsActivity extends AppCompatActivity
 	}
 
 	private void setUpHomeNavigation() {
-		getSupportActionBar().setHomeButtonEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
 	}
 
 	private void setUpSettingsFragment() {

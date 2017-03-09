@@ -93,7 +93,8 @@
 
 		<activity
 			android:label="@string/title_settings"
-			android:name=".activity.SettingsActivity">
+			android:name=".activity.SettingsActivity"
+			android:theme="@style/Theme.Amahi.Settings">
 		</activity>
 
 		<activity

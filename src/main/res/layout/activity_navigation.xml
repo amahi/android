@@ -19,21 +19,47 @@
   -->
 
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:id="@+id/drawer_content"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:animateLayoutChanges="true">
 
-	<FrameLayout
+	<RelativeLayout
 		android:id="@+id/container_content"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+		android:layout_height="match_parent">
+
+		<android.support.v7.widget.Toolbar
+			android:layout_height="?attr/actionBarSize"
+			android:layout_width="match_parent"
+			android:background="@drawable/bg_action_bar"
+			android:id="@+id/toolbar"
+			android:minHeight="?attr/actionBarSize"
+			app:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+			<ImageView
+				android:layout_width="50dp"
+				android:layout_height="50dp"
+				android:src="@drawable/ic_app_logo"/>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:text="Amahi"
+				android:textSize="20dp"
+				android:textStyle="bold"
+				android:gravity="center"
+				android:textColor="#FFFFFF"
+				android:id="@+id/toolbar_title" />
+		</android.support.v7.widget.Toolbar>
+	</RelativeLayout>
 
 	<FrameLayout
 		android:id="@+id/container_navigation"
 		android:background="@color/background_secondary"
 		android:layout_gravity="start"
 		android:layout_width="240dp"
+		android:layout_marginTop="?attr/actionBarSize"
 		android:layout_height="match_parent"/>
-
 </android.support.v4.widget.DrawerLayout>

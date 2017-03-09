@@ -17,24 +17,40 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal"
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
 	android:baselineAligned="false"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<FrameLayout
-		android:id="@+id/container_navigation"
-		android:background="@color/background_secondary"
-		android:layout_weight="1"
-		android:layout_width="0dp"
-		android:layout_height="match_parent"/>
+	<android.support.v7.widget.Toolbar
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:background="@drawable/bg_action_bar"
+		android:id="@+id/toolbar"
+		android:minHeight="?attr/actionBarSize"
+		app:theme="@style/ThemeOverlay.AppCompat.ActionBar"/>
 
-	<FrameLayout
-		android:id="@+id/container_content"
-		android:layout_weight="2"
-		android:layout_width="0dp"
-		android:layout_height="match_parent"/>
+	<LinearLayout
+		android:orientation="horizontal"
+		android:baselineAligned="false"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
 
+		<FrameLayout
+			android:id="@+id/container_navigation"
+			android:background="@color/background_secondary"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"/>
+
+		<FrameLayout
+			android:id="@+id/container_content"
+			android:layout_weight="2"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"/>
+
+	</LinearLayout>
 </LinearLayout>

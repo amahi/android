@@ -24,6 +24,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -67,6 +68,8 @@ public class ServerFileWebActivity extends AppCompatActivity
 		setContentView(R.layout.activity_server_file_web);
 
 		setUpInjections();
+
+		setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
 
 		setUpHomeNavigation();
 

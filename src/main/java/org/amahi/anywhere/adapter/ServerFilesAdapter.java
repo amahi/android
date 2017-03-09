@@ -109,24 +109,24 @@ public class ServerFilesAdapter extends BaseAdapter
 		TextView fileTextView = (TextView) view.findViewById(R.id.text);
 		TextView fileSize = (TextView) view.findViewById(R.id.file_size);
 		TextView fileLastModified = (TextView) view.findViewById(R.id.last_modified);
-        LinearLayout moreInfo = (LinearLayout) view.findViewById(R.id.more_info);
+               LinearLayout moreInfo = (LinearLayout) view.findViewById(R.id.more_info);
 
 		fileTextView.setText(getFileName(file));
 
-        int size=getFileSize(file);
+               int size=getFileSize(file);
 
-        if(size==0){
-            moreInfo.setVisibility(View.GONE);
-        }else{
-            moreInfo.setVisibility(View.VISIBLE);
+               if(size==0){
+                 moreInfo.setVisibility(View.GONE);
+               }else{
+                 moreInfo.setVisibility(View.VISIBLE);
 
-            // for converting size in format of xx.xx i.e. 2 digit after point
-            double inMb=(size/1024.0)/1024.0;
-            fileSize.setText(((int)(inMb*100))/100.0+" MB");
+                 // for converting size in format of xx.xx i.e. 2 digit after point
+                 double inMb=(size/1024.0)/1024.0;
+                 fileSize.setText(((int)(inMb*100))/100.0+" MB");
 
-            Date d=getLastModified(file);
-            fileLastModified.setText(d.toString());
-        }
+                 Date d=getLastModified(file);
+                 fileLastModified.setText(d.toString());
+               }
 
 		if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
 			setUpImageIcon(file, fileIconView);
@@ -139,13 +139,13 @@ public class ServerFilesAdapter extends BaseAdapter
 		return file.getName();
 	}
 
-    private int getFileSize(ServerFile file) {
-        return file.getSize();
-    }
+       private int getFileSize(ServerFile file) {
+              return file.getSize();
+       }
 
-    private Date getLastModified(ServerFile file) {
-        return file.getModificationTime();
-    }
+       private Date getLastModified(ServerFile file) {
+              return file.getModificationTime();
+       }
 
 	private int getFileIcon(ServerFile file) {
 		switch (Mimes.match(file.getMime())) {

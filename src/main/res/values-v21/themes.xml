@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<style name="Theme.Amahi" parent="@android:style/Theme.Material">
+	<style name="Theme.Amahi" parent="@style/Theme.AppCompat">
 		<item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
 		<item name="android:windowBackground">@color/background_primary</item>
 		<item name="android:colorAccent">@color/accent_material_dark</item>
@@ -12,7 +12,7 @@
 		<item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
 	</style>
 
-	<style name="Theme.Amahi.Fullscreen" parent="@android:style/Theme.Material">
+	<style name="Theme.Amahi.Fullscreen" parent="@style/Theme.AppCompat">
 		<item name="android:actionBarStyle">@style/Theme.Amahi.Fullscreen.ActionBar</item>
 		<item name="android:windowActionBarOverlay">true</item>
 		<item name="android:windowBackground">@android:color/black</item>

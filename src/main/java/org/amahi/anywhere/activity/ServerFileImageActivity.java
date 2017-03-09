@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -53,7 +54,7 @@ import javax.inject.Inject;
  * Image activity. Shows images as a slide show.
  * Backed up by {@link android.widget.ImageView}.
  */
-public class ServerFileImageActivity extends Activity implements ViewPager.OnPageChangeListener
+public class ServerFileImageActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener
 {
 	private static final Set<String> SUPPORTED_FORMATS;
 
@@ -87,7 +88,7 @@ public class ServerFileImageActivity extends Activity implements ViewPager.OnPag
 	}
 
 	private void setUpHomeNavigation() {
-		getActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
 	}
 
 	private void setUpImage() {
@@ -102,7 +103,7 @@ public class ServerFileImageActivity extends Activity implements ViewPager.OnPag
 	}
 
 	private void setUpImageTitle(ServerFile file) {
-		getActionBar().setTitle(file.getName());
+		getSupportActionBar().setTitle(file.getName());
 	}
 
 	private ServerFile getFile() {

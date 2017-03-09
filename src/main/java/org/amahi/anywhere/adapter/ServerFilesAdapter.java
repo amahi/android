@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -36,7 +37,9 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
 
+import java.text.DateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -104,8 +107,27 @@ public class ServerFilesAdapter extends BaseAdapter
 	private void bindView(ServerFile file, View view) {
 		ImageView fileIconView = (ImageView) view.findViewById(R.id.icon);
 		TextView fileTextView = (TextView) view.findViewById(R.id.text);
+		TextView fileSize = (TextView) view.findViewById(R.id.file_size);
+		TextView fileLastModified = (TextView) view.findViewById(R.id.last_modified);
+        LinearLayout moreInfo = (LinearLayout) view.findViewById(R.id.more_info);
 
 		fileTextView.setText(getFileName(file));
+
+        int size=getFileSize(file);
+
+        if(size==0){
+            moreInfo.setVisibility(View.GONE);
+        }else{
+            moreInfo.setVisibility(View.VISIBLE);
+
+            // for converting size in format of xx.xx i.e. 2 digit after point
+            double inMb=(size/1024.0)/1024.0;
+            fileSize.setText(((int)(inMb*100))/100.0+" MB");
+
+            Date d=getLastModified(file);
+            fileLastModified.setText(d.toString());
+        }
+
 		if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
 			setUpImageIcon(file, fileIconView);
 		} else {
@@ -116,6 +138,14 @@ public class ServerFilesAdapter extends BaseAdapter
 	private String getFileName(ServerFile file) {
 		return file.getName();
 	}
+
+    private int getFileSize(ServerFile file) {
+        return file.getSize();
+    }
+
+    private Date getLastModified(ServerFile file) {
+        return file.getModificationTime();
+    }
 
 	private int getFileIcon(ServerFile file) {
 		switch (Mimes.match(file.getMime())) {
@@ -164,4 +194,5 @@ public class ServerFilesAdapter extends BaseAdapter
 	private Uri getImageUri(ServerFile file) {
 		return serverClient.getFileUri(serverShare, file);
 	}
+
 }

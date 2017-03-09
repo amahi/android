@@ -18,10 +18,11 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:background="?android:attr/activatedBackgroundIndicator"
-	android:layout_width="match_parent"
-	android:layout_height="?android:attr/listPreferredItemHeight">
+	android:orientation="vertical"
+    android:layout_width="match_parent"
+	android:layout_height="wrap_content">
 
 	<LinearLayout
 		android:orientation="horizontal"
@@ -46,4 +47,31 @@
 
 	</LinearLayout>
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/more_info"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_weight="1"
+            android:id="@+id/last_modified"
+            android:maxLines="1"
+            android:textSize="@dimen/text_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"/>
+
+        <TextView
+            android:id="@+id/file_size"
+            android:maxLines="1"
+            android:textSize="@dimen/text_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"/>
+
+    </LinearLayout>
+
+</LinearLayout>

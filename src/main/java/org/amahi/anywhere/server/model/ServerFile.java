@@ -43,7 +43,19 @@ public class ServerFile implements Parcelable
 	@SerializedName("mtime")
 	private Date modificationTime;
 
-	public void setParentFile(ServerFile parentFile) {
+    @SerializedName("size")
+    private int size;
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public int getSize() {
+
+        return size;
+    }
+
+    public void setParentFile(ServerFile parentFile) {
 		this.parentFile = parentFile;
 	}
 

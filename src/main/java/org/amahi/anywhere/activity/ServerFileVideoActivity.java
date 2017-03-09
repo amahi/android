@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -83,6 +84,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements Servic
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_server_file_video);
 
+		setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
+
 		setUpInjections();
 
 		setUpHomeNavigation();
@@ -97,7 +100,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements Servic
 	}
 
 	private void setUpHomeNavigation() {
-		getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 	}
 
 	private void setUpVideo() {

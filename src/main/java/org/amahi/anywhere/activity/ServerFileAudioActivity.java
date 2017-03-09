@@ -29,6 +29,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -107,6 +108,8 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_server_file_audio);
 
+		setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
+
 		setUpInjections();
 
 		setUpHomeNavigation();
@@ -119,6 +122,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 	}
 
 	private void setUpHomeNavigation() {
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
 

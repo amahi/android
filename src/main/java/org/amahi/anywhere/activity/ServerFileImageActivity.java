@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -76,6 +77,8 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_server_file_image);
 
+		setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
+
 		setUpInjections();
 
 		setUpHomeNavigation();
@@ -88,7 +91,8 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 	}
 
 	private void setUpHomeNavigation() {
-		getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 	}
 
 	private void setUpImage() {

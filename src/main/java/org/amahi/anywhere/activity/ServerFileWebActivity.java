@@ -81,6 +81,7 @@ public class ServerFileWebActivity extends AppCompatActivity
 	}
 
 	private void setUpHomeNavigation() {
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
 	}
 

@@ -107,13 +107,25 @@ public class TouchImageView extends AppCompatImageView {
                         if (mode == State.DRAG) {
                             float deltaX = curr.x - last.x;
                             float deltaY = curr.y - last.y;
-                            float fixTransX = getFixDragTrans(deltaX, viewWidth,
-                                    origWidth * saveScale);
-                            float fixTransY = getFixDragTrans(deltaY, viewHeight,
-                                    origHeight * saveScale);
-                            matrix.postTranslate(fixTransX, fixTransY);
-                            fixTrans();
-                            last.set(curr.x, curr.y);
+                            if(deltaX != 0f || deltaY != 0f) {
+                                float fixTransX = getFixDragTrans(deltaX, viewWidth,
+                                        origWidth * saveScale);
+                                float fixTransY = getFixDragTrans(deltaY, viewHeight,
+                                        origHeight * saveScale);
+                                if (saveScale > 1f) {
+                                    matrix.getValues(m);
+                                    float absTransX = Math.abs(m[Matrix.MTRANS_X]);
+                                    float transXMax = (origWidth*(saveScale-1f));
+                                    if ((transXMax - absTransX < 0.5f && fixTransX < 0f)
+                                            || (absTransX < 0.5f && fixTransX > 0f))
+                                        getParent().requestDisallowInterceptTouchEvent(false);
+                                    else
+                                        getParent().requestDisallowInterceptTouchEvent(true);
+                                }
+                                matrix.postTranslate(fixTransX, fixTransY);
+                                fixTrans();
+                                last.set(curr.x, curr.y);
+                            }
                         }
                         break;
 
@@ -233,7 +245,7 @@ public class TouchImageView extends AppCompatImageView {
 
     float getFixDragTrans(float delta, float viewSize, float contentSize) {
         if (contentSize <= viewSize) {
-            return 0;
+            return 0f;
         }
         return delta;
     }

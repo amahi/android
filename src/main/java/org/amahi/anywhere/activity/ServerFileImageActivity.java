@@ -51,7 +51,7 @@ import javax.inject.Inject;
 
 /**
  * Image activity. Shows images as a slide show.
- * Backed up by {@link android.widget.ImageView}.
+ * Backed up by {@link org.amahi.anywhere.view.TouchImageView}.
  */
 public class ServerFileImageActivity extends Activity implements ViewPager.OnPageChangeListener
 {
@@ -142,7 +142,7 @@ public class ServerFileImageActivity extends Activity implements ViewPager.OnPag
 	}
 
 	private void setUpImageListener() {
-		getImagePager().setOnPageChangeListener(this);
+		getImagePager().addOnPageChangeListener(this);
 	}
 
 	@Override

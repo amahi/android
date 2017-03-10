@@ -18,18 +18,19 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:balloonbery="http://schemas.android.com/apk/res-auto">
 
 	<item
 		android:id="@+id/menu_back"
 		android:icon="@drawable/ic_menu_back"
 		android:title="@string/menu_back"
-		android:showAsAction="always"/>
+		balloonbery:showAsAction="always"/>
 
 	<item
 		android:id="@+id/menu_forward"
 		android:icon="@drawable/ic_menu_forward"
 		android:title="@string/menu_forward"
-		android:showAsAction="always"/>
+		balloonbery:showAsAction="always"/>
 
 </menu>

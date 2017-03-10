@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Amahi
+ * Copyright (c) 2014 Amahi
  *
  * This file is part of Amahi.
  *

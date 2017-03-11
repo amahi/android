@@ -105,6 +105,7 @@ public class MediaControls extends MediaController implements Animation.Animatio
 			hideAnimated();
 		} else {
 			showAnimated();
+			hideControlsDelayed();
 		}
 	}
 

@@ -529,13 +529,10 @@ public class ServerFileVideoActivity extends Activity implements
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
-	}
-
-	@Override
 	public void onPause() {
 		super.onPause();
+
+		videoControls.hide();
 
 		if (!isChangingConfigurations()) {
 			pause();

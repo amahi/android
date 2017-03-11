@@ -106,7 +106,7 @@ public class FullScreenHelper {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     if (autoHide) {
-                        delayedHide(autoHideDelayMillis);
+                        delayedHide();
                     }
                     return false;
                 }
@@ -119,6 +119,7 @@ public class FullScreenHelper {
             hide();
         } else {
             show();
+            delayedHide();
         }
     }
 

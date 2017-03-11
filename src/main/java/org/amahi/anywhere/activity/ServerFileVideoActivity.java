@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -38,21 +37,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.MediaController;
-import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
+import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.ViewDirector;
 import org.amahi.anywhere.view.MediaControls;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Video activity. Shows videos, supports basic operations such as pausing, resuming, scrolling.
@@ -61,16 +58,15 @@ import java.util.concurrent.TimeUnit;
  */
 public class ServerFileVideoActivity extends Activity implements
 	ServiceConnection,
-	Runnable,
 	MediaController.MediaPlayerControl,
-	View.OnSystemUiVisibilityChangeListener,
 	IVLCVout.OnNewVideoLayoutListener,
 	MediaPlayer.EventListener,
 	View.OnLayoutChangeListener {
 
 	private VideoService videoService;
 	private MediaControls videoControls;
-	private Handler videoControlsHandler;
+	private FullScreenHelper fullScreen;
+	private Handler layoutChangeHandler;
 
 	private int mVideoHeight = 0;
 	private int mVideoWidth = 0;
@@ -92,8 +88,6 @@ public class ServerFileVideoActivity extends Activity implements
 	
 	//TODO Add feature for changing the screen size
 
-	private final Handler mHandler = new Handler();
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -105,7 +99,7 @@ public class ServerFileVideoActivity extends Activity implements
 
 		setUpVideo();
 
-		setUpSystemControls();
+		setUpFullScreen();
 
 		setUpVideoService();
 	}
@@ -130,107 +124,22 @@ public class ServerFileVideoActivity extends Activity implements
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 
+	private void setUpFullScreen() {
+		fullScreen = new FullScreenHelper(getActionBar(), getSurfaceFrame(), getControlsContainer());
+		fullScreen.enableOnClickToggle(false);
+		getSurfaceFrame().setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				fullScreen.toggle();
+				videoControls.toggle();
+			}
+		});
+		fullScreen.init();
+	}
+
 	private MediaPlayer getMediaPlayer() {
 		assert videoService != null;
 		return videoService.getMediaPlayer();
-	}
-
-	private void setUpSystemControls() {
-		setUpSystemControlsListener();
-
-		showSystemControls();
-		showControls();
-	}
-
-	private void setUpSystemControlsListener() {
-		getActivityView().setOnSystemUiVisibilityChangeListener(this);
-	}
-
-	private View getActivityView() {
-		return getWindow().getDecorView();
-	}
-
-	@Override
-	public void onSystemUiVisibilityChange(int visibility) {
-		Toast.makeText(this, "" + visibility, Toast.LENGTH_SHORT).show();
-		if (areSystemControlsVisible(visibility) && !isFinishing()) {
-			showControls();
-		}
-	}
-
-	private boolean areSystemControlsVisible(int visibility) {
-		return (visibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
-	}
-
-	private void showControls() {
-		showSystemControls();
-		showVideoControls();
-
-		hideControlsDelayed();
-	}
-
-	private void showControlsDelayed() {
-		if (isVideoControlsHandlerAvailable()) {
-			videoControlsHandler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					showControls();
-				}
-			}, 100);
-		}
-	}
-
-	@SuppressLint("InlinedApi")
-	private void showSystemControls() {
-		getActivityView().setSystemUiVisibility(
-			View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-			View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-	}
-
-	private void showVideoControls() {
-		if (areVideoControlsAvailable() && !videoControls.isShowing()) {
-			videoControls.showAnimated();
-		}
-	}
-
-	private boolean areVideoControlsAvailable() {
-		return videoControls != null;
-	}
-
-	private void hideControlsDelayed() {
-		if (isVideoControlsHandlerAvailable()) {
-			videoControlsHandler.postDelayed(this, TimeUnit.SECONDS.toMillis(3));
-		}
-	}
-
-	private boolean isVideoControlsHandlerAvailable() {
-		return videoControlsHandler != null;
-	}
-
-	@Override
-	public void run() {
-		hideControls();
-	}
-
-	private void hideControls() {
-		hideSystemControls();
-		hideVideoControls();
-	}
-
-	@SuppressLint("InlinedApi")
-	private void hideSystemControls() {
-		getActivityView().setSystemUiVisibility(
-        	View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-            View.SYSTEM_UI_FLAG_FULLSCREEN |
-            View.SYSTEM_UI_FLAG_LOW_PROFILE |
-            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION );
-	}
-
-	private void hideVideoControls() {
-		videoControls.hideAnimated();
 	}
 
 	@Override
@@ -259,7 +168,7 @@ public class ServerFileVideoActivity extends Activity implements
 
 		setUpVideoView();
 		setUpVideoControls();
-		setUpVideoControlsHandler();
+		setUpHandlers();
 		setUpVideoPlayback();
 	}
 
@@ -292,23 +201,44 @@ public class ServerFileVideoActivity extends Activity implements
 			videoControls = new MediaControls(this);
 
 			videoControls.setMediaPlayer(this);
-			videoControls.setAnchorView(findViewById(R.id.container_controls));
+			videoControls.setAnchorView(getControlsContainer());
 		}
 	}
 
-	private void setUpVideoControlsHandler() {
-		if (!isVideoControlsHandlerAvailable()) {
-			videoControlsHandler = new Handler();
+	private boolean areVideoControlsAvailable() {
+		return videoControls != null;
+	}
+
+	private void setUpHandlers() {
+		if (!layoutChangeHandlerAvailable()) {
+			layoutChangeHandler = new Handler();
 		}
+	}
+
+	private boolean layoutChangeHandlerAvailable() {
+		return layoutChangeHandler != null;
+	}
+
+	private View getControlsContainer() {
+		return findViewById(R.id.container_controls);
 	}
 
 	private void setUpVideoPlayback() {
 		if (videoService.isVideoStarted()) {
 			showVideo();
-			showControlsDelayed();
+			showThenAutoHideControls();
 		} else {
 			videoService.startVideo(getVideoShare(), getVideoFile());
 			addLayoutChangeListener();
+		}
+	}
+
+	private void showThenAutoHideControls() {
+		if (!isFinishing()) {
+			fullScreen.show();
+			fullScreen.delayedHide();
+			videoControls.showAnimated();
+			videoControls.hideControlsDelayed();
 		}
 	}
 
@@ -328,8 +258,8 @@ public class ServerFileVideoActivity extends Activity implements
 	public void onLayoutChange(View v, int left, int top, int right,
 							   int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
 		if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
-			mHandler.removeCallbacks(mRunnable);
-			mHandler.post(mRunnable);
+			layoutChangeHandler.removeCallbacks(mRunnable);
+			layoutChangeHandler.post(mRunnable);
 		}
 	}
 
@@ -567,10 +497,10 @@ public class ServerFileVideoActivity extends Activity implements
 				showVideo();
 				break;
 			case MediaPlayer.Event.Playing:
-				showControlsForced();
+				showThenAutoHideControls();
 				break;
 			case MediaPlayer.Event.Paused:
-				showControlsForced();
+				showThenAutoHideControls();
 				break;
 			case MediaPlayer.Event.EndReached:
 				finish();
@@ -603,24 +533,9 @@ public class ServerFileVideoActivity extends Activity implements
 		super.onResume();
 	}
 
-	private void showControlsForced() {
-		showSystemControls();
-		showVideoControlsForced();
-
-		hideControlsDelayed();
-	}
-
-	private void showVideoControlsForced() {
-		if (areVideoControlsAvailable()) {
-			videoControls.show();
-		}
-	}
-
 	@Override
 	public void onPause() {
 		super.onPause();
-
-		tearDownVideoControlsHandler();
 
 		if (!isChangingConfigurations()) {
 			pause();
@@ -628,12 +543,6 @@ public class ServerFileVideoActivity extends Activity implements
 
 		if (isFinishing()) {
 			tearDownVideoPlayback();
-		}
-	}
-
-	private void tearDownVideoControlsHandler() {
-		if (isVideoControlsHandlerAvailable()) {
-			videoControlsHandler.removeCallbacks(this);
 		}
 	}
 

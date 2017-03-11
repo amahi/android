@@ -33,7 +33,7 @@
 		android:id="@+id/text"
 		android:textColor="@android:color/white"
 		android:textSize="@dimen/text_small"
-		android:singleLine="true"
+               android:maxLines="1"
 		android:gravity="center"
 		android:layout_gravity="bottom"
 		android:padding="4dp"

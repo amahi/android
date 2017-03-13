@@ -60,6 +60,17 @@
 		android:layout_width="match_parent"
 		android:layout_height="16dp"/>
 
+	<CheckBox
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/show_password"
+		android:text="@string/show_password"
+		/>
+
+	<Space
+		android:layout_width="match_parent"
+		android:layout_height="16dp"/>
+
 	<com.dd.processbutton.iml.ActionProcessButton
 		android:id="@+id/button_authentication"
 		android:text="@string/button_sign_in"

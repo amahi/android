@@ -28,7 +28,10 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -60,7 +63,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_authentication);
-
+		setUpCheckbox();
 		setUpInjections();
 
 		setUpAuthentication();
@@ -102,6 +105,22 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		authenticationFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
 		authenticationConnectionFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
 	}
+
+	private void setUpCheckbox() {
+        CheckBox checkBox_password = (CheckBox) findViewById(R.id.show_password);
+        final EditText password = (EditText) findViewById(R.id.edit_password);
+
+        checkBox_password.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
+                if (isChecked) {
+                    password.setTransformationMethod(null);
+
+                } else {
+                    password.setTransformationMethod(new PasswordTransformationMethod());
+                }
+            }
+        });
+    }
 
 	private void setUpAuthenticationListeners() {
 		setUpAuthenticationTextListener();

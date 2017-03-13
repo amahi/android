@@ -31,6 +31,9 @@
 
 	<string name="hint_password">Password</string>
 	<string name="hint_username">Username</string>
+	<string name="show_password">Show Password</string>
+
+
 
 	<string name="menu_back">Back</string>
 	<string name="menu_forward">Forward</string>

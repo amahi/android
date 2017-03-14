@@ -41,7 +41,9 @@ import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.view.ClickableViewPager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,14 +55,14 @@ import javax.inject.Inject;
 
 /**
  * Image activity. Shows images as a slide show.
- * Backed up by {@link android.widget.ImageView}.
+ * Backed up by {@link org.amahi.anywhere.view.TouchImageView}.
  */
 public class ServerFileImageActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener
 {
 	private static final Set<String> SUPPORTED_FORMATS;
 
 	static {
-		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
+		SUPPORTED_FORMATS = new HashSet<>(Arrays.asList(
 			"image/bmp",
 			"image/jpeg",
 			"image/gif",
@@ -84,10 +86,24 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 		setUpHomeNavigation();
 
 		setUpImage();
+
+		setUpFullScreen();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpFullScreen() {
+		final FullScreenHelper fullScreen = new FullScreenHelper(getActionBar(), getImagePager(), null);
+		fullScreen.enableOnClickToggle(false);
+		getImagePager().setOnViewPagerClickListener(new ClickableViewPager.OnClickListener() {
+			@Override
+			public void onViewPagerClick(ViewPager viewPager) {
+				fullScreen.toggle();
+			}
+		});
+		fullScreen.init();
 	}
 
 	private void setUpHomeNavigation() {
@@ -118,8 +134,8 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 		getImagePager().setAdapter(new ServerFilesImagePagerAdapter(getFragmentManager(), getShare(), getImageFiles()));
 	}
 
-	private ViewPager getImagePager() {
-		return (ViewPager) findViewById(R.id.pager_images);
+	private ClickableViewPager getImagePager() {
+		return (ClickableViewPager) findViewById(R.id.pager_images);
 	}
 
 	private ServerShare getShare() {
@@ -147,7 +163,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 	}
 
 	private void setUpImageListener() {
-		getImagePager().setOnPageChangeListener(this);
+		getImagePager().addOnPageChangeListener(this);
 	}
 
 	@Override

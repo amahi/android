@@ -37,8 +37,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
-		<ListView
-			android:id="@android:id/list"
+		<android.support.v7.widget.RecyclerView
+			android:id="@+id/list"
 			android:scrollbarStyle="outsideOverlay"
 			android:paddingLeft="16dp"
 			android:paddingRight="16dp"
@@ -46,9 +46,10 @@
 			android:layout_height="match_parent"/>
 
 		<LinearLayout
-			android:id="@android:id/empty"
+			android:id="@+id/empty"
 			android:orientation="vertical"
 			android:layout_gravity="center"
+			android:visibility="gone"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 

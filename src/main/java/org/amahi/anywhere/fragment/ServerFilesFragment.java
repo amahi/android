@@ -33,6 +33,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -526,8 +527,10 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 				final List<ServerFile> allFiles = getFiles();
 				actionBar.setCustomView(R.layout.search_bar);
 				actionBar.setDisplayShowTitleEnabled(false);
+				actionBar.setDisplayShowHomeEnabled(false);
 				editSearch = (EditText) actionBar.getCustomView().findViewById(R.id.editSearch);
-				editSearch.setHint("Enter name of file");
+				editSearch.setHint("Search");
+				editSearch.setGravity(Gravity.LEFT);
 				editSearch.addTextChangedListener(new TextWatcher() {
 					@Override
 					public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -670,6 +673,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 			isSearchOpen = false;
 			actionBar.setDisplayShowCustomEnabled(false);
 			actionBar.setDisplayShowTitleEnabled(true);
+			actionBar.setDisplayShowHomeEnabled(true);
 		}
 	}
 }

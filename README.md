@@ -26,15 +26,19 @@ Gradle, Android SDK and project dependencies will be downloaded automatically.
   client.secret = SECRET
   ```
 
+This is something to keep private and you obtain it by asking in the [Amahi IRC channel](http://talk.amahi.org) or send a messag to `support at Amahi dot org`.
+
 3. Build the application.
 
   ```
   $ ./gradlew clean assembleDebug
 
   ```
-4. Once you have build the application, you will be needing credentials to access the application. Go to Amahi website and create your account, once the account is activated, you will see the description of how to setup Amahi server. The process is explained for Fedora 23/25 which are currently supported.
 
-5. If you just want to getting started then initially you can use the demo files provided by community. To access that you have to ask for api related details which due to privacy reasons have been kept private. Ask any of the amahi community member for the same. Make sure you don't share them without permission of the community.
+  or using the GUI.
+
+4. Once you have built the application, you will be needing credentials to use the application. Go to Amahi website and create your account, once the account is activated, you will see the description of how to setup Amahi server. However, this is not strictly needed, as we have a set up a demo server called "Welcome to Amahi" which you should see even without your own server installed.
+
 
 ## Generating the documentation
 

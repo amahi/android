@@ -25,8 +25,8 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -118,12 +118,12 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	private void setUpNavigationDrawer() {
 		this.navigationDrawerToggle = buildNavigationDrawerToggle();
 
-		getDrawer().setDrawerListener(this);
+		getDrawer().addDrawerListener(this);
 		getDrawer().setDrawerShadow(R.drawable.bg_shadow_drawer, Gravity.START);
 	}
 
 	private ActionBarDrawerToggle buildNavigationDrawerToggle() {
-		return new ActionBarDrawerToggle(this,getDrawer(), R.drawable.ic_ic_ham_menu,R.string.menu_navigation_open,R.string.menu_navigation_close);
+		return new ActionBarDrawerToggle(this,getDrawer(),R.string.menu_navigation_open,R.string.menu_navigation_close);
 	}
 
 	private DrawerLayout getDrawer() {

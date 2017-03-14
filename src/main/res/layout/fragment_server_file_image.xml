@@ -28,7 +28,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"/>
 
-	<ImageView
+	<org.amahi.anywhere.view.TouchImageView
 		android:id="@+id/image"
 		android:visibility="invisible"
 		android:layout_width="match_parent"

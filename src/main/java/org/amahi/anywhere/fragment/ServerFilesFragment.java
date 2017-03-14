@@ -531,6 +531,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 				editSearch = (EditText) actionBar.getCustomView().findViewById(R.id.editSearch);
 				editSearch.setHint("Search");
 				editSearch.setGravity(Gravity.LEFT);
+				editSearch.setLongClickable(false);
 				editSearch.addTextChangedListener(new TextWatcher() {
 					@Override
 					public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {

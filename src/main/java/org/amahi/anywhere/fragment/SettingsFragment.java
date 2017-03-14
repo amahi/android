@@ -180,7 +180,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void setUpApplicationVersion() {
-		Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent();
+		Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent(getActivity());
 		startActivity(intent);
 	}
 

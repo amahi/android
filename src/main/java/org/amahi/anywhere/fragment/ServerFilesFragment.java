@@ -19,9 +19,13 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.Manifest;
 import android.app.Fragment;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -33,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -59,6 +64,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import static android.support.v4.content.PermissionChecker.checkSelfPermission;
+
 /**
  * Files fragment. Shows files list.
  */
@@ -76,6 +83,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		public static final String FILES_SORT = "files_sort";
 	}
 
+	private static final int CALLBACK_NUMBER = 100;
+	
 	private enum FilesSort
 	{
 		NAME, MODIFICATION_TIME
@@ -175,11 +184,12 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		getListView().requestLayout();
 	}
 
+	@RequiresApi(api = Build.VERSION_CODES.M)
 	@Override
 	public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
 			case R.id.menu_share:
-				startFileSharing(getCheckedFile());
+				checkPermissions();
 				break;
 
 			default:
@@ -189,6 +199,32 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		actionMode.finish();
 
 		return true;
+	}
+	@RequiresApi(api = Build.VERSION_CODES.M)
+	private void checkPermissions(){
+	int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+	
+	if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {					
+		if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+		} else {
+		requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CALLBACK_NUMBER);
+		}
+	} else {
+		startFileSharing(getCheckedFile());
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+	switch (requestCode) {
+		case 100: {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Toast.makeText(getActivity().getApplicationContext(),"Storage permission has been enabled please reshare to download",Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(getActivity().getApplicationContext(),"You have denied the permission please enable permission in settings for media access",Toast.LENGTH_LONG).show();
+			}
+		   }
+		}
 	}
 
 	private void startFileSharing(ServerFile file) {

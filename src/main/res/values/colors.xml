@@ -24,5 +24,7 @@
 	<color name="background_secondary">#333333</color>
 	<color name="background_transparent_primary">#cc000000</color>
 	<color name="background_transparent_secondary">#80000000</color>
+	<color name="primary_text_material_light">#deffffff</color>
+	<color name="accent_material_dark">#19b3f3</color>
 
 </resources>

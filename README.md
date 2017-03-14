@@ -25,6 +25,15 @@ Gradle, Android SDK and project dependencies will be downloaded automatically.
   client.id = ID
   client.secret = SECRET
   ```
+  
+  ```
+  $ vim fabric.properties
+  ```
+  ```
+  apiKey=YOUR_API_KEY
+  apiSecret=YOUR_API_SECRET (Optional)
+  ```
+
 
 3. Build the application.
 

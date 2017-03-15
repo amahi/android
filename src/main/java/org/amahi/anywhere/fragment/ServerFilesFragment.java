@@ -358,6 +358,10 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		return getDirectory() != null;
 	}
 
+       private boolean isDirectory(ServerFile file) {
+           return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
+       }
+
 	private ServerFile getDirectory() {
 		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
 	}
@@ -442,12 +446,20 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 			clearFileChoices();
 
 			startFileOpening(getFile(filePosition));
+
+                       if(isDirectory(getFile(filePosition))){
+                           setUpTitle(getFile(filePosition).getName());
+                       }
 		}
 	}
 
 	private void startFileOpening(ServerFile file) {
 		BusProvider.getBus().post(new FileOpeningEvent(getShare(), getFiles(), file));
 	}
+
+       private void setUpTitle(String title) {
+           getActivity().getActionBar().setTitle(title);
+       }
 
 	private List<ServerFile> getFiles() {
 		if (!isMetadataAvailable()) {

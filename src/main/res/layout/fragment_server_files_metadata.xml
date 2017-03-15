@@ -70,7 +70,7 @@
 			android:layout_height="wrap_content">
 
 			<TextView
-				android:text="No Files"
+				android:text="@string/message_no_files"
 				android:textSize="@dimen/text_large"
 				android:textStyle="bold"
 				android:gravity="center_horizontal"
@@ -82,7 +82,7 @@
 				android:layout_height="8dp"/>
 
 			<TextView
-				android:text="Create some and try again"
+				android:text="@string/message_create_and_try_again"
 				android:textSize="@dimen/text_small"
 				android:gravity="center_horizontal"
 				android:layout_width="match_parent"
@@ -100,7 +100,7 @@
 		android:layout_height="wrap_content">
 
 		<TextView
-			android:text="Connection Error"
+			android:text="@string/message_connection_error"
 			android:textSize="@dimen/text_large"
 			android:textStyle="bold"
 			android:gravity="center_horizontal"
@@ -112,7 +112,7 @@
 			android:layout_height="8dp"/>
 
 		<TextView
-			android:text="Check your settings and try again"
+			android:text="@string/message_notice_check_settings"
 			android:textSize="@dimen/text_small"
 			android:gravity="center_horizontal"
 			android:layout_width="match_parent"

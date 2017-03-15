@@ -27,9 +27,12 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
@@ -57,7 +60,7 @@ import javax.inject.Inject;
  * The navigation itself is done via {@link org.amahi.anywhere.fragment.NavigationFragment},
  * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
-public class NavigationActivity extends Activity implements DrawerLayout.DrawerListener
+public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener
 {
 	private static final class State
 	{
@@ -81,20 +84,25 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 
 		setUpInjections();
 
+		setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
+
 		setUpHomeNavigation();
 
 		setUpNavigation(savedInstanceState);
+
+		getDrawer().setScrimColor(getResources().getColor(android.R.color.transparent));
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
 	}
 
-	private void setUpHomeNavigation() {
-		ActionBar actionBar = getActionBar();
+	private TextView getToolbarTitle(){return (TextView)findViewById(R.id.toolbar_title);}
 
-		actionBar.setHomeButtonEnabled(isNavigationDrawerAvailable());
-		actionBar.setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
+	private void setUpHomeNavigation() {
+		getSupportActionBar().setDisplayShowTitleEnabled(false);
+		getSupportActionBar().setHomeButtonEnabled(isNavigationDrawerAvailable());
+		getSupportActionBar().setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
 	}
 
 	private boolean isNavigationDrawerAvailable() {
@@ -139,7 +147,7 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 
 	private void setUpTitle(String title) {
 		if (isNavigationDrawerAvailable()) {
-			getActionBar().setTitle(title);
+			getToolbarTitle().setText(title);
 		}
 	}
 

@@ -17,7 +17,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
-
 <org.amahi.anywhere.view.ClickableViewPager
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/pager_images"

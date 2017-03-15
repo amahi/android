@@ -28,6 +28,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -66,7 +68,7 @@ import javax.inject.Inject;
  * The playback itself is done via {@link org.amahi.anywhere.service.AudioService}.
  * Backed up by {@link android.media.MediaPlayer}.
  */
-public class ServerFileAudioActivity extends Activity implements ServiceConnection, MediaController.MediaPlayerControl
+public class ServerFileAudioActivity extends AppCompatActivity implements ServiceConnection, MediaController.MediaPlayerControl
 {
 	private static final Set<String> SUPPORTED_FORMATS;
 
@@ -106,6 +108,8 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_server_file_audio);
 
+		setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
+
 		setUpInjections();
 
 		setUpHomeNavigation();
@@ -118,7 +122,8 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	}
 
 	private void setUpHomeNavigation() {
-		getActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
 	}
 
 	private void setUpAudio(Bundle state) {
@@ -136,7 +141,7 @@ public class ServerFileAudioActivity extends Activity implements ServiceConnecti
 	}
 
 	private void setUpAudioTitle() {
-		getActionBar().setTitle(audioFile.getName());
+		getSupportActionBar().setTitle(audioFile.getName());
 	}
 
 	private void setUpAudioMetadata(Bundle state) {

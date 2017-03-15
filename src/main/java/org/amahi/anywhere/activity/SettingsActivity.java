@@ -22,6 +22,7 @@ package org.amahi.anywhere.activity;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import org.amahi.anywhere.util.Fragments;

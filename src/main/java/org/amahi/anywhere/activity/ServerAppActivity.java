@@ -22,6 +22,8 @@ package org.amahi.anywhere.activity;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,7 +50,7 @@ import javax.inject.Inject;
  * App activity. Shows web apps contents and allows basic navigation inside them.
  * Backed up by {@link android.webkit.WebView}.
  */
-public class ServerAppActivity extends Activity
+public class ServerAppActivity extends AppCompatActivity
 {
 	private static final class AppWebAgentField
 	{
@@ -65,6 +67,8 @@ public class ServerAppActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_server_app);
+
+		setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
 
 		setUpInjections();
 
@@ -133,7 +137,7 @@ public class ServerAppActivity extends Activity
 	}
 
 	private void setUpAppWebTitle() {
-		getActionBar().setTitle(getApp().getName());
+		getSupportActionBar().setTitle(getApp().getName());
 	}
 
 	private void setUpAppWebContent(Bundle state) {

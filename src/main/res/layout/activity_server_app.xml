@@ -18,22 +18,33 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/animator"
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:inAnimation="@android:anim/fade_in"
 	android:outAnimation="@android:anim/fade_out"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<ProgressBar
-		android:id="@android:id/progress"
-		android:layout_gravity="center"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"/>
+	<include layout="@layout/toolbar"/>
 
-	<WebView
-		android:id="@+id/web_content"
+	<ViewAnimator
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/animator"
+		android:inAnimation="@android:anim/fade_in"
+		android:outAnimation="@android:anim/fade_out"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+		android:layout_height="match_parent">
 
-</ViewAnimator>
+		<ProgressBar
+			android:id="@android:id/progress"
+			android:layout_gravity="center"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+
+		<WebView
+			android:id="@+id/web_content"
+			android:layout_marginTop="?attr/actionBarSize"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"/>
+	</ViewAnimator>
+</RelativeLayout>

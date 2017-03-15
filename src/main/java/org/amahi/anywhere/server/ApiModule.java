@@ -80,6 +80,7 @@ public class ApiModule
 	@Provides
 	@Singleton
 	HttpLoggingInterceptor provideLogging() {
+		// change the level below to HttpLoggingInterceptor.Level.BODY to get the whole body in the logs
 		return new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
 	}
 }

@@ -19,13 +19,16 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 
 import com.squareup.otto.Subscribe;
 
@@ -49,7 +52,7 @@ import javax.inject.Inject;
 /**
  * Shares fragment. Shows shares list.
  */
-public class ServerSharesFragment extends ListFragment
+public class ServerSharesFragment extends Fragment
 {
 	private static final class State
 	{
@@ -59,12 +62,33 @@ public class ServerSharesFragment extends ListFragment
 		public static final String SHARES = "shares";
 	}
 
+	private RecyclerView mRecyclerView;
+
+	private ServerSharesAdapter mServerSharesAdapter;
+
+	private LinearLayout mEmptyLinearLayout;
+
 	@Inject
 	ServerClient serverClient;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
+
+		View rootView = layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
+
+		mRecyclerView = (RecyclerView)rootView.findViewById(R.id.list);
+
+		mServerSharesAdapter = new ServerSharesAdapter(getActivity());
+
+		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+
+		mEmptyLinearLayout = (LinearLayout)rootView.findViewById(R.id.empty);
+
+		mRecyclerView.addItemDecoration(new
+				DividerItemDecoration(getActivity(),
+				DividerItemDecoration.VERTICAL));
+
+		return rootView;
 	}
 
 	@Override
@@ -82,11 +106,12 @@ public class ServerSharesFragment extends ListFragment
 
 	private void setUpShares(Bundle state) {
 		setUpSharesAdapter();
+
 		setUpSharesContent(state);
 	}
 
 	private void setUpSharesAdapter() {
-		setListAdapter(new ServerSharesAdapter(getActivity()));
+		mRecyclerView.setAdapter(mServerSharesAdapter);
 	}
 
 	private void setUpSharesContent(Bundle state) {
@@ -103,10 +128,18 @@ public class ServerSharesFragment extends ListFragment
 
 	private void setUpSharesState(Bundle state) {
 		List<ServerShare> shares = state.getParcelableArrayList(State.SHARES);
+		if(shares!=null) {
+			setUpSharesContent(shares);
 
-		setUpSharesContent(shares);
+			showSharesContent();
 
-		showSharesContent();
+			mEmptyLinearLayout.setVisibility(View.GONE);
+		}
+		else{
+
+			mEmptyLinearLayout.setVisibility(View.VISIBLE);
+
+		}
 	}
 
 	private void setUpSharesContent(List<ServerShare> shares) {
@@ -114,11 +147,11 @@ public class ServerSharesFragment extends ListFragment
 	}
 
 	private ServerSharesAdapter getSharesAdapter() {
-		return (ServerSharesAdapter) getListAdapter();
+		return mServerSharesAdapter;
 	}
 
 	private void showSharesContent() {
-		ViewDirector.of(this, R.id.animator).show(R.id.content);
+		ViewDirector.of(getActivity(), R.id.animator).show(R.id.content);
 	}
 
 	private void setUpSharesContent() {
@@ -145,18 +178,7 @@ public class ServerSharesFragment extends ListFragment
 	}
 
 	private void showSharesError() {
-		ViewDirector.of(this, R.id.animator).show(R.id.error);
-	}
-
-	@Override
-	public void onListItemClick(ListView sharesListView, View shareView, int sharePosition, long shareId) {
-		super.onListItemClick(sharesListView, shareView, sharePosition, shareId);
-
-		startShareOpening(getSharesAdapter().getItem(sharePosition));
-	}
-
-	private void startShareOpening(ServerShare share) {
-		BusProvider.getBus().post(new ShareSelectedEvent(share));
+		ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
 	}
 
 	@Override

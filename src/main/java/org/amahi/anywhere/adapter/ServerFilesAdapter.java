@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2014 Amahi
  *
@@ -38,6 +39,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -118,14 +120,15 @@ public class ServerFilesAdapter extends BaseAdapter
                if(size==0){
                  moreInfo.setVisibility(View.GONE);
                }else{
+
                  moreInfo.setVisibility(View.VISIBLE);
 
-                 // for converting size in format of xx.xx i.e. 2 digit after point
                  double inMb=(size/1024.0)/1024.0;
-                 fileSize.setText(((int)(inMb*100))/100.0+" MB");
+                 fileSize.setText(((int)(inMb*100))/100.0+"MB");
 
                  Date d=getLastModified(file);
-                 fileLastModified.setText(d.toString());
+                 SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
+                 fileLastModified.setText(dt.format(d));
                }
 
 		if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {

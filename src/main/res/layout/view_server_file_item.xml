@@ -22,12 +22,14 @@
 	android:background="?android:attr/activatedBackgroundIndicator"
 	android:orientation="vertical"
        android:layout_width="match_parent"
+       android:padding="8dp"
 	android:layout_height="wrap_content">
 
 	<LinearLayout
 		android:orientation="horizontal"
 		android:gravity="center_vertical"
-		android:padding="8dp"
+		android:paddingLeft="8dp"
+		android:paddingRight="8dp"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
 
@@ -51,23 +53,27 @@
         android:id="@+id/more_info"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="8dp"
+        android:paddingTop="5dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
+            android:textColor="#686868"
             android:layout_weight="1"
             android:id="@+id/last_modified"
             android:maxLines="1"
-            android:textSize="@dimen/text_small"
-            android:layout_width="wrap_content"
+            android:textSize="@dimen/text_micro"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"/>
 
         <TextView
+            android:textColor="#686868"
             android:id="@+id/file_size"
             android:maxLines="1"
-            android:textSize="@dimen/text_small"
+            android:textSize="@dimen/text_micro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"/>

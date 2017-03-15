@@ -26,11 +26,19 @@ Gradle, Android SDK and project dependencies will be downloaded automatically.
   client.secret = SECRET
   ```
 
+This is something to keep private and you obtain it by asking in the [Amahi IRC channel](http://talk.amahi.org) or send a messag to `support at Amahi dot org`.
+
 3. Build the application.
 
   ```
   $ ./gradlew clean assembleDebug
+
   ```
+
+  or using the GUI.
+
+4. Once you have built the application, you will be needing credentials to use the application. Go to Amahi website and create your account, once the account is activated, you will see the description of how to setup Amahi server. However, this is not strictly needed, as we have a set up a demo server called "Welcome to Amahi" which you should see even without your own server installed.
+
 
 ## Generating the documentation
 

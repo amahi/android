@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2014 Amahi
   ~
   ~ This file is part of Amahi.
@@ -16,138 +15,88 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
-  -->
-
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="org.amahi.anywhere"
-	android:installLocation="auto">
+    android:installLocation="auto">
 
-	<uses-permission
-		android:name="android.permission.ACCESS_NETWORK_STATE"/>
-	<uses-permission
-		android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
-	<uses-permission
-		android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-	<uses-permission
-		android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-	<uses-permission
-		android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <application
+        android:name=".AmahiApplication"
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/application_name"
+        android:theme="@style/Theme.Amahi">
+        <activity android:name=".activity.NavigationActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-	<uses-permission
-		android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
-	<uses-permission
-		android:name="android.permission.GET_ACCOUNTS"/>
-	<uses-permission
-		android:name="android.permission.MANAGE_ACCOUNTS"/>
-	<uses-permission
-		android:name="android.permission.USE_CREDENTIALS"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.ServerAppActivity"></activity>
+        <activity android:name=".activity.ServerFilesActivity"></activity>
+        <activity
+            android:name=".activity.ServerFileAudioActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Amahi.Fullscreen"></activity>
+        <activity
+            android:name=".activity.ServerFileImageActivity"
+            android:theme="@style/Theme.Amahi.Fullscreen"></activity>
+        <activity
+            android:name=".activity.ServerFileVideoActivity"
+            android:theme="@style/Theme.Amahi.Fullscreen"></activity>
+        <activity android:name=".activity.ServerFileWebActivity"></activity>
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_settings"></activity>
+        <activity
+            android:name=".activity.AuthenticationActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/Theme.Amahi.Authentication"></activity>
 
-	<uses-permission
-		android:name="android.permission.WAKE_LOCK"/>
+        <service
+            android:name=".account.AmahiAuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
 
-	<application
-		android:allowBackup="false"
-		android:icon="@drawable/ic_launcher"
-		android:label="@string/application_name"
-		android:name=".AmahiApplication"
-		android:theme="@style/Theme.Amahi">
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service android:name=".service.AudioService"></service>
+        <service android:name=".service.VideoService"></service>
 
-		<activity
-			android:name=".activity.NavigationActivity">
+        <receiver android:name=".receiver.AudioReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.NetworkReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
 
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN"/>
-				<category android:name="android.intent.category.LAUNCHER"/>
-			</intent-filter>
-
-		</activity>
-
-		<activity
-			android:name=".activity.ServerAppActivity">
-		</activity>
-
-		<activity
-			android:name=".activity.ServerFilesActivity">
-		</activity>
-
-		<activity
-			android:launchMode="singleTop"
-			android:name=".activity.ServerFileAudioActivity"
-			android:theme="@style/Theme.Amahi.Fullscreen">
-		</activity>
-
-		<activity
-			android:name=".activity.ServerFileImageActivity"
-			android:theme="@style/Theme.Amahi.Fullscreen">
-		</activity>
-
-		<activity
-			android:name=".activity.ServerFileVideoActivity"
-			android:theme="@style/Theme.Amahi.Fullscreen">
-		</activity>
-
-		<activity
-			android:name=".activity.ServerFileWebActivity">
-		</activity>
-
-		<activity
-			android:label="@string/title_settings"
-			android:name=".activity.SettingsActivity">
-		</activity>
-
-		<activity
-			android:name=".activity.AuthenticationActivity"
-			android:windowSoftInputMode="stateHidden"
-			android:theme="@style/Theme.Amahi.Authentication">
-		</activity>
-
-		<service
-			android:name=".account.AmahiAuthenticatorService"
-			android:exported="false">
-
-			<intent-filter>
-				<action android:name="android.accounts.AccountAuthenticator"/>
-			</intent-filter>
-
-			<meta-data
-				android:name="android.accounts.AccountAuthenticator"
-				android:resource="@xml/authenticator"/>
-
-		</service>
-
-		<service
-			android:name=".service.AudioService">
-		</service>
-
-		<service
-			android:name=".service.VideoService">
-		</service>
-
-		<receiver
-			android:name=".receiver.AudioReceiver">
-
-			<intent-filter>
-				<action android:name="android.intent.action.MEDIA_BUTTON"/>
-				<action android:name="android.media.AUDIO_BECOMING_NOISY"/>
-			</intent-filter>
-
-		</receiver>
-
-		<receiver
-			android:name=".receiver.NetworkReceiver">
-
-			<intent-filter>
-				<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-			</intent-filter>
-
-		</receiver>
-
-		<meta-data
-			android:name="com.crashlytics.ApiKey"
-			android:value="d7b65346d3cf0028328f006bff447501d70f8996"/>
-			/>
-
-	</application>
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="d7b65346d3cf0028328f006bff447501d70f8996" />
+        />
+        <activity android:name=".activity.WebViewActivity"
+            android:label="@string/title_version_settings"></activity>
+    </application>
 
 </manifest>

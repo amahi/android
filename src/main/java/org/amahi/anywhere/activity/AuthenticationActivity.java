@@ -25,6 +25,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
@@ -88,7 +89,9 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	}
 
 	private EditText getPasswordEdit() {
-		return (EditText) findViewById(R.id.edit_password);
+		TextInputLayout password_layout;
+		password_layout = (TextInputLayout) findViewById(R.id.password_layout);
+		return password_layout.getEditText();
 	}
 
 	private ActionProcessButton getAuthenticationButton() {

@@ -44,25 +44,35 @@
             android:layout_width="match_parent"
             android:layout_height="8dp" />
 
-        <EditText
-            android:id="@+id/edit_username"
+        <android.support.design.widget.TextInputLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_username"
-            android:singleLine="true" />
+            android:theme="@style/Theme.AppCompat"
+            app:passwordToggleEnabled="true">
+
+            <EditText
+                android:id="@+id/edit_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_username"
+                android:singleLine="true" />
+
+        </android.support.design.widget.TextInputLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="8dp" />
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/password_layout"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/Theme.AppCompat"
             app:passwordToggleEnabled="true">
 
-            <android.support.design.widget.TextInputEditText
+            <EditText
+                android:id="@+id/password_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_password"

@@ -38,7 +38,6 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -117,14 +116,19 @@ public class ServerFilesAdapter extends BaseAdapter
 
                long size=getFileSize(file);
 
-               if(size==0){
+               if(file.getMime().equals("text/directory")){
                  moreInfo.setVisibility(View.GONE);
-               }else{
 
+               }else{
                  moreInfo.setVisibility(View.VISIBLE);
 
                  double inMb=(size/1024.0)/1024.0;
-                 fileSize.setText(String.format("%.2f", inMb)+"MB");
+
+                 if(inMb <= 0.1){
+                    fileSize.setText(String.format("%.2f", inMb*1024.0)+"KB");
+                 }else{
+                    fileSize.setText(String.format("%.2f", inMb)+"MB");
+                 }
 
                  Date d=getLastModified(file);
                  SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");

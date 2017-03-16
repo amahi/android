@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2014 Amahi
  *
@@ -21,11 +22,13 @@ package org.amahi.anywhere.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -36,7 +39,9 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -51,10 +56,12 @@ public class ServerFilesAdapter extends BaseAdapter
 	private ServerShare serverShare;
 	private List<ServerFile> files;
 
+       private Context context;
+
 	public ServerFilesAdapter(Context context, ServerClient serverClient) {
 		this.serverClient = serverClient;
 		this.layoutInflater = LayoutInflater.from(context);
-
+               this.context=context;
 		this.files = Collections.emptyList();
 	}
 
@@ -104,8 +111,27 @@ public class ServerFilesAdapter extends BaseAdapter
 	private void bindView(ServerFile file, View view) {
 		ImageView fileIconView = (ImageView) view.findViewById(R.id.icon);
 		TextView fileTextView = (TextView) view.findViewById(R.id.text);
+		TextView fileSize = (TextView) view.findViewById(R.id.file_size);
+		TextView fileLastModified = (TextView) view.findViewById(R.id.last_modified);
+               LinearLayout moreInfo = (LinearLayout) view.findViewById(R.id.more_info);
 
 		fileTextView.setText(getFileName(file));
+
+               long size=getFileSize(file);
+
+               if(file.getMime().equals("text/directory")){
+                 moreInfo.setVisibility(View.GONE);
+
+               }else{
+                 moreInfo.setVisibility(View.VISIBLE);
+
+                 fileSize.setText(Formatter.formatFileSize(context, size));
+
+                 Date d=getLastModified(file);
+                 SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
+                 fileLastModified.setText(dt.format(d));
+               }
+
 		if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
 			setUpImageIcon(file, fileIconView);
 		} else {
@@ -116,6 +142,14 @@ public class ServerFilesAdapter extends BaseAdapter
 	private String getFileName(ServerFile file) {
 		return file.getName();
 	}
+
+       private long getFileSize(ServerFile file) {
+              return file.getSize();
+       }
+
+       private Date getLastModified(ServerFile file) {
+              return file.getModificationTime();
+       }
 
 	private int getFileIcon(ServerFile file) {
 		switch (Mimes.match(file.getMime())) {
@@ -164,4 +198,5 @@ public class ServerFilesAdapter extends BaseAdapter
 	private Uri getImageUri(ServerFile file) {
 		return serverClient.getFileUri(serverShare, file);
 	}
+
 }

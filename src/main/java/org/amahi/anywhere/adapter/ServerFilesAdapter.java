@@ -22,6 +22,7 @@ package org.amahi.anywhere.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,10 +56,12 @@ public class ServerFilesAdapter extends BaseAdapter
 	private ServerShare serverShare;
 	private List<ServerFile> files;
 
+       private Context context;
+
 	public ServerFilesAdapter(Context context, ServerClient serverClient) {
 		this.serverClient = serverClient;
 		this.layoutInflater = LayoutInflater.from(context);
-
+               this.context=context;
 		this.files = Collections.emptyList();
 	}
 
@@ -122,13 +125,7 @@ public class ServerFilesAdapter extends BaseAdapter
                }else{
                  moreInfo.setVisibility(View.VISIBLE);
 
-                 double inMb=(size/1024.0)/1024.0;
-
-                 if(inMb <= 0.1){
-                    fileSize.setText(String.format("%.2f", inMb*1024.0)+"KB");
-                 }else{
-                    fileSize.setText(String.format("%.2f", inMb)+"MB");
-                 }
+                 fileSize.setText(Formatter.formatFileSize(context, size));
 
                  Date d=getLastModified(file);
                  SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");

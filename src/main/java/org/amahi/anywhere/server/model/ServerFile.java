@@ -44,13 +44,13 @@ public class ServerFile implements Parcelable
 	private Date modificationTime;
 
        @SerializedName("size")
-       private int size;
+       private long size;
 
        public void setSize(int size) {
             this.size = size;
        }
 
-       public int getSize() {
+       public long getSize() {
             return size;
        }
 

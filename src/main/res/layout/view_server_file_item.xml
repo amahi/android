@@ -20,63 +20,63 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:background="?android:attr/activatedBackgroundIndicator"
-	android:orientation="vertical"
+	android:orientation="horizontal"
        android:layout_width="match_parent"
        android:padding="8dp"
 	android:layout_height="wrap_content">
 
-	<LinearLayout
-		android:orientation="horizontal"
-		android:gravity="center_vertical"
-		android:paddingLeft="8dp"
-		android:paddingRight="8dp"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
-
-		<ImageView
-			android:id="@+id/icon"
-			android:layout_marginRight="8dp"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"/>
-
-		<TextView
-			android:id="@+id/text"
-			android:maxLines="1"
-			android:textSize="@dimen/text_medium"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:ellipsize="end"/>
-
-	</LinearLayout>
+    <ImageView
+        android:scaleType="centerCrop"
+        android:id="@+id/icon"
+        android:layout_marginRight="8dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"/>
 
     <LinearLayout
-        android:id="@+id/more_info"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingTop="5dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+       android:orientation="vertical"
+       android:gravity="center_vertical"
+	android:paddingLeft="8dp"
+	android:paddingRight="8dp"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
 
-        <TextView
-            android:textColor="#686868"
-            android:layout_weight="1"
-            android:id="@+id/last_modified"
-            android:maxLines="1"
-            android:textSize="@dimen/text_micro"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"/>
+	<TextView
+	   android:id="@+id/text"
+	   android:maxLines="1"
+	   android:textSize="@dimen/text_medium"
+	   android:layout_width="match_parent"
+	   android:layout_height="wrap_content"
+	   android:ellipsize="end"/>
 
-        <TextView
-            android:textColor="#686868"
-            android:id="@+id/file_size"
-            android:maxLines="1"
-            android:textSize="@dimen/text_micro"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"/>
+        <LinearLayout
+           android:id="@+id/more_info"
+          android:orientation="horizontal"
+          android:gravity="center_vertical"
+           android:paddingTop="5dp"
+           android:paddingRight="5dp"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent">
+
+            <TextView
+                android:textColor="#686868"
+                android:layout_weight="1"
+                android:id="@+id/last_modified"
+                android:maxLines="1"
+                android:textSize="@dimen/text_micro"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:textColor="#686868"
+                android:id="@+id/file_size"
+                android:maxLines="1"
+                android:textSize="@dimen/text_micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

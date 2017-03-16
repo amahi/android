@@ -115,7 +115,7 @@ public class ServerFilesAdapter extends BaseAdapter
 
 		fileTextView.setText(getFileName(file));
 
-               int size=getFileSize(file);
+               long size=getFileSize(file);
 
                if(size==0){
                  moreInfo.setVisibility(View.GONE);
@@ -124,7 +124,7 @@ public class ServerFilesAdapter extends BaseAdapter
                  moreInfo.setVisibility(View.VISIBLE);
 
                  double inMb=(size/1024.0)/1024.0;
-                 fileSize.setText(((int)(inMb*100))/100.0+"MB");
+                 fileSize.setText(String.format("%.2f", inMb)+"MB");
 
                  Date d=getLastModified(file);
                  SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
@@ -142,7 +142,7 @@ public class ServerFilesAdapter extends BaseAdapter
 		return file.getName();
 	}
 
-       private int getFileSize(ServerFile file) {
+       private long getFileSize(ServerFile file) {
               return file.getSize();
        }
 

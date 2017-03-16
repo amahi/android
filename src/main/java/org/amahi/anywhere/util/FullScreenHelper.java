@@ -35,7 +35,7 @@ import android.view.View;
 public class FullScreenHelper {
 
     private boolean autoHide = true;
-    private int autoHideDelayMillis = 3000;
+    private long autoHideDelayMillis = 3000;
     private boolean onClickToggleEnabled = true;
     private boolean mVisible;
     private static final int UI_ANIMATION_DELAY = 300;
@@ -106,7 +106,7 @@ public class FullScreenHelper {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     if (autoHide) {
-                        delayedHide(autoHideDelayMillis);
+                        delayedHide();
                     }
                     return false;
                 }
@@ -119,6 +119,7 @@ public class FullScreenHelper {
             hide();
         } else {
             show();
+            delayedHide();
         }
     }
 
@@ -154,7 +155,7 @@ public class FullScreenHelper {
         }
     };
 
-    private void hide() {
+    public void hide() {
         if (actionBar != null)
             actionBar.hide();
         if (mControlsView != null)
@@ -167,7 +168,7 @@ public class FullScreenHelper {
     }
 
     @SuppressLint("InlinedApi")
-    private void show() {
+    public void show() {
         // Show the system bar
         mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
@@ -182,8 +183,16 @@ public class FullScreenHelper {
      * Schedules a call to hide() in [delay] milliseconds, canceling any
      * previously scheduled calls.
      */
-    private void delayedHide(int delayMillis) {
+    public void delayedHide(long delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    public void delayedHide() {
+        delayedHide(autoHideDelayMillis);
+    }
+
+    public long getAutoHideDelayMillis() {
+        return autoHideDelayMillis;
     }
 }

@@ -23,41 +23,30 @@ import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 
 import org.amahi.anywhere.AmahiApplication;
-import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.VideoFinishedEvent;
-import org.amahi.anywhere.bus.VideoSizeChangedEvent;
-import org.amahi.anywhere.bus.VideoStartedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.videolan.libvlc.EventHandler;
-import org.videolan.libvlc.IVideoPlayer;
 import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.LibVlcException;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 /**
  * Video service. Does all the work related to the video playback.
  */
-public class VideoService extends Service implements IVideoPlayer
+public class VideoService extends Service
 {
-	private static enum VideoStatus
-	{
-		PLAYING, PAUSED
-	}
-
-	private LibVLC videoPlayer;
-	private VideoStatus videoStatus;
-	private VideoEventsHandler videoEventsHandler;
-
 	private ServerShare videoShare;
 	private ServerFile videoFile;
+
+	private LibVLC mLibVLC;
+	private MediaPlayer mMediaPlayer = null;
 
 	@Inject
 	ServerClient serverClient;
@@ -81,14 +70,10 @@ public class VideoService extends Service implements IVideoPlayer
 	}
 
 	private void setUpVideoPlayer() {
-		try {
-			videoPlayer = LibVLC.getInstance();
-			videoPlayer.init(this);
-
-			videoStatus = VideoStatus.PAUSED;
-		} catch (LibVlcException e) {
-			throw new RuntimeException(e);
-		}
+		final ArrayList<String> args = new ArrayList<>();
+		args.add("-vvv");
+		mLibVLC = new LibVLC(this, args);
+		mMediaPlayer = new MediaPlayer(mLibVLC);
 	}
 
 	public boolean isVideoStarted() {
@@ -99,119 +84,57 @@ public class VideoService extends Service implements IVideoPlayer
 		this.videoShare = videoShare;
 		this.videoFile = videoFile;
 
-		setUpVideoEvents();
 		setUpVideoPlayback();
 	}
 
-	private void setUpVideoEvents() {
-		videoEventsHandler = new VideoEventsHandler();
-
-		EventHandler.getInstance().addHandler(videoEventsHandler);
-	}
-
 	private void setUpVideoPlayback() {
-		videoPlayer.playMRL(getVideoUri().toString());
-
-		videoStatus = VideoStatus.PLAYING;
+		Media media = new Media(mLibVLC, getVideoUri());
+		mMediaPlayer.setMedia(media);
+		media.release();
+		mMediaPlayer.play();
 	}
 
 	private Uri getVideoUri() {
 		return serverClient.getFileUri(videoShare, videoFile);
 	}
 
-	public LibVLC getVideoPlayer() {
-		return videoPlayer;
+	public MediaPlayer getMediaPlayer() {
+		return mMediaPlayer;
 	}
 
 	public boolean isVideoPlaying() {
-		return videoStatus == VideoStatus.PLAYING;
+		return mMediaPlayer.isPlaying();
 	}
 
 	public void playVideo() {
-		videoPlayer.play();
-
-		videoStatus = VideoStatus.PLAYING;
+		mMediaPlayer.play();
 	}
 
 	public void pauseVideo() {
-		videoPlayer.pause();
-
-		videoStatus = VideoStatus.PAUSED;
+		mMediaPlayer.pause();
 	}
 
-	@Override
-	public void setSurfaceSize(int width, int height, int visibleWidth, int visibleHeight, int sarNumber, int sarDensity) {
-		changeVideoSize(width, height);
-	}
-	public void eventHardwareAccelerationError(){
-		// FIXME -- handle this error
-	}
-
-	private void changeVideoSize(int width, int height) {
-		Message message = Message.obtain(videoEventsHandler, VideoEvent.CHANGE_VIDEO_SIZE, width, height);
-		message.sendToTarget();
-	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 
-		tearDownVideoEvents();
 		tearDownVideoPlayback();
 	}
 
-	private void tearDownVideoEvents() {
-		EventHandler.getInstance().removeHandler(videoEventsHandler);
-	}
 
 	private void tearDownVideoPlayback() {
-		videoPlayer.stop();
-		videoPlayer.destroy();
+		mMediaPlayer.stop();
+		mMediaPlayer.release();
+		mLibVLC.release();
 	}
 
-	public static final class VideoEvent
-	{
-		private VideoEvent() {
-		}
-
-		public static final int CHANGE_VIDEO_SIZE = 42;
-	}
-
-	private static final class VideoEventsHandler extends Handler
-	{
-		@Override
-		public void handleMessage(Message message) {
-			super.handleMessage(message);
-
-			switch (message.what) {
-				case VideoEvent.CHANGE_VIDEO_SIZE:
-					BusProvider.getBus().post(new VideoSizeChangedEvent(message.arg1, message.arg2));
-					break;
-
-				default:
-					break;
-			}
-
-			switch (message.getData().getInt("event")) {
-				case EventHandler.MediaPlayerPlaying:
-					BusProvider.getBus().post(new VideoStartedEvent());
-					break;
-
-				case EventHandler.MediaPlayerEndReached:
-					BusProvider.getBus().post(new VideoFinishedEvent());
-					break;
-
-				default:
-					break;
-			}
-		}
-	}
 
 	public static final class VideoServiceBinder extends Binder
 	{
 		private final VideoService videoService;
 
-		public VideoServiceBinder(VideoService videoService) {
+		VideoServiceBinder(VideoService videoService) {
 			this.videoService = videoService;
 		}
 

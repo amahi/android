@@ -21,7 +21,11 @@ package org.amahi.anywhere.view;
 
 import android.app.Activity;
 import android.content.Context;
+import java.util.concurrent.TimeUnit;
+import android.os.Handler;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.MediaController;
@@ -36,9 +40,30 @@ import org.amahi.anywhere.R;
  */
 public class MediaControls extends MediaController implements Animation.AnimationListener
 {
+	private Handler videoControlsHandler;
+	private boolean isVisible = false;
+    private long autoHideDelayMillis = TimeUnit.SECONDS.toMillis(3);
+
 	public MediaControls(Context context) {
 		super(context);
+        init();
 	}
+
+    public MediaControls(Context context, long autoHideDelayMillis) {
+        super(context);
+        this.autoHideDelayMillis = autoHideDelayMillis;
+        init();
+    }
+
+	private void init() {
+        videoControlsHandler = new Handler();
+		setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				hideControlsDelayed();
+			}
+		});
+    }
 
 	@Override
 	public void show(int timeout) {
@@ -46,21 +71,48 @@ public class MediaControls extends MediaController implements Animation.Animatio
 	}
 
 	public void showAnimated() {
-		Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.slide_up_view);
-		startAnimation(animation);
-
-		show();
+		if(!isVisible) {
+			videoControlsHandler.removeCallbacks(mHideRunnable);
+			Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.slide_up_view);
+			startAnimation(animation);
+			show();
+			isVisible = true;
+		}
 	}
 
 	public void hideAnimated() {
-		Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.slide_down_view);
-		animation.setAnimationListener(this);
-		startAnimation(animation);
+		if(isVisible) {
+			Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.slide_down_view);
+			animation.setAnimationListener(this);
+			startAnimation(animation);
+		}
+	}
+
+	Runnable mHideRunnable = new Runnable() {
+		@Override
+		public void run() {
+			hideAnimated();
+		}
+	};
+
+    public void hideControlsDelayed() {
+		videoControlsHandler.removeCallbacks(mHideRunnable);
+        videoControlsHandler.postDelayed(mHideRunnable, autoHideDelayMillis);
+    }
+
+    public void toggle() {
+		if (isVisible) {
+			hideAnimated();
+		} else {
+			showAnimated();
+			hideControlsDelayed();
+		}
 	}
 
 	@Override
 	public void onAnimationEnd(Animation animation) {
 		hide();
+		isVisible = false;
 	}
 
 	@Override

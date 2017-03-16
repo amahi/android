@@ -32,8 +32,8 @@
 		android:layout_height="40dp"/>
 
 	<TextView
-		android:id="@+id/text"
-		android:singleLine="true"
+		android:id="@+id/title"
+		android:maxLines="1"
 		android:textSize="@dimen/text_medium"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"/>

@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -167,7 +168,8 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	private void tearDownActivity() {
 		getActivity().finish();
 		Intent myIntent = new Intent(getActivity().getApplicationContext(), AuthenticationActivity.class);
-		startActivity(myIntent);
+		myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(myIntent);
 	}
 
 	private void sharedIntent(){
@@ -180,7 +182,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void setUpApplicationVersion() {
-		Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent();
+		Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent(getActivity());
 		startActivity(intent);
 	}
 

@@ -84,6 +84,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
             }
         });
 
+
         getPasswordEdit().setOnTouchListener(new View.OnTouchListener() {
 
             @Override
@@ -127,9 +128,9 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
     }
 
     private EditText getPasswordEdit() {
-        TextInputLayout password_layout;
-        password_layout = (TextInputLayout) findViewById(R.id.password_layout);
-        return password_layout.getEditText();
+        EditText password_layout;
+        password_layout = (EditText) findViewById(R.id.password_layout);
+        return password_layout;
     }
 
     private ActionProcessButton getAuthenticationButton() {

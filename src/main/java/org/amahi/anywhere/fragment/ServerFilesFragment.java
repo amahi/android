@@ -21,6 +21,7 @@ package org.amahi.anywhere.fragment;
 
 import android.Manifest;
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -84,7 +85,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private static final int CALLBACK_NUMBER = 100;
-	
+	public static final int DIALOG_RESULT_CODE = 121;
+	public static final String EXTRA_INT_SORT = "option_selected";
+
 	private enum FilesSort
 	{
 		NAME, MODIFICATION_TIME
@@ -469,7 +472,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		}
 	}
 
-	@Override
+       @Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
 		super.onCreateOptionsMenu(menu, menuInflater);
 
@@ -502,14 +505,45 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
 			case R.id.menu_sort:
-				setUpFilesContentSortSwitched();
-				setUpFilesContentSortIcon(menuItem);
+                               showSortDialog();
 				return true;
 
 			default:
 				return super.onOptionsItemSelected(menuItem);
 		}
 	}
+
+       private void showSortDialog(){
+           int previous_index=0;
+
+           if(filesSort==FilesSort.MODIFICATION_TIME){
+               previous_index=1;
+           }
+
+           SortingDialogFragment fragment=SortingDialogFragment.newInstance(previous_index);
+           android.app.FragmentManager fm=getFragmentManager();
+
+           fragment.show(fm,"sorting-dialog");
+
+           fragment.setTargetFragment(this, DIALOG_RESULT_CODE);
+       }
+
+       @Override
+       public void onActivityResult(int requestCode, int resultCode, Intent data) {
+           super.onActivityResult(requestCode, resultCode, data);
+
+           if(requestCode==DIALOG_RESULT_CODE){
+               int select=data.getIntExtra(EXTRA_INT_SORT,0);
+
+               if(select==0){
+                   filesSort=FilesSort.NAME;
+               }else if(select==1){
+                   filesSort=FilesSort.MODIFICATION_TIME;
+               }
+
+               setUpFilesContentSort();
+           }
+       }
 
 	private void setUpFilesContentSortSwitched() {
 		switch (filesSort) {
@@ -528,7 +562,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		setUpFilesContentSort();
 	}
 
-	private void setUpFilesContentSort() {
+       private void setUpFilesContentSort() {
 		if (!isMetadataAvailable()) {
 			getFilesAdapter().replaceWith(getShare(), sortFiles(getFiles()));
 		} else {

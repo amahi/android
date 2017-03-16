@@ -48,6 +48,7 @@
 			android:id="@+id/empty_server_apps"
 			android:orientation="vertical"
 			android:layout_gravity="center"
+			android:visibility="gone"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
@@ -55,7 +56,6 @@
 				android:text="@string/message_empty_apps"
 				android:textSize="@dimen/text_large"
 				android:textStyle="bold"
-				android:visibility="gone"
 				android:gravity="center_horizontal"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"/>

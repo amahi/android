@@ -105,7 +105,13 @@ public class ServerFilesActivity extends Activity
 		getActionBar().setTitle(getShare().getName());
 	}
 
-	private ServerShare getShare() {
+       @Override
+       public void onBackPressed() {
+           super.onBackPressed();
+           setUpFilesTitle();
+       }
+
+       private ServerShare getShare() {
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
@@ -257,7 +263,7 @@ public class ServerFilesActivity extends Activity
 		BusProvider.getBus().unregister(this);
 	}
 
-	@Override
+       @Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 

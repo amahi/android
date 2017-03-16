@@ -53,7 +53,10 @@
     <string name="message_notice_check_settings">Check your settings and try again</string>
     <string name="message_notice_create_some">Create some and try again</string>
 
-    <string name="message_progress_file_downloading">Downloading file...</string>
+    <string name="message_progress_file_downloading">Downloading file...</string>	
+    <string name="message_no_files">No Files</string>
+    <string name="message_create_and_try_again">Create some and try again</string>
+    <string name="message_connection_error">Connection Error</string>
 
 	<string name="share_subject">Check out my Amahi home server!</string>
 	<string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>

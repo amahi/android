@@ -41,7 +41,7 @@
 	<EditText
 		android:id="@+id/edit_username"
 		android:hint="@string/hint_username"
-		android:singleLine="true"
+		android:maxLines="1"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"/>
 

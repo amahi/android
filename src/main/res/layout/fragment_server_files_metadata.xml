@@ -62,6 +62,16 @@
 
 		</android.support.v4.widget.SwipeRefreshLayout>
 
+		<TextView
+			android:text="No search results found."
+			android:textSize="@dimen/text_large"
+			android:textStyle="bold"
+			android:id="@+id/none_text"
+			android:visibility="gone"
+			android:gravity="center"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"/>
+
 		<LinearLayout
 			android:id="@android:id/empty"
 			android:orientation="vertical"

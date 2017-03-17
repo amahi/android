@@ -25,4 +25,10 @@
 		android:title="@string/menu_sort"
 		android:showAsAction="always"/>
 
+	<item
+		android:id="@+id/menu_search"
+		android:title="Search"
+        android:icon="@drawable/menu_search"
+		android:showAsAction="always"/>
+
 </menu>

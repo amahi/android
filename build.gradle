@@ -20,16 +20,18 @@ android {
     signingConfigs {
         release {
             def signingFile = file("signing.properties")
+            def fakeSigningFile = file("fakeSigning.properties")
             def signingProperties = new Properties()
 
             if (signingFile.exists()) {
                 signingProperties.load(signingFile.newInputStream())
-
-                storeFile file(signingProperties["keystore.file"])
-                storePassword signingProperties["keystore.password"]
-                keyAlias signingProperties["key.alias"]
-                keyPassword signingProperties["key.password"]
+            } else {
+                signingProperties.load(fakeSigningFile.newInputStream())
             }
+            storeFile file(signingProperties["keystore.file"])
+            storePassword signingProperties["keystore.password"]
+            keyAlias signingProperties["key.alias"]
+            keyPassword signingProperties["key.password"]
         }
     }
 
@@ -70,6 +72,12 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
 }
 
 def buildVersionName(versionMajor, versionMinor, versionPatch) {
@@ -92,7 +100,7 @@ dependencies {
         maven { url 'http://dl.bintray.com/megabitdragon/maven' }
     }
 
-    def SUPPORT_LIBRARY_VERSION = "25.1.1"
+    def SUPPORT_LIBRARY_VERSION = "25.3.0"
 
     compile "com.android.support:support-v4:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:support-v13:${SUPPORT_LIBRARY_VERSION}"

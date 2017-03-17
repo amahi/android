@@ -47,16 +47,18 @@ android {
         targetSdkVersion 25
 
         def apiFile = file("api.properties")
+        def fakeApiFile = file("fakeApi.properties")
         def apiProperties = new Properties()
 
         if (apiFile.exists()) {
             apiProperties.load(apiFile.newInputStream())
-
-            buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
-            buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
-            buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
-            buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
+        } else {
+            apiProperties.load(fakeApiFile.newInputStream())
         }
+        buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
+        buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
+        buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
+        buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
     }
 
     buildTypes {
@@ -75,7 +77,7 @@ def buildVersionName(versionMajor, versionMinor, versionPatch) {
 }
 
 def buildVersionCode(versionMajor, versionMinor, versionPatch) {
-    return versionMajor * 10 ** 2 + versionMinor * 10 ** 1 + versionPatch * 10 ** 0
+    return versionMajor * 10**2 + versionMinor * 10**1 + versionPatch * 10**0
 }
 
 def formatStringField(field) {
@@ -87,10 +89,10 @@ dependencies {
         mavenCentral()
         mavenLocal()
         maven { url 'https://maven.fabric.io/public' }
-        maven { url  'http://dl.bintray.com/megabitdragon/maven' }
+        maven { url 'http://dl.bintray.com/megabitdragon/maven' }
     }
 
-def SUPPORT_LIBRARY_VERSION = "25.1.1"
+    def SUPPORT_LIBRARY_VERSION = "25.1.1"
 
     compile "com.android.support:support-v4:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:support-v13:${SUPPORT_LIBRARY_VERSION}"

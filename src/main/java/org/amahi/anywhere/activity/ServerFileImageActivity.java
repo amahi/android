@@ -91,7 +91,7 @@ public class ServerFileImageActivity extends Activity implements ViewPager.OnPag
 	}
 
 	private void setUpFullScreen() {
-		final FullScreenHelper fullScreen = new FullScreenHelper(getActionBar(), getImagePager(), null);
+		final FullScreenHelper fullScreen = new FullScreenHelper(getActionBar(), getImagePager());
 		fullScreen.enableOnClickToggle(false);
 		getImagePager().setOnViewPagerClickListener(new ClickableViewPager.OnClickListener() {
 			@Override

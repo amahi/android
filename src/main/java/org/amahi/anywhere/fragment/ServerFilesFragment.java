@@ -21,6 +21,8 @@ package org.amahi.anywhere.fragment;
 
 import android.Manifest;
 import android.app.Fragment;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,13 +38,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.ListAdapter;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.adapter.FilesFilterBaseAdapter;
 import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
@@ -57,6 +63,7 @@ import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.ViewDirector;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -72,8 +79,13 @@ import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
 	AdapterView.OnItemClickListener,
 	AdapterView.OnItemLongClickListener,
-	ActionMode.Callback
+	ActionMode.Callback,
+	SearchView.OnQueryTextListener,
+	FilesFilterBaseAdapter.onFilterListChange
 {
+	private SearchView searchView;
+	private MenuItem searchMenuItem;
+
 	private static final class State
 	{
 		private State() {
@@ -84,7 +96,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private static final int CALLBACK_NUMBER = 100;
-	
+
 	private enum FilesSort
 	{
 		NAME, MODIFICATION_TIME
@@ -203,8 +215,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	@RequiresApi(api = Build.VERSION_CODES.M)
 	private void checkPermissions(){
 	int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-	
-	if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {					
+
+	if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {
 		if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 		} else {
 		requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CALLBACK_NUMBER);
@@ -267,7 +279,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		}
 	}
 
-	private void setListAdapter(ListAdapter adapter) {
+	private void setListAdapter(FilesFilterBaseAdapter adapter) {
+		adapter.setFilterListChangeListener(this);
 		getListView().setAdapter(adapter);
 	}
 
@@ -285,6 +298,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void setUpFilesState(Bundle state) {
 		List<ServerFile> files = state.getParcelableArrayList(State.FILES);
+
 		FilesSort filesSort = (FilesSort) state.getSerializable(State.FILES_SORT);
 
 		setUpFilesContent(files);
@@ -313,7 +327,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 				metadataFiles.add(file);
 			}
 		}
-
 		return metadataFiles;
 	}
 
@@ -358,9 +371,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		return getDirectory() != null;
 	}
 
-       private boolean isDirectory(ServerFile file) {
-           return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
-       }
+	private boolean isDirectory(ServerFile file) {
+		return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
+	}
 
 	private ServerFile getDirectory() {
 		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
@@ -443,13 +456,12 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	@Override
 	public void onItemClick(AdapterView<?> filesListView, View fileView, int filePosition, long fileId) {
 		if (!areFilesActionsAvailable()) {
-			clearFileChoices();
-
+			collapseSearchView();
 			startFileOpening(getFile(filePosition));
 
-                       if(isDirectory(getFile(filePosition))){
-                           setUpTitle(getFile(filePosition).getName());
-                       }
+			if(isDirectory(getFile(filePosition))){
+				setUpTitle(getFile(filePosition).getName());
+			}
 		}
 	}
 
@@ -457,7 +469,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		BusProvider.getBus().post(new FileOpeningEvent(getShare(), getFiles(), file));
 	}
 
-       private void setUpTitle(String title) {
+	private void setUpTitle(String title) {
            getActivity().getActionBar().setTitle(title);
        }
 
@@ -481,6 +493,28 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		super.onPrepareOptionsMenu(menu);
 
 		setUpFilesContentSortIcon(menu.findItem(R.id.menu_sort));
+		searchMenuItem = menu.findItem(R.id.menu_search);
+		searchView = (SearchView) searchMenuItem.getActionView();
+
+		setUpSearchView();
+		setSearchCursor();
+	}
+
+	private void setUpSearchView() {
+		SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+		searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+		searchView.setSubmitButtonEnabled(false);
+		searchView.setOnQueryTextListener(this);
+	}
+
+	private void setSearchCursor() {
+		final int textViewID = searchView.getContext().getResources().getIdentifier("android:id/search_src_text",null, null);
+		final AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(textViewID);
+		try {
+			Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
+			mCursorDrawableRes.setAccessible(true);
+			mCursorDrawableRes.set(searchTextView, R.drawable.white_cursor);
+		} catch (Exception ignored) {}
 	}
 
 	private void setUpFilesContentSortIcon(MenuItem menuItem) {
@@ -501,6 +535,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
+
 			case R.id.menu_sort:
 				setUpFilesContentSortSwitched();
 				setUpFilesContentSortIcon(menuItem);
@@ -533,6 +568,37 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 			getFilesAdapter().replaceWith(getShare(), sortFiles(getFiles()));
 		} else {
 			getFilesMetadataAdapter().replaceWith(getShare(), sortFiles(getFiles()));
+		}
+	}
+
+	@Override
+	public boolean onQueryTextSubmit(String s) {
+		return false;
+	}
+
+	@Override
+	public boolean onQueryTextChange(String s) {
+		if (!isMetadataAvailable()) {
+			getFilesAdapter().getFilter().filter(s);
+		} else {
+			getFilesMetadataAdapter().getFilter().filter(s);
+		}
+		return true;
+	}
+
+	@Override
+	public void isListEmpty(boolean empty) {
+		getNoneTextView().setVisibility(empty?View.VISIBLE:View.GONE);
+	}
+
+	private View getNoneTextView() {
+		return getView().findViewById(R.id.none_text);
+	}
+
+	private void collapseSearchView() {
+		if (searchView.isShown()) {
+			searchMenuItem.collapseActionView();
+			searchView.setQuery("", false);
 		}
 	}
 

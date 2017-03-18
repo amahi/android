@@ -20,16 +20,18 @@ android {
     signingConfigs {
         release {
             def signingFile = file("signing.properties")
+            def fakeSigningFile = file("fakeSigning.properties")
             def signingProperties = new Properties()
 
             if (signingFile.exists()) {
                 signingProperties.load(signingFile.newInputStream())
-
-                storeFile file(signingProperties["keystore.file"])
-                storePassword signingProperties["keystore.password"]
-                keyAlias signingProperties["key.alias"]
-                keyPassword signingProperties["key.password"]
+            } else {
+                signingProperties.load(fakeSigningFile.newInputStream())
             }
+            storeFile file(signingProperties["keystore.file"])
+            storePassword signingProperties["keystore.password"]
+            keyAlias signingProperties["key.alias"]
+            keyPassword signingProperties["key.password"]
         }
     }
 
@@ -47,16 +49,18 @@ android {
         targetSdkVersion 25
 
         def apiFile = file("api.properties")
+        def fakeApiFile = file("fakeApi.properties")
         def apiProperties = new Properties()
 
         if (apiFile.exists()) {
             apiProperties.load(apiFile.newInputStream())
-
-            buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
-            buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
-            buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
-            buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
+        } else {
+            apiProperties.load(fakeApiFile.newInputStream())
         }
+        buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
+        buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
+        buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
+        buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
     }
 
     buildTypes {
@@ -68,6 +72,12 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
 }
 
 def buildVersionName(versionMajor, versionMinor, versionPatch) {
@@ -75,7 +85,7 @@ def buildVersionName(versionMajor, versionMinor, versionPatch) {
 }
 
 def buildVersionCode(versionMajor, versionMinor, versionPatch) {
-    return versionMajor * 10 ** 2 + versionMinor * 10 ** 1 + versionPatch * 10 ** 0
+    return versionMajor * 10**2 + versionMinor * 10**1 + versionPatch * 10**0
 }
 
 def formatStringField(field) {
@@ -87,13 +97,16 @@ dependencies {
         mavenCentral()
         mavenLocal()
         maven { url 'https://maven.fabric.io/public' }
+        maven { url 'http://dl.bintray.com/megabitdragon/maven' }
     }
 
-    compile "com.android.support:support-v4:25.1.1"
-    compile "com.android.support:support-v13:25.1.1"
-    compile "com.android.support:recyclerview-v7:25.1.1"
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.android.support:design:25.1.1'
+    def SUPPORT_LIBRARY_VERSION = "25.3.0"
+
+    compile "com.android.support:support-v4:${SUPPORT_LIBRARY_VERSION}"
+    compile "com.android.support:support-v13:${SUPPORT_LIBRARY_VERSION}"
+    compile "com.android.support:recyclerview-v7:${SUPPORT_LIBRARY_VERSION}"
+    compile "com.android.support:appcompat-v7:${SUPPORT_LIBRARY_VERSION}"
+    compile "com.android.support:design:${SUPPORT_LIBRARY_VERSION}"
     compile "com.github.dmytrodanylyk.android-process-button:library:1.0.4"
     compile "com.jakewharton.byteunits:byteunits:0.9.1"
     compile "com.jakewharton.timber:timber:4.5.1"
@@ -103,7 +116,7 @@ dependencies {
     compile "com.squareup.retrofit2:retrofit:2.2.0"
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-    compile "org.videolan:libvlc:1.0.0"
+    compile "org.videolan:libvlc:2.1.1"
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }

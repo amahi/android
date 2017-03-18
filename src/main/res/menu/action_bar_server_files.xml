@@ -20,9 +20,18 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<item
-		android:id="@+id/menu_sort"
-		android:title="@string/menu_sort"
-		android:showAsAction="always"/>
+    <item
+        android:id="@+id/menu_search"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/ic_search"
+        android:orderInCategory="100"
+        android:title="@string/menu_search"
+        android:showAsAction="collapseActionView|always"/>
+
+    <item
+        android:id="@+id/menu_sort"
+        android:orderInCategory="101"
+        android:title="@string/menu_sort"
+        android:showAsAction="always"/>
 
 </menu>

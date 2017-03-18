@@ -52,7 +52,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/hint_username"
-            android:singleLine="true" />
+            android:inputType="text"
+            android:maxLines="1" />
 
         <Space
             android:layout_width="match_parent"
@@ -69,10 +70,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/hint_password"
+                android:imeOptions="actionGo"
                 android:inputType="textPassword" />
 
         </android.support.design.widget.TextInputLayout>
-
 
         <Space
             android:layout_width="match_parent"

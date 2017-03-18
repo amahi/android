@@ -23,14 +23,18 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dd.processbutton.iml.ActionProcessButton;
@@ -52,248 +56,295 @@ import javax.inject.Inject;
  * Authentication activity. Allows user authentication. If operation succeed
  * the authentication token is saved at the {@link android.accounts.AccountManager}.
  */
-public class AuthenticationActivity extends AccountAuthenticatorActivity implements TextWatcher, View.OnClickListener
-{
-	@Inject
-	AmahiClient amahiClient;
+public class AuthenticationActivity extends AccountAuthenticatorActivity implements TextWatcher, View.OnClickListener {
+    @Inject
+    AmahiClient amahiClient;
+    ImageView imageView;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_authentication);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_authentication);
 
-		setUpInjections();
+        imageView = (ImageView) findViewById(R.id.icon);
 
-		setUpAuthentication();
-	}
+        getUsernameEdit().setOnTouchListener(new View.OnTouchListener() {
 
-	private void setUpInjections() {
-		AmahiApplication.from(this).inject(this);
-	}
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                getUsernameEdit().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        if (b) {
+                            imageView.setImageDrawable(null);
+                        }
+                    }
+                });
+                return false;
+            }
+        });
 
-	private void setUpAuthentication() {
-		setUpAuthenticationMessages();
-		setUpAuthenticationListeners();
-	}
 
-	private String getUsername() {
-		return getUsernameEdit().getText().toString();
-	}
+        getPasswordEdit().setOnTouchListener(new View.OnTouchListener() {
 
-	private EditText getUsernameEdit() {
-		return (EditText) findViewById(R.id.edit_username);
-	}
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                getPasswordEdit().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        if (b) {
+                            imageView.setImageDrawable(null);
+                        }
+                    }
+                });
+                return false;
+            }
+        });
 
-	private String getPassword() {
-		return getPasswordEdit().getText().toString();
-	}
+        setUpInjections();
 
-	private EditText getPasswordEdit() {
-		TextInputLayout password_layout;
-		password_layout = (TextInputLayout) findViewById(R.id.password_layout);
-		return password_layout.getEditText();
-	}
+        setUpAuthentication();
+    }
 
-	private ActionProcessButton getAuthenticationButton() {
-		return (ActionProcessButton) findViewById(R.id.button_authentication);
-	}
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
 
-	private void setUpAuthenticationMessages() {
-		TextView authenticationFailureMessage = (TextView) findViewById(R.id.text_message_authentication);
-		TextView authenticationConnectionFailureMessage = (TextView) findViewById(R.id.text_message_authentication_connection);
+    private void setUpAuthentication() {
+        setUpAuthenticationMessages();
+        setUpAuthenticationListeners();
+    }
 
-		authenticationFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
-		authenticationConnectionFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
-	}
+    private String getUsername() {
+        return getUsernameEdit().getText().toString();
+    }
 
-	private void setUpAuthenticationListeners() {
-		setUpAuthenticationTextListener();
-		setUpAuthenticationActionListener();
-	}
+    private EditText getUsernameEdit() {
+        return (EditText) findViewById(R.id.edit_username);
+    }
 
-	private void setUpAuthenticationTextListener() {
-		getUsernameEdit().addTextChangedListener(this);
-		getPasswordEdit().addTextChangedListener(this);
-	}
+    private String getPassword() {
+        return getPasswordEdit().getText().toString();
+    }
 
-	@Override
-	public void onTextChanged(CharSequence text, int after, int before, int count) {
-		hideAuthenticationFailureMessage();
-	}
+    private EditText getPasswordEdit() {
+        EditText password_layout;
+        password_layout = (EditText) findViewById(R.id.password_layout);
+        return password_layout;
+    }
 
-	private void hideAuthenticationFailureMessage() {
-		ViewDirector.of(this, R.id.animator_message).show(R.id.view_message_empty);
-	}
+    private ActionProcessButton getAuthenticationButton() {
+        return (ActionProcessButton) findViewById(R.id.button_authentication);
+    }
 
-	@Override
-	public void afterTextChanged(Editable text) {
-	}
+    private void setUpAuthenticationMessages() {
+        TextView authenticationFailureMessage = (TextView) findViewById(R.id.text_message_authentication);
+        TextView authenticationConnectionFailureMessage = (TextView) findViewById(R.id.text_message_authentication_connection);
 
-	@Override
-	public void beforeTextChanged(CharSequence text, int start, int count, int before) {
-	}
+        authenticationFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        authenticationConnectionFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
+    }
 
-	private void setUpAuthenticationActionListener() {
-		getAuthenticationButton().setOnClickListener(this);
-	}
+    private void setUpAuthenticationListeners() {
+        setUpAuthenticationTextListener();
+        setUpAuthenticationActionListener();
+    }
 
-	@Override
-	public void onClick(View view) {
-		if(getUsername().trim().isEmpty() || getPassword().trim().isEmpty()){
-			ViewDirector.of(this,R.id.animator_message).show(R.id.text_message_authentication_empty);
+    private void setUpAuthenticationTextListener() {
+        getUsernameEdit().addTextChangedListener(this);
+        getPasswordEdit().addTextChangedListener(this);
+    }
 
-			if(getUsername().trim().isEmpty())
-				getUsernameEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
-			if(getPassword().trim().isEmpty())
-				getPasswordEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+    @Override
+    public void onTextChanged(CharSequence text, int after, int before, int count) {
+        hideAuthenticationFailureMessage();
+    }
 
-			getUsernameEdit().addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    private void hideAuthenticationFailureMessage() {
+        ViewDirector.of(this, R.id.animator_message).show(R.id.view_message_empty);
+    }
 
-				}
+    @Override
+    public void afterTextChanged(Editable text) {
+    }
 
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-					if(!getUsername().trim().isEmpty())
-						getUsernameEdit().getBackground().setColorFilter(getResources().getColor(R.color.blue_normal),PorterDuff.Mode.SRC_ATOP);
-					else
-						getUsernameEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
-				}
+    @Override
+    public void beforeTextChanged(CharSequence text, int start, int count, int before) {
+    }
 
-				@Override
-				public void afterTextChanged(Editable editable) {
+    private void setUpAuthenticationActionListener() {
+        getAuthenticationButton().setOnClickListener(this);
+    }
 
-				}
-			});
+    @Override
+    public void onClick(View view) {
+        getUsernameEdit().clearFocus();
+        getPasswordEdit().clearFocus();
 
-			getPasswordEdit().addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        if (getUsername().trim().isEmpty() || getPassword().trim().isEmpty()) {
+            imageView.setImageResource(R.drawable.ic_banner);
 
-				}
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
 
-				@Override
-				public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-					if(!getPassword().trim().isEmpty())
-						getPasswordEdit().getBackground().setColorFilter(getResources().getColor(R.color.blue_normal),PorterDuff.Mode.SRC_ATOP);
-					else
-						getPasswordEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
-				}
+            ViewDirector.of(this, R.id.animator_message).show(R.id.text_message_authentication_empty);
 
-				@Override
-				public void afterTextChanged(Editable editable) {
+            if (getUsername().trim().isEmpty())
+                getUsernameEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+            if (getPassword().trim().isEmpty())
+                getPasswordEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
 
-				}
-			});
+            getUsernameEdit().addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-		}
-		else {
-			startAuthentication();
+                }
 
-			authenticate();
-		}
-	}
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    if (!getUsername().trim().isEmpty())
+                        getUsernameEdit().getBackground().setColorFilter(getResources().getColor(R.color.blue_normal), PorterDuff.Mode.SRC_ATOP);
+                    else
+                        getUsernameEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+                }
 
-	private void startAuthentication() {
-		hideAuthenticationText();
+                @Override
+                public void afterTextChanged(Editable editable) {
 
-		showProgress();
+                }
+            });
 
-		hideAuthenticationFailureMessage();
-	}
+            getPasswordEdit().addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-	private void hideAuthenticationText() {
-		getUsernameEdit().setEnabled(false);
-		getPasswordEdit().setEnabled(false);
-	}
+                }
 
-	private void showProgress() {
-		ActionProcessButton authenticationButton = getAuthenticationButton();
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    if (!getPassword().trim().isEmpty())
+                        getPasswordEdit().getBackground().setColorFilter(getResources().getColor(R.color.blue_normal), PorterDuff.Mode.SRC_ATOP);
+                    else
+                        getPasswordEdit().getBackground().setColorFilter(getResources().getColor(android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+                }
 
-		authenticationButton.setMode(ActionProcessButton.Mode.ENDLESS);
-		authenticationButton.setProgress(1);
-	}
+                @Override
+                public void afterTextChanged(Editable editable) {
 
-	private void authenticate() {
-		amahiClient.authenticate(getUsername(), getPassword());
-	}
+                }
+            });
 
-	@Subscribe
-	public void onAuthenticationFailed(AuthenticationFailedEvent event) {
-		finishAuthentication();
+        } else {
+            imageView.setImageResource(R.drawable.ic_banner);
 
-		showAuthenticationFailureMessage();
-	}
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
 
-	private void finishAuthentication() {
-		showAuthenticationText();
+            startAuthentication();
 
-		hideProgress();
-	}
+            authenticate();
+        }
+    }
 
-	private void showAuthenticationText() {
-		getUsernameEdit().setEnabled(true);
-		getPasswordEdit().setEnabled(true);
-	}
+    private void startAuthentication() {
+        hideAuthenticationText();
 
-	private void hideProgress() {
-		getAuthenticationButton().setProgress(0);
-	}
+        showProgress();
 
-	private void showAuthenticationFailureMessage() {
-		ViewDirector.of(this, R.id.animator_message).show(R.id.text_message_authentication);
-	}
+        hideAuthenticationFailureMessage();
+    }
 
-	@Subscribe
-	public void onAuthenticationConnectionFailed(AuthenticationConnectionFailedEvent event) {
-		finishAuthentication();
+    private void hideAuthenticationText() {
+        getUsernameEdit().setEnabled(false);
+        getPasswordEdit().setEnabled(false);
+    }
 
-		showAuthenticationConnectionFailureMessage();
-	}
+    private void showProgress() {
+        ActionProcessButton authenticationButton = getAuthenticationButton();
 
-	private void showAuthenticationConnectionFailureMessage() {
-		ViewDirector.of(this, R.id.animator_message).show(R.id.text_message_authentication_connection);
-	}
+        authenticationButton.setMode(ActionProcessButton.Mode.ENDLESS);
+        authenticationButton.setProgress(1);
+    }
 
-	@Subscribe
-	public void onAuthenticationSucceed(AuthenticationSucceedEvent event) {
-		finishAuthentication(event.getAuthentication().getToken());
-	}
+    private void authenticate() {
+        amahiClient.authenticate(getUsername(), getPassword());
+    }
 
-	private void finishAuthentication(String authenticationToken) {
-		AccountManager accountManager = AccountManager.get(this);
+    @Subscribe
+    public void onAuthenticationFailed(AuthenticationFailedEvent event) {
+        finishAuthentication();
 
-		Bundle authenticationBundle = new Bundle();
+        showAuthenticationFailureMessage();
+    }
 
-		Account account = new AmahiAccount(getUsername());
+    private void finishAuthentication() {
+        showAuthenticationText();
 
-		if (accountManager.addAccountExplicitly(account, getPassword(), null)) {
-			authenticationBundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-			authenticationBundle.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-			authenticationBundle.putString(AccountManager.KEY_AUTHTOKEN, authenticationToken);
+        hideProgress();
+    }
 
-			accountManager.setAuthToken(account, account.type, authenticationToken);
-		}
+    private void showAuthenticationText() {
+        getUsernameEdit().setEnabled(true);
+        getPasswordEdit().setEnabled(true);
+    }
 
-		setAccountAuthenticatorResult(authenticationBundle);
+    private void hideProgress() {
+        getAuthenticationButton().setProgress(0);
+    }
 
-		setResult(Activity.RESULT_OK);
+    private void showAuthenticationFailureMessage() {
+        ViewDirector.of(this, R.id.animator_message).show(R.id.text_message_authentication);
+    }
 
-		finish();
-	}
+    @Subscribe
+    public void onAuthenticationConnectionFailed(AuthenticationConnectionFailedEvent event) {
+        finishAuthentication();
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+        showAuthenticationConnectionFailureMessage();
+    }
 
-		BusProvider.getBus().register(this);
-	}
+    private void showAuthenticationConnectionFailureMessage() {
+        ViewDirector.of(this, R.id.animator_message).show(R.id.text_message_authentication_connection);
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+    @Subscribe
+    public void onAuthenticationSucceed(AuthenticationSucceedEvent event) {
+        finishAuthentication(event.getAuthentication().getToken());
+    }
 
-		BusProvider.getBus().unregister(this);
-	}
+    private void finishAuthentication(String authenticationToken) {
+        AccountManager accountManager = AccountManager.get(this);
+
+        Bundle authenticationBundle = new Bundle();
+
+        Account account = new AmahiAccount(getUsername());
+
+        if (accountManager.addAccountExplicitly(account, getPassword(), null)) {
+            authenticationBundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+            authenticationBundle.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+            authenticationBundle.putString(AccountManager.KEY_AUTHTOKEN, authenticationToken);
+
+            accountManager.setAuthToken(account, account.type, authenticationToken);
+        }
+
+        setAccountAuthenticatorResult(authenticationBundle);
+
+        setResult(Activity.RESULT_OK);
+
+        finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        BusProvider.getBus().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        BusProvider.getBus().unregister(this);
+    }
 }

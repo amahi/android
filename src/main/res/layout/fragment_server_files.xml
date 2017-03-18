@@ -54,10 +54,10 @@
 
 		<TextView
 			android:text="@string/message_no_search_result"
-			android:textSize="@dimen/text_large"
-			android:textStyle="bold"
+			android:textSize="@dimen/text_medium"
 			android:id="@+id/none_text"
 			android:visibility="gone"
+			android:layout_marginTop="10dp"
 			android:gravity="center"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"/>

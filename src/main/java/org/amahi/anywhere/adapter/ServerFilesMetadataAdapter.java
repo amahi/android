@@ -20,11 +20,12 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
-import android.support.annotation.DrawableRes;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -34,14 +35,12 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
-import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.FileMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
 
 import java.util.Collections;
-import java.util.List;
 
-public class ServerFilesMetadataAdapter extends BaseAdapter
+public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 {
 	public static final class Tags
 	{
@@ -55,61 +54,16 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 		public static final int FILE_ICON = R.id.icon;
 	}
 
-	private final LayoutInflater layoutInflater;
-
-	private final ServerClient serverClient;
-
-	private ServerShare share;
-	private List<ServerFile> files;
-
 	public ServerFilesMetadataAdapter(Context context, ServerClient serverClient) {
 		this.layoutInflater = LayoutInflater.from(context);
 
 		this.serverClient = serverClient;
 
 		this.files = Collections.emptyList();
+		this.filteredFiles = Collections.emptyList();
 	}
 
-	public void replaceWith(ServerShare share, List<ServerFile> files) {
-		this.share = share;
-		this.files = files;
-
-		notifyDataSetChanged();
-	}
-
-	@Override
-	public int getCount() {
-		return files.size();
-	}
-
-	public List<ServerFile> getItems() {
-		return files;
-	}
-
-	@Override
-	public ServerFile getItem(int position) {
-		return files.get(position);
-	}
-
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
-
-	@Override
-	public View getView(int position, View view, ViewGroup container) {
-		ServerFile file = getItem(position);
-
-		if (view == null) {
-			view = newView(container);
-		}
-
-		bindView(file, view);
-
-		return view;
-	}
-
-	private View newView(ViewGroup container) {
+	protected View newView(ViewGroup container) {
 		View fileView = layoutInflater.inflate(R.layout.view_server_file_metadata_item, container, false);
 
 		fileView.setTag(Tags.FILE_TITLE, fileView.findViewById(R.id.text));
@@ -118,13 +72,17 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 		return fileView;
 	}
 
-	private void bindView(ServerFile file, View fileView) {
+	protected void bindView(ServerFile file, View fileView) {
 		unbindFileView(file, fileView);
 
+		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
 		if (Mimes.match(file.getMime()) != Mimes.Type.VIDEO) {
 			bindFileView(file, fileView);
 		} else {
 			bindFileMetadataView(file, fileView);
+		}
+		if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
+			setUpImageIcon(file, fileIcon);
 		}
 	}
 
@@ -139,46 +97,17 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 		fileIcon.setBackgroundResource(R.color.background_secondary);
 	}
 
-	@DrawableRes
-	private static int getFileIcon(ServerFile file) {
-		switch (Mimes.match(file.getMime())) {
-			case Mimes.Type.ARCHIVE:
-				return R.drawable.ic_file_archive;
-
-			case Mimes.Type.AUDIO:
-				return R.drawable.ic_file_audio;
-
-			case Mimes.Type.CODE:
-				return R.drawable.ic_file_code;
-
-			case Mimes.Type.DOCUMENT:
-				return R.drawable.ic_file_text;
-
-			case Mimes.Type.DIRECTORY:
-				return R.drawable.ic_file_directory;
-
-			case Mimes.Type.IMAGE:
-				return R.drawable.ic_file_image;
-
-			case Mimes.Type.PRESENTATION:
-				return R.drawable.ic_file_presentation;
-
-			case Mimes.Type.SPREADSHEET:
-				return R.drawable.ic_file_spreadsheet;
-
-			case Mimes.Type.VIDEO:
-				return R.drawable.ic_file_video;
-
-			default:
-				return R.drawable.ic_file_generic;
-		}
-	}
-
 	private static void bindFileView(ServerFile file, View fileView) {
 		TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
 		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
 
-		fileTitle.setText(file.getName());
+		SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
+		if(queryString != null && !TextUtils.isEmpty(queryString)) {
+			int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
+			if (searchMatchPosition != -1)
+				sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+		}
+		fileTitle.setText(sb);
 		fileTitle.setBackgroundResource(R.color.background_transparent_secondary);
 
 		fileIcon.setImageResource(getFileIcon(file));
@@ -186,7 +115,7 @@ public class ServerFilesMetadataAdapter extends BaseAdapter
 	}
 
 	private void bindFileMetadataView(ServerFile file, View fileView) {
-		fileView.setTag(Tags.SHARE, share);
+		fileView.setTag(Tags.SHARE, serverShare);
 		fileView.setTag(Tags.FILE, file);
 
 		FileMetadataRetrievingTask.execute(serverClient, fileView);

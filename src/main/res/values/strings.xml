@@ -63,4 +63,6 @@
 	<string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
 	<string name="title_version_settings">Amahi for Android</string>
 	<string name="message_no_search_result">No search results found</string>
+
+    <string name="double_press_to_exit">Please click BACK again to exit</string>
 </resources>

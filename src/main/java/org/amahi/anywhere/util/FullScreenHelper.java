@@ -20,9 +20,11 @@
 package org.amahi.anywhere.util;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
+
+
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.view.MotionEvent;
 import android.view.View;
 

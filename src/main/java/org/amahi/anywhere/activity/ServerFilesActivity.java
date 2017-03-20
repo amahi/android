@@ -19,12 +19,12 @@
 
 package org.amahi.anywhere.activity;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.squareup.otto.Subscribe;
@@ -53,7 +53,7 @@ import javax.inject.Inject;
  * such as opening and sharing.
  * The files navigation itself is done via {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
-public class ServerFilesActivity extends Activity
+public class ServerFilesActivity extends AppCompatActivity
 {
 	private static final class State
 	{
@@ -92,7 +92,8 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private void setUpHomeNavigation() {
-		getActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setIcon(R.drawable.ic_launcher);
 	}
 
 	private void setUpFiles(Bundle state) {
@@ -102,7 +103,7 @@ public class ServerFilesActivity extends Activity
 	}
 
 	private void setUpFilesTitle() {
-		getActionBar().setTitle(getShare().getName());
+		getSupportActionBar().setTitle(getShare().getName());
 	}
 
        @Override

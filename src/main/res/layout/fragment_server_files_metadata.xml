@@ -63,7 +63,7 @@
 		</android.support.v4.widget.SwipeRefreshLayout>
 
 		<TextView
-			android:text="No search results found."
+			android:text="@string/message_no_search_result"
 			android:textSize="@dimen/text_large"
 			android:textStyle="bold"
 			android:id="@+id/none_text"

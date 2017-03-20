@@ -38,6 +38,7 @@
     <string name="menu_settings">Settings</string>
     <string name="menu_share">Share</string>
     <string name="menu_sort">Sort</string>
+    <string name="menu_search">Search</string>
 
     <string name="message_empty_apps">No Apps</string>
     <string name="message_empty_files">No Files</string>
@@ -53,7 +54,7 @@
     <string name="message_notice_check_settings">Check your settings and try again</string>
     <string name="message_notice_create_some">Create some and try again</string>
 
-    <string name="message_progress_file_downloading">Downloading file...</string>	
+    <string name="message_progress_file_downloading">Downloading file…</string>
     <string name="message_no_files">No Files</string>
     <string name="message_create_and_try_again">Create some and try again</string>
     <string name="message_connection_error">Connection Error</string>

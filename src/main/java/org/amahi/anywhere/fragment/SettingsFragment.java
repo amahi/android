@@ -29,11 +29,12 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
-import org.amahi.anywhere.activity.AuthenticationActivity;
+import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
@@ -165,10 +166,11 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void tearDownActivity() {
-		getActivity().finish();
-		Intent myIntent = new Intent(getActivity().getApplicationContext(), AuthenticationActivity.class);
+		Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
+		Intent myIntent = new Intent(getActivity().getApplicationContext(), NavigationActivity.class);
 		myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(myIntent);
+		startActivity(myIntent);
+		getActivity().finish();
 	}
 
 	private void sharedIntent(){

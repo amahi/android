@@ -31,6 +31,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -74,6 +75,9 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 
 	private ActionBarDrawerToggle navigationDrawerToggle;
 	private String navigationTitle;
+
+	private static final int TIME_INTERVAL = 2000; // # milliseconds, desired time passed between two back presses.
+	private long mBackPressed;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -336,5 +340,19 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+
+	@Override
+	public void onBackPressed()
+	{
+		if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis())
+		{
+			super.onBackPressed();
+			return;
+		}
+		else { Toast.makeText(getBaseContext(), "Tap back button in order to exit", Toast.LENGTH_SHORT).show(); }
+
+		mBackPressed = System.currentTimeMillis();
 	}
 }

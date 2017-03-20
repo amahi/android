@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.MediaController;
+import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -81,6 +82,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	private int mVideoSarDen = 0;
 
 	private SurfaceView mSubtitlesSurface = null;
+	private float bufferPercent = 0.0f;
 
 	private enum SurfaceSizes {
 		SURFACE_BEST_FIT,
@@ -508,7 +510,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
 	@Override
 	public int getBufferPercentage() {
-		return 0;
+		return (int) bufferPercent;
 	}
 
 	@Override
@@ -533,11 +535,10 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 				finish();
 				break;
 			case MediaPlayer.Event.Buffering:
-				// Log.d("BUFFERING", ""+event.getBuffering());
-				// TODO Use this and show buffering to users
+				bufferPercent = event.getBuffering();
 				break;
 			case MediaPlayer.Event.EncounteredError:
-				// TODO Handle errors encountered if any
+				Toast.makeText(this, R.string.message_error_video, Toast.LENGTH_SHORT).show();
 				break;
 		}
 

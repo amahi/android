@@ -30,7 +30,9 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -115,6 +117,17 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	private void setUpAuthenticationTextListener() {
 		getUsernameEdit().addTextChangedListener(this);
 		getPasswordEdit().addTextChangedListener(this);
+		getPasswordEdit().setOnEditorActionListener(new EditText.OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				boolean handled = false;
+				if (actionId == EditorInfo.IME_ACTION_GO) {
+					onClick(getAuthenticationButton());
+					handled = true;
+				}
+				return handled;
+			}
+		});
 	}
 
 	@Override

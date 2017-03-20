@@ -179,7 +179,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		sendIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.share_subject));
 		sendIntent.putExtra(Intent.EXTRA_TEXT,getString(R.string.share_message));
 		sendIntent.setType("text/plain");
-		startActivity(sendIntent);
+		startActivity(Intent.createChooser(sendIntent,getString(R.string.share_screen_title)));
 	}
 
 	private void setUpApplicationVersion() {

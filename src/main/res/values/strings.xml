@@ -62,5 +62,6 @@
 	<string name="share_subject">Check out my Amahi home server!</string>
 	<string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
 	<string name="title_version_settings">Amahi for Android</string>
-	<string name="message_no_search_result">No search results found</string>
+	<string name="message_no_search_result">No search results found.</string>
+    <string name="share_screen_title">Share Using</string>
 </resources>

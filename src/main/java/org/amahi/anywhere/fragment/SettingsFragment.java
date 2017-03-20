@@ -193,7 +193,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 			startActivity(intent);
 		}
 		else {
-			Toast.makeText(getActivity(), "NO Application Found", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), R.string.application_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 

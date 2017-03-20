@@ -19,15 +19,13 @@
 
 package org.amahi.anywhere.activity;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,7 +56,7 @@ import javax.inject.Inject;
  * The navigation itself is done via {@link org.amahi.anywhere.fragment.NavigationFragment},
  * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
-public class NavigationActivity extends Activity implements DrawerLayout.DrawerListener
+public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener
 {
 	private static final class State
 	{
@@ -92,10 +90,9 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 	}
 
 	private void setUpHomeNavigation() {
-		ActionBar actionBar = getActionBar();
-
-		actionBar.setHomeButtonEnabled(isNavigationDrawerAvailable());
-		actionBar.setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
+		getSupportActionBar().setHomeButtonEnabled(isNavigationDrawerAvailable());
+		getSupportActionBar().setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
+		getSupportActionBar().setIcon(R.drawable.ic_launcher);
 	}
 
 	private boolean isNavigationDrawerAvailable() {
@@ -140,7 +137,7 @@ public class NavigationActivity extends Activity implements DrawerLayout.DrawerL
 
 	private void setUpTitle(String title) {
 		if (isNavigationDrawerAvailable()) {
-			getActionBar().setTitle(title);
+			getSupportActionBar().setTitle(title);
 		}
 	}
 

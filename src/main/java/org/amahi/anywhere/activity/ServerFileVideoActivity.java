@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.activity;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +28,7 @@ import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
@@ -56,7 +56,7 @@ import org.videolan.libvlc.MediaPlayer;
  * The playback itself is done via {@link org.amahi.anywhere.service.VideoService}.
  * Backed up by {@link android.view.SurfaceView} and {@link org.videolan.libvlc.LibVLC}.
  */
-public class ServerFileVideoActivity extends Activity implements
+public class ServerFileVideoActivity extends AppCompatActivity implements
 	ServiceConnection,
 	MediaController.MediaPlayerControl,
 	IVLCVout.OnNewVideoLayoutListener,
@@ -109,7 +109,8 @@ public class ServerFileVideoActivity extends Activity implements
 	}
 
 	private void setUpHomeNavigation() {
-		getActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setIcon(R.drawable.ic_launcher);
 	}
 
 	private void setUpVideo() {
@@ -117,7 +118,7 @@ public class ServerFileVideoActivity extends Activity implements
 	}
 
 	private void setUpVideoTitle() {
-		getActionBar().setTitle(getVideoFile().getName());
+		getSupportActionBar().setTitle(getVideoFile().getName());
 	}
 
 	private ServerFile getVideoFile() {
@@ -125,7 +126,7 @@ public class ServerFileVideoActivity extends Activity implements
 	}
 
 	private void setUpFullScreen() {
-		fullScreen = new FullScreenHelper(getActionBar(), getSurfaceFrame(), getControlsContainer());
+		fullScreen = new FullScreenHelper(getSupportActionBar(), getSurfaceFrame(), getControlsContainer());
 		fullScreen.enableOnClickToggle(false);
 		getSurfaceFrame().setOnClickListener(new View.OnClickListener() {
 			@Override

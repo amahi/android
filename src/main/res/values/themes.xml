@@ -19,7 +19,10 @@
   -->
 
 <resources>
-	<style name="Theme.Amahi.Authentication" parent="@style/Theme.Amahi">
-		<item name="android:windowNoTitle">true</item>
-	</style>
+    <style name="Theme.Amahi.Authentication" parent="Theme.AppCompat">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
+        <item name="android:windowBackground">@color/background_primary</item>
+        <item name="android:textColorPrimaryInverse">@color/primary_text_material_light</item>
+    </style>
 </resources>

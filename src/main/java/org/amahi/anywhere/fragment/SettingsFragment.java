@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -189,7 +190,12 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	private void setUpApplicationFeedback() {
 		Intent intent = Intents.Builder.with(getActivity()).buildFeedbackIntent();
-		startActivity(intent);
+		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+			startActivity(intent);
+		}
+		else {
+			Toast.makeText(getActivity(), R.string.application_not_found, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	private void setUpApplicationRating() {

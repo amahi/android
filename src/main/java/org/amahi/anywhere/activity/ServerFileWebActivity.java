@@ -19,10 +19,10 @@
 
 package org.amahi.anywhere.activity;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -45,7 +45,7 @@ import javax.inject.Inject;
  * Web activity. Shows web resources such as SVG and HTML files.
  * Backed up by {@link android.webkit.WebView}.
  */
-public class ServerFileWebActivity extends Activity
+public class ServerFileWebActivity extends AppCompatActivity
 {
 	private static final Set<String> SUPPORTED_FORMATS;
 
@@ -77,7 +77,8 @@ public class ServerFileWebActivity extends Activity
 	}
 
 	private void setUpHomeNavigation() {
-		getActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setIcon(R.drawable.ic_launcher);
 	}
 
 	private void setUpWebResource(Bundle state) {
@@ -87,7 +88,7 @@ public class ServerFileWebActivity extends Activity
 	}
 
 	private void setUpWebResourceTitle() {
-		getActionBar().setTitle(getFile().getName());
+		getSupportActionBar().setTitle(getFile().getName());
 	}
 
 	private void setUpWebResourceClient() {

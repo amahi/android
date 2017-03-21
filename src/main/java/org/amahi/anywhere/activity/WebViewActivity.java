@@ -1,16 +1,15 @@
 package org.amahi.anywhere.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import org.amahi.anywhere.R;
 
-public class WebViewActivity extends Activity {
+public class WebViewActivity extends AppCompatActivity {
 
     private WebView webView;
 
@@ -40,7 +39,8 @@ public class WebViewActivity extends Activity {
     }
 
     private void setUpHomeNavigation() {
-        getActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
     }
 
     @Override

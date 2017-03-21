@@ -48,6 +48,7 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.adapter.FilesFilterBaseAdapter;
 import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
@@ -470,7 +471,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setUpTitle(String title) {
-           getActivity().getActionBar().setTitle(title);
+		((ServerFilesActivity)getActivity()).getSupportActionBar().setTitle(title);
        }
 
 	private List<ServerFile> getFiles() {
@@ -588,11 +589,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	@Override
 	public void isListEmpty(boolean empty) {
-		getNoneTextView().setVisibility(empty?View.VISIBLE:View.GONE);
-	}
-
-	private View getNoneTextView() {
-		return getView().findViewById(R.id.none_text);
+		if(getView().findViewById(R.id.none_text)!=null)
+			getView().findViewById(R.id.none_text).setVisibility(empty?View.VISIBLE:View.GONE);
 	}
 
 	private void collapseSearchView() {

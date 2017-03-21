@@ -51,7 +51,7 @@
             android:theme="@style/Theme.AppCompat"
             app:passwordToggleEnabled="true">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/edit_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             android:theme="@style/Theme.AppCompat"
             app:passwordToggleEnabled="true">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/password_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

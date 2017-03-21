@@ -20,8 +20,6 @@
 package org.amahi.anywhere.util;
 
 import android.annotation.SuppressLint;
-
-
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;

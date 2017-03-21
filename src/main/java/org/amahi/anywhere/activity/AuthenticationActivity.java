@@ -52,6 +52,8 @@ import org.amahi.anywhere.util.ViewDirector;
 
 import javax.inject.Inject;
 
+import static org.amahi.anywhere.R.id.password_layout;
+
 /**
  * Authentication activity. Allows user authentication. If operation succeed
  * the authentication token is saved at the {@link android.accounts.AccountManager}.
@@ -120,7 +122,8 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
     }
 
     private EditText getUsernameEdit() {
-        return (EditText) findViewById(R.id.edit_username);
+        TextInputLayout username = (TextInputLayout) findViewById(R.id.edit_username);
+        return username.getEditText();
     }
 
     private String getPassword() {
@@ -128,9 +131,8 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
     }
 
     private EditText getPasswordEdit() {
-        EditText password_layout;
-        password_layout = (EditText) findViewById(R.id.password_layout);
-        return password_layout;
+        TextInputLayout  password_layout = (TextInputLayout) findViewById(R.id.password_layout);
+        return password_layout.getEditText();
     }
 
     private ActionProcessButton getAuthenticationButton() {

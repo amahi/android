@@ -197,7 +197,6 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
                 .centerCrop()
                 .fit()
                 .placeholder(getFileIcon(file))
-                .error(getFileIcon(file))
                 .into(fileIconView);
     }
 

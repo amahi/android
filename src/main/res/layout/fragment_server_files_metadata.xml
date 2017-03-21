@@ -43,8 +43,8 @@
 
 			<GridView
 				android:id="@android:id/list"
-				android:numColumns="auto_fit"
-				android:columnWidth="170dp"
+				android:numColumns="2"
+				android:columnWidth="157dp"
 				android:choiceMode="singleChoice"
 				android:scrollbarStyle="outsideOverlay"
 				android:divider="@null"

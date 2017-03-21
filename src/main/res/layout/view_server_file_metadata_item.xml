@@ -20,12 +20,13 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:foreground="?android:attr/activatedBackgroundIndicator"
-	android:layout_width="170dp"
-	android:layout_height="270dp">
+	android:layout_width="157dp"
+	android:layout_height="250dp">
 
 	<ImageView
 		android:id="@+id/icon"
 		android:scaleType="centerInside"
+		android:src="@drawable/ic_app_logo"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 

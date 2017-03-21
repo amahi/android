@@ -30,11 +30,12 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
-import org.amahi.anywhere.activity.AuthenticationActivity;
+import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
@@ -166,10 +167,11 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void tearDownActivity() {
-		getActivity().finish();
-		Intent myIntent = new Intent(getActivity().getApplicationContext(), AuthenticationActivity.class);
+		Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
+		Intent myIntent = new Intent(getActivity().getApplicationContext(), NavigationActivity.class);
 		myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(myIntent);
+		startActivity(myIntent);
+		getActivity().finish();
 	}
 
 	private void sharedIntent(){
@@ -178,7 +180,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		sendIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.share_subject));
 		sendIntent.putExtra(Intent.EXTRA_TEXT,getString(R.string.share_message));
 		sendIntent.setType("text/plain");
-		startActivity(sendIntent);
+		startActivity(Intent.createChooser(sendIntent,getString(R.string.share_screen_title)));
 	}
 
 	private void setUpApplicationVersion() {
@@ -188,12 +190,22 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	private void setUpApplicationFeedback() {
 		Intent intent = Intents.Builder.with(getActivity()).buildFeedbackIntent();
-		startActivity(intent);
+		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+			startActivity(intent);
+		}
+		else {
+			Toast.makeText(getActivity(), R.string.application_not_found, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	private void setUpApplicationRating() {
 		Intent intent = Intents.Builder.with(getActivity()).buildGooglePlayIntent();
-		startActivity(intent);
+		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+			startActivity(intent);
+		}
+		else {
+			Toast.makeText(getActivity(), R.string.application_not_found, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override

@@ -190,7 +190,12 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	private void setUpApplicationFeedback() {
 		Intent intent = Intents.Builder.with(getActivity()).buildFeedbackIntent();
-		startActivity(intent);
+		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+			startActivity(intent);
+		}
+		else {
+			Toast.makeText(getActivity(), R.string.application_not_found, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	private void setUpApplicationRating() {

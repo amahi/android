@@ -19,7 +19,7 @@
 
 package org.amahi.anywhere.activity;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;

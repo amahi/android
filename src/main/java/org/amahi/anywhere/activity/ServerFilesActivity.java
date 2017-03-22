@@ -20,7 +20,7 @@
 package org.amahi.anywhere.activity;
 
 import android.app.DialogFragment;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;

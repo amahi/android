@@ -127,7 +127,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 	}
 
 	private void setUpImageAdapter() {
-		getImagePager().setAdapter(new ServerFilesImagePagerAdapter(getFragmentManager(), getShare(), getImageFiles()));
+		getImagePager().setAdapter(new ServerFilesImagePagerAdapter(getSupportFragmentManager(), getShare(), getImageFiles()));
 	}
 
 	private ClickableViewPager getImagePager() {

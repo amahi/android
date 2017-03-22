@@ -19,8 +19,8 @@
 
 package org.amahi.anywhere.util;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -99,15 +99,13 @@ public final class Fragments
 	public static final class Operator
 	{
 		private final FragmentManager fragmentManager;
-		private final android.support.v4.app.FragmentManager supportFragmentManager;
 
 		public static Operator at(AppCompatActivity activity) {
 			return new Operator(activity);
 		}
 
 		private Operator(AppCompatActivity activity) {
-			this.fragmentManager = activity.getFragmentManager();
-			this.supportFragmentManager = activity.getSupportFragmentManager();
+			this.fragmentManager = activity.getSupportFragmentManager();
 		}
 
 		public void set(Fragment fragment, int fragmentContainerId) {
@@ -119,17 +117,6 @@ public final class Fragments
 				.beginTransaction()
 				.add(fragmentContainerId, fragment)
 				.commit();
-		}
-
-		public void set(android.support.v4.app.Fragment fragment, int fragmentContainerId) {
-			if (isSet(fragmentContainerId)) {
-				return;
-			}
-
-			supportFragmentManager
-					.beginTransaction()
-					.add(fragmentContainerId, fragment)
-					.commit();
 		}
 
 		private boolean isSet(int fragmentContainerId) {

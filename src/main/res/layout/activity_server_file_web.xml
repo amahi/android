@@ -22,8 +22,8 @@
 	android:id="@+id/animator"
 	android:inAnimation="@android:anim/fade_in"
 	android:outAnimation="@android:anim/fade_out"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
 
 	<ProgressBar
 		android:id="@android:id/progress"
@@ -33,7 +33,7 @@
 
 	<WebView
 		android:id="@+id/web_content"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"/>
 
 </ViewAnimator>

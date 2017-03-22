@@ -19,10 +19,10 @@
 
 package org.amahi.anywhere.util;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
@@ -91,7 +91,7 @@ public final class Fragments
 			return fileFragment;
 		}
 
-		public static Fragment buildSettingsFragment() {
+		public static android.support.v4.app.Fragment buildSettingsFragment() {
 			return new SettingsFragment();
 		}
 	}
@@ -100,12 +100,12 @@ public final class Fragments
 	{
 		private final FragmentManager fragmentManager;
 
-		public static Operator at(Activity activity) {
+		public static Operator at(AppCompatActivity activity) {
 			return new Operator(activity);
 		}
 
-		private Operator(Activity activity) {
-			this.fragmentManager = activity.getFragmentManager();
+		private Operator(AppCompatActivity activity) {
+			this.fragmentManager = activity.getSupportFragmentManager();
 		}
 
 		public void set(Fragment fragment, int fragmentContainerId) {

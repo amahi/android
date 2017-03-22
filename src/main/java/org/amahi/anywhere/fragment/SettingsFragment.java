@@ -26,10 +26,9 @@ import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.util.Log;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -49,7 +48,7 @@ import javax.inject.Inject;
 /**
  * Settings fragment. Shows application's settings.
  */
-public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener,
+public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener,
 	SharedPreferences.OnSharedPreferenceChangeListener,
 	AccountManagerCallback<Boolean>
 {
@@ -57,9 +56,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	ServerClient serverClient;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
+	public void onCreatePreferences(Bundle bundle, String s) {
 		setUpInjections();
 
 		setUpSettings();
@@ -80,20 +77,19 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private void setUpSettingsSummary() {
-		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
+		ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
 		Preference applicationVersion = getPreference(R.string.preference_key_about_version);
 
 		serverConnection.setSummary(getServerConnectionSummary());
 		applicationVersion.setSummary(getApplicationVersionSummary());
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T extends Preference> T getPreference(int settingId) {
-		return (T) findPreference(getString(settingId));
+	private Preference getPreference(int settingId) {
+		return findPreference(getString(settingId));
 	}
 
 	private String getServerConnectionSummary() {
-		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
+		ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
 
 		return String.format("%s", serverConnection.getEntry());
 	}
@@ -241,7 +237,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	}
 
 	private ApiConnection getServerConnection() {
-		ListPreference serverConnection = getPreference(R.string.preference_key_server_connection);
+		ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
 
 		if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_auto))) {
 			return ApiConnection.AUTO;

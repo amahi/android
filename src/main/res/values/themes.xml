@@ -26,6 +26,7 @@
         <!--Adding Support for the Support Library-->
         <item name="actionBarStyle">@style/Theme.Amahi.ActionBar</item>
         <item name="colorAccent">@color/accent_material_dark</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
     <style name="Theme.Amahi.Fullscreen.ActionBar" parent="@style/Widget.AppCompat.ActionBar">

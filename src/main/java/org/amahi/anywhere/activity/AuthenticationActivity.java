@@ -55,8 +55,6 @@ import org.amahi.anywhere.util.ViewDirector;
 
 import javax.inject.Inject;
 
-import static org.amahi.anywhere.R.id.password_layout;
-
 /**
  * Authentication activity. Allows user authentication. If operation succeed
  * the authentication token is saved at the {@link android.accounts.AccountManager}.
@@ -77,31 +75,16 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                getUsernameEdit().setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean b) {
-                        if (b) {
-                            imageView.setImageDrawable(null);
-                        }
-                    }
-                });
+                FocusListener(view);
                 return false;
             }
         });
 
 
         getPasswordEdit().setOnTouchListener(new View.OnTouchListener() {
-
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                getPasswordEdit().setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean b) {
-                        if (b) {
-                            imageView.setImageDrawable(null);
-                        }
-                    }
-                });
+                FocusListener(view);
                 return false;
             }
         });
@@ -192,13 +175,24 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
         getAuthenticationButton().setOnClickListener(this);
     }
 
+    private void FocusListener(View view) {
+        view.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (b) {
+                    imageView.setVisibility(imageView.GONE);
+                }
+            }
+        });
+    }
+
     @Override
     public void onClick(View view) {
         getUsernameEdit().clearFocus();
         getPasswordEdit().clearFocus();
 
         if (getUsername().trim().isEmpty() || getPassword().trim().isEmpty()) {
-            imageView.setImageResource(R.drawable.ic_banner);
+            imageView.setVisibility(imageView.VISIBLE);
 
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
@@ -250,7 +244,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
                 }
             });
         } else {
-            imageView.setImageResource(R.drawable.ic_banner);
+            imageView.setVisibility(imageView.VISIBLE);
 
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);

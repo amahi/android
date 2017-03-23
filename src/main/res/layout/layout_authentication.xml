@@ -17,18 +17,22 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
-
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+<LinearLayout
 	android:orientation="vertical"
 	android:layout_gravity="center"
 	android:paddingLeft="32dp"
 	android:paddingRight="32dp"
 	android:layout_width="match_parent"
-	android:layout_height="wrap_content">
+	android:layout_height="wrap_content"
+	android:descendantFocusability="beforeDescendants"
+	android:focusableInTouchMode="true">
 
 	<ImageView
+		android:id="@+id/logo"
 		android:src="@drawable/ic_banner"
 		android:paddingLeft="32dp"
 		android:paddingRight="32dp"
@@ -126,3 +130,4 @@
 	</ViewAnimator>
 
 </LinearLayout>
+</ScrollView>

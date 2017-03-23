@@ -25,3 +25,4 @@ fabric.properties
 # Key
 
 signing.properties
+api.properties

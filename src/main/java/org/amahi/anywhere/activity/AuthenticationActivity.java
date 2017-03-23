@@ -23,7 +23,9 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.PorterDuff;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
@@ -33,7 +35,9 @@ import android.text.method.LinkMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dd.processbutton.iml.ActionProcessButton;
@@ -59,11 +63,17 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 {
 	@Inject
 	AmahiClient amahiClient;
+	ImageView imageView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_authentication);
+
+		imageView = (ImageView) findViewById(R.id.logo);
+
+		FocusListener(getUsernameEdit());
+		FocusListener(getPasswordEdit());
 
 		setUpInjections();
 
@@ -151,8 +161,27 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		getAuthenticationButton().setOnClickListener(this);
 	}
 
+	private void FocusListener(View view) {
+		view.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View view, boolean b) {
+				if (b) {
+					imageView.setVisibility(View.GONE);
+				}
+			}
+		});
+	}
+
 	@Override
 	public void onClick(View view) {
+		getUsernameEdit().clearFocus();
+		getPasswordEdit().clearFocus();
+
+		imageView.setVisibility(View.VISIBLE);
+
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+
 		if(getUsername().trim().isEmpty() || getPassword().trim().isEmpty()){
 			ViewDirector.of(this,R.id.animator_message).show(R.id.text_message_authentication_empty);
 

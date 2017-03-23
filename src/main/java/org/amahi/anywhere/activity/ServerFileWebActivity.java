@@ -97,6 +97,9 @@ public class ServerFileWebActivity extends AppCompatActivity
 
 	private void setUpWebResourceContent(Bundle state) {
 		if (!isWebResourceStateValid(state)) {
+			getWebView().getSettings().setLoadWithOverviewMode(true);
+			getWebView().getSettings().setUseWideViewPort(true);
+			getWebView().getSettings().setBuiltInZoomControls(true);
 			getWebView().loadUrl(getWebResourceUri().toString());
 		}
 	}

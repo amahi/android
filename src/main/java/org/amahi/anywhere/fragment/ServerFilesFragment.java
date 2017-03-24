@@ -218,10 +218,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
 	if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {
-		if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-		} else {
+
 		requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CALLBACK_NUMBER);
-		}
+
 	} else {
 		startFileSharing(getCheckedFile());
 		}

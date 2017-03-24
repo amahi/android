@@ -36,11 +36,12 @@ public class TestEditText extends TextInputEditText {
     public boolean onKeyPreIme (int keyCode, KeyEvent event) {
         user.clearFocus();
         password.clearFocus();
+
         imageView.setVisibility(View.VISIBLE);
-        //WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        //imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         imm.hideSoftInputFromWindow(getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+        
         return true;
     }
 }

@@ -23,7 +23,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
 
     <ImageView
         android:id="@+id/logo"
@@ -50,12 +52,12 @@
             android:layout_height="8dp" />
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/username_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/Theme.AppCompat">
 
-            <android.support.design.widget.TextInputEditText
+            <org.amahi.anywhere.activity.TestEditText
+                android:id="@+id/username_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/hint_username"
@@ -69,13 +71,13 @@
             android:layout_height="14dp" />
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/Theme.AppCompat"
             app:passwordToggleEnabled="true">
 
-            <android.support.design.widget.TextInputEditText
+            <org.amahi.anywhere.activity.TestEditText
+                android:id="@+id/password_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/hint_password"

@@ -19,136 +19,135 @@
 
 package org.amahi.anywhere.server.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
 /**
  * File API resource.
  */
-public class ServerFile implements Parcelable
-{
-	private ServerFile parentFile;
+public class ServerFile implements Parcelable {
 
-	@SerializedName("name")
-	private String name;
+    private ServerFile parentFile;
 
-	@SerializedName("mime_type")
-	private String mime;
+    @SerializedName("name")
+    private String name;
 
-	@SerializedName("mtime")
-	private Date modificationTime;
+    @SerializedName("mime_type")
+    private String mime;
 
-       @SerializedName("size")
-       private long size;
+    @SerializedName("mtime")
+    private Date modificationTime;
 
-       public long getSize() {
-            return size;
-       }
+    @SerializedName("size")
+    private long size;
 
-       public void setParentFile(ServerFile parentFile) {
-		this.parentFile = parentFile;
-	}
+    public long getSize() {
+        return size;
+    }
 
-	public ServerFile getParentFile() {
-		return parentFile;
-	}
+    public void setParentFile(ServerFile parentFile) {
+        this.parentFile = parentFile;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public ServerFile getParentFile() {
+        return parentFile;
+    }
 
-	public String getMime() {
-		return mime;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Date getModificationTime() {
-		return modificationTime;
-	}
+    public String getMime() {
+        return mime;
+    }
 
-	public String getPath() {
-		Uri.Builder uri = new Uri.Builder();
+    public Date getModificationTime() {
+        return modificationTime;
+    }
 
-		if (parentFile != null) {
-			uri.appendPath(parentFile.getPath());
-		}
+    public String getPath() {
+        Uri.Builder uri = new Uri.Builder();
 
-		uri.appendPath(name);
+        if (parentFile != null) {
+            uri.appendPath(parentFile.getPath());
+        }
 
-		return uri.build().getPath();
-	}
+        uri.appendPath(name);
 
-	public static final Creator<ServerFile> CREATOR = new Creator<ServerFile>()
-	{
-		@Override
-		public ServerFile createFromParcel(Parcel parcel) {
-			return new ServerFile(parcel);
-		}
+        return uri.build().getPath();
+    }
 
-		@Override
-		public ServerFile[] newArray(int size) {
-			return new ServerFile[size];
-		}
-	};
+    public static final Creator<ServerFile> CREATOR = new Creator<ServerFile>() {
+        @Override
+        public ServerFile createFromParcel(Parcel parcel) {
+            return new ServerFile(parcel);
+        }
 
-	private ServerFile(Parcel parcel) {
-		this.parentFile = parcel.readParcelable(ServerFile.class.getClassLoader());
-		this.name = parcel.readString();
-		this.mime = parcel.readString();
-		this.modificationTime = new Date(parcel.readLong());
-              this.size= parcel.readLong();
-	}
+        @Override
+        public ServerFile[] newArray(int size) {
+            return new ServerFile[size];
+        }
+    };
 
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeParcelable(parentFile, flags);
-		parcel.writeString(name);
-		parcel.writeString(mime);
-		parcel.writeLong(modificationTime.getTime());
-              parcel.writeLong(size);
-	}
+    private ServerFile(Parcel parcel) {
+        this.parentFile = parcel.readParcelable(ServerFile.class.getClassLoader());
+        this.name = parcel.readString();
+        this.mime = parcel.readString();
+        this.modificationTime = new Date(parcel.readLong());
+        this.size = parcel.readLong();
+    }
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeParcelable(parentFile, flags);
+        parcel.writeString(name);
+        parcel.writeString(mime);
+        parcel.writeLong(modificationTime.getTime());
+        parcel.writeLong(size);
+    }
 
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-		if (object == null) {
-			return false;
-		}
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
 
-		if (getClass() != object.getClass()) {
-			return false;
-		}
+        if (object == null) {
+            return false;
+        }
 
-		ServerFile file = (ServerFile) object;
+        if (getClass() != object.getClass()) {
+            return false;
+        }
 
-		if ((parentFile != null) && (!parentFile.equals(file.parentFile))) {
-			return false;
-		}
+        ServerFile file = (ServerFile) object;
 
-		if (!name.equals(file.name)) {
-			return false;
-		}
+        if ((parentFile != null) && (!parentFile.equals(file.parentFile))) {
+            return false;
+        }
 
-		if (!mime.equals(file.mime)) {
-			return false;
-		}
+        if (!name.equals(file.name)) {
+            return false;
+        }
 
-		if (!modificationTime.equals(file.modificationTime)) {
-			return false;
-		}
+        if (!mime.equals(file.mime)) {
+            return false;
+        }
 
-		return true;
-	}
+        if (!modificationTime.equals(file.modificationTime)) {
+            return false;
+        }
+
+        return true;
+    }
 }

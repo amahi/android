@@ -32,32 +32,31 @@ import org.amahi.anywhere.bus.NetworkChangedEvent;
  * Network system events receiver. Proxies system network events such as changing network connection
  * to the local {@link com.squareup.otto.Bus} as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class NetworkReceiver extends BroadcastReceiver
-{
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-			handleNetworkChangeEvent(context);
-		}
-	}
+public class NetworkReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+            handleNetworkChangeEvent(context);
+        }
+    }
 
-	private void handleNetworkChangeEvent(Context context) {
-		NetworkInfo network = getNetwork(context);
+    private void handleNetworkChangeEvent(Context context) {
+        NetworkInfo network = getNetwork(context);
 
-		if (isNetworkConnected(network)) {
-			BusProvider.getBus().post(new NetworkChangedEvent(network.getType()));
-		}
-	}
+        if (isNetworkConnected(network)) {
+            BusProvider.getBus().post(new NetworkChangedEvent(network.getType()));
+        }
+    }
 
-	private NetworkInfo getNetwork(Context context) {
-		return getNetworkManager(context).getActiveNetworkInfo();
-	}
+    private NetworkInfo getNetwork(Context context) {
+        return getNetworkManager(context).getActiveNetworkInfo();
+    }
 
-	private ConnectivityManager getNetworkManager(Context context) {
-		return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-	}
+    private ConnectivityManager getNetworkManager(Context context) {
+        return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
 
-	private boolean isNetworkConnected(NetworkInfo network) {
-		return (network != null) && network.isConnected();
-	}
+    private boolean isNetworkConnected(NetworkInfo network) {
+        return (network != null) && network.isConnected();
+    }
 }

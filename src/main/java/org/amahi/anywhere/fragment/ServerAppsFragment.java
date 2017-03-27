@@ -19,20 +19,22 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerAppsAdapter;
-import org.amahi.anywhere.bus.AppSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerAppsLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerAppsLoadedEvent;
@@ -49,7 +51,7 @@ import javax.inject.Inject;
 /**
  * Apps fragment. Shows apps list.
  */
-public class ServerAppsFragment extends ListFragment
+public class ServerAppsFragment extends Fragment
 {
 	private static final class State
 	{
@@ -59,12 +61,31 @@ public class ServerAppsFragment extends ListFragment
 		public static final String APPS = "apps";
 	}
 
+	private ServerAppsAdapter mServerAppsAdapter;
+
+	private RecyclerView mRecyclerView;
+
+	private LinearLayout mEmptyLinearLayout;
+
 	@Inject
 	ServerClient serverClient;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
+		View rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
+
+		mRecyclerView = (RecyclerView)rootView.findViewById(R.id.list_server_apps);
+
+		mServerAppsAdapter = new ServerAppsAdapter(getActivity());
+
+		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+
+		mEmptyLinearLayout = (LinearLayout)rootView.findViewById(R.id.empty_server_apps);
+
+		mRecyclerView.addItemDecoration(new
+				DividerItemDecoration(getActivity(),
+				DividerItemDecoration.VERTICAL));
+		return rootView;
 	}
 
 	@Override
@@ -86,7 +107,7 @@ public class ServerAppsFragment extends ListFragment
 	}
 
 	private void setUpAppsAdapter() {
-		setListAdapter(new ServerAppsAdapter(getActivity()));
+		mRecyclerView.setAdapter(mServerAppsAdapter);
 	}
 
 	private void setUpAppsContent(Bundle state) {
@@ -103,10 +124,15 @@ public class ServerAppsFragment extends ListFragment
 
 	private void setUpAppsState(Bundle state) {
 		List<ServerApp> apps = state.getParcelableArrayList(State.APPS);
+		if(apps!=null) {
+			mEmptyLinearLayout.setVisibility(View.GONE);
+			setUpAppsContent(apps);
 
-		setUpAppsContent(apps);
-
-		showAppsContent();
+			showAppsContent();
+		}
+		else{
+			mEmptyLinearLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	private void setUpAppsContent(List<ServerApp> apps) {
@@ -114,7 +140,7 @@ public class ServerAppsFragment extends ListFragment
 	}
 
 	private ServerAppsAdapter getAppsAdapter() {
-		return (ServerAppsAdapter) getListAdapter();
+		return mServerAppsAdapter;
 	}
 
 	private void showAppsContent() {
@@ -146,17 +172,6 @@ public class ServerAppsFragment extends ListFragment
 
 	private void showAppsError() {
 		ViewDirector.of(this, R.id.animator).show(R.id.error);
-	}
-
-	@Override
-	public void onListItemClick(ListView appsListView, View appView, int appPosition, long appId) {
-		super.onListItemClick(appsListView, appView, appPosition, appId);
-
-		startAppOpening(getAppsAdapter().getItem(appPosition));
-	}
-
-	private void startAppOpening(ServerApp app) {
-		BusProvider.getBus().post(new AppSelectedEvent(app));
 	}
 
 	@Override

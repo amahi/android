@@ -1,27 +1,22 @@
 # Gradle
-
 .gradle/
 build/
 
 # Android Studio
-
 .idea/
 *.iml
 
 # Android SDK
-
 local.properties
 
 # API
-
 api.properties
 
 # Crashlytics
-
 crashlytics.properties
 crashlytics-build.properties
 com_crashlytics_export_strings.xml
 fabric.properties
-# Key
 
+# Key
 signing.properties

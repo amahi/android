@@ -19,13 +19,12 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -36,6 +35,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.view.TouchImageView;
 
 import javax.inject.Inject;
 
@@ -90,8 +90,8 @@ public class ServerFileImageFragment extends Fragment implements Callback
 		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
 	}
 
-	private ImageView getImageView() {
-		return (ImageView) getView().findViewById(R.id.image);
+	private TouchImageView getImageView() {
+		return (TouchImageView) getView().findViewById(R.id.image);
 	}
 
 	@Override

@@ -76,6 +76,7 @@ public class Mimes
 		types.put("application/vnd.oasis.opendocument.text", Type.DOCUMENT);
 		types.put("application/x-abiword", Type.DOCUMENT);
 		types.put("application/x-kword", Type.DOCUMENT);
+		types.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", Type.DOCUMENT);
 
 		types.put("text/directory", Type.DIRECTORY);
 
@@ -88,6 +89,7 @@ public class Mimes
 
 		types.put("application/vnd.ms-excel", Type.SPREADSHEET);
 		types.put("application/vnd.oasis.opendocument.spreadsheet", Type.SPREADSHEET);
+		types.put("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Type.SPREADSHEET);
 
 		types.put("application/x-quicktimeplayer", Type.VIDEO);
 	}

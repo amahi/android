@@ -26,11 +26,12 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -74,7 +75,8 @@ import javax.inject.Inject;
 public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
 	OnAccountsUpdateListener,
 	AdapterView.OnItemSelectedListener,
-	AdapterView.OnItemClickListener
+	AdapterView.OnItemClickListener,
+	SwipeRefreshLayout.OnRefreshListener
 {
 	private static final class State
 	{
@@ -104,6 +106,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpSettingsMenu();
 
 		setUpAuthenticationListener();
+
+		setUpContentRefreshing();
 
 		setUpServers(savedInstanceState);
 	}
@@ -135,6 +139,24 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		}
 	}
 
+	private void setUpContentRefreshing() {
+		SwipeRefreshLayout refreshLayout = getRefreshLayout();
+
+		refreshLayout.setColorSchemeResources(
+				android.R.color.holo_blue_light,
+				android.R.color.holo_orange_light,
+				android.R.color.holo_green_light,
+				android.R.color.holo_red_light);
+
+		refreshLayout.setOnRefreshListener(this);
+	}
+
+	@Override
+	public void onRefresh() {
+		ViewDirector.of(this, R.id.animator_content).show(R.id.empty_view);
+		setUpServers(new Bundle());
+	}
+
 	private List<Account> getAccounts() {
 		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
 	}
@@ -163,9 +185,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 			}
 		} catch (OperationCanceledException e) {
 			tearDownActivity();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} catch (AuthenticatorException e) {
+		} catch (IOException | AuthenticatorException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -175,13 +195,15 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void setUpServers(Bundle state) {
+		getRefreshLayout().setRefreshing(true);
 		setUpServersAdapter();
 		setUpServersContent(state);
 		setUpServersListener();
 	}
 
 	private void setUpServersAdapter() {
-		getServersSpinner().setAdapter(new ServersAdapter(getActivity()));
+		if (!areServersLoaded())
+			getServersSpinner().setAdapter(new ServersAdapter(getActivity()));
 	}
 
 	private Spinner getServersSpinner() {
@@ -230,6 +252,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void showContent() {
+		getRefreshLayout().setRefreshing(false);
 		ViewDirector.of(this, R.id.animator_content).show(R.id.layout_content);
 	}
 
@@ -258,6 +281,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpNavigation();
 
 		showContent();
+	}
+
+	private SwipeRefreshLayout getRefreshLayout() {
+		return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
 	}
 
 	private void setUpNavigation() {
@@ -308,6 +335,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void showError() {
+		getRefreshLayout().setRefreshing(false);
 		ViewDirector.of(this, R.id.animator_content).show(R.id.layout_error);
 	}
 

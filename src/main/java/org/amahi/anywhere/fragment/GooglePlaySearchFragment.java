@@ -19,12 +19,13 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -79,7 +80,12 @@ public class GooglePlaySearchFragment extends DialogFragment implements DialogIn
 		String search = getFile().getMime();
 
 		Intent intent = Intents.Builder.with(getActivity()).buildGooglePlaySearchIntent(search);
-		startActivity(intent);
+		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+			startActivity(intent);
+		}
+		else {
+			Toast.makeText(getActivity(), R.string.application_not_found, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	private ServerFile getFile() {

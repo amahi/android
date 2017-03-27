@@ -21,7 +21,6 @@ package org.amahi.anywhere.server;
 
 import android.net.Uri;
 
-
 import org.amahi.anywhere.server.model.ServerRoute;
 
 import java.io.IOException;

@@ -23,18 +23,13 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jakewharton.byteunits.BinaryByteUnit;
 
 import org.amahi.anywhere.util.Time;
-
-import java.io.File;
-import java.io.IOException;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
@@ -80,6 +75,7 @@ public class ApiModule
 	@Provides
 	@Singleton
 	HttpLoggingInterceptor provideLogging() {
+		// change the level below to HttpLoggingInterceptor.Level.BODY to get the whole body in the logs
 		return new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
 	}
 }

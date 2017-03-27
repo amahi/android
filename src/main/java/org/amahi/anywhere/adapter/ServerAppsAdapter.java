@@ -20,17 +20,19 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.AppSelectedEvent;
+import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.server.model.ServerApp;
 
 import java.util.Collections;
@@ -40,16 +42,56 @@ import java.util.List;
  * Apps adapter. Visualizes web apps
  * for the {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
-public class ServerAppsAdapter extends BaseAdapter
+public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.ServerAppsViewHolder>
 {
-	private final LayoutInflater layoutInflater;
-
 	private List<ServerApp> apps;
+	private Context mContext;
 
 	public ServerAppsAdapter(Context context) {
-		this.layoutInflater = LayoutInflater.from(context);
-
+		mContext = context;
 		this.apps = Collections.emptyList();
+	}
+
+	class ServerAppsViewHolder extends RecyclerView.ViewHolder{
+		TextView text;
+		ImageView logo;
+		ServerAppsViewHolder(View itemView) {
+			super(itemView);
+			text = (TextView)itemView.findViewById(R.id.text);
+			logo = (ImageView)itemView.findViewById(R.id.logo);
+		}
+	}
+
+	@Override
+	public ServerAppsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+		return new ServerAppsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_app_item, parent, false));
+	}
+
+	@Override
+	public void onBindViewHolder(final ServerAppsViewHolder holder, int position) {
+		holder.text.setText(apps.get(position).getName());
+		if(TextUtils.isEmpty(apps.get(position).getLogoUrl()))
+			holder.logo.setImageResource(R.drawable.ic_app_logo);
+		else {
+			Picasso
+					.with(mContext)
+					.load(apps.get(position).getLogoUrl())
+					.fit()
+					.centerInside()
+					.error(R.drawable.ic_app_logo)
+					.into(holder.logo);
+		}
+		holder.itemView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				BusProvider.getBus().post(new AppSelectedEvent(apps.get(holder.getAdapterPosition())));
+			}
+		});
+	}
+
+	@Override
+	public int getItemCount() {
+		return apps.size();
 	}
 
 	public void replaceWith(List<ServerApp> apps) {
@@ -58,16 +100,10 @@ public class ServerAppsAdapter extends BaseAdapter
 		notifyDataSetChanged();
 	}
 
-	@Override
-	public int getCount() {
-		return apps.size();
-	}
-
 	public List<ServerApp> getItems() {
 		return apps;
 	}
 
-	@Override
 	public ServerApp getItem(int position) {
 		return apps.get(position);
 	}
@@ -75,41 +111,5 @@ public class ServerAppsAdapter extends BaseAdapter
 	@Override
 	public long getItemId(int position) {
 		return position;
-	}
-
-	@Override
-	public View getView(int position, View view, ViewGroup container) {
-		ServerApp app = getItem(position);
-
-		if (view == null) {
-			view = newView(container);
-		}
-
-		bindView(app, view);
-
-		return view;
-	}
-
-	private View newView(ViewGroup container) {
-		return layoutInflater.inflate(R.layout.view_server_app_item, container, false);
-	}
-
-	private void bindView(ServerApp app, View view) {
-		ImageView appLogoView = (ImageView) view.findViewById(R.id.logo);
-		TextView appTextView = (TextView) view.findViewById(R.id.text);
-
-		if (TextUtils.isEmpty(app.getLogoUrl())) {
-			appLogoView.setImageResource(R.drawable.ic_app_logo);
-		} else {
-			Picasso
-				.with(view.getContext())
-				.load(app.getLogoUrl())
-				.fit()
-				.centerInside()
-				.error(R.drawable.ic_app_logo)
-				.into(appLogoView);
-		}
-
-		appTextView.setText(app.getName());
 	}
 }

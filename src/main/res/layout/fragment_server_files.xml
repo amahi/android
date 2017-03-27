@@ -19,105 +19,105 @@
   -->
 
 <ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/animator"
-	android:inAnimation="@android:anim/fade_in"
-	android:outAnimation="@android:anim/fade_out"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+              android:id="@+id/animator"
+              android:inAnimation="@android:anim/fade_in"
+              android:outAnimation="@android:anim/fade_out"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
-	<ProgressBar
-		android:id="@android:id/progress"
-		android:layout_gravity="center"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"/>
+    <ProgressBar
+            android:id="@android:id/progress"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-	<FrameLayout
-		android:id="@+id/content"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+    <FrameLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-		<android.support.v4.widget.SwipeRefreshLayout
-			android:id="@+id/layout_refresh"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent">
+        <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/layout_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-			<ListView
-				android:id="@android:id/list"
-				android:choiceMode="singleChoice"
-				android:scrollbarStyle="outsideOverlay"
-				android:paddingLeft="16dp"
-				android:paddingRight="16dp"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"/>
+            <ListView
+                    android:id="@android:id/list"
+                    android:choiceMode="singleChoice"
+                    android:scrollbarStyle="outsideOverlay"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
 
-		</android.support.v4.widget.SwipeRefreshLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
-		<TextView
-			android:text="@string/message_no_search_result"
-			android:textSize="@dimen/text_medium"
-			android:id="@+id/none_text"
-			android:visibility="gone"
-			android:layout_marginTop="10dp"
-			android:gravity="center"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
+        <TextView
+                android:text="@string/message_no_search_result"
+                android:textSize="@dimen/text_medium"
+                android:id="@+id/none_text"
+                android:visibility="gone"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-		<LinearLayout
-			android:id="@android:id/empty"
-			android:orientation="vertical"
-			android:layout_gravity="center"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+        <LinearLayout
+                android:id="@android:id/empty"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-			<TextView
-				android:text="@string/message_empty_files"
-				android:textSize="@dimen/text_large"
-				android:textStyle="bold"
-				android:gravity="center_horizontal"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"/>
+            <TextView
+                    android:text="@string/message_empty_files"
+                    android:textSize="@dimen/text_large"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-			<Space
-				android:layout_width="match_parent"
-				android:layout_height="8dp"/>
+            <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"/>
 
-			<TextView
-				android:text="@string/message_notice_create_some"
-				android:textSize="@dimen/text_small"
-				android:gravity="center_horizontal"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"/>
+            <TextView
+                    android:text="@string/message_notice_create_some"
+                    android:textSize="@dimen/text_small"
+                    android:gravity="center_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
-		</LinearLayout>
+        </LinearLayout>
 
-	</FrameLayout>
+    </FrameLayout>
 
-	<LinearLayout
-		android:id="@+id/error"
-		android:orientation="vertical"
-		android:layout_gravity="center"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+    <LinearLayout
+            android:id="@+id/error"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-		<TextView
-			android:text="@string/message_error_connection"
-			android:textSize="@dimen/text_large"
-			android:textStyle="bold"
-			android:gravity="center_horizontal"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
+        <TextView
+                android:text="@string/message_error_connection"
+                android:textSize="@dimen/text_large"
+                android:textStyle="bold"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-		<Space
-			android:layout_width="match_parent"
-			android:layout_height="8dp"/>
+        <Space
+                android:layout_width="match_parent"
+                android:layout_height="8dp"/>
 
-		<TextView
-			android:text="@string/message_notice_check_settings"
-			android:textSize="@dimen/text_small"
-			android:gravity="center_horizontal"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
+        <TextView
+                android:text="@string/message_notice_check_settings"
+                android:textSize="@dimen/text_small"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-	</LinearLayout>
+    </LinearLayout>
 
 </ViewAnimator>

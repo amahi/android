@@ -19,9 +19,9 @@
 
 package org.amahi.anywhere.util;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import org.amahi.anywhere.fragment.NavigationFragment;
@@ -36,106 +36,103 @@ import org.amahi.anywhere.server.model.ServerShare;
 /**
  * Fragments accessor. Provides a factory for building fragments and an operator for placing them.
  */
-public final class Fragments
-{
-	private Fragments() {
-	}
+public final class Fragments {
+    private Fragments() {
+    }
 
-	public static final class Arguments
-	{
-		private Arguments() {
-		}
+    public static final class Arguments {
+        private Arguments() {
+        }
 
-		public static final String SERVER_FILE = "server_file";
-		public static final String SERVER_SHARE = "server_share";
-	}
+        public static final String SERVER_FILE = "server_file";
+        public static final String SERVER_SHARE = "server_share";
+    }
 
-	public static final class Builder
-	{
-		private Builder() {
-		}
+    public static final class Builder {
+        private Builder() {
+        }
 
-		public static Fragment buildNavigationFragment() {
-			return new NavigationFragment();
-		}
+        public static Fragment buildNavigationFragment() {
+            return new NavigationFragment();
+        }
 
-		public static Fragment buildServerSharesFragment() {
-			return new ServerSharesFragment();
-		}
+        public static Fragment buildServerSharesFragment() {
+            return new ServerSharesFragment();
+        }
 
-		public static Fragment buildServerAppsFragment() {
-			return new ServerAppsFragment();
-		}
+        public static Fragment buildServerAppsFragment() {
+            return new ServerAppsFragment();
+        }
 
-		public static Fragment buildServerFilesFragment(ServerShare share, ServerFile directory) {
-			Fragment filesFragment = new ServerFilesFragment();
+        public static Fragment buildServerFilesFragment(ServerShare share, ServerFile directory) {
+            Fragment filesFragment = new ServerFilesFragment();
 
-			Bundle arguments = new Bundle();
-			arguments.putParcelable(Arguments.SERVER_SHARE, share);
-			arguments.putParcelable(Arguments.SERVER_FILE, directory);
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(Arguments.SERVER_SHARE, share);
+            arguments.putParcelable(Arguments.SERVER_FILE, directory);
 
-			filesFragment.setArguments(arguments);
+            filesFragment.setArguments(arguments);
 
-			return filesFragment;
-		}
+            return filesFragment;
+        }
 
-		public static Fragment buildServerFileImageFragment(ServerShare share, ServerFile file) {
-			Fragment fileFragment = new ServerFileImageFragment();
+        public static Fragment buildServerFileImageFragment(ServerShare share, ServerFile file) {
+            Fragment fileFragment = new ServerFileImageFragment();
 
-			Bundle arguments = new Bundle();
-			arguments.putParcelable(Arguments.SERVER_SHARE, share);
-			arguments.putParcelable(Arguments.SERVER_FILE, file);
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(Arguments.SERVER_SHARE, share);
+            arguments.putParcelable(Arguments.SERVER_FILE, file);
 
-			fileFragment.setArguments(arguments);
+            fileFragment.setArguments(arguments);
 
-			return fileFragment;
-		}
+            return fileFragment;
+        }
 
-		public static android.support.v4.app.Fragment buildSettingsFragment() {
-			return new SettingsFragment();
-		}
-	}
+        public static android.support.v4.app.Fragment buildSettingsFragment() {
+            return new SettingsFragment();
+        }
+    }
 
-	public static final class Operator
-	{
-		private final FragmentManager fragmentManager;
+    public static final class Operator {
+        private final FragmentManager fragmentManager;
 
-		public static Operator at(AppCompatActivity activity) {
-			return new Operator(activity);
-		}
+        public static Operator at(AppCompatActivity activity) {
+            return new Operator(activity);
+        }
 
-		private Operator(AppCompatActivity activity) {
-			this.fragmentManager = activity.getSupportFragmentManager();
-		}
+        private Operator(AppCompatActivity activity) {
+            this.fragmentManager = activity.getSupportFragmentManager();
+        }
 
-		public void set(Fragment fragment, int fragmentContainerId) {
-			if (isSet(fragmentContainerId)) {
-				return;
-			}
+        public void set(Fragment fragment, int fragmentContainerId) {
+            if (isSet(fragmentContainerId)) {
+                return;
+            }
 
-			fragmentManager
-				.beginTransaction()
-				.add(fragmentContainerId, fragment)
-				.commit();
-		}
+            fragmentManager
+                    .beginTransaction()
+                    .add(fragmentContainerId, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
 
-		private boolean isSet(int fragmentContainerId) {
-			return fragmentManager.findFragmentById(fragmentContainerId) != null;
-		}
+        private boolean isSet(int fragmentContainerId) {
+            return fragmentManager.findFragmentById(fragmentContainerId) != null;
+        }
 
-		public void replace(Fragment fragment, int fragmentContainerId) {
-			fragmentManager
-				.beginTransaction()
-				.replace(fragmentContainerId, fragment)
-				.commit();
-		}
+        public void replace(Fragment fragment, int fragmentContainerId) {
+            fragmentManager
+                    .beginTransaction()
+                    .replace(fragmentContainerId, fragment)
+                    .commit();
+        }
 
-		public void replaceBackstacked(Fragment fragment, int fragmentContainerId) {
-			fragmentManager
-				.beginTransaction()
-				.replace(fragmentContainerId, fragment)
-				.addToBackStack(null)
-				.commit();
-		}
-	}
+        public void replaceBackstacked(Fragment fragment, int fragmentContainerId) {
+            fragmentManager
+                    .beginTransaction()
+                    .replace(fragmentContainerId, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
 }

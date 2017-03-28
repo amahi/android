@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2014 Amahi
   ~
   ~ This file is part of Amahi.
@@ -18,8 +17,7 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<org.amahi.anywhere.view.ClickableViewPager
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/pager_images"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"/>
+<org.amahi.anywhere.view.ClickableViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pager_images"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />

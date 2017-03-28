@@ -19,6 +19,5 @@
 
 package org.amahi.anywhere.bus;
 
-public class SharesSelectedEvent implements BusEvent
-{
+public class SharesSelectedEvent implements BusEvent {
 }

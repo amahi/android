@@ -19,6 +19,5 @@
 
 package org.amahi.anywhere.bus;
 
-public class ServersLoadFailedEvent implements BusEvent
-{
+public class ServersLoadFailedEvent implements BusEvent {
 }

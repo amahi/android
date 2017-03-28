@@ -21,15 +21,14 @@ package org.amahi.anywhere.bus;
 
 import org.amahi.anywhere.server.model.ServerApp;
 
-public class AppSelectedEvent implements BusEvent
-{
-	private final ServerApp app;
+public class AppSelectedEvent implements BusEvent {
+    private final ServerApp app;
 
-	public AppSelectedEvent(ServerApp app) {
-		this.app = app;
-	}
+    public AppSelectedEvent(ServerApp app) {
+        this.app = app;
+    }
 
-	public ServerApp getApp() {
-		return app;
-	}
+    public ServerApp getApp() {
+        return app;
+    }
 }

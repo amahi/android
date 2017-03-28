@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2014 Amahi
   ~
   ~ This file is part of Amahi.
@@ -20,7 +19,7 @@
 
 <resources>
 
-	<attr name="server_file">server_file</attr>
-	<attr name="server_share">server_share</attr>
+    <attr name="server_file">server_file</attr>
+    <attr name="server_share">server_share</attr>
 
 </resources>

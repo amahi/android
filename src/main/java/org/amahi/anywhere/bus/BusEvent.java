@@ -24,6 +24,5 @@ package org.amahi.anywhere.bus;
  * to declare a result object of {@link android.os.AsyncTask} not actually knowing which result
  * will be produced.
  */
-public interface BusEvent
-{
+public interface BusEvent {
 }

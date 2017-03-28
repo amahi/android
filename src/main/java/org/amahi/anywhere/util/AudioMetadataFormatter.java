@@ -28,47 +28,46 @@ import org.amahi.anywhere.server.model.ServerShare;
  * Audio metadata formatter. Formats audio metadata in a safe way taking in mind all variations
  * of not complete metadata.
  */
-public final class AudioMetadataFormatter
-{
-	private final String audioTitle;
-	private final String audioArtist;
-	private final String audioAlbum;
+public final class AudioMetadataFormatter {
+    private final String audioTitle;
+    private final String audioArtist;
+    private final String audioAlbum;
 
-	public AudioMetadataFormatter(String audioTitle, String audioArtist, String audioAlbum) {
-		this.audioTitle = audioTitle;
-		this.audioArtist = audioArtist;
-		this.audioAlbum = audioAlbum;
-	}
+    public AudioMetadataFormatter(String audioTitle, String audioArtist, String audioAlbum) {
+        this.audioTitle = audioTitle;
+        this.audioArtist = audioArtist;
+        this.audioAlbum = audioAlbum;
+    }
 
-	public String getAudioTitle(ServerFile audioFile) {
-		if (TextUtils.isEmpty(audioTitle)) {
-			return audioFile.getName();
-		}
+    public String getAudioTitle(ServerFile audioFile) {
+        if (TextUtils.isEmpty(audioTitle)) {
+            return audioFile.getName();
+        }
 
-		if (TextUtils.isEmpty(audioArtist) && TextUtils.isEmpty(audioAlbum)) {
-			return audioFile.getName();
-		}
+        if (TextUtils.isEmpty(audioArtist) && TextUtils.isEmpty(audioAlbum)) {
+            return audioFile.getName();
+        }
 
-		return audioTitle;
-	}
+        return audioTitle;
+    }
 
-	public String getAudioSubtitle(ServerShare audioShare) {
-		if (TextUtils.isEmpty(audioTitle)) {
-			return audioShare.getName();
-		}
+    public String getAudioSubtitle(ServerShare audioShare) {
+        if (TextUtils.isEmpty(audioTitle)) {
+            return audioShare.getName();
+        }
 
-		if (TextUtils.isEmpty(audioArtist) && TextUtils.isEmpty(audioAlbum)) {
-			return audioShare.getName();
-		}
+        if (TextUtils.isEmpty(audioArtist) && TextUtils.isEmpty(audioAlbum)) {
+            return audioShare.getName();
+        }
 
-		if (TextUtils.isEmpty(audioArtist)) {
-			return audioAlbum;
-		}
+        if (TextUtils.isEmpty(audioArtist)) {
+            return audioAlbum;
+        }
 
-		if (TextUtils.isEmpty(audioAlbum)) {
-			return audioArtist;
-		}
+        if (TextUtils.isEmpty(audioAlbum)) {
+            return audioArtist;
+        }
 
-		return String.format("%s - %s", audioArtist, audioAlbum);
-	}
+        return String.format("%s - %s", audioArtist, audioAlbum);
+    }
 }

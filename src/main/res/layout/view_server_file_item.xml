@@ -21,9 +21,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/activatedBackgroundIndicator"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
     android:orientation="horizontal"
     android:padding="8dp">
-
+  
     <ImageView
         android:id="@+id/icon"
         android:layout_width="50dp"

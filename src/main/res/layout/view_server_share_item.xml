@@ -22,6 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:background="?android:attr/activatedBackgroundIndicator"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
     android:gravity="center_vertical"
     android:maxLines="1"
     android:padding="8dp"

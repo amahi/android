@@ -61,6 +61,8 @@ android {
         buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
         buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
         buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -100,7 +102,7 @@ dependencies {
         maven { url 'http://dl.bintray.com/megabitdragon/maven' }
     }
 
-    def SUPPORT_LIBRARY_VERSION = "25.3.0"
+    def SUPPORT_LIBRARY_VERSION = "25.3.1"
 
     compile "com.android.support:support-v4:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:support-v13:${SUPPORT_LIBRARY_VERSION}"
@@ -121,6 +123,10 @@ dependencies {
         transitive = true;
     }
     provided "com.squareup.dagger:dagger-compiler:1.2.5"
+
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support:support-annotations:25.3.1'
 }
 
 task generateWrapper(type: Wrapper) {

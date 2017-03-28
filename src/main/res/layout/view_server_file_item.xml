@@ -20,6 +20,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:background="?android:attr/activatedBackgroundIndicator"
+	android:foreground="?android:attr/selectableItemBackgroundBorderless"
 	android:orientation="horizontal"
        android:layout_width="match_parent"
        android:padding="8dp"

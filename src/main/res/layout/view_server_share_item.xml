@@ -23,6 +23,7 @@
 	android:maxLines="1"
 	android:textSize="@dimen/text_medium"
 	android:background="?android:attr/activatedBackgroundIndicator"
+	android:foreground="?android:attr/selectableItemBackgroundBorderless"
 	android:gravity="center_vertical"
 	android:padding="8dp"
 	android:layout_width="match_parent"

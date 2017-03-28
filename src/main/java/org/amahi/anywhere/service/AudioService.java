@@ -21,20 +21,27 @@ package org.amahi.anywhere.service;
 
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.RemoteControlClient;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaBrowserServiceCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaButtonReceiver;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 
 import com.squareup.otto.Subscribe;
 
@@ -67,7 +74,7 @@ import javax.inject.Inject;
  * Places information at {@link android.app.Notification} and {@link android.media.RemoteControlClient},
  * handles audio focus changes as well.
  */
-public class AudioService extends Service implements AudioManager.OnAudioFocusChangeListener,
+public class AudioService extends MediaBrowserServiceCompat implements AudioManager.OnAudioFocusChangeListener,
 	MediaPlayer.OnPreparedListener,
 	MediaPlayer.OnCompletionListener,
 	MediaPlayer.OnErrorListener
@@ -86,7 +93,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	}
 
 	private MediaPlayer audioPlayer;
-	private RemoteControlClient audioPlayerRemote;
+//	private RemoteControlClient audioPlayerRemote;
+	private MediaSessionCompat mediaSession;
 	private AudioFocus audioFocus;
 
 	private ServerShare audioShare;
@@ -116,6 +124,28 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		setUpAudioPlayerRemote();
 	}
 
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		MediaButtonReceiver.handleIntent(mediaSession, intent);
+		return super.onStartCommand(intent, flags, startId);
+	}
+
+	@Nullable
+	@Override
+	public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
+		if(TextUtils.equals(clientPackageName, getPackageName())) {
+			return new BrowserRoot(getString(R.string.application_name), null);
+		}
+
+		return null;
+	}
+
+	//Not important for general audio service, required for class
+	@Override
+	public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+		result.sendResult(null);
+	}
+
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
 	}
@@ -129,6 +159,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 		audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		audioPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
+		audioPlayer.setVolume(1.0f, 1.0f);
 
 		audioPlayer.setOnPreparedListener(this);
 		audioPlayer.setOnCompletionListener(this);
@@ -138,21 +169,43 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	private void setUpAudioPlayerRemote() {
 		AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		ComponentName audioReceiver = new ComponentName(getPackageName(), AudioReceiver.class.getName());
+//		ComponentName mediaButtonReceiver = new ComponentName(getApplicationContext(), MediaButtonReceiver.class);
 
 		Intent audioIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
 		audioIntent.setComponent(audioReceiver);
 		PendingIntent audioPendingIntent = PendingIntent.getBroadcast(this, 0, audioIntent, 0);
 
-		audioPlayerRemote = new RemoteControlClient(audioPendingIntent);
-		audioPlayerRemote.setTransportControlFlags(
-			RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE |
-			RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
-			RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS);
-		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+		mediaSession = new MediaSessionCompat(this, "PlayerService", audioReceiver, null);
+		mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+				MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+		mediaSession.setMediaButtonReceiver(audioPendingIntent);
+//		setSessionToken(mediaSession.getSessionToken());
+		mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
+				.setState(PlaybackStateCompat.STATE_PAUSED, 0, 0)
+				.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
+				.build());
+
+//		mMediaSessionCompat = new MediaSessionCompat(getApplicationContext(), "Tag", mediaButtonReceiver, null);
+//
+//		mMediaSessionCompat.setCallback(mMediaSessionCallback);
+//		mMediaSessionCompat.setFlags( MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS );
+//
+//
+//		mMediaSessionCompat.setMediaButtonReceiver(pendingIntent);
+//
+//		setSessionToken(mMediaSessionCompat.getSessionToken());
+
+//		audioPlayerRemote = new RemoteControlClient(audioPendingIntent);
+//		audioPlayerRemote.setTransportControlFlags(
+//			RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE |
+//			RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
+//			RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS);
+//		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 
 		audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-		audioManager.registerMediaButtonEventReceiver(audioReceiver);
-		audioManager.registerRemoteControlClient(audioPlayerRemote);
+		mediaSession.setActive(true);
+//		audioManager.registerMediaButtonEventReceiver(audioReceiver);
+//		audioManager.registerRemoteControlClient(audioPlayerRemote);
 	}
 
 	public boolean isAudioStarted() {
@@ -203,12 +256,12 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	}
 
 	private void setUpAudioPlayerRemote(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
-		audioPlayerRemote
-			.editMetadata(true)
-			.putString(MediaMetadataRetriever.METADATA_KEY_TITLE, audioMetadataFormatter.getAudioTitle(audioFile))
-			.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, audioMetadataFormatter.getAudioSubtitle(audioShare))
-			.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, getAudioPlayerRemoteArtwork(audioAlbumArt))
-			.apply();
+
+		mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+				.putString(MediaMetadataCompat.METADATA_KEY_TITLE, audioMetadataFormatter.getAudioTitle(audioFile))
+				.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, audioMetadataFormatter.getAudioSubtitle(audioShare))
+				.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, getAudioPlayerRemoteArtwork(audioAlbumArt))
+				.build());
 	}
 
 	private Bitmap getAudioPlayerRemoteArtwork(Bitmap audioAlbumArt) {
@@ -304,14 +357,27 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 
 	public void playAudio() {
 		audioPlayer.start();
+		mediaSession.setActive(true);
+		setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
 
-		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+//		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 	}
 
 	public void pauseAudio() {
 		audioPlayer.pause();
 
-		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
+		setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+	}
+
+	private void setMediaPlaybackState(int state) {
+		PlaybackStateCompat.Builder playbackstateBuilder = new PlaybackStateCompat.Builder();
+		if( state == PlaybackStateCompat.STATE_PLAYING ) {
+			playbackstateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PAUSE);
+		} else {
+			playbackstateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY);
+		}
+		playbackstateBuilder.setState(state, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0);
+		mediaSession.setPlaybackState(playbackstateBuilder.build());
 	}
 
 	private void startNextAudio() {
@@ -449,6 +515,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 	private void tearDownAudioPlayer() {
 		audioPlayer.reset();
 		audioPlayer.release();
+		mediaSession.release();
 	}
 
 	private void tearDownAudioPlayerRemote() {
@@ -456,8 +523,8 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		ComponentName audioReceiver = new ComponentName(getPackageName(), AudioReceiver.class.getName());
 
 		audioManager.abandonAudioFocus(this);
-		audioManager.unregisterMediaButtonEventReceiver(audioReceiver);
-		audioManager.unregisterRemoteControlClient(audioPlayerRemote);
+//		audioManager.unregisterMediaButtonEventReceiver(audioReceiver);
+//		audioManager.unregisterRemoteControlClient(audioPlayerRemote);
 	}
 
 	private void tearDownAudioPlayerNotification() {

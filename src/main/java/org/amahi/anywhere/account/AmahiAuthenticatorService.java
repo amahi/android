@@ -27,19 +27,18 @@ import android.os.IBinder;
  * Amahi authenticator service.
  * Allows {@link android.accounts.AccountManager} to interact with{@link AmahiAuthenticator}.
  */
-public class AmahiAuthenticatorService extends Service
-{
-	private AmahiAuthenticator authenticator;
+public class AmahiAuthenticatorService extends Service {
+    private AmahiAuthenticator authenticator;
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-		authenticator = new AmahiAuthenticator(getApplicationContext());
-	}
+        authenticator = new AmahiAuthenticator(getApplicationContext());
+    }
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return authenticator.getIBinder();
-	}
+    @Override
+    public IBinder onBind(Intent intent) {
+        return authenticator.getIBinder();
+    }
 }

@@ -55,195 +55,194 @@ import javax.inject.Inject;
  * Image activity. Shows images as a slide show.
  * Backed up by {@link org.amahi.anywhere.view.TouchImageView}.
  */
-public class ServerFileImageActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener
-{
-	private static final Set<String> SUPPORTED_FORMATS;
+public class ServerFileImageActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
+    private static final Set<String> SUPPORTED_FORMATS;
 
-	static {
-		SUPPORTED_FORMATS = new HashSet<>(Arrays.asList(
-			"image/bmp",
-			"image/jpeg",
-			"image/gif",
-			"image/png",
-			"image/webp"
-		));
-	}
+    static {
+        SUPPORTED_FORMATS = new HashSet<>(Arrays.asList(
+                "image/bmp",
+                "image/jpeg",
+                "image/gif",
+                "image/png",
+                "image/webp"
+        ));
+    }
 
-	@Inject
-	ServerClient serverClient;
+    @Inject
+    ServerClient serverClient;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_server_file_image);
+    public static boolean supports(String mime_type) {
+        return SUPPORTED_FORMATS.contains(mime_type);
+    }
 
-		setUpInjections();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_server_file_image);
 
-		setUpHomeNavigation();
+        setUpInjections();
 
-		setUpImage();
+        setUpHomeNavigation();
 
-		setUpFullScreen();
-	}
+        setUpImage();
 
-	private void setUpInjections() {
-		AmahiApplication.from(this).inject(this);
-	}
+        setUpFullScreen();
+    }
 
-	private void setUpFullScreen() {
-		final FullScreenHelper fullScreen = new FullScreenHelper(getSupportActionBar(), getImagePager());
-		fullScreen.enableOnClickToggle(false);
-		getImagePager().setOnViewPagerClickListener(new ClickableViewPager.OnClickListener() {
-			@Override
-			public void onViewPagerClick(ViewPager viewPager) {
-				fullScreen.toggle();
-			}
-		});
-		fullScreen.init();
-	}
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
 
-	private void setUpHomeNavigation() {
-		getSupportActionBar().setHomeButtonEnabled(true);
-		getSupportActionBar().setIcon(R.drawable.ic_launcher);
-	}
+    private void setUpFullScreen() {
+        final FullScreenHelper fullScreen = new FullScreenHelper(getSupportActionBar(), getImagePager());
+        fullScreen.enableOnClickToggle(false);
+        getImagePager().setOnViewPagerClickListener(new ClickableViewPager.OnClickListener() {
+            @Override
+            public void onViewPagerClick(ViewPager viewPager) {
+                fullScreen.toggle();
+            }
+        });
+        fullScreen.init();
+    }
 
-	private void setUpImage() {
-		setUpImageTitle();
-		setUpImageAdapter();
-		setUpImagePosition();
-		setUpImageListener();
-	}
+    private void setUpHomeNavigation() {
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+    }
 
-	private void setUpImageTitle() {
-		setUpImageTitle(getFile());
-	}
+    private void setUpImage() {
+        setUpImageTitle();
+        setUpImageAdapter();
+        setUpImagePosition();
+        setUpImageListener();
+    }
 
-	private void setUpImageTitle(ServerFile file) {
-		getSupportActionBar().setTitle(file.getName());
-	}
+    private void setUpImageTitle() {
+        setUpImageTitle(getFile());
+    }
 
-	private ServerFile getFile() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
-	}
+    private void setUpImageTitle(ServerFile file) {
+        getSupportActionBar().setTitle(file.getName());
+    }
 
-	private void setUpImageAdapter() {
-		getImagePager().setAdapter(new ServerFilesImagePagerAdapter(getSupportFragmentManager(), getShare(), getImageFiles()));
-	}
+    private ServerFile getFile() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
+    }
 
-	private ClickableViewPager getImagePager() {
-		return (ClickableViewPager) findViewById(R.id.pager_images);
-	}
+    private void setUpImageAdapter() {
+        getImagePager().setAdapter(new ServerFilesImagePagerAdapter(getSupportFragmentManager(), getShare(), getImageFiles()));
+    }
 
-	private ServerShare getShare() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
-	}
+    private ClickableViewPager getImagePager() {
+        return (ClickableViewPager) findViewById(R.id.pager_images);
+    }
 
-	private List<ServerFile> getImageFiles() {
-		List<ServerFile> imageFiles = new ArrayList<ServerFile>();
+    private ServerShare getShare() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+    }
 
-		for (ServerFile file : getFiles()) {
-			if (SUPPORTED_FORMATS.contains(file.getMime())) {
-				imageFiles.add(file);
-			}
-		}
+    private List<ServerFile> getImageFiles() {
+        List<ServerFile> imageFiles = new ArrayList<ServerFile>();
 
-		return imageFiles;
-	}
+        for (ServerFile file : getFiles()) {
+            if (SUPPORTED_FORMATS.contains(file.getMime())) {
+                imageFiles.add(file);
+            }
+        }
 
-	private List<ServerFile> getFiles() {
-		return getIntent().getParcelableArrayListExtra(Intents.Extras.SERVER_FILES);
-	}
+        return imageFiles;
+    }
 
-	private void setUpImagePosition() {
-		getImagePager().setCurrentItem(getImageFiles().indexOf(getFile()));
-	}
+    private List<ServerFile> getFiles() {
+        return getIntent().getParcelableArrayListExtra(Intents.Extras.SERVER_FILES);
+    }
 
-	private void setUpImageListener() {
-		getImagePager().addOnPageChangeListener(this);
-	}
+    private void setUpImagePosition() {
+        getImagePager().setCurrentItem(getImageFiles().indexOf(getFile()));
+    }
 
-	@Override
-	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-	}
+    private void setUpImageListener() {
+        getImagePager().addOnPageChangeListener(this);
+    }
 
-	@Override
-	public void onPageScrollStateChanged(int state) {
-	}
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
 
-	@Override
-	public void onPageSelected(int position) {
-		setUpImageTitle(getImageFiles().get(position));
-	}
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.action_bar_server_file_image, menu);
+    @Override
+    public void onPageSelected(int position) {
+        setUpImageTitle(getImageFiles().get(position));
+    }
 
-		return super.onCreateOptionsMenu(menu);
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bar_server_file_image, menu);
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		switch (menuItem.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
+        return super.onCreateOptionsMenu(menu);
+    }
 
-			case R.id.menu_share:
-				startFileSharingActivity();
-				return true;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
 
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
-	}
+            case R.id.menu_share:
+                startFileSharingActivity();
+                return true;
 
-	private void startFileSharingActivity() {
-		startFileDownloading(getShare(), getCurrentFile());
-	}
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
 
-	private ServerFile getCurrentFile() {
-		return getImageFiles().get(getImagePager().getCurrentItem());
-	}
+    private void startFileSharingActivity() {
+        startFileDownloading(getShare(), getCurrentFile());
+    }
 
-	private void startFileDownloading(ServerShare share, ServerFile file) {
-		showFileDownloadingFragment(share, file);
-	}
+    private ServerFile getCurrentFile() {
+        return getImageFiles().get(getImagePager().getCurrentItem());
+    }
 
-	private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
-		DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
-		fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
-	}
+    private void startFileDownloading(ServerShare share, ServerFile file) {
+        showFileDownloadingFragment(share, file);
+    }
 
-	@Subscribe
-	public void onFileDownloaded(FileDownloadedEvent event) {
-		finishFileDownloading(event.getFileUri());
-	}
+    private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
+        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
+        fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
+    }
 
-	private void finishFileDownloading(Uri fileUri) {
-		startFileSharingActivity(getCurrentFile(), fileUri);
-	}
+    @Subscribe
+    public void onFileDownloaded(FileDownloadedEvent event) {
+        finishFileDownloading(event.getFileUri());
+    }
 
-	private void startFileSharingActivity(ServerFile file, Uri fileUri) {
-		Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
-		startActivity(intent);
-	}
+    private void finishFileDownloading(Uri fileUri) {
+        startFileSharingActivity(getCurrentFile(), fileUri);
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    private void startFileSharingActivity(ServerFile file, Uri fileUri) {
+        Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
+        startActivity(intent);
+    }
 
-		BusProvider.getBus().register(this);
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+        BusProvider.getBus().register(this);
+    }
 
-		BusProvider.getBus().unregister(this);
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
 
-	public static boolean supports(String mime_type) {
-		return SUPPORTED_FORMATS.contains(mime_type);
-	}
+        BusProvider.getBus().unregister(this);
+    }
 }

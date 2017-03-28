@@ -40,109 +40,105 @@ import org.amahi.anywhere.util.Mimes;
 
 import java.util.Collections;
 
-public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
-{
-	public static final class Tags
-	{
-		private Tags() {
-		}
+public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter {
+    public ServerFilesMetadataAdapter(Context context, ServerClient serverClient) {
+        this.layoutInflater = LayoutInflater.from(context);
 
-		public static final int SHARE = R.id.container_files;
-		public static final int FILE = R.attr.server_share;
+        this.serverClient = serverClient;
 
-		public static final int FILE_TITLE = R.id.text;
-		public static final int FILE_ICON = R.id.icon;
-	}
+        this.files = Collections.emptyList();
+        this.filteredFiles = Collections.emptyList();
+    }
 
-	public ServerFilesMetadataAdapter(Context context, ServerClient serverClient) {
-		this.layoutInflater = LayoutInflater.from(context);
+    private static void bindFileView(ServerFile file, View fileView) {
+        TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
+        ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
 
-		this.serverClient = serverClient;
+        SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
+        if (queryString != null && !TextUtils.isEmpty(queryString)) {
+            int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
+            if (searchMatchPosition != -1)
+                sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+        fileTitle.setText(sb);
+        fileTitle.setBackgroundResource(R.color.background_transparent_secondary);
 
-		this.files = Collections.emptyList();
-		this.filteredFiles = Collections.emptyList();
-	}
+        fileIcon.setImageResource(getFileIcon(file));
+        fileIcon.setBackgroundResource(R.color.background_secondary);
+    }
 
-	protected View newView(ViewGroup container) {
-		View fileView = layoutInflater.inflate(R.layout.view_server_file_metadata_item, container, false);
+    public static void bindView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
+        if (fileMetadata == null) {
+            bindFileView(file, fileView);
+        } else {
+            bindFileMetadataView(file, fileMetadata, fileView);
+        }
+    }
 
-		fileView.setTag(Tags.FILE_TITLE, fileView.findViewById(R.id.text));
-		fileView.setTag(Tags.FILE_ICON, fileView.findViewById(R.id.icon));
+    private static void bindFileMetadataView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
+        TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
+        ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
 
-		return fileView;
-	}
+        fileTitle.setText(null);
+        fileTitle.setBackgroundResource(android.R.color.transparent);
 
-	protected void bindView(ServerFile file, View fileView) {
-		unbindFileView(file, fileView);
+        Picasso.with(fileView.getContext())
+                .load(fileMetadata.getArtworkUrl())
+                .centerCrop()
+                .fit()
+                .placeholder(getFileIcon(file))
+                .error(getFileIcon(file))
+                .into(fileIcon);
+        fileTitle.setBackgroundResource(android.R.color.transparent);
+    }
 
-		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
-		if (Mimes.match(file.getMime()) != Mimes.Type.VIDEO) {
-			bindFileView(file, fileView);
-		} else {
-			bindFileMetadataView(file, fileView);
-		}
-		if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
-			setUpImageIcon(file, fileIcon);
-		}
-	}
+    protected View newView(ViewGroup container) {
+        View fileView = layoutInflater.inflate(R.layout.view_server_file_metadata_item, container, false);
 
-	private void unbindFileView(ServerFile file, View fileView) {
-		TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
-		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
+        fileView.setTag(Tags.FILE_TITLE, fileView.findViewById(R.id.text));
+        fileView.setTag(Tags.FILE_ICON, fileView.findViewById(R.id.icon));
 
-		fileTitle.setText(null);
-		fileTitle.setBackgroundResource(android.R.color.transparent);
+        return fileView;
+    }
 
-		fileIcon.setImageResource(getFileIcon(file));
-		fileIcon.setBackgroundResource(R.color.background_secondary);
-	}
+    protected void bindView(ServerFile file, View fileView) {
+        unbindFileView(file, fileView);
 
-	private static void bindFileView(ServerFile file, View fileView) {
-		TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
-		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
+        ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
+        if (Mimes.match(file.getMime()) != Mimes.Type.VIDEO) {
+            bindFileView(file, fileView);
+        } else {
+            bindFileMetadataView(file, fileView);
+        }
+        if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
+            setUpImageIcon(file, fileIcon);
+        }
+    }
 
-		SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
-		if(queryString != null && !TextUtils.isEmpty(queryString)) {
-			int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
-			if (searchMatchPosition != -1)
-				sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-		}
-		fileTitle.setText(sb);
-		fileTitle.setBackgroundResource(R.color.background_transparent_secondary);
+    private void unbindFileView(ServerFile file, View fileView) {
+        TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
+        ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
 
-		fileIcon.setImageResource(getFileIcon(file));
-		fileIcon.setBackgroundResource(R.color.background_secondary);
-	}
+        fileTitle.setText(null);
+        fileTitle.setBackgroundResource(android.R.color.transparent);
 
-	private void bindFileMetadataView(ServerFile file, View fileView) {
-		fileView.setTag(Tags.SHARE, serverShare);
-		fileView.setTag(Tags.FILE, file);
+        fileIcon.setImageResource(getFileIcon(file));
+        fileIcon.setBackgroundResource(R.color.background_secondary);
+    }
 
-		FileMetadataRetrievingTask.execute(serverClient, fileView);
-	}
+    private void bindFileMetadataView(ServerFile file, View fileView) {
+        fileView.setTag(Tags.SHARE, serverShare);
+        fileView.setTag(Tags.FILE, file);
 
-	public static void bindView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
-		if (fileMetadata == null) {
-			bindFileView(file, fileView);
-		} else {
-			bindFileMetadataView(file, fileMetadata, fileView);
-		}
-	}
+        FileMetadataRetrievingTask.execute(serverClient, fileView);
+    }
 
-	private static void bindFileMetadataView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
-		TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
-		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
-
-		fileTitle.setText(null);
-		fileTitle.setBackgroundResource(android.R.color.transparent);
-
-		Picasso.with(fileView.getContext())
-			.load(fileMetadata.getArtworkUrl())
-			.centerCrop()
-			.fit()
-			.placeholder(getFileIcon(file))
-			.error(getFileIcon(file))
-			.into(fileIcon);
-		fileTitle.setBackgroundResource(android.R.color.transparent);
-	}
+    public static final class Tags {
+        public static final int SHARE = R.id.container_files;
+        public static final int FILE = R.attr.server_share;
+        public static final int FILE_TITLE = R.id.text;
+        public static final int FILE_ICON = R.id.icon;
+        private Tags() {
+        }
+    }
 }

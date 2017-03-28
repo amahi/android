@@ -26,11 +26,11 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
-import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -73,402 +73,399 @@ import javax.inject.Inject;
  * Navigation fragments. Shows main application sections and servers list as well.
  */
 public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
-	OnAccountsUpdateListener,
-	AdapterView.OnItemSelectedListener,
-	AdapterView.OnItemClickListener,
-	SwipeRefreshLayout.OnRefreshListener
-{
-	private static final class State
-	{
-		private State() {
-		}
-
-		public static final String SERVERS = "servers";
-	}
-
-	@Inject
-	AmahiClient amahiClient;
-
-	@Inject
-	ServerClient serverClient;
-
-	@Override
-	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_navigation, container, false);
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
-		setUpInjections();
-
-		setUpSettingsMenu();
-
-		setUpAuthenticationListener();
-
-		setUpContentRefreshing();
-
-		setUpServers(savedInstanceState);
-	}
-
-	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
-	}
-
-	private void setUpSettingsMenu() {
-		setHasOptionsMenu(true);
-	}
-
-	private void setUpAuthenticationListener() {
-		getAccountManager().addOnAccountsUpdatedListener(this, null, false);
-	}
-
-	private AccountManager getAccountManager() {
-		return AccountManager.get(getActivity());
-	}
-
-	@Override
-	public void onAccountsUpdated(Account[] accounts) {
-		if (isVisible()) {
-			return;
-		}
-
-		if (getAccounts().isEmpty()) {
-			setUpAccount();
-		}
-	}
-
-	private void setUpContentRefreshing() {
-		SwipeRefreshLayout refreshLayout = getRefreshLayout();
-
-		refreshLayout.setColorSchemeResources(
-				android.R.color.holo_blue_light,
-				android.R.color.holo_orange_light,
-				android.R.color.holo_green_light,
-				android.R.color.holo_red_light);
-
-		refreshLayout.setOnRefreshListener(this);
-	}
-
-	@Override
-	public void onRefresh() {
-		ViewDirector.of(this, R.id.animator_content).show(R.id.empty_view);
-		setUpServers(new Bundle());
-	}
-
-	private List<Account> getAccounts() {
-		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
-	}
-
-	private void setUpAccount() {
-		getAccountManager().addAccount(AmahiAccount.TYPE, AmahiAccount.TYPE_TOKEN, null, null, getActivity(), this, null);
-	}
-
-	private void setUpAuthenticationToken() {
-		Account account = getAccounts().get(0);
-
-		getAccountManager().getAuthToken(account, AmahiAccount.TYPE, null, getActivity(), this, null);
-	}
-
-	@Override
-	public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
-		try {
-			Bundle accountManagerResult = accountManagerFuture.getResult();
-
-			String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
-
-			if (authenticationToken != null) {
-				setUpServers(authenticationToken);
-			} else {
-				setUpAuthenticationToken();
-			}
-		} catch (OperationCanceledException e) {
-			tearDownActivity();
-		} catch (IOException | AuthenticatorException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void tearDownActivity() {
-		getActivity().finish();
-	}
-
-	private void setUpServers(Bundle state) {
-		getRefreshLayout().setRefreshing(true);
-		setUpServersAdapter();
-		setUpServersContent(state);
-		setUpServersListener();
-	}
-
-	private void setUpServersAdapter() {
-		if (!areServersLoaded())
-			getServersSpinner().setAdapter(new ServersAdapter(getActivity()));
-	}
-
-	private Spinner getServersSpinner() {
-		return (Spinner) getView().findViewById(R.id.spinner_servers);
-	}
-
-	private void setUpServersContent(Bundle state) {
-		if (isServersStateValid(state)) {
-			setUpServersState(state);
-			setUpNavigation();
-		} else {
-			setUpAuthentication();
-		}
-	}
-
-	private boolean isServersStateValid(Bundle state) {
-		return (state != null) && state.containsKey(State.SERVERS);
-	}
-
-	private void setUpServersState(Bundle state) {
-		List<Server> servers = state.getParcelableArrayList(State.SERVERS);
-
-		setUpServersContent(servers);
-
-		showContent();
-	}
-
-	private void setUpServersContent(List<Server> servers) {
-		getServersAdapter().replaceWith(filterActiveServers(servers));
-	}
-
-	private ServersAdapter getServersAdapter() {
-		return (ServersAdapter) getServersSpinner().getAdapter();
-	}
-
-	private List<Server> filterActiveServers(List<Server> servers) {
-		List<Server> activeServers = new ArrayList<Server>();
-
-		for (Server server : servers) {
-			if (server.isActive()) {
-				activeServers.add(server);
-			}
-		}
-
-		return activeServers;
-	}
-
-	private void showContent() {
-		getRefreshLayout().setRefreshing(false);
-		ViewDirector.of(this, R.id.animator_content).show(R.id.layout_content);
-	}
-
-	private void setUpAuthentication() {
-		if (getAccounts().isEmpty()) {
-			setUpAccount();
-		} else {
-			setUpAuthenticationToken();
-		}
-	}
-
-	private void setUpServers(String authenticationToken) {
-		setUpServersAdapter();
-		setUpServersContent(authenticationToken);
-		setUpServersListener();
-	}
-
-	private void setUpServersContent(String authenticationToken) {
-		amahiClient.getServers(authenticationToken);
-	}
-
-	@Subscribe
-	public void onServersLoaded(ServersLoadedEvent event) {
-		setUpServersContent(event.getServers());
-
-		setUpNavigation();
-
-		showContent();
-	}
-
-	private SwipeRefreshLayout getRefreshLayout() {
-		return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
-	}
-
-	private void setUpNavigation() {
-		setUpNavigationAdapter();
-		setUpNavigationListener();
-	}
-
-	private void setUpNavigationAdapter() {
-		if (!serverClient.isConnected()) {
-			getNavigationListView().setAdapter(NavigationAdapter.newRemoteAdapter(getActivity()));
-			return;
-		}
-
-		if (serverClient.isConnectedLocal()) {
-			getNavigationListView().setAdapter(NavigationAdapter.newLocalAdapter(getActivity()));
-		} else {
-			getNavigationListView().setAdapter(NavigationAdapter.newRemoteAdapter(getActivity()));
-		}
-	}
-
-	private ListView getNavigationListView() {
-		return (ListView) getView().findViewById(R.id.list_navigation);
-	}
-
-	private void setUpNavigationListener() {
-		getNavigationListView().setOnItemClickListener(this);
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> navigationListView, View navigationView, int navigationPosition, long navigationId) {
-		switch (navigationPosition) {
-			case NavigationAdapter.NavigationItems.SHARES:
-				BusProvider.getBus().post(new SharesSelectedEvent());
-				break;
-
-			case NavigationAdapter.NavigationItems.APPS:
-				BusProvider.getBus().post(new AppsSelectedEvent());
-				break;
-
-			default:
-				break;
-		}
-	}
-
-	@Subscribe
-	public void onServersLoadFailed(ServersLoadFailedEvent event) {
-		showError();
-	}
-
-	private void showError() {
-		getRefreshLayout().setRefreshing(false);
-		ViewDirector.of(this, R.id.animator_content).show(R.id.layout_error);
-	}
-
-	private void setUpServersListener() {
-		getServersSpinner().setOnItemSelectedListener(this);
-	}
-
-	@Override
-	public void onNothingSelected(AdapterView<?> spinnerView) {
-	}
-
-	@Override
-	public void onItemSelected(AdapterView<?> spinnerView, View view, int position, long id) {
-		Server server = getServersAdapter().getItem(position);
-
-		setUpServerConnection(server);
-	}
-
-	private void setUpServerConnection(Server server) {
-		if (serverClient.isConnected(server)) {
-			setUpServerConnection();
-			setUpServerNavigation();
-		} else {
-			serverClient.connect(server);
-		}
-	}
-
-	@Subscribe
-	public void onServerConnected(ServerConnectedEvent event) {
-		setUpServerConnection();
-		setUpServerNavigation();
-	}
-
-	private void setUpServerConnection() {
-		if (!isConnectionAvailable() || isConnectionAuto()) {
-			serverClient.connectAuto();
-			return;
-		}
-
-		if (isConnectionLocal()) {
-			serverClient.connectLocal();
-		} else {
-			serverClient.connectRemote();
-		}
-	}
-
-	private boolean isConnectionAvailable() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-		return preferences.contains(getString(R.string.preference_key_server_connection));
-	}
-
-	private boolean isConnectionAuto() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
-
-		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_auto));
-	}
-
-	private boolean isConnectionLocal() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
-
-		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
-	}
-
-	private void setUpServerNavigation() {
-		setUpNavigationAdapter();
-	}
-
-	@Subscribe
-	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
-		setUpServerNavigation();
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-		super.onCreateOptionsMenu(menu, menuInflater);
-
-		menuInflater.inflate(R.menu.action_bar_navigation, menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		switch (menuItem.getItemId()) {
-			case R.id.menu_settings:
-				BusProvider.getBus().post(new SettingsSelectedEvent());
-				return true;
-
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		BusProvider.getBus().register(this);
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		BusProvider.getBus().unregister(this);
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-
-		tearDownServersState(outState);
-	}
-
-	private void tearDownServersState(Bundle state) {
-		if (areServersLoaded()) {
-			state.putParcelableArrayList(State.SERVERS, new ArrayList<Parcelable>(getServersAdapter().getItems()));
-		}
-	}
-
-	private boolean areServersLoaded() {
-		return getServersAdapter() != null;
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		tearDownAuthenticationListener();
-	}
-
-	private void tearDownAuthenticationListener() {
-		getAccountManager().removeOnAccountsUpdatedListener(this);
-	}
+        OnAccountsUpdateListener,
+        AdapterView.OnItemSelectedListener,
+        AdapterView.OnItemClickListener,
+        SwipeRefreshLayout.OnRefreshListener {
+    @Inject
+    AmahiClient amahiClient;
+    @Inject
+    ServerClient serverClient;
+
+    @Override
+    public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
+        return layoutInflater.inflate(R.layout.fragment_navigation, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        setUpInjections();
+
+        setUpSettingsMenu();
+
+        setUpAuthenticationListener();
+
+        setUpContentRefreshing();
+
+        setUpServers(savedInstanceState);
+    }
+
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
+    }
+
+    private void setUpSettingsMenu() {
+        setHasOptionsMenu(true);
+    }
+
+    private void setUpAuthenticationListener() {
+        getAccountManager().addOnAccountsUpdatedListener(this, null, false);
+    }
+
+    private AccountManager getAccountManager() {
+        return AccountManager.get(getActivity());
+    }
+
+    @Override
+    public void onAccountsUpdated(Account[] accounts) {
+        if (isVisible()) {
+            return;
+        }
+
+        if (getAccounts().isEmpty()) {
+            setUpAccount();
+        }
+    }
+
+    private void setUpContentRefreshing() {
+        SwipeRefreshLayout refreshLayout = getRefreshLayout();
+
+        refreshLayout.setColorSchemeResources(
+                android.R.color.holo_blue_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_green_light,
+                android.R.color.holo_red_light);
+
+        refreshLayout.setOnRefreshListener(this);
+    }
+
+    @Override
+    public void onRefresh() {
+        ViewDirector.of(this, R.id.animator_content).show(R.id.empty_view);
+        setUpServers(new Bundle());
+    }
+
+    private List<Account> getAccounts() {
+        return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
+    }
+
+    private void setUpAccount() {
+        getAccountManager().addAccount(AmahiAccount.TYPE, AmahiAccount.TYPE_TOKEN, null, null, getActivity(), this, null);
+    }
+
+    private void setUpAuthenticationToken() {
+        Account account = getAccounts().get(0);
+
+        getAccountManager().getAuthToken(account, AmahiAccount.TYPE, null, getActivity(), this, null);
+    }
+
+    @Override
+    public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
+        try {
+            Bundle accountManagerResult = accountManagerFuture.getResult();
+
+            String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
+
+            if (authenticationToken != null) {
+                setUpServers(authenticationToken);
+            } else {
+                setUpAuthenticationToken();
+            }
+        } catch (OperationCanceledException e) {
+            tearDownActivity();
+        } catch (IOException | AuthenticatorException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void tearDownActivity() {
+        getActivity().finish();
+    }
+
+    private void setUpServers(Bundle state) {
+        getRefreshLayout().setRefreshing(true);
+        setUpServersAdapter();
+        setUpServersContent(state);
+        setUpServersListener();
+    }
+
+    private void setUpServersAdapter() {
+        if (!areServersLoaded())
+            getServersSpinner().setAdapter(new ServersAdapter(getActivity()));
+    }
+
+    private Spinner getServersSpinner() {
+        return (Spinner) getView().findViewById(R.id.spinner_servers);
+    }
+
+    private void setUpServersContent(Bundle state) {
+        if (isServersStateValid(state)) {
+            setUpServersState(state);
+            setUpNavigation();
+        } else {
+            setUpAuthentication();
+        }
+    }
+
+    private boolean isServersStateValid(Bundle state) {
+        return (state != null) && state.containsKey(State.SERVERS);
+    }
+
+    private void setUpServersState(Bundle state) {
+        List<Server> servers = state.getParcelableArrayList(State.SERVERS);
+
+        setUpServersContent(servers);
+
+        showContent();
+    }
+
+    private void setUpServersContent(List<Server> servers) {
+        getServersAdapter().replaceWith(filterActiveServers(servers));
+    }
+
+    private ServersAdapter getServersAdapter() {
+        return (ServersAdapter) getServersSpinner().getAdapter();
+    }
+
+    private List<Server> filterActiveServers(List<Server> servers) {
+        List<Server> activeServers = new ArrayList<Server>();
+
+        for (Server server : servers) {
+            if (server.isActive()) {
+                activeServers.add(server);
+            }
+        }
+
+        return activeServers;
+    }
+
+    private void showContent() {
+        getRefreshLayout().setRefreshing(false);
+        ViewDirector.of(this, R.id.animator_content).show(R.id.layout_content);
+    }
+
+    private void setUpAuthentication() {
+        if (getAccounts().isEmpty()) {
+            setUpAccount();
+        } else {
+            setUpAuthenticationToken();
+        }
+    }
+
+    private void setUpServers(String authenticationToken) {
+        setUpServersAdapter();
+        setUpServersContent(authenticationToken);
+        setUpServersListener();
+    }
+
+    private void setUpServersContent(String authenticationToken) {
+        amahiClient.getServers(authenticationToken);
+    }
+
+    @Subscribe
+    public void onServersLoaded(ServersLoadedEvent event) {
+        setUpServersContent(event.getServers());
+
+        setUpNavigation();
+
+        showContent();
+    }
+
+    private SwipeRefreshLayout getRefreshLayout() {
+        return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
+    }
+
+    private void setUpNavigation() {
+        setUpNavigationAdapter();
+        setUpNavigationListener();
+    }
+
+    private void setUpNavigationAdapter() {
+        if (!serverClient.isConnected()) {
+            getNavigationListView().setAdapter(NavigationAdapter.newRemoteAdapter(getActivity()));
+            return;
+        }
+
+        if (serverClient.isConnectedLocal()) {
+            getNavigationListView().setAdapter(NavigationAdapter.newLocalAdapter(getActivity()));
+        } else {
+            getNavigationListView().setAdapter(NavigationAdapter.newRemoteAdapter(getActivity()));
+        }
+    }
+
+    private ListView getNavigationListView() {
+        return (ListView) getView().findViewById(R.id.list_navigation);
+    }
+
+    private void setUpNavigationListener() {
+        getNavigationListView().setOnItemClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> navigationListView, View navigationView, int navigationPosition, long navigationId) {
+        switch (navigationPosition) {
+            case NavigationAdapter.NavigationItems.SHARES:
+                BusProvider.getBus().post(new SharesSelectedEvent());
+                break;
+
+            case NavigationAdapter.NavigationItems.APPS:
+                BusProvider.getBus().post(new AppsSelectedEvent());
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    @Subscribe
+    public void onServersLoadFailed(ServersLoadFailedEvent event) {
+        showError();
+    }
+
+    private void showError() {
+        getRefreshLayout().setRefreshing(false);
+        ViewDirector.of(this, R.id.animator_content).show(R.id.layout_error);
+    }
+
+    private void setUpServersListener() {
+        getServersSpinner().setOnItemSelectedListener(this);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> spinnerView) {
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> spinnerView, View view, int position, long id) {
+        Server server = getServersAdapter().getItem(position);
+
+        setUpServerConnection(server);
+    }
+
+    private void setUpServerConnection(Server server) {
+        if (serverClient.isConnected(server)) {
+            setUpServerConnection();
+            setUpServerNavigation();
+        } else {
+            serverClient.connect(server);
+        }
+    }
+
+    @Subscribe
+    public void onServerConnected(ServerConnectedEvent event) {
+        setUpServerConnection();
+        setUpServerNavigation();
+    }
+
+    private void setUpServerConnection() {
+        if (!isConnectionAvailable() || isConnectionAuto()) {
+            serverClient.connectAuto();
+            return;
+        }
+
+        if (isConnectionLocal()) {
+            serverClient.connectLocal();
+        } else {
+            serverClient.connectRemote();
+        }
+    }
+
+    private boolean isConnectionAvailable() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        return preferences.contains(getString(R.string.preference_key_server_connection));
+    }
+
+    private boolean isConnectionAuto() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+
+        return preferenceConnection.equals(getString(R.string.preference_key_server_connection_auto));
+    }
+
+    private boolean isConnectionLocal() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+
+        return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+    }
+
+    private void setUpServerNavigation() {
+        setUpNavigationAdapter();
+    }
+
+    @Subscribe
+    public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        setUpServerNavigation();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater);
+
+        menuInflater.inflate(R.menu.action_bar_navigation, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.menu_settings:
+                BusProvider.getBus().post(new SettingsSelectedEvent());
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        BusProvider.getBus().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        BusProvider.getBus().unregister(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        tearDownServersState(outState);
+    }
+
+    private void tearDownServersState(Bundle state) {
+        if (areServersLoaded()) {
+            state.putParcelableArrayList(State.SERVERS, new ArrayList<Parcelable>(getServersAdapter().getItems()));
+        }
+    }
+
+    private boolean areServersLoaded() {
+        return getServersAdapter() != null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        tearDownAuthenticationListener();
+    }
+
+    private void tearDownAuthenticationListener() {
+        getAccountManager().removeOnAccountsUpdatedListener(this);
+    }
+
+    private static final class State {
+        public static final String SERVERS = "servers";
+
+        private State() {
+        }
+    }
 }

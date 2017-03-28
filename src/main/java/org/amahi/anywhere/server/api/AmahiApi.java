@@ -35,17 +35,16 @@ import retrofit2.http.Query;
 /**
  * Amahi API declaration.
  */
-public interface AmahiApi
-{
-	@FormUrlEncoded
-	@POST("/api2/oauth/token?grant_type=password")
-	Call<Authentication> authenticate(
-		@Field("client_id") String clientId,
-		@Field("client_secret") String clientSecret,
-		@Field("username") String username,
-		@Field("password") String password);
+public interface AmahiApi {
+    @FormUrlEncoded
+    @POST("/api2/oauth/token?grant_type=password")
+    Call<Authentication> authenticate(
+            @Field("client_id") String clientId,
+            @Field("client_secret") String clientSecret,
+            @Field("username") String username,
+            @Field("password") String password);
 
-	@GET("/api2/servers")
-	Call<List<Server>> getServers(
-		@Query("access_token") String authenticationToken);
+    @GET("/api2/servers")
+    Call<List<Server>> getServers(
+            @Query("access_token") String authenticationToken);
 }

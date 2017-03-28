@@ -19,16 +19,16 @@ public class WebViewActivity extends AppCompatActivity {
 
         setUpHomeNavigation();
         setContentView(R.layout.activity_web_view);
-        webView=(WebView)findViewById(R.id.webview);
+        webView = (WebView) findViewById(R.id.webview);
 
         loadWebView("https://www.amahi.org/android");
 
     }
 
-    private void loadWebView(String url){
+    private void loadWebView(String url) {
         webView.setWebViewClient(new WebViewClient());
 
-        WebSettings settings=webView.getSettings();
+        WebSettings settings = webView.getSettings();
 
         settings.setLoadWithOverviewMode(true);
         settings.setBuiltInZoomControls(true);

@@ -35,52 +35,51 @@ import java.util.HashMap;
  * Async wrapper for audio metadata retrieving.
  * The retrieving itself is done via {@link android.media.MediaMetadataRetriever}.
  */
-public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
-{
-	private final Uri audioUri;
+public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent> {
+    private final Uri audioUri;
 
-	public static void execute(Uri audioUri) {
-		new AudioMetadataRetrievingTask(audioUri).execute();
-	}
+    private AudioMetadataRetrievingTask(Uri audioUri) {
+        this.audioUri = audioUri;
+    }
 
-	private AudioMetadataRetrievingTask(Uri audioUri) {
-		this.audioUri = audioUri;
-	}
+    public static void execute(Uri audioUri) {
+        new AudioMetadataRetrievingTask(audioUri).execute();
+    }
 
-	@Override
-	protected BusEvent doInBackground(Void... parameters) {
-		MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
+    @Override
+    protected BusEvent doInBackground(Void... parameters) {
+        MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
 
-		try {
-			audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
+        try {
+            audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
 
-			String audioTitle = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-			String audioArtist = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-			String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-			Bitmap audioAlbumArt = extractAlbumArt(audioMetadataRetriever);
+            String audioTitle = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String audioArtist = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+            Bitmap audioAlbumArt = extractAlbumArt(audioMetadataRetriever);
 
-			return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt);
-		} catch (RuntimeException e) {
-			return new AudioMetadataRetrievedEvent(null, null, null, null);
-		} finally {
-			audioMetadataRetriever.release();
-		}
-	}
+            return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt);
+        } catch (RuntimeException e) {
+            return new AudioMetadataRetrievedEvent(null, null, null, null);
+        } finally {
+            audioMetadataRetriever.release();
+        }
+    }
 
-	private Bitmap extractAlbumArt(MediaMetadataRetriever audioMetadataRetriever) {
-		byte[] audioAlbumArtBytes = audioMetadataRetriever.getEmbeddedPicture();
+    private Bitmap extractAlbumArt(MediaMetadataRetriever audioMetadataRetriever) {
+        byte[] audioAlbumArtBytes = audioMetadataRetriever.getEmbeddedPicture();
 
-		if (audioAlbumArtBytes == null) {
-			return null;
-		}
+        if (audioAlbumArtBytes == null) {
+            return null;
+        }
 
-		return BitmapFactory.decodeByteArray(audioAlbumArtBytes, 0, audioAlbumArtBytes.length);
-	}
+        return BitmapFactory.decodeByteArray(audioAlbumArtBytes, 0, audioAlbumArtBytes.length);
+    }
 
-	@Override
-	protected void onPostExecute(BusEvent busEvent) {
-		super.onPostExecute(busEvent);
+    @Override
+    protected void onPostExecute(BusEvent busEvent) {
+        super.onPostExecute(busEvent);
 
-		BusProvider.getBus().post(busEvent);
-	}
+        BusProvider.getBus().post(busEvent);
+    }
 }

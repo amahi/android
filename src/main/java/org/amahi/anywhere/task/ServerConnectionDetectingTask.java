@@ -31,27 +31,26 @@ import org.amahi.anywhere.server.model.ServerRoute;
  * Async wrapper for server connection detecting.
  * The detecting itself is done via {@link org.amahi.anywhere.server.ApiConnectionDetector}.
  */
-public class ServerConnectionDetectingTask extends AsyncTask<Void, Void, BusEvent>
-{
-	private final ServerRoute serverRoute;
+public class ServerConnectionDetectingTask extends AsyncTask<Void, Void, BusEvent> {
+    private final ServerRoute serverRoute;
 
-	public static void execute(ServerRoute serverRoute) {
-		new ServerConnectionDetectingTask(serverRoute).execute();
-	}
+    private ServerConnectionDetectingTask(ServerRoute serverRoute) {
+        this.serverRoute = serverRoute;
+    }
 
-	private ServerConnectionDetectingTask(ServerRoute serverRoute) {
-		this.serverRoute = serverRoute;
-	}
+    public static void execute(ServerRoute serverRoute) {
+        new ServerConnectionDetectingTask(serverRoute).execute();
+    }
 
-	@Override
-	protected BusEvent doInBackground(Void... parameters) {
-		return new ServerConnectionDetectedEvent(new ApiConnectionDetector().detect(serverRoute));
-	}
+    @Override
+    protected BusEvent doInBackground(Void... parameters) {
+        return new ServerConnectionDetectedEvent(new ApiConnectionDetector().detect(serverRoute));
+    }
 
-	@Override
-	protected void onPostExecute(BusEvent busEvent) {
-		super.onPostExecute(busEvent);
+    @Override
+    protected void onPostExecute(BusEvent busEvent) {
+        super.onPostExecute(busEvent);
 
-		BusProvider.getBus().post(busEvent);
-	}
+        BusProvider.getBus().post(busEvent);
+    }
 }

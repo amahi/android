@@ -37,82 +37,81 @@ import java.util.List;
 
 /**
  * Amahi authenticator. Performs basic account and auth token manipulations.
- *
+ * <p>
  * The current implementation allows only single account exist on a device.
  */
-class AmahiAuthenticator extends AbstractAccountAuthenticator
-{
-	private final Context context;
+class AmahiAuthenticator extends AbstractAccountAuthenticator {
+    private final Context context;
 
-	public AmahiAuthenticator(Context context) {
-		super(context);
+    public AmahiAuthenticator(Context context) {
+        super(context);
 
-		this.context = context;
-	}
+        this.context = context;
+    }
 
-	@Override
-	public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
-		Bundle accountBundle = new Bundle();
+    @Override
+    public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
+        Bundle accountBundle = new Bundle();
 
-		if (getAccounts().isEmpty()) {
-			Intent accountIntent = new Intent(context, AuthenticationActivity.class);
-			accountIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+        if (getAccounts().isEmpty()) {
+            Intent accountIntent = new Intent(context, AuthenticationActivity.class);
+            accountIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
-			accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);
-		} else {
-			accountBundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_CANCELED);
-			accountBundle.putString(AccountManager.KEY_ERROR_MESSAGE, context.getString(R.string.message_error_account_exists));
-		}
+            accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);
+        } else {
+            accountBundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_CANCELED);
+            accountBundle.putString(AccountManager.KEY_ERROR_MESSAGE, context.getString(R.string.message_error_account_exists));
+        }
 
-		return accountBundle;
-	}
+        return accountBundle;
+    }
 
-	private List<Account> getAccounts() {
-		return Arrays.asList(AccountManager.get(context).getAccountsByType(AmahiAccount.TYPE));
-	}
+    private List<Account> getAccounts() {
+        return Arrays.asList(AccountManager.get(context).getAccountsByType(AmahiAccount.TYPE));
+    }
 
-	@Override
-	public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
-		Bundle authBundle = new Bundle();
+    @Override
+    public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
+        Bundle authBundle = new Bundle();
 
-		String authToken = AccountManager.get(context).peekAuthToken(account, authTokenType);
+        String authToken = AccountManager.get(context).peekAuthToken(account, authTokenType);
 
-		if (!TextUtils.isEmpty(authToken)) {
-			authBundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-			authBundle.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
-			authBundle.putString(AccountManager.KEY_AUTHTOKEN, authToken);
-		} else {
-			Intent authIntent = new Intent(context, AuthenticationActivity.class);
-			authIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+        if (!TextUtils.isEmpty(authToken)) {
+            authBundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+            authBundle.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+            authBundle.putString(AccountManager.KEY_AUTHTOKEN, authToken);
+        } else {
+            Intent authIntent = new Intent(context, AuthenticationActivity.class);
+            authIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
-			authBundle.putParcelable(AccountManager.KEY_INTENT, authIntent);
-		}
+            authBundle.putParcelable(AccountManager.KEY_INTENT, authIntent);
+        }
 
-		return authBundle;
-	}
+        return authBundle;
+    }
 
-	@Override
-	public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
-		return null;
-	}
+    @Override
+    public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
+        return null;
+    }
 
-	@Override
-	public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account, Bundle options) throws NetworkErrorException {
-		return null;
-	}
+    @Override
+    public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account, Bundle options) throws NetworkErrorException {
+        return null;
+    }
 
-	@Override
-	public String getAuthTokenLabel(String authTokenType) {
-		return null;
-	}
+    @Override
+    public String getAuthTokenLabel(String authTokenType) {
+        return null;
+    }
 
-	@Override
-	public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
-		return null;
-	}
+    @Override
+    public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account, String authTokenType, Bundle options) throws NetworkErrorException {
+        return null;
+    }
 
-	@Override
-	public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account, String[] features) throws NetworkErrorException {
-		return null;
-	}
+    @Override
+    public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account, String[] features) throws NetworkErrorException {
+        return null;
+    }
 }

@@ -31,47 +31,46 @@ import org.amahi.anywhere.server.model.ServerShare;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 
-public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, ServerFileMetadata>
-{
-	private final ServerClient serverClient;
+public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, ServerFileMetadata> {
+    private final ServerClient serverClient;
 
-	private final Reference<View> fileViewReference;
+    private final Reference<View> fileViewReference;
 
-	private final ServerShare share;
-	private final ServerFile file;
+    private final ServerShare share;
+    private final ServerFile file;
 
-	public static void execute(ServerClient serverClient, View fileView) {
-		new FileMetadataRetrievingTask(serverClient, fileView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-	}
+    private FileMetadataRetrievingTask(ServerClient serverClient, View fileView) {
+        this.serverClient = serverClient;
 
-	private FileMetadataRetrievingTask(ServerClient serverClient, View fileView) {
-		this.serverClient = serverClient;
+        this.fileViewReference = new WeakReference<View>(fileView);
 
-		this.fileViewReference = new WeakReference<View>(fileView);
+        this.share = (ServerShare) fileView.getTag(ServerFilesMetadataAdapter.Tags.SHARE);
+        this.file = (ServerFile) fileView.getTag(ServerFilesMetadataAdapter.Tags.FILE);
+    }
 
-		this.share = (ServerShare) fileView.getTag(ServerFilesMetadataAdapter.Tags.SHARE);
-		this.file = (ServerFile) fileView.getTag(ServerFilesMetadataAdapter.Tags.FILE);
-	}
+    public static void execute(ServerClient serverClient, View fileView) {
+        new FileMetadataRetrievingTask(serverClient, fileView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
 
-	@Override
-	protected ServerFileMetadata doInBackground(Void... parameters) {
-		return serverClient.getFileMetadata(share, file);
-	}
+    @Override
+    protected ServerFileMetadata doInBackground(Void... parameters) {
+        return serverClient.getFileMetadata(share, file);
+    }
 
-	@Override
-	protected void onPostExecute(ServerFileMetadata fileMetadata) {
-		super.onPostExecute(fileMetadata);
+    @Override
+    protected void onPostExecute(ServerFileMetadata fileMetadata) {
+        super.onPostExecute(fileMetadata);
 
-		View fileView = fileViewReference.get();
+        View fileView = fileViewReference.get();
 
-		if (fileView == null) {
-			return;
-		}
+        if (fileView == null) {
+            return;
+        }
 
-		if (!file.equals(fileView.getTag(ServerFilesMetadataAdapter.Tags.FILE))) {
-			return;
-		}
+        if (!file.equals(fileView.getTag(ServerFilesMetadataAdapter.Tags.FILE))) {
+            return;
+        }
 
-		ServerFilesMetadataAdapter.bindView(file, fileMetadata, fileView);
-	}
+        ServerFilesMetadataAdapter.bindView(file, fileMetadata, fileView);
+    }
 }

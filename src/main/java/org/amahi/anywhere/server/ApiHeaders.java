@@ -33,42 +33,38 @@ import okhttp3.Response;
 /**
  * API headers accessor.
  */
-class ApiHeaders implements Interceptor
-{
-	private static final class HeaderFields
-	{
-		private HeaderFields() {
-		}
+class ApiHeaders implements Interceptor {
+    private final String acceptHeader;
+    private final String userAgentHeader;
+    public ApiHeaders(Context context) {
+        this.acceptHeader = getAcceptHeader();
+        this.userAgentHeader = getUserAgentHeader(context);
+    }
 
-		public static final String ACCEPT = "Accept";
-		public static final String USER_AGENT = "User-Agent";
-	}
+    private String getAcceptHeader() {
+        return "application/json";
+    }
 
-	private final String acceptHeader;
-	private final String userAgentHeader;
+    private String getUserAgentHeader(Context context) {
+        return Identifier.getUserAgent(context);
+    }
 
-	public ApiHeaders(Context context) {
-		this.acceptHeader = getAcceptHeader();
-		this.userAgentHeader = getUserAgentHeader(context);
-	}
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        Request original = chain.request();
+        Request request = original.newBuilder()
+                .addHeader(HeaderFields.ACCEPT, acceptHeader)
+                .addHeader(HeaderFields.USER_AGENT, userAgentHeader)
+                .method(original.method(), original.body())
+                .build();
 
-	private String getAcceptHeader() {
-		return "application/json";
-	}
+        return chain.proceed(request);
+    }
 
-	private String getUserAgentHeader(Context context) {
-		return Identifier.getUserAgent(context);
-	}
-
-	@Override
-	public Response intercept(Chain chain) throws IOException {
-		Request original = chain.request();
-		Request request = original.newBuilder()
-				.addHeader(HeaderFields.ACCEPT, acceptHeader)
-				.addHeader(HeaderFields.USER_AGENT, userAgentHeader)
-				.method(original.method(), original.body())
-				.build();
-
-		return chain.proceed(request);
-	}
+    private static final class HeaderFields {
+        public static final String ACCEPT = "Accept";
+        public static final String USER_AGENT = "User-Agent";
+        private HeaderFields() {
+        }
+    }
 }

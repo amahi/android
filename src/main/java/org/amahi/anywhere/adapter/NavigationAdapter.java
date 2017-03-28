@@ -35,81 +35,77 @@ import java.util.List;
  * Navigation adapter. Visualizes predefined values
  * for the {@link org.amahi.anywhere.fragment.NavigationFragment}.
  */
-public class NavigationAdapter extends BaseAdapter
-{
-	public static final class NavigationItems
-	{
-		private NavigationItems() {
-		}
+public class NavigationAdapter extends BaseAdapter {
+    private final LayoutInflater layoutInflater;
+    private final List<Integer> navigationItems;
 
-		public static final int SHARES = 0;
-		public static final int APPS = 1;
-	}
+    private NavigationAdapter(Context context, List<Integer> navigationItems) {
+        this.layoutInflater = LayoutInflater.from(context);
 
-	private final LayoutInflater layoutInflater;
+        this.navigationItems = navigationItems;
+    }
 
-	private final List<Integer> navigationItems;
+    public static NavigationAdapter newLocalAdapter(Context context) {
+        return new NavigationAdapter(context, Arrays.asList(NavigationItems.SHARES, NavigationItems.APPS));
+    }
 
-	public static NavigationAdapter newLocalAdapter(Context context) {
-		return new NavigationAdapter(context, Arrays.asList(NavigationItems.SHARES, NavigationItems.APPS));
-	}
+    public static NavigationAdapter newRemoteAdapter(Context context) {
+        return new NavigationAdapter(context, Arrays.asList(NavigationItems.SHARES));
+    }
 
-	public static NavigationAdapter newRemoteAdapter(Context context) {
-		return new NavigationAdapter(context, Arrays.asList(NavigationItems.SHARES));
-	}
+    @Override
+    public int getCount() {
+        return navigationItems.size();
+    }
 
-	private NavigationAdapter(Context context, List<Integer> navigationItems) {
-		this.layoutInflater = LayoutInflater.from(context);
+    @Override
+    public Integer getItem(int position) {
+        return position;
+    }
 
-		this.navigationItems = navigationItems;
-	}
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-	@Override
-	public int getCount() {
-		return navigationItems.size();
-	}
+    @Override
+    public View getView(int position, View view, ViewGroup container) {
+        if (view == null) {
+            view = newView(container);
+        }
 
-	@Override
-	public Integer getItem(int position) {
-		return position;
-	}
+        bindView(position, view);
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+        return view;
+    }
 
-	@Override
-	public View getView(int position, View view, ViewGroup container) {
-		if (view == null) {
-			view = newView(container);
-		}
+    private View newView(ViewGroup container) {
+        return layoutInflater.inflate(R.layout.view_navigation_item, container, false);
+    }
 
-		bindView(position, view);
+    private void bindView(int navigationItem, View view) {
+        TextView navigationView = (TextView) view;
 
-		return view;
-	}
+        navigationView.setText(getNavigationName(view.getContext(), navigationItem));
+    }
 
-	private View newView(ViewGroup container) {
-		return layoutInflater.inflate(R.layout.view_navigation_item, container, false);
-	}
+    private String getNavigationName(Context context, int navigationItem) {
+        switch (navigationItem) {
+            case NavigationItems.SHARES:
+                return context.getString(R.string.title_shares);
 
-	private void bindView(int navigationItem, View view) {
-		TextView navigationView = (TextView) view;
+            case NavigationItems.APPS:
+                return context.getString(R.string.title_apps);
 
-		navigationView.setText(getNavigationName(view.getContext(), navigationItem));
-	}
+            default:
+                return null;
+        }
+    }
 
-	private String getNavigationName(Context context, int navigationItem) {
-		switch (navigationItem) {
-			case NavigationItems.SHARES:
-				return context.getString(R.string.title_shares);
-
-			case NavigationItems.APPS:
-				return context.getString(R.string.title_apps);
-
-			default:
-				return null;
-		}
-	}
+    public static final class NavigationItems {
+        public static final int SHARES = 0;
+        public static final int APPS = 1;
+        private NavigationItems() {
+        }
+    }
 }

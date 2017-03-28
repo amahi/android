@@ -32,22 +32,21 @@ import retrofit2.Retrofit;
  * dependency injection provided components.
  */
 @Singleton
-public class ApiAdapter
-{
-	private final Retrofit.Builder apiBuilder;
+public class ApiAdapter {
+    private final Retrofit.Builder apiBuilder;
 
-	@Inject
-	public ApiAdapter(OkHttpClient client, Factory factory) {
-		this.apiBuilder = buildApiBuilder(client, factory);
-	}
+    @Inject
+    public ApiAdapter(OkHttpClient client, Factory factory) {
+        this.apiBuilder = buildApiBuilder(client, factory);
+    }
 
-	private Retrofit.Builder buildApiBuilder(OkHttpClient client, Factory factory) {
-		return new Retrofit.Builder()
-			.client(client)
-			.addConverterFactory(factory);
-	}
+    private Retrofit.Builder buildApiBuilder(OkHttpClient client, Factory factory) {
+        return new Retrofit.Builder()
+                .client(client)
+                .addConverterFactory(factory);
+    }
 
-	public <T> T create(Class<T> api, String apiUrl) {
-		return apiBuilder.baseUrl(apiUrl).build().create(api);
-	}
+    public <T> T create(Class<T> api, String apiUrl) {
+        return apiBuilder.baseUrl(apiUrl).build().create(api);
+    }
 }

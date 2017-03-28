@@ -19,9 +19,9 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -51,157 +51,153 @@ import javax.inject.Inject;
 /**
  * Apps fragment. Shows apps list.
  */
-public class ServerAppsFragment extends Fragment
-{
-	private static final class State
-	{
-		private State() {
-		}
+public class ServerAppsFragment extends Fragment {
+    @Inject
+    ServerClient serverClient;
+    private ServerAppsAdapter mServerAppsAdapter;
 
-		public static final String APPS = "apps";
-	}
+    private RecyclerView mRecyclerView;
 
-	private ServerAppsAdapter mServerAppsAdapter;
+    private LinearLayout mEmptyLinearLayout;
 
-	private RecyclerView mRecyclerView;
+    @Override
+    public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
 
-	private LinearLayout mEmptyLinearLayout;
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list_server_apps);
 
-	@Inject
-	ServerClient serverClient;
+        mServerAppsAdapter = new ServerAppsAdapter(getActivity());
 
-	@Override
-	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		View rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-		mRecyclerView = (RecyclerView)rootView.findViewById(R.id.list_server_apps);
+        mEmptyLinearLayout = (LinearLayout) rootView.findViewById(R.id.empty_server_apps);
 
-		mServerAppsAdapter = new ServerAppsAdapter(getActivity());
+        mRecyclerView.addItemDecoration(new
+                DividerItemDecoration(getActivity(),
+                DividerItemDecoration.VERTICAL));
+        return rootView;
+    }
 
-		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-		mEmptyLinearLayout = (LinearLayout)rootView.findViewById(R.id.empty_server_apps);
+        setUpInjections();
 
-		mRecyclerView.addItemDecoration(new
-				DividerItemDecoration(getActivity(),
-				DividerItemDecoration.VERTICAL));
-		return rootView;
-	}
+        setUpApps(savedInstanceState);
+    }
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
+    }
 
-		setUpInjections();
+    private void setUpApps(Bundle state) {
+        setUpAppsAdapter();
+        setUpAppsContent(state);
+    }
 
-		setUpApps(savedInstanceState);
-	}
+    private void setUpAppsAdapter() {
+        mRecyclerView.setAdapter(mServerAppsAdapter);
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
-	}
+    private void setUpAppsContent(Bundle state) {
+        if (isAppsStateValid(state)) {
+            setUpAppsState(state);
+        } else {
+            setUpAppsContent();
+        }
+    }
 
-	private void setUpApps(Bundle state) {
-		setUpAppsAdapter();
-		setUpAppsContent(state);
-	}
+    private boolean isAppsStateValid(Bundle state) {
+        return (state != null) && state.containsKey(State.APPS);
+    }
 
-	private void setUpAppsAdapter() {
-		mRecyclerView.setAdapter(mServerAppsAdapter);
-	}
+    private void setUpAppsState(Bundle state) {
+        List<ServerApp> apps = state.getParcelableArrayList(State.APPS);
+        if (apps != null) {
+            mEmptyLinearLayout.setVisibility(View.GONE);
+            setUpAppsContent(apps);
 
-	private void setUpAppsContent(Bundle state) {
-		if (isAppsStateValid(state)) {
-			setUpAppsState(state);
-		} else {
-			setUpAppsContent();
-		}
-	}
+            showAppsContent();
+        } else {
+            mEmptyLinearLayout.setVisibility(View.VISIBLE);
+        }
+    }
 
-	private boolean isAppsStateValid(Bundle state) {
-		return (state != null) && state.containsKey(State.APPS);
-	}
+    private void setUpAppsContent(List<ServerApp> apps) {
+        getAppsAdapter().replaceWith(apps);
+    }
 
-	private void setUpAppsState(Bundle state) {
-		List<ServerApp> apps = state.getParcelableArrayList(State.APPS);
-		if(apps!=null) {
-			mEmptyLinearLayout.setVisibility(View.GONE);
-			setUpAppsContent(apps);
+    private ServerAppsAdapter getAppsAdapter() {
+        return mServerAppsAdapter;
+    }
 
-			showAppsContent();
-		}
-		else{
-			mEmptyLinearLayout.setVisibility(View.VISIBLE);
-		}
-	}
+    private void showAppsContent() {
+        ViewDirector.of(this, R.id.animator).show(R.id.content);
+    }
 
-	private void setUpAppsContent(List<ServerApp> apps) {
-		getAppsAdapter().replaceWith(apps);
-	}
+    private void setUpAppsContent() {
+        if (serverClient.isConnected()) {
+            serverClient.getApps();
+        }
+    }
 
-	private ServerAppsAdapter getAppsAdapter() {
-		return mServerAppsAdapter;
-	}
+    @Subscribe
+    public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        serverClient.getApps();
+    }
 
-	private void showAppsContent() {
-		ViewDirector.of(this, R.id.animator).show(R.id.content);
-	}
+    @Subscribe
+    public void onAppsLoaded(ServerAppsLoadedEvent event) {
+        setUpAppsContent(event.getServerApps());
 
-	private void setUpAppsContent() {
-		if (serverClient.isConnected()) {
-			serverClient.getApps();
-		}
-	}
+        showAppsContent();
+    }
 
-	@Subscribe
-	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
-		serverClient.getApps();
-	}
+    @Subscribe
+    public void onAppsLoadFailed(ServerAppsLoadFailedEvent event) {
+        showAppsError();
+    }
 
-	@Subscribe
-	public void onAppsLoaded(ServerAppsLoadedEvent event) {
-		setUpAppsContent(event.getServerApps());
+    private void showAppsError() {
+        ViewDirector.of(this, R.id.animator).show(R.id.error);
+    }
 
-		showAppsContent();
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
 
-	@Subscribe
-	public void onAppsLoadFailed(ServerAppsLoadFailedEvent event) {
-		showAppsError();
-	}
+        BusProvider.getBus().register(this);
+    }
 
-	private void showAppsError() {
-		ViewDirector.of(this, R.id.animator).show(R.id.error);
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
 
-	@Override
-	public void onResume() {
-		super.onResume();
+        BusProvider.getBus().unregister(this);
+    }
 
-		BusProvider.getBus().register(this);
-	}
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-	@Override
-	public void onPause() {
-		super.onPause();
+        tearDownAppsState(outState);
+    }
 
-		BusProvider.getBus().unregister(this);
-	}
+    private void tearDownAppsState(Bundle state) {
+        if (areAppsLoaded()) {
+            state.putParcelableArrayList(State.APPS, new ArrayList<Parcelable>(getAppsAdapter().getItems()));
+        }
+    }
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+    private boolean areAppsLoaded() {
+        return getAppsAdapter() != null;
+    }
 
-		tearDownAppsState(outState);
-	}
+    private static final class State {
+        public static final String APPS = "apps";
 
-	private void tearDownAppsState(Bundle state) {
-		if (areAppsLoaded()) {
-			state.putParcelableArrayList(State.APPS, new ArrayList<Parcelable>(getAppsAdapter().getItems()));
-		}
-	}
-
-	private boolean areAppsLoaded() {
-		return getAppsAdapter() != null;
-	}
+        private State() {
+        }
+    }
 }

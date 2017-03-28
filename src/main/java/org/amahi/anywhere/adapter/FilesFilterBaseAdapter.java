@@ -50,27 +50,54 @@ import java.util.List;
 public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filterable {
 
 
+    static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
+    static String queryString;
     LayoutInflater layoutInflater;
     ServerClient serverClient;
-
     ServerShare serverShare;
-
     List<ServerFile> files;
     List<ServerFile> filteredFiles;
-
-    static String queryString;
-    static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
-
     private FilesFilter filesFilter;
     private onFilterListChange onFilterListChange;
+
+    @DrawableRes
+    static int getFileIcon(ServerFile file) {
+        switch (Mimes.match(file.getMime())) {
+            case Mimes.Type.ARCHIVE:
+                return R.drawable.ic_file_archive;
+
+            case Mimes.Type.AUDIO:
+                return R.drawable.ic_file_audio;
+
+            case Mimes.Type.CODE:
+                return R.drawable.ic_file_code;
+
+            case Mimes.Type.DOCUMENT:
+                return R.drawable.ic_file_text;
+
+            case Mimes.Type.DIRECTORY:
+                return R.drawable.ic_file_directory;
+
+            case Mimes.Type.IMAGE:
+                return R.drawable.ic_file_image;
+
+            case Mimes.Type.PRESENTATION:
+                return R.drawable.ic_file_presentation;
+
+            case Mimes.Type.SPREADSHEET:
+                return R.drawable.ic_file_spreadsheet;
+
+            case Mimes.Type.VIDEO:
+                return R.drawable.ic_file_video;
+
+            default:
+                return R.drawable.ic_file_generic;
+        }
+    }
 
     abstract void bindView(ServerFile file, View view);
 
     abstract View newView(ViewGroup container);
-
-    public interface onFilterListChange {
-        void isListEmpty(boolean empty);
-    }
 
     public <T extends onFilterListChange> void setFilterListChangeListener(T t) {
         this.onFilterListChange = t;
@@ -124,6 +151,23 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
         return files;
     }
 
+    void setUpImageIcon(ServerFile file, ImageView fileIconView) {
+        Picasso.with(fileIconView.getContext())
+                .load(getImageUri(file))
+                .centerCrop()
+                .fit()
+                .placeholder(getFileIcon(file))
+                .into(fileIconView);
+    }
+
+    private Uri getImageUri(ServerFile file) {
+        return serverClient.getFileUri(serverShare, file);
+    }
+
+    public interface onFilterListChange {
+        void isListEmpty(boolean empty);
+    }
+
     private class FilesFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
@@ -154,54 +198,6 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
             filteredFiles = (List<ServerFile>) filterResults.values;
             notifyDataSetChanged();
         }
-    }
-
-    @DrawableRes
-    static int getFileIcon(ServerFile file) {
-        switch (Mimes.match(file.getMime())) {
-            case Mimes.Type.ARCHIVE:
-                return R.drawable.ic_file_archive;
-
-            case Mimes.Type.AUDIO:
-                return R.drawable.ic_file_audio;
-
-            case Mimes.Type.CODE:
-                return R.drawable.ic_file_code;
-
-            case Mimes.Type.DOCUMENT:
-                return R.drawable.ic_file_text;
-
-            case Mimes.Type.DIRECTORY:
-                return R.drawable.ic_file_directory;
-
-            case Mimes.Type.IMAGE:
-                return R.drawable.ic_file_image;
-
-            case Mimes.Type.PRESENTATION:
-                return R.drawable.ic_file_presentation;
-
-            case Mimes.Type.SPREADSHEET:
-                return R.drawable.ic_file_spreadsheet;
-
-            case Mimes.Type.VIDEO:
-                return R.drawable.ic_file_video;
-
-            default:
-                return R.drawable.ic_file_generic;
-        }
-    }
-
-    void setUpImageIcon(ServerFile file, ImageView fileIconView) {
-        Picasso.with(fileIconView.getContext())
-                .load(getImageUri(file))
-                .centerCrop()
-                .fit()
-                .placeholder(getFileIcon(file))
-                .into(fileIconView);
-    }
-
-    private Uri getImageUri(ServerFile file) {
-        return serverClient.getFileUri(serverShare, file);
     }
 
 }

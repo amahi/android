@@ -27,57 +27,52 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Server API resource.
  */
-public class Server implements Parcelable
-{
-	@SerializedName("name")
-	private String name;
+public class Server implements Parcelable {
+    public static final Creator<Server> CREATOR = new Creator<Server>() {
+        @Override
+        public Server createFromParcel(Parcel parcel) {
+            return new Server(parcel);
+        }
 
-	@SerializedName("session_token")
-	private String session;
+        @Override
+        public Server[] newArray(int size) {
+            return new Server[size];
+        }
+    };
+    @SerializedName("name")
+    private String name;
+    @SerializedName("session_token")
+    private String session;
+    @SerializedName("active")
+    private boolean active;
 
-	@SerializedName("active")
-	private boolean active;
+    private Server(Parcel parcel) {
+        this.name = parcel.readString();
+        this.session = parcel.readString();
+        this.active = Boolean.valueOf(parcel.readString());
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getSession() {
-		return session;
-	}
+    public String getSession() {
+        return session;
+    }
 
-	public boolean isActive() {
-		return active;
-	}
+    public boolean isActive() {
+        return active;
+    }
 
-	public static final Creator<Server> CREATOR = new Creator<Server>()
-	{
-		@Override
-		public Server createFromParcel(Parcel parcel) {
-			return new Server(parcel);
-		}
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(name);
+        parcel.writeString(session);
+        parcel.writeString(String.valueOf(active));
+    }
 
-		@Override
-		public Server[] newArray(int size) {
-			return new Server[size];
-		}
-	};
-
-	private Server(Parcel parcel) {
-		this.name = parcel.readString();
-		this.session = parcel.readString();
-		this.active = Boolean.valueOf(parcel.readString());
-	}
-
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeString(name);
-		parcel.writeString(session);
-		parcel.writeString(String.valueOf(active));
-	}
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }

@@ -35,18 +35,17 @@ import retrofit2.Response;
  * Apps response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
  * as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class ServerAppsResponse implements Callback<List<ServerApp>>
-{
-	@Override
-	public void onResponse(Call<List<ServerApp>> call, Response<List<ServerApp>> response) {
-		if (response.isSuccessful())
-			BusProvider.getBus().post(new ServerAppsLoadedEvent(response.body()));
-		else
-			this.onFailure(call, new HttpException(response));
-	}
+public class ServerAppsResponse implements Callback<List<ServerApp>> {
+    @Override
+    public void onResponse(Call<List<ServerApp>> call, Response<List<ServerApp>> response) {
+        if (response.isSuccessful())
+            BusProvider.getBus().post(new ServerAppsLoadedEvent(response.body()));
+        else
+            this.onFailure(call, new HttpException(response));
+    }
 
-	@Override
-	public void onFailure(Call<List<ServerApp>> call, Throwable t) {
-		BusProvider.getBus().post(new ServerAppsLoadFailedEvent());
-	}
+    @Override
+    public void onFailure(Call<List<ServerApp>> call, Throwable t) {
+        BusProvider.getBus().post(new ServerAppsLoadFailedEvent());
+    }
 }

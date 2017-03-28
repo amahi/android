@@ -30,55 +30,54 @@ import org.amahi.anywhere.R;
 /**
  * Android properties accessor.
  */
-public final class Android
-{
-	private Android() {
-	}
+public final class Android {
+    private Android() {
+    }
 
-	public static boolean isTablet(Context context) {
-		return context.getResources().getBoolean(R.bool.tablet);
-	}
+    public static boolean isTablet(Context context) {
+        return context.getResources().getBoolean(R.bool.tablet);
+    }
 
-	public static String getVersion() {
-		return Build.VERSION.RELEASE;
-	}
+    public static String getVersion() {
+        return Build.VERSION.RELEASE;
+    }
 
-	public static String getApplicationVersion() {
-		return BuildConfig.VERSION_NAME;
-	}
+    public static String getApplicationVersion() {
+        return BuildConfig.VERSION_NAME;
+    }
 
-	public static String getDeviceName() {
-		return Build.MODEL;
-	}
+    public static String getDeviceName() {
+        return Build.MODEL;
+    }
 
-	public static int getDeviceScreenWidth(Context context) {
-		return getDeviceScreenMetrics(context).widthPixels;
-	}
+    public static int getDeviceScreenWidth(Context context) {
+        return getDeviceScreenMetrics(context).widthPixels;
+    }
 
-	public static int getDeviceScreenHeight(Context context) {
-		return getDeviceScreenMetrics(context).heightPixels;
-	}
+    public static int getDeviceScreenHeight(Context context) {
+        return getDeviceScreenMetrics(context).heightPixels;
+    }
 
-	public static double getDeviceScreenSize(Context context) {
-		DisplayMetrics screenMetrics = getDeviceScreenMetrics(context);
+    public static double getDeviceScreenSize(Context context) {
+        DisplayMetrics screenMetrics = getDeviceScreenMetrics(context);
 
-		float screenWidth = screenMetrics.widthPixels / screenMetrics.xdpi;
-		float screenHeight = screenMetrics.heightPixels / screenMetrics.ydpi;
+        float screenWidth = screenMetrics.widthPixels / screenMetrics.xdpi;
+        float screenHeight = screenMetrics.heightPixels / screenMetrics.ydpi;
 
-		return Math.sqrt(Math.pow(screenWidth, 2) + Math.pow(screenHeight, 2));
-	}
+        return Math.sqrt(Math.pow(screenWidth, 2) + Math.pow(screenHeight, 2));
+    }
 
-	private static DisplayMetrics getDeviceScreenMetrics(Context context) {
-		DisplayMetrics screenMetrics = new DisplayMetrics();
+    private static DisplayMetrics getDeviceScreenMetrics(Context context) {
+        DisplayMetrics screenMetrics = new DisplayMetrics();
 
-		WindowManager windows = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windows = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-			windows.getDefaultDisplay().getRealMetrics(screenMetrics);
-		} else {
-			windows.getDefaultDisplay().getMetrics(screenMetrics);
-		}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            windows.getDefaultDisplay().getRealMetrics(screenMetrics);
+        } else {
+            windows.getDefaultDisplay().getMetrics(screenMetrics);
+        }
 
-		return screenMetrics;
-	}
+        return screenMetrics;
+    }
 }

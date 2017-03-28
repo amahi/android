@@ -29,9 +29,8 @@ import retrofit2.http.PUT;
 /**
  * Proxy API declaration.
  */
-public interface ProxyApi
-{
-	@PUT("/client")
-	Call<ServerRoute> getServerRoute(
-		@Header("Session") String session);
+public interface ProxyApi {
+    @PUT("/client")
+    Call<ServerRoute> getServerRoute(
+            @Header("Session") String session);
 }

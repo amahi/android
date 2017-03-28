@@ -8,17 +8,16 @@
     tools:context="org.amahi.anywhere.activity.WebViewActivity">
 
     <WebView
-        android:background="@color/background_secondary"
         android:id="@+id/webview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        />
+        android:background="@color/background_secondary" />
 
     <ProgressBar
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:visibility="gone"
+        android:id="@+id/progress_webview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progress_webview"/>
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 </RelativeLayout>

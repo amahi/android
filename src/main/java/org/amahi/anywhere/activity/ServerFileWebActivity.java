@@ -45,151 +45,149 @@ import javax.inject.Inject;
  * Web activity. Shows web resources such as SVG and HTML files.
  * Backed up by {@link android.webkit.WebView}.
  */
-public class ServerFileWebActivity extends AppCompatActivity
-{
-	private static final Set<String> SUPPORTED_FORMATS;
+public class ServerFileWebActivity extends AppCompatActivity {
+    private static final Set<String> SUPPORTED_FORMATS;
 
-	static {
-		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
-			"image/svg+xml",
-			"text/html",
-			"text/plain"
-		));
-	}
+    static {
+        SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
+                "image/svg+xml",
+                "text/html",
+                "text/plain"
+        ));
+    }
 
-	@Inject
-	ServerClient serverClient;
+    @Inject
+    ServerClient serverClient;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_server_file_web);
+    public static boolean supports(String mime_type) {
+        return SUPPORTED_FORMATS.contains(mime_type);
+    }
 
-		setUpInjections();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_server_file_web);
 
-		setUpHomeNavigation();
+        setUpInjections();
 
-		setUpWebResource(savedInstanceState);
-	}
+        setUpHomeNavigation();
 
-	private void setUpInjections() {
-		AmahiApplication.from(this).inject(this);
-	}
+        setUpWebResource(savedInstanceState);
+    }
 
-	private void setUpHomeNavigation() {
-		getSupportActionBar().setHomeButtonEnabled(true);
-		getSupportActionBar().setIcon(R.drawable.ic_launcher);
-	}
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
 
-	private void setUpWebResource(Bundle state) {
-		setUpWebResourceTitle();
-		setUpWebResourceClient();
-		setUpWebResourceContent(state);
-	}
+    private void setUpHomeNavigation() {
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+    }
 
-	private void setUpWebResourceTitle() {
-		getSupportActionBar().setTitle(getFile().getName());
-	}
+    private void setUpWebResource(Bundle state) {
+        setUpWebResourceTitle();
+        setUpWebResourceClient();
+        setUpWebResourceContent(state);
+    }
 
-	private void setUpWebResourceClient() {
-		getWebView().setWebViewClient(new WebResourceClient(this));
-	}
+    private void setUpWebResourceTitle() {
+        getSupportActionBar().setTitle(getFile().getName());
+    }
 
-	private void setUpWebResourceContent(Bundle state) {
-		if (!isWebResourceStateValid(state)) {
-			getWebView().getSettings().setLoadWithOverviewMode(true);
-			getWebView().getSettings().setUseWideViewPort(true);
-			getWebView().getSettings().setBuiltInZoomControls(true);
-			getWebView().loadUrl(getWebResourceUri().toString());
-		}
-	}
+    private void setUpWebResourceClient() {
+        getWebView().setWebViewClient(new WebResourceClient(this));
+    }
 
-	private boolean isWebResourceStateValid(Bundle state) {
-		return state != null;
-	}
+    private void setUpWebResourceContent(Bundle state) {
+        if (!isWebResourceStateValid(state)) {
+            getWebView().getSettings().setLoadWithOverviewMode(true);
+            getWebView().getSettings().setUseWideViewPort(true);
+            getWebView().getSettings().setBuiltInZoomControls(true);
+            getWebView().loadUrl(getWebResourceUri().toString());
+        }
+    }
 
-	private WebView getWebView() {
-		return (WebView) findViewById(R.id.web_content);
-	}
+    private boolean isWebResourceStateValid(Bundle state) {
+        return state != null;
+    }
 
-	private Uri getWebResourceUri() {
-		return serverClient.getFileUri(getShare(), getFile());
-	}
+    private WebView getWebView() {
+        return (WebView) findViewById(R.id.web_content);
+    }
 
-	private ServerShare getShare() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
-	}
+    private Uri getWebResourceUri() {
+        return serverClient.getFileUri(getShare(), getFile());
+    }
 
-	private ServerFile getFile() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
-	}
+    private ServerShare getShare() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+    }
 
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
+    private ServerFile getFile() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
+    }
 
-		setUpWebResourceState(savedInstanceState);
-	}
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
 
-	private void setUpWebResourceState(Bundle state) {
-		getWebView().restoreState(state);
-	}
+        setUpWebResourceState(savedInstanceState);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		switch (menuItem.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
+    private void setUpWebResourceState(Bundle state) {
+        getWebView().restoreState(state);
+    }
 
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
 
-		tearDownWebResourceState(outState);
-	}
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-	private void tearDownWebResourceState(Bundle state) {
-		getWebView().saveState(state);
-	}
+        tearDownWebResourceState(outState);
+    }
 
-	public static boolean supports(String mime_type) {
-		return SUPPORTED_FORMATS.contains(mime_type);
-	}
+    private void tearDownWebResourceState(Bundle state) {
+        getWebView().saveState(state);
+    }
 
-	private static final class WebResourceClient extends WebViewClient
-	{
-		private final ServerFileWebActivity activity;
+    private void showProgress() {
+        ViewDirector.of(this, R.id.animator).show(android.R.id.progress);
+    }
 
-		public WebResourceClient(ServerFileWebActivity activity) {
-			this.activity = activity;
-		}
+    private void showApp() {
+        ViewDirector.of(this, R.id.animator).show(R.id.web_content);
+    }
 
-		@Override
-		public void onPageStarted(WebView appWebView, String appUrl, Bitmap appFavicon) {
-			super.onPageStarted(appWebView, appUrl, appFavicon);
+    private static final class WebResourceClient extends WebViewClient {
+        private final ServerFileWebActivity activity;
 
-			activity.showProgress();
-		}
+        public WebResourceClient(ServerFileWebActivity activity) {
+            this.activity = activity;
+        }
 
-		@Override
-		public void onPageFinished(WebView appWebView, String appUrl) {
-			super.onPageFinished(appWebView, appUrl);
+        @Override
+        public void onPageStarted(WebView appWebView, String appUrl, Bitmap appFavicon) {
+            super.onPageStarted(appWebView, appUrl, appFavicon);
 
-			activity.showApp();
-		}
-	}
+            activity.showProgress();
+        }
 
-	private void showProgress() {
-		ViewDirector.of(this, R.id.animator).show(android.R.id.progress);
-	}
+        @Override
+        public void onPageFinished(WebView appWebView, String appUrl) {
+            super.onPageFinished(appWebView, appUrl);
 
-	private void showApp() {
-		ViewDirector.of(this, R.id.animator).show(R.id.web_content);
-	}
+            activity.showApp();
+        }
+    }
 }

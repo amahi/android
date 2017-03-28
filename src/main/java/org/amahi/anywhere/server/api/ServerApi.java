@@ -34,25 +34,24 @@ import retrofit2.http.Query;
 /**
  * Server API declaration.
  */
-public interface ServerApi
-{
-	@GET("/shares")
-	Call<List<ServerShare>> getShares(
-		@Header("Session") String session);
+public interface ServerApi {
+    @GET("/shares")
+    Call<List<ServerShare>> getShares(
+            @Header("Session") String session);
 
-	@GET("/files")
-	Call<List<ServerFile>> getFiles(
-		@Header("Session") String session,
-		@Query("s") String share,
-		@Query("p") String path);
+    @GET("/files")
+    Call<List<ServerFile>> getFiles(
+            @Header("Session") String session,
+            @Query("s") String share,
+            @Query("p") String path);
 
-	@GET("/md")
-	Call<ServerFileMetadata> getFileMetadata(
-		@Header("Session") String session,
-		@Query("f") String fileName,
-		@Query("h") String hint);
+    @GET("/md")
+    Call<ServerFileMetadata> getFileMetadata(
+            @Header("Session") String session,
+            @Query("f") String fileName,
+            @Query("h") String hint);
 
-	@GET("/apps")
-	Call<List<ServerApp>> getApps(
-		@Header("Session") String session);
+    @GET("/apps")
+    Call<List<ServerApp>> getApps(
+            @Header("Session") String session);
 }

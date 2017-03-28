@@ -40,106 +40,102 @@ import javax.inject.Inject;
 /**
  * Video service. Does all the work related to the video playback.
  */
-public class VideoService extends Service
-{
-	private ServerShare videoShare;
-	private ServerFile videoFile;
+public class VideoService extends Service {
+    @Inject
+    ServerClient serverClient;
+    private ServerShare videoShare;
+    private ServerFile videoFile;
+    private LibVLC mLibVLC;
+    private MediaPlayer mMediaPlayer = null;
 
-	private LibVLC mLibVLC;
-	private MediaPlayer mMediaPlayer = null;
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new VideoServiceBinder(this);
+    }
 
-	@Inject
-	ServerClient serverClient;
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return new VideoServiceBinder(this);
-	}
+        setUpInjections();
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+        setUpVideoPlayer();
+    }
 
-		setUpInjections();
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
 
-		setUpVideoPlayer();
-	}
+    private void setUpVideoPlayer() {
+        final ArrayList<String> args = new ArrayList<>();
+        args.add("-vvv");
+        mLibVLC = new LibVLC(this, args);
+        mMediaPlayer = new MediaPlayer(mLibVLC);
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(this).inject(this);
-	}
+    public boolean isVideoStarted() {
+        return (videoShare != null) && (videoFile != null);
+    }
 
-	private void setUpVideoPlayer() {
-		final ArrayList<String> args = new ArrayList<>();
-		args.add("-vvv");
-		mLibVLC = new LibVLC(this, args);
-		mMediaPlayer = new MediaPlayer(mLibVLC);
-	}
+    public void startVideo(ServerShare videoShare, ServerFile videoFile) {
+        this.videoShare = videoShare;
+        this.videoFile = videoFile;
 
-	public boolean isVideoStarted() {
-		return (videoShare != null) && (videoFile != null);
-	}
+        setUpVideoPlayback();
+    }
 
-	public void startVideo(ServerShare videoShare, ServerFile videoFile) {
-		this.videoShare = videoShare;
-		this.videoFile = videoFile;
+    private void setUpVideoPlayback() {
+        Media media = new Media(mLibVLC, getVideoUri());
+        mMediaPlayer.setMedia(media);
+        media.release();
+        mMediaPlayer.play();
+    }
 
-		setUpVideoPlayback();
-	}
+    private Uri getVideoUri() {
+        return serverClient.getFileUri(videoShare, videoFile);
+    }
 
-	private void setUpVideoPlayback() {
-		Media media = new Media(mLibVLC, getVideoUri());
-		mMediaPlayer.setMedia(media);
-		media.release();
-		mMediaPlayer.play();
-	}
+    public MediaPlayer getMediaPlayer() {
+        return mMediaPlayer;
+    }
 
-	private Uri getVideoUri() {
-		return serverClient.getFileUri(videoShare, videoFile);
-	}
+    public boolean isVideoPlaying() {
+        return mMediaPlayer.isPlaying();
+    }
 
-	public MediaPlayer getMediaPlayer() {
-		return mMediaPlayer;
-	}
+    public void playVideo() {
+        mMediaPlayer.play();
+    }
 
-	public boolean isVideoPlaying() {
-		return mMediaPlayer.isPlaying();
-	}
-
-	public void playVideo() {
-		mMediaPlayer.play();
-	}
-
-	public void pauseVideo() {
-		mMediaPlayer.pause();
-	}
+    public void pauseVideo() {
+        mMediaPlayer.pause();
+    }
 
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-		tearDownVideoPlayback();
-	}
-
-
-	private void tearDownVideoPlayback() {
-		mMediaPlayer.stop();
-		mMediaPlayer.release();
-		mLibVLC.release();
-	}
+        tearDownVideoPlayback();
+    }
 
 
-	public static final class VideoServiceBinder extends Binder
-	{
-		private final VideoService videoService;
+    private void tearDownVideoPlayback() {
+        mMediaPlayer.stop();
+        mMediaPlayer.release();
+        mLibVLC.release();
+    }
 
-		VideoServiceBinder(VideoService videoService) {
-			this.videoService = videoService;
-		}
 
-		public VideoService getVideoService() {
-			return videoService;
-		}
-	}
+    public static final class VideoServiceBinder extends Binder {
+        private final VideoService videoService;
+
+        VideoServiceBinder(VideoService videoService) {
+            this.videoService = videoService;
+        }
+
+        public VideoService getVideoService() {
+            return videoService;
+        }
+    }
 }

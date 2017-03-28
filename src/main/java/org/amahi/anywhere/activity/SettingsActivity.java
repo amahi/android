@@ -19,8 +19,8 @@
 
 package org.amahi.anywhere.activity;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -31,39 +31,38 @@ import org.amahi.anywhere.util.Fragments;
  * Settings activity. Shows application's settings.
  * Settings itself are provided via {@link org.amahi.anywhere.fragment.SettingsFragment}.
  */
-public class SettingsActivity extends AppCompatActivity
-{
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+public class SettingsActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		setUpHomeNavigation();
+        setUpHomeNavigation();
 
-		setUpSettingsFragment();
-	}
+        setUpSettingsFragment();
+    }
 
-	private void setUpHomeNavigation() {
-		getSupportActionBar().setHomeButtonEnabled(true);
-		getSupportActionBar().setIcon(R.drawable.ic_launcher);
-	}
+    private void setUpHomeNavigation() {
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+    }
 
-	private void setUpSettingsFragment() {
-		Fragments.Operator.at(this).set(buildSettingsFragment(), android.R.id.content);
-	}
+    private void setUpSettingsFragment() {
+        Fragments.Operator.at(this).set(buildSettingsFragment(), android.R.id.content);
+    }
 
-	private Fragment buildSettingsFragment() {
-		return Fragments.Builder.buildSettingsFragment();
-	}
+    private Fragment buildSettingsFragment() {
+        return Fragments.Builder.buildSettingsFragment();
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		switch (menuItem.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
 
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
-	}
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
 }

@@ -20,10 +20,10 @@
 package org.amahi.anywhere.activity;
 
 import android.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -35,8 +35,8 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
-import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
+import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -53,226 +53,221 @@ import javax.inject.Inject;
  * such as opening and sharing.
  * The files navigation itself is done via {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
-public class ServerFilesActivity extends AppCompatActivity
-{
-	private static final class State
-	{
-		private State() {
-		}
+public class ServerFilesActivity extends AppCompatActivity {
+    @Inject
+    ServerClient serverClient;
+    private ServerFile file;
+    private FileAction fileAction;
 
-		public static final String FILE = "file";
-		public static final String FILE_ACTION = "file_action";
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_server_files);
 
-	private static enum FileAction
-	{
-		OPEN, SHARE
-	}
+        setUpInjections();
 
-	@Inject
-	ServerClient serverClient;
+        setUpHomeNavigation();
 
-	private ServerFile file;
-	private FileAction fileAction;
+        setUpFiles(savedInstanceState);
+    }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_server_files);
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
 
-		setUpInjections();
+    private void setUpHomeNavigation() {
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+    }
 
-		setUpHomeNavigation();
+    private void setUpFiles(Bundle state) {
+        setUpFilesTitle();
+        setUpFilesFragment();
+        setUpFilesState(state);
+    }
 
-		setUpFiles(savedInstanceState);
-	}
+    private void setUpFilesTitle() {
+        getSupportActionBar().setTitle(getShare().getName());
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(this).inject(this);
-	}
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setUpFilesTitle();
+    }
 
-	private void setUpHomeNavigation() {
-		getSupportActionBar().setHomeButtonEnabled(true);
-		getSupportActionBar().setIcon(R.drawable.ic_launcher);
-	}
+    private ServerShare getShare() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+    }
 
-	private void setUpFiles(Bundle state) {
-		setUpFilesTitle();
-		setUpFilesFragment();
-		setUpFilesState(state);
-	}
+    private void setUpFilesFragment() {
+        Fragments.Operator.at(this).set(buildFilesFragment(getShare(), null), R.id.container_files);
+    }
 
-	private void setUpFilesTitle() {
-		getSupportActionBar().setTitle(getShare().getName());
-	}
+    private Fragment buildFilesFragment(ServerShare share, ServerFile directory) {
+        return Fragments.Builder.buildServerFilesFragment(share, directory);
+    }
 
-       @Override
-       public void onBackPressed() {
-           super.onBackPressed();
-           setUpFilesTitle();
-       }
+    private void setUpFilesState(Bundle state) {
+        if (isFilesStateValid(state)) {
+            this.file = state.getParcelable(State.FILE);
+            this.fileAction = (FileAction) state.getSerializable(State.FILE_ACTION);
+        }
+    }
 
-       private ServerShare getShare() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
-	}
+    private boolean isFilesStateValid(Bundle state) {
+        return (state != null) && state.containsKey(State.FILE) && state.containsKey(State.FILE_ACTION);
+    }
 
-	private void setUpFilesFragment() {
-		Fragments.Operator.at(this).set(buildFilesFragment(getShare(), null), R.id.container_files);
-	}
+    @Subscribe
+    public void onFileOpening(FileOpeningEvent event) {
+        this.file = event.getFile();
+        this.fileAction = FileAction.OPEN;
 
-	private Fragment buildFilesFragment(ServerShare share, ServerFile directory) {
-		return Fragments.Builder.buildServerFilesFragment(share, directory);
-	}
+        setUpFile(event.getShare(), event.getFiles(), event.getFile());
+    }
 
-	private void setUpFilesState(Bundle state) {
-		if (isFilesStateValid(state)) {
-			this.file = state.getParcelable(State.FILE);
-			this.fileAction = (FileAction) state.getSerializable(State.FILE_ACTION);
-		}
-	}
+    private void setUpFile(ServerShare share, List<ServerFile> files, ServerFile file) {
+        if (isDirectory(file)) {
+            setUpFilesFragment(share, file);
+        } else {
+            setUpFileActivity(share, files, file);
+        }
+    }
 
-	private boolean isFilesStateValid(Bundle state) {
-		return (state != null) && state.containsKey(State.FILE) && state.containsKey(State.FILE_ACTION);
-	}
+    private boolean isDirectory(ServerFile file) {
+        return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
+    }
 
-	@Subscribe
-	public void onFileOpening(FileOpeningEvent event) {
-		this.file = event.getFile();
-		this.fileAction = FileAction.OPEN;
+    private void setUpFilesFragment(ServerShare share, ServerFile directory) {
+        Fragments.Operator.at(this).replaceBackstacked(buildFilesFragment(share, directory), R.id.container_files);
+    }
 
-		setUpFile(event.getShare(), event.getFiles(), event.getFile());
-	}
+    private void setUpFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
+        if (Intents.Builder.with(this).isServerFileSupported(file)) {
+            startFileActivity(share, files, file);
+            return;
+        }
 
-	private void setUpFile(ServerShare share, List<ServerFile> files, ServerFile file) {
-		if (isDirectory(file)) {
-			setUpFilesFragment(share, file);
-		} else {
-			setUpFileActivity(share, files, file);
-		}
-	}
+        if (Intents.Builder.with(this).isServerFileOpeningSupported(file)) {
+            startFileOpeningActivity(share, file);
+            return;
+        }
 
-	private boolean isDirectory(ServerFile file) {
-		return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
-	}
+        showGooglePlaySearchFragment(file);
+    }
 
-	private void setUpFilesFragment(ServerShare share, ServerFile directory) {
-		Fragments.Operator.at(this).replaceBackstacked(buildFilesFragment(share, directory), R.id.container_files);
-	}
+    private void startFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
+        Intent intent = Intents.Builder.with(this).buildServerFileIntent(share, files, file);
+        startActivity(intent);
+    }
 
-	private void setUpFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
-		if (Intents.Builder.with(this).isServerFileSupported(file)) {
-			startFileActivity(share, files, file);
-			return;
-		}
+    private void startFileOpeningActivity(ServerShare share, ServerFile file) {
+        startFileDownloading(share, file);
+    }
 
-		if (Intents.Builder.with(this).isServerFileOpeningSupported(file)) {
-			startFileOpeningActivity(share, file);
-			return;
-		}
+    private void startFileDownloading(ServerShare share, ServerFile file) {
+        showFileDownloadingFragment(share, file);
+    }
 
-		showGooglePlaySearchFragment(file);
-	}
+    private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
+        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
+        fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
+    }
 
-	private void startFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
-		Intent intent = Intents.Builder.with(this).buildServerFileIntent(share, files, file);
-		startActivity(intent);
-	}
+    @Subscribe
+    public void onFileDownloaded(FileDownloadedEvent event) {
+        finishFileDownloading(event.getFileUri());
+    }
 
-	private void startFileOpeningActivity(ServerShare share, ServerFile file) {
-		startFileDownloading(share, file);
-	}
+    private void finishFileDownloading(Uri fileUri) {
+        switch (fileAction) {
+            case OPEN:
+                startFileOpeningActivity(file, fileUri);
+                break;
 
-	private void startFileDownloading(ServerShare share, ServerFile file) {
-		showFileDownloadingFragment(share, file);
-	}
+            case SHARE:
+                startFileSharingActivity(file, fileUri);
+                break;
 
-	private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
-		DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
-		fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
-	}
+            default:
+                break;
+        }
+    }
 
-	@Subscribe
-	public void onFileDownloaded(FileDownloadedEvent event) {
-		finishFileDownloading(event.getFileUri());
-	}
+    private void startFileOpeningActivity(ServerFile file, Uri fileUri) {
+        Intent intent = Intents.Builder.with(this).buildServerFileOpeningIntent(file, fileUri);
+        startActivity(intent);
+    }
 
-	private void finishFileDownloading(Uri fileUri) {
-		switch (fileAction) {
-			case OPEN:
-				startFileOpeningActivity(file, fileUri);
-				break;
+    private void startFileSharingActivity(ServerFile file, Uri fileUri) {
+        Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
+        startActivity(intent);
+    }
 
-			case SHARE:
-				startFileSharingActivity(file, fileUri);
-				break;
+    private void showGooglePlaySearchFragment(ServerFile file) {
+        GooglePlaySearchFragment fragment = GooglePlaySearchFragment.newInstance(file);
+        fragment.show(getFragmentManager(), GooglePlaySearchFragment.TAG);
+    }
 
-			default:
-				break;
-		}
-	}
+    @Subscribe
+    public void onFileSharing(ServerFileSharingEvent event) {
+        this.file = event.getFile();
+        this.fileAction = FileAction.SHARE;
 
-	private void startFileOpeningActivity(ServerFile file, Uri fileUri) {
-		Intent intent = Intents.Builder.with(this).buildServerFileOpeningIntent(file, fileUri);
-		startActivity(intent);
-	}
+        startFileSharingActivity(event.getShare(), event.getFile());
+    }
 
-	private void startFileSharingActivity(ServerFile file, Uri fileUri) {
-		Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
-		startActivity(intent);
-	}
+    private void startFileSharingActivity(ServerShare share, ServerFile file) {
+        startFileDownloading(share, file);
+    }
 
-	private void showGooglePlaySearchFragment(ServerFile file) {
-		GooglePlaySearchFragment fragment = GooglePlaySearchFragment.newInstance(file);
-		fragment.show(getFragmentManager(), GooglePlaySearchFragment.TAG);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
 
-	@Subscribe
-	public void onFileSharing(ServerFileSharingEvent event) {
-		this.file = event.getFile();
-		this.fileAction = FileAction.SHARE;
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
 
-		startFileSharingActivity(event.getShare(), event.getFile());
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-	private void startFileSharingActivity(ServerShare share, ServerFile file) {
-		startFileDownloading(share, file);
-	}
+        BusProvider.getBus().register(this);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		switch (menuItem.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
+    @Override
+    protected void onPause() {
+        super.onPause();
 
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
-	}
+        BusProvider.getBus().unregister(this);
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-		BusProvider.getBus().register(this);
-	}
+        tearDownFilesState(outState);
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+    private void tearDownFilesState(Bundle state) {
+        state.putParcelable(State.FILE, file);
+        state.putSerializable(State.FILE_ACTION, fileAction);
+    }
 
-		BusProvider.getBus().unregister(this);
-	}
+    private static enum FileAction {
+        OPEN, SHARE
+    }
 
-       @Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-
-		tearDownFilesState(outState);
-	}
-
-	private void tearDownFilesState(Bundle state) {
-		state.putParcelable(State.FILE, file);
-		state.putSerializable(State.FILE_ACTION, fileAction);
-	}
+    private static final class State {
+        public static final String FILE = "file";
+        public static final String FILE_ACTION = "file_action";
+        private State() {
+        }
+    }
 }

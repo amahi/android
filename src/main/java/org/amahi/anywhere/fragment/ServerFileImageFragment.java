@@ -19,9 +19,9 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.support.v4.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,81 +42,80 @@ import javax.inject.Inject;
 /**
  * Image fragment. Shows a single image.
  */
-public class ServerFileImageFragment extends Fragment implements Callback
-{
-	@Inject
-	ServerClient serverClient;
+public class ServerFileImageFragment extends Fragment implements Callback {
+    @Inject
+    ServerClient serverClient;
 
-	@Override
-	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_server_file_image, container, false);
-	}
+    @Override
+    public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
+        return layoutInflater.inflate(R.layout.fragment_server_file_image, container, false);
+    }
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-		setUpInjections();
+        setUpInjections();
 
-		setUpImage();
-	}
+        setUpImage();
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
-	}
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
+    }
 
-	private void setUpImage() {
-		setUpImageContent();
-	}
+    private void setUpImage() {
+        setUpImageContent();
+    }
 
-	private void setUpImageContent() {
-		Picasso
-			.with(getActivity())
-			.load(getImageUri())
-			.fit()
-			.centerInside()
-			.into(getImageView(), this);
-	}
+    private void setUpImageContent() {
+        Picasso
+                .with(getActivity())
+                .load(getImageUri())
+                .fit()
+                .centerInside()
+                .into(getImageView(), this);
+    }
 
-	private Uri getImageUri() {
-		return serverClient.getFileUri(getShare(), getFile());
-	}
+    private Uri getImageUri() {
+        return serverClient.getFileUri(getShare(), getFile());
+    }
 
-	private ServerShare getShare() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
-	}
+    private ServerShare getShare() {
+        return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
+    }
 
-	private ServerFile getFile() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
-	}
+    private ServerFile getFile() {
+        return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+    }
 
-	private TouchImageView getImageView() {
-		return (TouchImageView) getView().findViewById(R.id.image);
-	}
+    private TouchImageView getImageView() {
+        return (TouchImageView) getView().findViewById(R.id.image);
+    }
 
-	@Override
-	public void onSuccess() {
-		showImageContent();
-	}
+    @Override
+    public void onSuccess() {
+        showImageContent();
+    }
 
-	private void showImageContent() {
-		getImageView().setVisibility(View.VISIBLE);
-	}
+    private void showImageContent() {
+        getImageView().setVisibility(View.VISIBLE);
+    }
 
-	@Override
-	public void onError() {
-	}
+    @Override
+    public void onError() {
+    }
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
 
-		tearDownImageContent();
-	}
+        tearDownImageContent();
+    }
 
-	private void tearDownImageContent() {
-		Picasso
-			.with(getActivity())
-			.cancelRequest(getImageView());
-	}
+    private void tearDownImageContent() {
+        Picasso
+                .with(getActivity())
+                .cancelRequest(getImageView());
+    }
 }

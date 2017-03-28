@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2014 Amahi
   ~
   ~ This file is part of Amahi.
@@ -19,23 +18,23 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal"
-	android:gravity="center_vertical"
-	android:padding="8dp"
-	android:layout_width="match_parent"
-	android:layout_height="?android:attr/listPreferredItemHeight">
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="8dp">
 
-	<ImageView
-		android:id="@+id/logo"
-		android:layout_marginRight="8dp"
-		android:layout_width="40dp"
-		android:layout_height="40dp"/>
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="8dp" />
 
-	<TextView
-		android:id="@+id/text"
-		android:maxLines="1"
-		android:textSize="@dimen/text_medium"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textSize="@dimen/text_medium" />
 
 </LinearLayout>

@@ -24,17 +24,15 @@ import com.squareup.otto.Bus;
 /**
  * {@link com.squareup.otto.Bus} holder, which allows to use a single instance everywhere.
  */
-public final class BusProvider
-{
-	private static final class BusHolder
-	{
-		public static final Bus BUS = new Bus();
-	}
+public final class BusProvider {
+    private BusProvider() {
+    }
 
-	private BusProvider() {
-	}
+    public static Bus getBus() {
+        return BusHolder.BUS;
+    }
 
-	public static Bus getBus() {
-		return BusHolder.BUS;
-	}
+    private static final class BusHolder {
+        public static final Bus BUS = new Bus();
+    }
 }

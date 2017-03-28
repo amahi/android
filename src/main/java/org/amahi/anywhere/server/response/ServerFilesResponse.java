@@ -37,34 +37,32 @@ import retrofit2.Response;
  * Files response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
  * as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class ServerFilesResponse implements Callback<List<ServerFile>>
-{
-	private final ServerFile serverDirectory;
+public class ServerFilesResponse implements Callback<List<ServerFile>> {
+    private final ServerFile serverDirectory;
 
-	public ServerFilesResponse(ServerFile serverDirectory) {
-		this.serverDirectory = serverDirectory;
-	}
+    public ServerFilesResponse(ServerFile serverDirectory) {
+        this.serverDirectory = serverDirectory;
+    }
 
-	@Override
-	public void onResponse(Call<List<ServerFile>> call, Response<List<ServerFile>> response) {
-		if (response.isSuccessful()) {
-			List<ServerFile> serverFiles = response.body();
-			if (serverFiles == null) {
-				serverFiles = Collections.emptyList();
-			}
+    @Override
+    public void onResponse(Call<List<ServerFile>> call, Response<List<ServerFile>> response) {
+        if (response.isSuccessful()) {
+            List<ServerFile> serverFiles = response.body();
+            if (serverFiles == null) {
+                serverFiles = Collections.emptyList();
+            }
 
-			for (ServerFile serverFile : serverFiles) {
-				serverFile.setParentFile(serverDirectory);
-			}
+            for (ServerFile serverFile : serverFiles) {
+                serverFile.setParentFile(serverDirectory);
+            }
 
-			BusProvider.getBus().post(new ServerFilesLoadedEvent(serverFiles));
-		}
-		else
-			this.onFailure(call, new HttpException(response));
-	}
+            BusProvider.getBus().post(new ServerFilesLoadedEvent(serverFiles));
+        } else
+            this.onFailure(call, new HttpException(response));
+    }
 
-	@Override
-	public void onFailure(Call<List<ServerFile>> call, Throwable t) {
-		BusProvider.getBus().post(new ServerFilesLoadFailedEvent());
-	}
+    @Override
+    public void onFailure(Call<List<ServerFile>> call, Throwable t) {
+        BusProvider.getBus().post(new ServerFilesLoadFailedEvent());
+    }
 }

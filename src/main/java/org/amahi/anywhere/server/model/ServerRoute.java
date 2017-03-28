@@ -24,19 +24,18 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Server route API resource.
  */
-public class ServerRoute
-{
-	@SerializedName("local_addr")
-	private String localAddress;
+public class ServerRoute {
+    @SerializedName("local_addr")
+    private String localAddress;
 
-	@SerializedName("relay_addr")
-	private String remoteAddress;
+    @SerializedName("relay_addr")
+    private String remoteAddress;
 
-	public String getLocalAddress() {
-		return localAddress;
-	}
+    public String getLocalAddress() {
+        return localAddress;
+    }
 
-	public String getRemoteAddress() {
-		return remoteAddress;
-	}
+    public String getRemoteAddress() {
+        return remoteAddress;
+    }
 }

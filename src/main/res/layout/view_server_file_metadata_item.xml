@@ -19,7 +19,8 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:foreground="?android:attr/activatedBackgroundIndicator"
+	android:background="?android:attr/activatedBackgroundIndicator"
+	android:foreground="?android:attr/selectableItemBackgroundBorderless"
 	android:layout_width="157dp"
 	android:layout_height="250dp">
 

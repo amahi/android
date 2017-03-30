@@ -25,47 +25,44 @@ import android.content.SharedPreferences;
 /**
  * Application {@link android.content.SharedPreferences} accessor.
  */
-public final class Preferences
-{
-	private static final class Locations
-	{
-		private Locations() {
-		}
+public final class Preferences {
+    private final SharedPreferences preferences;
 
-		public static final String COOKIE = "cookie";
-	}
+    private Preferences(Context context, String location) {
+        this.preferences = context.getSharedPreferences(location, Context.MODE_PRIVATE);
+    }
 
-	private static final class Defaults
-	{
-		private Defaults() {
-		}
+    public static Preferences ofCookie(Context context) {
+        return new Preferences(context, Locations.COOKIE);
+    }
 
-		public static final String STRING = "";
-	}
+    public String getAppCookies(String appHost) {
+        return getString(appHost);
+    }
 
-	private final SharedPreferences preferences;
+    private String getString(String key) {
+        return preferences.getString(key, Defaults.STRING);
+    }
 
-	public static Preferences ofCookie(Context context) {
-		return new Preferences(context, Locations.COOKIE);
-	}
+    public void setAppCookies(String appHost, String appCookies) {
+        setString(appHost, appCookies);
+    }
 
-	private Preferences(Context context, String location) {
-		this.preferences = context.getSharedPreferences(location, Context.MODE_PRIVATE);
-	}
+    private void setString(String key, String value) {
+        preferences.edit().putString(key, value).apply();
+    }
 
-	public String getAppCookies(String appHost) {
-		return getString(appHost);
-	}
+    private static final class Locations {
+        public static final String COOKIE = "cookie";
 
-	private String getString(String key) {
-		return preferences.getString(key, Defaults.STRING);
-	}
+        private Locations() {
+        }
+    }
 
-	public void setAppCookies(String appHost, String appCookies) {
-		setString(appHost, appCookies);
-	}
+    private static final class Defaults {
+        public static final String STRING = "";
 
-	private void setString(String key, String value) {
-		preferences.edit().putString(key, value).apply();
-	}
+        private Defaults() {
+        }
+    }
 }

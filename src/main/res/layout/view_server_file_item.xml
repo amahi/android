@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2014 Amahi
   ~
   ~ This file is part of Amahi.
@@ -19,63 +18,63 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:background="?android:attr/activatedBackgroundIndicator"
-	android:foreground="?android:attr/selectableItemBackgroundBorderless"
-	android:orientation="horizontal"
-       android:layout_width="match_parent"
-       android:padding="8dp"
-	android:layout_height="wrap_content">
-
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/activatedBackgroundIndicator"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+    android:orientation="horizontal"
+    android:padding="8dp">
+  
     <ImageView
-        android:scaleType="centerCrop"
         android:id="@+id/icon"
-        android:layout_marginRight="8dp"
         android:layout_width="50dp"
-        android:layout_height="50dp"/>
+        android:layout_height="50dp"
+        android:layout_marginRight="8dp"
+        android:scaleType="centerCrop" />
 
     <LinearLayout
-       android:orientation="vertical"
-       android:gravity="center_vertical"
-	android:paddingLeft="8dp"
-	android:paddingRight="8dp"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp">
 
-	<TextView
-	   android:id="@+id/text"
-	   android:maxLines="1"
-	   android:textSize="@dimen/text_medium"
-	   android:layout_width="match_parent"
-	   android:layout_height="wrap_content"
-	   android:ellipsize="end"/>
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="@dimen/text_medium" />
 
         <LinearLayout
-           android:id="@+id/more_info"
-          android:orientation="horizontal"
-          android:gravity="center_vertical"
-           android:paddingTop="5dp"
-           android:paddingRight="5dp"
-           android:layout_width="match_parent"
-           android:layout_height="match_parent">
+            android:id="@+id/more_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp">
 
             <TextView
-                android:textColor="#686868"
-                android:layout_weight="1"
                 android:id="@+id/last_modified"
-                android:maxLines="1"
-                android:textSize="@dimen/text_micro"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"/>
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#686868"
+                android:textSize="@dimen/text_micro" />
 
             <TextView
-                android:textColor="#686868"
                 android:id="@+id/file_size"
-                android:maxLines="1"
-                android:textSize="@dimen/text_micro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"/>
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#686868"
+                android:textSize="@dimen/text_micro" />
 
         </LinearLayout>
 

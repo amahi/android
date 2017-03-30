@@ -27,112 +27,108 @@ import java.util.Map;
  * MIME type guesser. Provides {@link org.amahi.anywhere.util.Mimes.Type}
  * for its {@link java.lang.String} declaration.
  */
-public class Mimes
-{
-	public static final class Type
-	{
-		private Type() {
-		}
+public class Mimes {
+    private static final Map<String, Integer> types;
 
-		public static final int UNDEFINED = 0;
+    static {
+        types = new ArrayMap<String, Integer>();
 
-		public static final int ARCHIVE = 1;
-		public static final int AUDIO = 2;
-		public static final int CODE = 3;
-		public static final int DOCUMENT = 4;
-		public static final int DIRECTORY = 5;
-		public static final int IMAGE = 6;
-		public static final int PRESENTATION = 7;
-		public static final int SPREADSHEET = 8;
-		public static final int VIDEO = 9;
+        types.put("application/octet-stream", Type.UNDEFINED);
 
-	}
+        types.put("application/gzip", Type.ARCHIVE);
+        types.put("application/rar", Type.ARCHIVE);
+        types.put("application/zip", Type.ARCHIVE);
+        types.put("application/x-gtar", Type.ARCHIVE);
+        types.put("application/x-tar", Type.ARCHIVE);
+        types.put("application/x-rar-compressed", Type.ARCHIVE);
 
-	private static final Map<String, Integer> types;
+        types.put("application/ogg", Type.AUDIO);
+        types.put("application/x-flac", Type.AUDIO);
 
-	static {
-		types = new ArrayMap<String, Integer>();
+        types.put("text/css", Type.CODE);
+        types.put("text/xml", Type.CODE);
+        types.put("application/json", Type.CODE);
+        types.put("application/javascript", Type.CODE);
+        types.put("application/xml", Type.CODE);
 
-		types.put("application/octet-stream", Type.UNDEFINED);
+        types.put("application/pdf", Type.DOCUMENT);
+        types.put("application/msword", Type.DOCUMENT);
+        types.put("application/vnd.oasis.opendocument.text", Type.DOCUMENT);
+        types.put("application/x-abiword", Type.DOCUMENT);
+        types.put("application/x-kword", Type.DOCUMENT);
+        types.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", Type.DOCUMENT);
 
-		types.put("application/gzip", Type.ARCHIVE);
-		types.put("application/rar", Type.ARCHIVE);
-		types.put("application/zip", Type.ARCHIVE);
-		types.put("application/x-gtar", Type.ARCHIVE);
-		types.put("application/x-tar", Type.ARCHIVE);
-		types.put("application/x-rar-compressed", Type.ARCHIVE);
+        types.put("text/directory", Type.DIRECTORY);
 
-		types.put("application/ogg", Type.AUDIO);
-		types.put("application/x-flac", Type.AUDIO);
+        types.put("application/vnd.oasis.opendocument.graphics", Type.IMAGE);
+        types.put("application/vnd.oasis.opendocument.graphics-template", Type.IMAGE);
 
-		types.put("text/css", Type.CODE);
-		types.put("text/xml", Type.CODE);
-		types.put("application/json", Type.CODE);
-		types.put("application/javascript", Type.CODE);
-		types.put("application/xml", Type.CODE);
+        types.put("application/vnd.ms-powerpoint", Type.PRESENTATION);
+        types.put("application/vnd.openxmlformats-officedocument.presentationml.presentation", Type.PRESENTATION);
+        types.put("application/vnd.openxmlformats-officedocument.presentationml.slideshow", Type.PRESENTATION);
 
-		types.put("application/pdf", Type.DOCUMENT);
-		types.put("application/msword", Type.DOCUMENT);
-		types.put("application/vnd.oasis.opendocument.text", Type.DOCUMENT);
-		types.put("application/x-abiword", Type.DOCUMENT);
-		types.put("application/x-kword", Type.DOCUMENT);
-		types.put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", Type.DOCUMENT);
+        types.put("application/vnd.ms-excel", Type.SPREADSHEET);
+        types.put("application/vnd.oasis.opendocument.spreadsheet", Type.SPREADSHEET);
+        types.put("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Type.SPREADSHEET);
 
-		types.put("text/directory", Type.DIRECTORY);
+        types.put("application/x-quicktimeplayer", Type.VIDEO);
+    }
 
-		types.put("application/vnd.oasis.opendocument.graphics", Type.IMAGE);
-		types.put("application/vnd.oasis.opendocument.graphics-template", Type.IMAGE);
+    public static int match(String mime) {
+        int type = matchKnown(mime);
 
-		types.put("application/vnd.ms-powerpoint", Type.PRESENTATION);
-		types.put("application/vnd.openxmlformats-officedocument.presentationml.presentation", Type.PRESENTATION);
-		types.put("application/vnd.openxmlformats-officedocument.presentationml.slideshow", Type.PRESENTATION);
+        if (type != Type.UNDEFINED) {
+            return type;
+        } else {
+            return matchCategory(mime);
+        }
+    }
 
-		types.put("application/vnd.ms-excel", Type.SPREADSHEET);
-		types.put("application/vnd.oasis.opendocument.spreadsheet", Type.SPREADSHEET);
-		types.put("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Type.SPREADSHEET);
+    private static int matchKnown(String mime) {
+        Integer type = types.get(mime);
 
-		types.put("application/x-quicktimeplayer", Type.VIDEO);
-	}
+        if (type != null) {
+            return type;
+        } else {
+            return Type.UNDEFINED;
+        }
+    }
 
-	public static int match(String mime) {
-		int type = matchKnown(mime);
+    private static int matchCategory(String mime) {
+        String type = mime.split("/")[0];
 
-		if (type != Type.UNDEFINED) {
-			return type;
-		} else {
-			return matchCategory(mime);
-		}
-	}
+        if ("audio".equals(type)) {
+            return Type.AUDIO;
+        }
 
-	private static int matchKnown(String mime) {
-		Integer type = types.get(mime);
+        if ("image".equals(type)) {
+            return Type.IMAGE;
+        }
 
-		if (type != null) {
-			return type;
-		} else {
-			return Type.UNDEFINED;
-		}
-	}
+        if ("text".equals(type)) {
+            return Type.DOCUMENT;
+        }
 
-	private static int matchCategory(String mime) {
-		String type = mime.split("/")[0];
+        if ("video".equals(type)) {
+            return Type.VIDEO;
+        }
 
-		if ("audio".equals(type)) {
-			return Type.AUDIO;
-		}
+        return Type.UNDEFINED;
+    }
 
-		if ("image".equals(type)) {
-			return Type.IMAGE;
-		}
+    public static final class Type {
+        public static final int UNDEFINED = 0;
+        public static final int ARCHIVE = 1;
+        public static final int AUDIO = 2;
+        public static final int CODE = 3;
+        public static final int DOCUMENT = 4;
+        public static final int DIRECTORY = 5;
+        public static final int IMAGE = 6;
+        public static final int PRESENTATION = 7;
+        public static final int SPREADSHEET = 8;
+        public static final int VIDEO = 9;
+        private Type() {
+        }
 
-		if ("text".equals(type)) {
-			return Type.DOCUMENT;
-		}
-
-		if ("video".equals(type)) {
-			return Type.VIDEO;
-		}
-
-		return Type.UNDEFINED;
-	}
+    }
 }

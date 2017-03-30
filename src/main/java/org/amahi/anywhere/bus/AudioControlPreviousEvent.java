@@ -19,6 +19,5 @@
 
 package org.amahi.anywhere.bus;
 
-public class AudioControlPreviousEvent implements BusEvent
-{
+public class AudioControlPreviousEvent implements BusEvent {
 }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2014 Amahi
   ~
   ~ This file is part of Amahi.
@@ -19,21 +18,21 @@
   -->
 
 <ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/animator"
-	android:inAnimation="@android:anim/fade_in"
-	android:outAnimation="@android:anim/fade_out"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+    android:id="@+id/animator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out">
 
-	<ProgressBar
-		android:id="@android:id/progress"
-		android:layout_gravity="center"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"/>
+    <ProgressBar
+        android:id="@android:id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
-	<WebView
-		android:id="@+id/web_content"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+    <WebView
+        android:id="@+id/web_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </ViewAnimator>

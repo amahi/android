@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2014 Amahi
   ~
   ~ This file is part of Amahi.
@@ -20,16 +19,16 @@
 
 <ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/animator"
-    android:inAnimation="@android:anim/fade_in"
-    android:outAnimation="@android:anim/fade_out"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out">
 
     <ProgressBar
         android:id="@android:id/progress"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
     <FrameLayout
         android:id="@+id/content"
@@ -43,60 +42,60 @@
 
             <GridView
                 android:id="@android:id/list"
-                android:numColumns="auto_fit"
-                android:columnWidth="157dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:choiceMode="singleChoice"
-                android:scrollbarStyle="outsideOverlay"
+                android:clipToPadding="false"
+                android:columnWidth="157dp"
                 android:divider="@null"
                 android:dividerHeight="4dp"
                 android:drawSelectorOnTop="true"
                 android:horizontalSpacing="8dp"
-                android:verticalSpacing="8dp"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
+                android:numColumns="auto_fit"
                 android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:paddingTop="8dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:verticalSpacing="8dp" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
         <TextView
+            android:id="@+id/none_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/message_no_search_result"
             android:textSize="@dimen/text_large"
             android:textStyle="bold"
-            android:id="@+id/none_text"
-            android:visibility="gone"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@android:id/empty"
-            android:orientation="vertical"
-            android:layout_gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:text="@string/message_no_files"
                 android:textSize="@dimen/text_large"
-                android:textStyle="bold"
-                android:gravity="center_horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:textStyle="bold" />
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="8dp"/>
+                android:layout_height="8dp" />
 
             <TextView
-                android:text="@string/message_create_and_try_again"
-                android:textSize="@dimen/text_small"
-                android:gravity="center_horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/message_create_and_try_again"
+                android:textSize="@dimen/text_small" />
 
         </LinearLayout>
 
@@ -104,29 +103,29 @@
 
     <LinearLayout
         android:id="@+id/error"
-        android:orientation="vertical"
-        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="@string/message_connection_error"
             android:textSize="@dimen/text_large"
-            android:textStyle="bold"
-            android:gravity="center_horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:textStyle="bold" />
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="8dp"/>
+            android:layout_height="8dp" />
 
         <TextView
-            android:text="@string/message_notice_check_settings"
-            android:textSize="@dimen/text_small"
-            android:gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/message_notice_check_settings"
+            android:textSize="@dimen/text_small" />
 
     </LinearLayout>
 

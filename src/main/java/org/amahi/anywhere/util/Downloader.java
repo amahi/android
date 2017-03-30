@@ -40,92 +40,91 @@ import javax.inject.Singleton;
  * for downloads placing and cancelling.
  */
 @Singleton
-public class Downloader extends BroadcastReceiver
-{
-	private final Context context;
+public class Downloader extends BroadcastReceiver {
+    private final Context context;
 
-	private long downloadId;
+    private long downloadId;
 
-	@Inject
-	public Downloader(Context context) {
-		this.context = context.getApplicationContext();
+    @Inject
+    public Downloader(Context context) {
+        this.context = context.getApplicationContext();
 
-		this.downloadId = Integer.MIN_VALUE;
-	}
+        this.downloadId = Integer.MIN_VALUE;
+    }
 
-	public void startFileDownloading(Uri fileUri, String fileName) {
-		setUpDownloadReceiver();
+    public void startFileDownloading(Uri fileUri, String fileName) {
+        setUpDownloadReceiver();
 
-		startDownloading(fileUri, fileName);
-	}
+        startDownloading(fileUri, fileName);
+    }
 
-	private void setUpDownloadReceiver() {
-		IntentFilter downloadActionsFilter = new IntentFilter();
-		downloadActionsFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+    private void setUpDownloadReceiver() {
+        IntentFilter downloadActionsFilter = new IntentFilter();
+        downloadActionsFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
 
-		context.registerReceiver(this, downloadActionsFilter);
-	}
+        context.registerReceiver(this, downloadActionsFilter);
+    }
 
-	private void startDownloading(Uri downloadUri, String downloadName) {
-		DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri)
-			.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName)
-			.setVisibleInDownloadsUi(false)
-			.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+    private void startDownloading(Uri downloadUri, String downloadName) {
+        DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri)
+                .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName)
+                .setVisibleInDownloadsUi(false)
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
-		this.downloadId = getDownloadManager(context).enqueue(downloadRequest);
-	}
+        this.downloadId = getDownloadManager(context).enqueue(downloadRequest);
+    }
 
-	private DownloadManager getDownloadManager(Context context) {
-		return (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-	}
+    private DownloadManager getDownloadManager(Context context) {
+        return (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+    }
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		if (isDownloadCurrent(intent)) {
-			finishDownloading();
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (isDownloadCurrent(intent)) {
+            finishDownloading();
 
-			tearDownDownloadReceiver();
-		}
-	}
+            tearDownDownloadReceiver();
+        }
+    }
 
-	private boolean isDownloadCurrent(Intent intent) {
-		return downloadId == intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-	}
+    private boolean isDownloadCurrent(Intent intent) {
+        return downloadId == intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+    }
 
-	private void finishDownloading() {
-		DownloadManager.Query downloadQuery = new DownloadManager.Query()
-			.setFilterById(downloadId);
+    private void finishDownloading() {
+        DownloadManager.Query downloadQuery = new DownloadManager.Query()
+                .setFilterById(downloadId);
 
-		Cursor downloadInformation = getDownloadManager(context).query(downloadQuery);
+        Cursor downloadInformation = getDownloadManager(context).query(downloadQuery);
 
-		downloadInformation.moveToFirst();
+        downloadInformation.moveToFirst();
 
-		int downloadStatus = downloadInformation.getInt(
-			downloadInformation.getColumnIndex(DownloadManager.COLUMN_STATUS));
+        int downloadStatus = downloadInformation.getInt(
+                downloadInformation.getColumnIndex(DownloadManager.COLUMN_STATUS));
 
-		if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) {
-			String downloadUri = downloadInformation.getString(
-				downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+        if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) {
+            String downloadUri = downloadInformation.getString(
+                    downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 
-			BusProvider.getBus().post(new FileDownloadedEvent(Uri.parse(downloadUri)));
-		} else {
-			BusProvider.getBus().post(new FileDownloadFailedEvent());
-		}
+            BusProvider.getBus().post(new FileDownloadedEvent(Uri.parse(downloadUri)));
+        } else {
+            BusProvider.getBus().post(new FileDownloadFailedEvent());
+        }
 
-		downloadInformation.close();
-	}
+        downloadInformation.close();
+    }
 
-	private void tearDownDownloadReceiver() {
-		try {
-			context.unregisterReceiver(this);
-		} catch (IllegalArgumentException e) {
-			// False alarm, no need to unregister.
-		}
-	}
+    private void tearDownDownloadReceiver() {
+        try {
+            context.unregisterReceiver(this);
+        } catch (IllegalArgumentException e) {
+            // False alarm, no need to unregister.
+        }
+    }
 
-	public void finishFileDownloading() {
-		getDownloadManager(context).remove(downloadId);
+    public void finishFileDownloading() {
+        getDownloadManager(context).remove(downloadId);
 
-		tearDownDownloadReceiver();
-	}
+        tearDownDownloadReceiver();
+    }
 }

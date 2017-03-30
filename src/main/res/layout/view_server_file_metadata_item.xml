@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2014 Amahi
   ~
   ~ This file is part of Amahi.
@@ -19,27 +18,27 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:background="?android:attr/activatedBackgroundIndicator"
-	android:foreground="?android:attr/selectableItemBackgroundBorderless"
-	android:layout_width="157dp"
-	android:layout_height="250dp">
+    android:layout_width="157dp"
+    android:layout_height="250dp"
+    android:background="?android:attr/activatedBackgroundIndicator"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless">
 
-	<ImageView
-		android:id="@+id/icon"
-		android:scaleType="centerInside"
-		android:src="@drawable/ic_app_logo"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_app_logo" />
 
-	<TextView
-		android:id="@+id/text"
-		android:textColor="@android:color/white"
-		android:textSize="@dimen/text_small"
-		android:maxLines="1"
-		android:gravity="center"
-		android:layout_gravity="bottom"
-		android:padding="4dp"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:maxLines="1"
+        android:padding="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_small" />
 
 </FrameLayout>

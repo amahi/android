@@ -33,52 +33,51 @@ import timber.log.Timber;
  * Application declaration. Basically sets things up at the startup time,
  * such as dependency injection, logging, crash reporting and possible ANR detecting.
  */
-public class AmahiApplication extends Application
-{
-	private ObjectGraph injector;
+public class AmahiApplication extends Application {
+    private ObjectGraph injector;
 
-	public static AmahiApplication from(Context context) {
-		return (AmahiApplication) context.getApplicationContext();
-	}
+    public static AmahiApplication from(Context context) {
+        return (AmahiApplication) context.getApplicationContext();
+    }
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-		setUpLogging();
-		setUpReporting();
-		setUpDetecting();
+        setUpLogging();
+        setUpReporting();
+        setUpDetecting();
 
-		setUpInjections();
-	}
+        setUpInjections();
+    }
 
-	private void setUpLogging() {
-		if (isDebugging()) {
-			Timber.plant(new Timber.DebugTree());
-		}
-	}
+    private void setUpLogging() {
+        if (isDebugging()) {
+            Timber.plant(new Timber.DebugTree());
+        }
+    }
 
-	private boolean isDebugging() {
-		return BuildConfig.DEBUG;
-	}
+    private boolean isDebugging() {
+        return BuildConfig.DEBUG;
+    }
 
-	private void setUpReporting() {
-		if (!isDebugging()) {
-			Fabric.with(this, new Crashlytics());
-		}
-	}
+    private void setUpReporting() {
+        if (!isDebugging()) {
+            Fabric.with(this, new Crashlytics());
+        }
+    }
 
-	private void setUpDetecting() {
-		if (isDebugging()) {
-			StrictMode.enableDefaults();
-		}
-	}
+    private void setUpDetecting() {
+        if (isDebugging()) {
+            StrictMode.enableDefaults();
+        }
+    }
 
-	private void setUpInjections() {
-		injector = ObjectGraph.create(new AmahiModule(this));
-	}
+    private void setUpInjections() {
+        injector = ObjectGraph.create(new AmahiModule(this));
+    }
 
-	public void inject(Object injectionsConsumer) {
-		injector.inject(injectionsConsumer);
-	}
+    public void inject(Object injectionsConsumer) {
+        injector.inject(injectionsConsumer);
+    }
 }

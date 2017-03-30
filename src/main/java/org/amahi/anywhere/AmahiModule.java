@@ -30,9 +30,9 @@ import org.amahi.anywhere.activity.ServerFileImageActivity;
 import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
-import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
+import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.ServerSharesFragment;
@@ -51,40 +51,39 @@ import dagger.Provides;
  * provides application's {@link android.content.Context} for possible consumers.
  */
 @Module(
-	includes = {
-		ApiModule.class
-	},
-	injects = {
-		AuthenticationActivity.class,
-		NavigationActivity.class,
-		ServerAppActivity.class,
-		ServerFilesActivity.class,
-		ServerFileAudioActivity.class,
-		ServerFileImageActivity.class,
-		ServerFileVideoActivity.class,
-		ServerFileWebActivity.class,
-		NavigationFragment.class,
-		ServerSharesFragment.class,
-		ServerAppsFragment.class,
-		ServerFilesFragment.class,
-		ServerFileImageFragment.class,
-		ServerFileDownloadingFragment.class,
-		SettingsFragment.class,
-		AudioService.class,
-		VideoService.class
-	}
+        includes = {
+                ApiModule.class
+        },
+        injects = {
+                AuthenticationActivity.class,
+                NavigationActivity.class,
+                ServerAppActivity.class,
+                ServerFilesActivity.class,
+                ServerFileAudioActivity.class,
+                ServerFileImageActivity.class,
+                ServerFileVideoActivity.class,
+                ServerFileWebActivity.class,
+                NavigationFragment.class,
+                ServerSharesFragment.class,
+                ServerAppsFragment.class,
+                ServerFilesFragment.class,
+                ServerFileImageFragment.class,
+                ServerFileDownloadingFragment.class,
+                SettingsFragment.class,
+                AudioService.class,
+                VideoService.class
+        }
 )
-class AmahiModule
-{
-	private final Application application;
+class AmahiModule {
+    private final Application application;
 
-	public AmahiModule(Application application) {
-		this.application = application;
-	}
+    public AmahiModule(Application application) {
+        this.application = application;
+    }
 
-	@Provides
-	@Singleton
-	Context provideContext() {
-		return application;
-	}
+    @Provides
+    @Singleton
+    Context provideContext() {
+        return application;
+    }
 }

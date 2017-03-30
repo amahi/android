@@ -34,16 +34,42 @@ import android.view.View;
 
 public class FullScreenHelper {
 
+    private static final int UI_ANIMATION_DELAY = 300;
+    private final Handler mHideHandler = new Handler();
     private boolean autoHide = true;
     private long autoHideDelayMillis = 3000;
     private boolean onClickToggleEnabled = true;
     private boolean mVisible;
-    private static final int UI_ANIMATION_DELAY = 300;
-
     private View mControlsView;
     private View mContentView;
-
+    private final Runnable mHidePart2Runnable = new Runnable() {
+        @SuppressLint("InlinedApi")
+        @Override
+        public void run() {
+            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        }
+    };
     private ActionBar actionBar;
+    private final Runnable mShowPart2Runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (actionBar != null)
+                actionBar.show();
+            if (mControlsView != null)
+                mControlsView.setVisibility(View.VISIBLE);
+        }
+    };
+    private final Runnable mHideRunnable = new Runnable() {
+        @Override
+        public void run() {
+            hide();
+        }
+    };
 
     public FullScreenHelper(ActionBar actionBar, @NonNull View contentView) {
         setActionBar(actionBar);
@@ -70,10 +96,6 @@ public class FullScreenHelper {
 
     public void setAutoHide(Boolean autoHide) {
         this.autoHide = autoHide;
-    }
-
-    public void setAutoHideDelayMillis(int millis) {
-        this.autoHideDelayMillis = millis;
     }
 
     public void enableOnClickToggle(Boolean enable) {
@@ -123,38 +145,6 @@ public class FullScreenHelper {
         }
     }
 
-    private final Handler mHideHandler = new Handler();
-
-    private final Runnable mHidePart2Runnable = new Runnable() {
-        @SuppressLint("InlinedApi")
-        @Override
-        public void run() {
-            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        }
-    };
-
-    private final Runnable mShowPart2Runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (actionBar != null)
-                actionBar.show();
-            if (mControlsView != null)
-                mControlsView.setVisibility(View.VISIBLE);
-        }
-    };
-
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };
-
     public void hide() {
         if (actionBar != null)
             actionBar.hide();
@@ -194,5 +184,9 @@ public class FullScreenHelper {
 
     public long getAutoHideDelayMillis() {
         return autoHideDelayMillis;
+    }
+
+    public void setAutoHideDelayMillis(int millis) {
+        this.autoHideDelayMillis = millis;
     }
 }

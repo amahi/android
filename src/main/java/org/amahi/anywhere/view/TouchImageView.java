@@ -38,34 +38,24 @@ import android.view.ViewConfiguration;
  */
 public class TouchImageView extends AppCompatImageView {
 
+    static final int CLICK = 3;
+    protected float origWidth, origHeight;
     Matrix matrix;
-
-    private enum State {
-        NONE,
-        DRAG,
-        ZOOM
-    }
     State mode = State.NONE;
-
     PointF last = new PointF();
     PointF start = new PointF();
     float minScale = 1f;
     float doubleClickScale = 2f;
     float maxScale = 3f;
     float[] m;
-
     int viewWidth, viewHeight;
-    static final int CLICK = 3;
-    private long DOUBLE_CLICK_INTERVAL = ViewConfiguration.getDoubleTapTimeout();
     float saveScale = 1f;
-    protected float origWidth, origHeight;
     int oldMeasuredWidth, oldMeasuredHeight;
+    ScaleGestureDetector mScaleDetector;
+    Context context;
+    private long DOUBLE_CLICK_INTERVAL = ViewConfiguration.getDoubleTapTimeout();
     private long thisTouchTime;
     private long previousTouchTime = 0;
-
-    ScaleGestureDetector mScaleDetector;
-
-    Context context;
 
     public TouchImageView(Context context) {
         super(context);
@@ -107,7 +97,7 @@ public class TouchImageView extends AppCompatImageView {
                         if (mode == State.DRAG) {
                             float deltaX = curr.x - last.x;
                             float deltaY = curr.y - last.y;
-                            if(deltaX != 0f || deltaY != 0f) {
+                            if (deltaX != 0f || deltaY != 0f) {
                                 float fixTransX = getFixDragTrans(deltaX, viewWidth,
                                         origWidth * saveScale);
                                 float fixTransY = getFixDragTrans(deltaY, viewHeight,
@@ -115,7 +105,7 @@ public class TouchImageView extends AppCompatImageView {
                                 if (saveScale > 1f) {
                                     matrix.getValues(m);
                                     float absTransX = Math.abs(m[Matrix.MTRANS_X]);
-                                    float transXMax = (origWidth*(saveScale-1f));
+                                    float transXMax = (origWidth * (saveScale - 1f));
                                     if ((transXMax - absTransX < 0.5f && fixTransX < 0f)
                                             || (absTransX < 0.5f && fixTransX > 0f))
                                         getParent().requestDisallowInterceptTouchEvent(false);
@@ -162,11 +152,11 @@ public class TouchImageView extends AppCompatImageView {
         if (saveScale < doubleClickScale) {
             mScaleFactor = doubleClickScale / saveScale;
             saveScale = doubleClickScale;
-            matrix.postScale(mScaleFactor, mScaleFactor, curr.x, viewHeight/2);
+            matrix.postScale(mScaleFactor, mScaleFactor, curr.x, viewHeight / 2);
         } else {
             mScaleFactor = minScale / saveScale;
             saveScale = minScale;
-            matrix.postScale(mScaleFactor, mScaleFactor, viewWidth/2, viewHeight/2);
+            matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2, viewHeight / 2);
         }
         fixTrans();
     }
@@ -177,40 +167,6 @@ public class TouchImageView extends AppCompatImageView {
 
     public void setDoubleClickZoom(float x) {
         doubleClickScale = x;
-    }
-
-    private class ScaleListener extends
-            ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-            mode = State.ZOOM;
-            return true;
-        }
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            float mScaleFactor = detector.getScaleFactor();
-            float origScale = saveScale;
-            saveScale *= mScaleFactor;
-            if (saveScale > maxScale) {
-                saveScale = maxScale;
-                mScaleFactor = maxScale / origScale;
-            } else if (saveScale < minScale) {
-                saveScale = minScale;
-                mScaleFactor = minScale / origScale;
-            }
-
-            if (origWidth * saveScale <= viewWidth
-                    || origHeight * saveScale <= viewHeight)
-                matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2,
-                        viewHeight / 2);
-            else
-                matrix.postScale(mScaleFactor, mScaleFactor,
-                        detector.getFocusX(), detector.getFocusY());
-
-            fixTrans();
-            return true;
-        }
     }
 
     void fixTrans() {
@@ -298,5 +254,45 @@ public class TouchImageView extends AppCompatImageView {
             setImageMatrix(matrix);
         }
         fixTrans();
+    }
+
+    private enum State {
+        NONE,
+        DRAG,
+        ZOOM
+    }
+
+    private class ScaleListener extends
+            ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            mode = State.ZOOM;
+            return true;
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            float mScaleFactor = detector.getScaleFactor();
+            float origScale = saveScale;
+            saveScale *= mScaleFactor;
+            if (saveScale > maxScale) {
+                saveScale = maxScale;
+                mScaleFactor = maxScale / origScale;
+            } else if (saveScale < minScale) {
+                saveScale = minScale;
+                mScaleFactor = minScale / origScale;
+            }
+
+            if (origWidth * saveScale <= viewWidth
+                    || origHeight * saveScale <= viewHeight)
+                matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2,
+                        viewHeight / 2);
+            else
+                matrix.postScale(mScaleFactor, mScaleFactor,
+                        detector.getFocusX(), detector.getFocusY());
+
+            fixTrans();
+            return true;
+        }
     }
 }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2014 Amahi
   ~
   ~ This file is part of Amahi.
@@ -23,16 +22,16 @@
 
     <item
         android:id="@+id/menu_search"
-        app:actionViewClass="android.widget.SearchView"
         android:icon="@drawable/ic_search"
         android:orderInCategory="100"
         android:title="@string/menu_search"
-        app:showAsAction="collapseActionView|always"/>
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="collapseActionView|always" />
 
     <item
         android:id="@+id/menu_sort"
         android:orderInCategory="101"
         android:title="@string/menu_sort"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
 </menu>

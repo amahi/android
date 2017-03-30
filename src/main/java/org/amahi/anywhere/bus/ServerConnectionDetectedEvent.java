@@ -19,15 +19,14 @@
 
 package org.amahi.anywhere.bus;
 
-public class ServerConnectionDetectedEvent implements BusEvent
-{
-	private final String serverAddress;
+public class ServerConnectionDetectedEvent implements BusEvent {
+    private final String serverAddress;
 
-	public ServerConnectionDetectedEvent(String serverAddress) {
-		this.serverAddress = serverAddress;
-	}
+    public ServerConnectionDetectedEvent(String serverAddress) {
+        this.serverAddress = serverAddress;
+    }
 
-	public String getServerAddress() {
-		return serverAddress;
-	}
+    public String getServerAddress() {
+        return serverAddress;
+    }
 }

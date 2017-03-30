@@ -2,7 +2,8 @@
 
 ## Code style and structure
 
-* Run `Reformat Code` on changed files using `Default` Scheme in Android Studio before submitting a PR.
+* Set the Code Style Scheme to `Default` in Android Studio settings.
+* Run `Reformat Code` on changed files before committing.
 * Please check out the [Code Style for Contributors](https://source.android.com/source/code-style.html) section in AOSP and maintain as much consistency with them as possible.
 
 ## Getting Started

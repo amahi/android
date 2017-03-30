@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+      
+      <!--Fading Transition-->
+  
+    <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
+		  <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
+	  	<item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
+		  <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
+		  <item name="android:activityCloseExitAnimation">@android:anim/fade_out</item>
+	  </style>
 
     <style name="Theme.Amahi" parent="@style/Theme.AppCompat">
         <item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
         <item name="android:windowBackground">@color/background_primary</item>
         <item name="android:colorAccent">@color/accent_material_dark</item>
         <item name="android:textColorPrimaryInverse">@color/primary_text_material_light</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
         <!--Adding Support for the Support Library-->
         <item name="actionBarStyle">@style/Theme.Amahi.ActionBar</item>
         <item name="colorAccent">@color/accent_material_dark</item>

@@ -312,7 +312,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 	}
 
 	private void tearDownAudioTitle() {
-		getActionBar().setTitle(null);
+		getSupportActionBar().setTitle(null);
 	}
 
 	private void tearDownAudioMetadata() {

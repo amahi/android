@@ -515,19 +515,19 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 		stopService(intent);
 	}
 
-	private static final class AudioControlsNextListener implements View.OnClickListener
+	private final class AudioControlsNextListener implements View.OnClickListener
 	{
 		@Override
 		public void onClick(View view) {
-			BusProvider.getBus().post(new AudioControlNextEvent());
+			audioService.startNextAudio();
 		}
 	}
 
-	private static final class AudioControlsPreviousListener implements View.OnClickListener
+	private final class AudioControlsPreviousListener implements View.OnClickListener
 	{
 		@Override
 		public void onClick(View view) {
-			BusProvider.getBus().post(new AudioControlPreviousEvent());
+			audioService.startPreviousAudio();
 		}
 	}
 }

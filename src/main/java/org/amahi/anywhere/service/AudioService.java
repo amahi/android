@@ -314,7 +314,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
 	}
 
-	private void startNextAudio() {
+	public void startNextAudio() {
 		this.audioFile = getNextAudioFile();
 
 		tearDownAudioPlayback();
@@ -337,7 +337,7 @@ public class AudioService extends Service implements AudioManager.OnAudioFocusCh
 		audioPlayer.reset();
 	}
 
-	private void startPreviousAudio() {
+	public void startPreviousAudio() {
 		this.audioFile = getPreviousAudioFile();
 
 		tearDownAudioPlayback();

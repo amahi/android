@@ -18,12 +18,19 @@
   -->
 
 <resources>
+    <!-- https://www.materialpalette.com/blue/orange -->
+    <color name="primary">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="primary_light">#BBDEFB</color>
+    <color name="accent">#FF9800</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#BDBDBD</color>
 
     <color name="background_primary">#1a1a1a</color>
     <color name="background_secondary">#333333</color>
     <color name="background_transparent_primary">#cc000000</color>
     <color name="background_transparent_secondary">#80000000</color>
     <color name="primary_text_material_light">#deffffff</color>
-    <color name="accent_material_dark">#19b3f3</color>
-
 </resources>

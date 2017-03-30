@@ -33,6 +33,11 @@ This is something to keep **private** and you obtain it by asking in the [Amahi 
 
 3. Once you have built the application, you will be needing credentials to use the application. Go to Amahi website and create your account, once the account is activated, you will see the description on how to setup Amahi server. However, this is not strictly needed, as we have a set up of a demo server called "Welcome to Amahi" which you should see even without your own server installed.
 
+## Code Style Convention
+
+* Set the Code Style Scheme to `Default` in Android Studio settings.
+* Run `Reformat Code` on changed files before committing.
+* Please check out the [Code Style for Contributors](https://source.android.com/source/code-style.html) section in AOSP and maintain as much consistency with them as possible.
 
 ## Generating the documentation
 

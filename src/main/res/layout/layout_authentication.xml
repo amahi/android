@@ -41,7 +41,7 @@
         android:id="@+id/username_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.AppCompat">
+        android:theme="@style/Theme.Amahi">
 
         <android.support.design.widget.TextInputEditText
             android:layout_width="match_parent"
@@ -60,7 +60,7 @@
         android:id="@+id/password_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.AppCompat"
+        android:theme="@style/Theme.Amahi"
         app:passwordToggleEnabled="true">
 
         <android.support.design.widget.TextInputEditText

@@ -13,12 +13,15 @@
     <style name="Theme.Amahi" parent="@style/Theme.AppCompat">
         <item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
         <item name="android:windowBackground">@color/background_primary</item>
-        <item name="android:colorAccent">@color/accent_material_dark</item>
         <item name="android:textColorPrimaryInverse">@color/primary_text_material_light</item>
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
         <!--Adding Support for the Support Library-->
         <item name="actionBarStyle">@style/Theme.Amahi.ActionBar</item>
-        <item name="colorAccent">@color/accent_material_dark</item>
+
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 

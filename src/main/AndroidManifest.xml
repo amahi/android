@@ -66,7 +66,8 @@
             android:label="@string/title_settings" />
         <activity
             android:name=".activity.AuthenticationActivity"
-            android:theme="@style/Theme.Amahi.Authentication" />
+            android:theme="@style/Theme.Amahi.Authentication"
+            android:windowSoftInputMode="adjustResize" />
 
         <service
             android:name=".account.AmahiAuthenticatorService"

@@ -36,6 +36,7 @@
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/application_name"
+        android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi">
         <activity android:name=".activity.NavigationActivity">
             <intent-filter>
@@ -43,6 +44,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="android.max_aspect"
+                android:value="2.1"/>
         </activity>
         <activity android:name=".activity.ServerAppActivity" />
         <activity android:name=".activity.ServerFilesActivity">

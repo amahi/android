@@ -20,6 +20,9 @@
 package org.amahi.anywhere.fragment;
 
 import android.Manifest;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.app.SearchManager;
@@ -233,7 +236,18 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				Snackbar.make(getView(),getString(R.string.share_permission_granted),Snackbar.LENGTH_LONG).show();
 			} else {
-				Snackbar.make(getView(),getString(R.string.share_permission_denied),Snackbar.LENGTH_LONG).show();
+				Snackbar.make(getView(),getString(R.string.share_permission_denied),Snackbar.LENGTH_LONG)
+						.setAction("Permission", new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								Intent intent = new Intent();
+								intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+								Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+								intent.setData(uri);
+								startActivity(intent);
+							}
+						})
+						.show();
 			}
 		   }
 		}

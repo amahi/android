@@ -237,7 +237,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 				Snackbar.make(getView(),getString(R.string.share_permission_granted),Snackbar.LENGTH_LONG).show();
 			} else {
 				Snackbar.make(getView(),getString(R.string.share_permission_denied),Snackbar.LENGTH_LONG)
-						.setAction("Permission", new View.OnClickListener() {
+						.setAction("Permissions", new View.OnClickListener() {
 							@Override
 							public void onClick(View v) {
 								Intent intent = new Intent();

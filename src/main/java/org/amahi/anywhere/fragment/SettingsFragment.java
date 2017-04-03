@@ -26,6 +26,7 @@ import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
@@ -190,7 +191,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 			startActivity(intent);
 		}
 		else {
-			Toast.makeText(getActivity(), R.string.application_not_found, Toast.LENGTH_SHORT).show();
+			Snackbar.make(getView(),getString(R.string.application_not_found),Snackbar.LENGTH_SHORT).show();
 		}
 	}
 
@@ -200,7 +201,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 			startActivity(intent);
 		}
 		else {
-			Toast.makeText(getActivity(), R.string.application_not_found, Toast.LENGTH_SHORT).show();
+			Snackbar.make(getView(),getString(R.string.application_not_found),Snackbar.LENGTH_SHORT).show();
 		}
 	}
 

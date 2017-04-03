@@ -19,13 +19,13 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -84,7 +84,7 @@ public class GooglePlaySearchFragment extends DialogFragment implements DialogIn
 			startActivity(intent);
 		}
 		else {
-			Toast.makeText(getActivity(), R.string.application_not_found, Toast.LENGTH_SHORT).show();
+			Snackbar.make(getView(),getString(R.string.application_not_found),Snackbar.LENGTH_SHORT).show();
 		}
 	}
 

@@ -66,4 +66,6 @@
     <string name="application_not_found">No Handler Application Found</string>
     <string name="message_logout">Logged out successfully</string>
     <string name="share_screen_title">Share Using</string>
+    <string name="share_permission_granted">Storage permission has been enabled please reshare to download.</string>
+    <string name="share_permission_denied">You have denied the permissions for sharing. Enable permissions to continue.</string>
 </resources>

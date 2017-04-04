@@ -84,14 +84,18 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-        <service android:name=".service.AudioService" />
+        <service android:name=".service.AudioService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
         <service android:name=".service.VideoService" />
 
         <receiver android:name=".receiver.AudioReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
-                <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </receiver>
         <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">

@@ -71,7 +71,7 @@ import javax.inject.Inject;
 
 /**
  * Audio server. Does all the work related to the audio playback.
- * Places information at {@link android.app.Notification} and {@link android.media.RemoteControlClient},
+ * Places information at {@link android.app.Notification} and {@link MediaSessionCompat},
  * handles audio focus changes as well.
  */
 public class AudioService extends MediaBrowserServiceCompat implements AudioManager.OnAudioFocusChangeListener,
@@ -84,16 +84,15 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 		private Notifications() {
 		}
 
-		public static final int AUDIO_PLAYER = 42;
+		static final int AUDIO_PLAYER = 42;
 	}
 
-	private static enum AudioFocus
+	private enum AudioFocus
 	{
 		GAIN, LOSS
 	}
 
 	private MediaPlayer audioPlayer;
-//	private RemoteControlClient audioPlayerRemote;
 	private MediaSessionCompat mediaSession;
 	private AudioFocus audioFocus;
 
@@ -169,43 +168,23 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	private void setUpAudioPlayerRemote() {
 		AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		ComponentName audioReceiver = new ComponentName(getPackageName(), AudioReceiver.class.getName());
-//		ComponentName mediaButtonReceiver = new ComponentName(getApplicationContext(), MediaButtonReceiver.class);
 
 		Intent audioIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
 		audioIntent.setComponent(audioReceiver);
 		PendingIntent audioPendingIntent = PendingIntent.getBroadcast(this, 0, audioIntent, 0);
 
-		mediaSession = new MediaSessionCompat(this, "PlayerService", audioReceiver, null);
+		mediaSession = new MediaSessionCompat(this, "PlayerService", audioReceiver, audioPendingIntent);
 		mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
 				MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 		mediaSession.setMediaButtonReceiver(audioPendingIntent);
-//		setSessionToken(mediaSession.getSessionToken());
+		setSessionToken(mediaSession.getSessionToken());
 		mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
 				.setState(PlaybackStateCompat.STATE_PAUSED, 0, 0)
 				.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
 				.build());
 
-//		mMediaSessionCompat = new MediaSessionCompat(getApplicationContext(), "Tag", mediaButtonReceiver, null);
-//
-//		mMediaSessionCompat.setCallback(mMediaSessionCallback);
-//		mMediaSessionCompat.setFlags( MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS );
-//
-//
-//		mMediaSessionCompat.setMediaButtonReceiver(pendingIntent);
-//
-//		setSessionToken(mMediaSessionCompat.getSessionToken());
-
-//		audioPlayerRemote = new RemoteControlClient(audioPendingIntent);
-//		audioPlayerRemote.setTransportControlFlags(
-//			RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE |
-//			RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
-//			RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS);
-//		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
-
 		audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 		mediaSession.setActive(true);
-//		audioManager.registerMediaButtonEventReceiver(audioReceiver);
-//		audioManager.registerRemoteControlClient(audioPlayerRemote);
 	}
 
 	public boolean isAudioStarted() {
@@ -359,8 +338,6 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 		audioPlayer.start();
 		mediaSession.setActive(true);
 		setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
-
-//		audioPlayerRemote.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 	}
 
 	public void pauseAudio() {
@@ -370,14 +347,14 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	}
 
 	private void setMediaPlaybackState(int state) {
-		PlaybackStateCompat.Builder playbackstateBuilder = new PlaybackStateCompat.Builder();
+		PlaybackStateCompat.Builder playbackStateBuilder = new PlaybackStateCompat.Builder();
 		if( state == PlaybackStateCompat.STATE_PLAYING ) {
-			playbackstateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PAUSE);
+			playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PAUSE);
 		} else {
-			playbackstateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY);
+			playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY);
 		}
-		playbackstateBuilder.setState(state, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0);
-		mediaSession.setPlaybackState(playbackstateBuilder.build());
+		playbackStateBuilder.setState(state, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0);
+		mediaSession.setPlaybackState(playbackStateBuilder.build());
 	}
 
 	private void startNextAudio() {
@@ -515,16 +492,13 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	private void tearDownAudioPlayer() {
 		audioPlayer.reset();
 		audioPlayer.release();
-		mediaSession.release();
 	}
 
 	private void tearDownAudioPlayerRemote() {
 		AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		ComponentName audioReceiver = new ComponentName(getPackageName(), AudioReceiver.class.getName());
 
 		audioManager.abandonAudioFocus(this);
-//		audioManager.unregisterMediaButtonEventReceiver(audioReceiver);
-//		audioManager.unregisterRemoteControlClient(audioPlayerRemote);
+		mediaSession.release();
 	}
 
 	private void tearDownAudioPlayerNotification() {

@@ -30,6 +30,7 @@
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
     <application
         android:name=".AmahiApplication"
@@ -52,7 +53,7 @@
         <activity android:name=".activity.ServerFilesActivity">
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable"></meta-data>
+                android:resource="@xml/searchable"/>
         </activity>
         <activity
             android:name=".activity.ServerFileAudioActivity"
@@ -84,10 +85,21 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-        <service android:name=".service.AudioService" />
+        <service android:name=".service.AudioService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
         <service android:name=".service.VideoService" />
 
         <receiver android:name=".receiver.AudioReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />

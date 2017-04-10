@@ -31,7 +31,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -192,10 +192,9 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
     }
 
     void setUpImageIcon(ServerFile file, ImageView fileIconView) {
-        Picasso.with(fileIconView.getContext())
+        Glide.with(fileIconView.getContext())
                 .load(getImageUri(file))
                 .centerCrop()
-                .fit()
                 .placeholder(getFileIcon(file))
                 .into(fileIconView);
     }

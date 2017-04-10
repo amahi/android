@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AppSelectedEvent;
@@ -73,11 +73,11 @@ public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.Se
 		if(TextUtils.isEmpty(apps.get(position).getLogoUrl()))
 			holder.logo.setImageResource(R.drawable.ic_app_logo);
 		else {
-			Picasso
+			Glide
 					.with(mContext)
 					.load(apps.get(position).getLogoUrl())
-					.fit()
-					.centerInside()
+					.fitCenter()
+					.placeholder(R.drawable.ic_app_logo)
 					.error(R.drawable.ic_app_logo)
 					.into(holder.logo);
 		}

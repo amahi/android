@@ -29,7 +29,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -136,10 +136,10 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 		fileTitle.setText(null);
 		fileTitle.setBackgroundResource(android.R.color.transparent);
 
-		Picasso.with(fileView.getContext())
+		Glide.with(fileView.getContext())
 			.load(fileMetadata.getArtworkUrl())
 			.centerCrop()
-			.fit()
+			.fitCenter()
 			.placeholder(getFileIcon(file))
 			.error(getFileIcon(file))
 			.into(fileIcon);

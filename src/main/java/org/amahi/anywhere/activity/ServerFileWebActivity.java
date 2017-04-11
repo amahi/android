@@ -77,8 +77,6 @@ public class ServerFileWebActivity extends AppCompatActivity
 
 		setUpInjections();
 
-		setUpHomeNavigation();
-
 		setUpWebResource(savedInstanceState);
 	}
 
@@ -86,23 +84,8 @@ public class ServerFileWebActivity extends AppCompatActivity
 		AmahiApplication.from(this).inject(this);
 	}
 
-	private void setUpHomeNavigation() {
-		getSupportActionBar().setHomeButtonEnabled(true);
-		getSupportActionBar().setIcon(R.drawable.ic_launcher);
-	}
-
 	private void setUpWebResource(Bundle state) {
-		setUpWebResourceTitle();
-		setUpWebResourceClient();
 		setUpWebResourceContent(state);
-	}
-
-	private void setUpWebResourceTitle() {
-		getSupportActionBar().setTitle(getFile().getName());
-	}
-
-	private void setUpWebResourceClient() {
-		getWebView().setWebViewClient(new WebResourceClient(this));
 	}
 
 	private void setUpWebResourceContent(Bundle state) {
@@ -140,10 +123,6 @@ public class ServerFileWebActivity extends AppCompatActivity
 		return state != null;
 	}
 
-	private WebView getWebView() {
-		return (WebView) findViewById(R.id.web_content);
-	}
-
 	private Uri getWebResourceUri() {
 		return serverClient.getFileUri(getShare(), getFile());
 	}
@@ -156,73 +135,8 @@ public class ServerFileWebActivity extends AppCompatActivity
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
 	}
 
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-
-		setUpWebResourceState(savedInstanceState);
-	}
-
-	private void setUpWebResourceState(Bundle state) {
-		getWebView().restoreState(state);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		switch (menuItem.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
-
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-
-		tearDownWebResourceState(outState);
-	}
-
-	private void tearDownWebResourceState(Bundle state) {
-		getWebView().saveState(state);
-	}
-
 	public static boolean supports(String mime_type) {
 		return SUPPORTED_FORMATS.contains(mime_type);
-	}
-
-	private static final class WebResourceClient extends WebViewClient
-	{
-		private final ServerFileWebActivity activity;
-
-		public WebResourceClient(ServerFileWebActivity activity) {
-			this.activity = activity;
-		}
-
-		@Override
-		public void onPageStarted(WebView appWebView, String appUrl, Bitmap appFavicon) {
-			super.onPageStarted(appWebView, appUrl, appFavicon);
-
-			activity.showProgress();
-		}
-
-		@Override
-		public void onPageFinished(WebView appWebView, String appUrl) {
-			super.onPageFinished(appWebView, appUrl);
-
-			activity.showApp();
-		}
-	}
-
-	private void showProgress() {
-		ViewDirector.of(this, R.id.animator).show(android.R.id.progress);
-	}
-
-	private void showApp() {
-		ViewDirector.of(this, R.id.animator).show(R.id.web_content);
 	}
 
 	@Override

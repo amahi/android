@@ -19,9 +19,15 @@
 
 package org.amahi.anywhere.activity;
 
+import android.content.ComponentName;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsClient;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.customtabs.CustomTabsServiceConnection;
+import android.support.customtabs.CustomTabsSession;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.webkit.WebView;
@@ -48,6 +54,10 @@ import javax.inject.Inject;
 public class ServerFileWebActivity extends AppCompatActivity
 {
 	private static final Set<String> SUPPORTED_FORMATS;
+	CustomTabsClient mCustomTabsClient;
+	CustomTabsSession mCustomTabsSession;
+	CustomTabsServiceConnection mCustomTabsServiceConnection;
+	CustomTabsIntent mCustomTabsIntent;
 
 	static {
 		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
@@ -96,12 +106,34 @@ public class ServerFileWebActivity extends AppCompatActivity
 	}
 
 	private void setUpWebResourceContent(Bundle state) {
-		if (!isWebResourceStateValid(state)) {
-			getWebView().getSettings().setLoadWithOverviewMode(true);
-			getWebView().getSettings().setUseWideViewPort(true);
-			getWebView().getSettings().setBuiltInZoomControls(true);
-			getWebView().loadUrl(getWebResourceUri().toString());
+		if (!isWebResourceStateValid(state)){
+			setUpCustomTabs();
 		}
+	}
+
+	private void setUpCustomTabs(){
+
+		mCustomTabsServiceConnection = new CustomTabsServiceConnection() {
+			@Override
+			public void onCustomTabsServiceConnected(ComponentName componentName, CustomTabsClient customTabsClient) {
+				mCustomTabsClient= customTabsClient;
+				mCustomTabsClient.warmup(0L);
+				mCustomTabsSession = mCustomTabsClient.newSession(null);
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				mCustomTabsClient= null;
+			}
+		};
+
+		CustomTabsClient.bindCustomTabsService(this, getPackageName(), mCustomTabsServiceConnection);
+
+		mCustomTabsIntent = new CustomTabsIntent.Builder(mCustomTabsSession)
+				.setShowTitle(true)
+				.build();
+
+		mCustomTabsIntent.launchUrl(this,getWebResourceUri());
 	}
 
 	private boolean isWebResourceStateValid(Bundle state) {
@@ -191,5 +223,11 @@ public class ServerFileWebActivity extends AppCompatActivity
 
 	private void showApp() {
 		ViewDirector.of(this, R.id.animator).show(R.id.web_content);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		onBackPressed();
 	}
 }

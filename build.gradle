@@ -45,7 +45,7 @@ android {
         versionName buildVersionName(versionMajor, versionMinor, versionPatch)
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
 
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 25
 
         def apiFile = file("api.properties")
@@ -110,6 +110,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:design:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:preference-v7:${SUPPORT_LIBRARY_VERSION}"
+    compile "com.android.support:customtabs:${SUPPORT_LIBRARY_VERSION}"
     compile "com.github.dmytrodanylyk.android-process-button:library:1.0.4"
     compile "com.jakewharton.timber:timber:4.5.1"
     compile "com.squareup.dagger:dagger:1.2.5"

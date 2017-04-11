@@ -20,19 +20,20 @@
 package org.amahi.anywhere.fragment;
 
 import android.Manifest;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.Settings;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,8 +44,8 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
-import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
@@ -89,6 +90,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 {
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
+	private LinearLayout mErrorLinearLayout;
 
 	private static final class State
 	{
@@ -115,11 +117,14 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
+		View rootView;
 		if (!isMetadataAvailable()) {
-			return layoutInflater.inflate(R.layout.fragment_server_files, container, false);
+			rootView = layoutInflater.inflate(R.layout.fragment_server_files, container, false);
 		} else {
-			return layoutInflater.inflate(R.layout.fragment_server_files_metadata, container, false);
+			rootView = layoutInflater.inflate(R.layout.fragment_server_files_metadata, container, false);
 		}
+		mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
+		return rootView;
 	}
 
 	@Override
@@ -375,10 +380,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
             if (!isDirectoryAvailable()) {
                 serverClient.getFiles(getShare());
             } else {
-                    serverClient.getFiles(getShare(), getDirectory());
+                serverClient.getFiles(getShare(), getDirectory());
             }
         }
-
     }
 
 	private boolean isDirectoryAvailable() {
@@ -448,6 +452,13 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void showFilesError() {
 		ViewDirector.of(this, R.id.animator).show(R.id.error);
+		mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+				setUpFilesContent();
+			}
+		});
 	}
 
 	private void setUpFilesContentRefreshing() {

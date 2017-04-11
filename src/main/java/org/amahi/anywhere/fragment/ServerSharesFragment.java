@@ -19,9 +19,9 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -67,6 +67,8 @@ public class ServerSharesFragment extends Fragment
 
 	private LinearLayout mEmptyLinearLayout;
 
+    private LinearLayout mErrorLinearLayout;
+
 	@Inject
 	ServerClient serverClient;
 
@@ -82,6 +84,8 @@ public class ServerSharesFragment extends Fragment
 		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
 
 		mEmptyLinearLayout = (LinearLayout)rootView.findViewById(R.id.empty);
+
+        mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
 
 		mRecyclerView.addItemDecoration(new
 				DividerItemDecoration(getActivity(),
@@ -178,6 +182,13 @@ public class ServerSharesFragment extends Fragment
 
 	private void showSharesError() {
 		ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
+        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+                setUpSharesContent();
+            }
+        });
 	}
 
 	@Override

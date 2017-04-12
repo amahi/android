@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AppSelectedEvent;
@@ -76,6 +77,7 @@ public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.Se
 			Glide
 					.with(mContext)
 					.load(apps.get(position).getLogoUrl())
+					.diskCacheStrategy(DiskCacheStrategy.ALL)
 					.fitCenter()
 					.placeholder(R.drawable.ic_app_logo)
 					.error(R.drawable.ic_app_logo)

@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -138,6 +139,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 
 		Glide.with(fileView.getContext())
 			.load(fileMetadata.getArtworkUrl())
+			.diskCacheStrategy(DiskCacheStrategy.ALL)
 			.centerCrop()
 			.fitCenter()
 			.placeholder(getFileIcon(file))

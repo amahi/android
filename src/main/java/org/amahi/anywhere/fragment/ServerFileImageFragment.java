@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -75,6 +76,7 @@ public class ServerFileImageFragment extends Fragment implements RequestListener
 		Glide
 			.with(getActivity())
 			.load(getImageUri())
+			.diskCacheStrategy(DiskCacheStrategy.ALL)
 			.listener(this)
 			.into(getImageView());
 	}

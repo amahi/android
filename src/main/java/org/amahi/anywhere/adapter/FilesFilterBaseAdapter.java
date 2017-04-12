@@ -32,6 +32,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -194,6 +195,7 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
     void setUpImageIcon(ServerFile file, ImageView fileIconView) {
         Glide.with(fileIconView.getContext())
                 .load(getImageUri(file))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .placeholder(getFileIcon(file))
                 .into(fileIconView);

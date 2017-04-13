@@ -19,13 +19,14 @@
 
 package org.amahi.anywhere.activity;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.fragment.SettingsFragment;
 
 /**
  * Settings activity. Shows application's settings.
@@ -39,6 +40,8 @@ public class SettingsActivity extends AppCompatActivity
 
 		setUpHomeNavigation();
 
+		setContentView(R.layout.activity_settings);
+
 		setUpSettingsFragment();
 	}
 
@@ -48,11 +51,9 @@ public class SettingsActivity extends AppCompatActivity
 	}
 
 	private void setUpSettingsFragment() {
-		Fragments.Operator.at(this).set(buildSettingsFragment(), android.R.id.content);
-	}
-
-	private Fragment buildSettingsFragment() {
-		return Fragments.Builder.buildSettingsFragment();
+		FragmentManager fragmentManager = getFragmentManager();
+		fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+				.replace(R.id.settings_container,new SettingsFragment()).commit();
 	}
 
 	@Override

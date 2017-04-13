@@ -17,45 +17,45 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <android.support.v7.preference.PreferenceCategory android:title="@string/preference_category_account">
+    <PreferenceCategory android:title="@string/preference_category_account">
 
         <Preference
             android:key="@string/preference_key_account_sign_out"
             android:title="@string/preference_title_account_sign_out" />
 
-    </android.support.v7.preference.PreferenceCategory>
+    </PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory android:title="@string/preference_category_settings">
+    <PreferenceCategory android:title="@string/preference_category_settings">
 
-        <android.support.v7.preference.ListPreference
+        <ListPreference
             android:defaultValue="@string/preference_key_server_connection_auto"
             android:entries="@array/preference_entries_server_connection"
             android:entryValues="@array/preference_entries_keys_server_connection"
             android:key="@string/preference_key_server_connection"
             android:title="@string/preference_title_server_connection" />
 
-    </android.support.v7.preference.PreferenceCategory>
+    </PreferenceCategory>
 
-    <android.support.v7.preference.PreferenceCategory android:title="@string/preference_category_about">
+    <PreferenceCategory android:title="@string/preference_category_about">
 
-        <android.support.v7.preference.Preference
+        <Preference
             android:key="@string/preference_key_about_version"
             android:title="@string/preference_title_about_version" />
 
-        <android.support.v7.preference.Preference
+        <Preference
             android:key="@string/preference_key_about_feedback"
             android:title="@string/preference_title_about_feedback" />
 
-        <android.support.v7.preference.Preference
+        <Preference
             android:key="@string/preference_key_about_rating"
             android:title="@string/preference_title_about_rating" />
 
-        <android.support.v7.preference.Preference
+        <Preference
             android:key="@string/preference_key_tell_a_friend"
             android:title="@string/preference_title_tell_a_friend" />
 
-    </android.support.v7.preference.PreferenceCategory>
+    </PreferenceCategory>
 
-</android.support.v7.preference.PreferenceScreen>
+</PreferenceScreen>

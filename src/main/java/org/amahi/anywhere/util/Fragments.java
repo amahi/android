@@ -87,9 +87,6 @@ public final class Fragments {
             return fileFragment;
         }
 
-        public static android.support.v4.app.Fragment buildSettingsFragment() {
-            return new SettingsFragment();
-        }
     }
 
     public static final class Operator {

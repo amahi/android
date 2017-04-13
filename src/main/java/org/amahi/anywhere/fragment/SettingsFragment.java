@@ -26,10 +26,11 @@ import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v7.preference.ListPreference;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -49,7 +50,7 @@ import javax.inject.Inject;
 /**
  * Settings fragment. Shows application's settings.
  */
-public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener,
+public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener,
 	SharedPreferences.OnSharedPreferenceChangeListener,
 	AccountManagerCallback<Boolean>
 {
@@ -57,9 +58,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 	ServerClient serverClient;
 
 	@Override
-	public void onCreatePreferences(Bundle bundle, String s) {
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		setUpInjections();
-
 		setUpSettings();
 	}
 
@@ -85,14 +86,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 		applicationVersion.setSummary(getApplicationVersionSummary());
 	}
 
-	private Preference getPreference(int settingId) {
-		return findPreference(getString(settingId));
-	}
-
 	private String getServerConnectionSummary() {
 		ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
 
 		return String.format("%s", serverConnection.getEntry());
+	}
+
+	private Preference getPreference(int id){
+		return findPreference(getString(id));
 	}
 
 	private String getApplicationVersionSummary() {

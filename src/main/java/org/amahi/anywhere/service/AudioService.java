@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.service;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -32,9 +31,10 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -63,6 +63,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.MediaNotificationManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -79,22 +80,12 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	MediaPlayer.OnCompletionListener,
 	MediaPlayer.OnErrorListener
 {
-	private static final class Notifications
-	{
-		private Notifications() {
-		}
-
-		static final int AUDIO_PLAYER = 42;
-	}
+	private MediaNotificationManager mMediaNotificationManager;
 
 	private enum AudioFocus
 	{
 		GAIN, LOSS
 	}
-
-    public static final String ACTION_PLAY_PAUSE = "action_play_pause";
-    public static final String ACTION_NEXT = "action_next";
-    public static final String ACTION_PREVIOUS = "action_previous";
 
 	private MediaPlayer audioPlayer;
 	private MediaSessionCompat mediaSession;
@@ -130,31 +121,7 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		MediaButtonReceiver.handleIntent(mediaSession, intent);
-        handleIntent(intent);
 		return super.onStartCommand(intent, flags, startId);
-	}
-
-	private void handleIntent( Intent intent ) {
-		if( intent == null || intent.getAction() == null )
-			return;
-
-		String action = intent.getAction();
-
-		switch (action) {
-			case ACTION_PLAY_PAUSE:
-				if (audioPlayer.isPlaying()) {
-					pauseAudio();
-				} else {
-					playAudio();
-				}
-				break;
-			case ACTION_PREVIOUS:
-				startPreviousAudio();
-				break;
-			case ACTION_NEXT:
-				startNextAudio();
-				break;
-		}
 	}
 
 	@Nullable
@@ -202,17 +169,24 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 		PendingIntent audioPendingIntent = PendingIntent.getBroadcast(this, 0, audioIntent, 0);
 
 		mediaSession = new MediaSessionCompat(this, "PlayerService", audioReceiver, audioPendingIntent);
+		mediaSession.setCallback(new MediaSessionCallback());
 		mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
 				MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 		mediaSession.setMediaButtonReceiver(audioPendingIntent);
 		setSessionToken(mediaSession.getSessionToken());
+
+		try {
+			mMediaNotificationManager = new MediaNotificationManager(this);
+		} catch (RemoteException e) {
+			throw new IllegalStateException("Could not create a MediaNotificationManager", e);
+		}
+
 		mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
-				.setState(PlaybackStateCompat.STATE_PAUSED, 0, 0)
-				.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
+				.setState(PlaybackStateCompat.STATE_NONE, 0, 0)
+				.setActions(getAvailableActions())
 				.build());
 
 		audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-		mediaSession.setActive(true);
 	}
 
 	public boolean isAudioStarted() {
@@ -244,7 +218,6 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	@Override
 	public void onPrepared(MediaPlayer audioPlayer) {
 		BusProvider.getBus().post(new AudioPreparedEvent());
-
 		playAudio();
 	}
 
@@ -259,13 +232,15 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 		this.audioAlbumArt = event.getAudioAlbumArt();
 
 		setUpAudioPlayerRemote(audioMetadataFormatter, audioAlbumArt);
-		setUpAudioPlayerNotification(audioMetadataFormatter, audioAlbumArt);
+
+		mMediaNotificationManager.startNotification();
 	}
 
 	private void setUpAudioPlayerRemote(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
 
 		mediaSession.setMetadata(new MediaMetadataCompat.Builder()
 				.putString(MediaMetadataCompat.METADATA_KEY_TITLE, audioMetadataFormatter.getAudioTitle(audioFile))
+				.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, audioMetadataFormatter.getAudioSubtitle(audioShare))
 				.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, audioMetadataFormatter.getAudioSubtitle(audioShare))
 				.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, getAudioPlayerRemoteArtwork(audioAlbumArt))
 				.build());
@@ -285,57 +260,9 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 		return audioAlbumArt.copy(artworkConfig, false);
 	}
 
-	private void setUpAudioPlayerNotification(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
+	public PendingIntent createContentIntent() {
 		Intent audioIntent = Intents.Builder.with(this).buildServerFileIntent(audioShare, audioFiles, audioFile);
-		PendingIntent audioPendingIntent = PendingIntent.getActivity(this, 0, audioIntent, 0);
-
-        NotificationCompat.Style style = new android.support.v7.app.NotificationCompat.MediaStyle();
-		Notification notification = new NotificationCompat.Builder(this)
-			.setContentTitle(audioMetadataFormatter.getAudioTitle(audioFile))
-			.setContentText(audioMetadataFormatter.getAudioSubtitle(audioShare))
-			.setSmallIcon(getAudioPlayerNotificationIcon())
-			.setLargeIcon(getAudioPlayerNotificationArtwork(audioAlbumArt))
-			.setOngoing(audioPlayer.isPlaying())
-			.setWhen(0)
-			.setContentIntent(audioPendingIntent)
-            .setStyle(style)
-			.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .addAction(generateAction(android.R.drawable.ic_media_previous, null, ACTION_PREVIOUS))
-            .addAction(generateAction(getPlayPauseIcon(), null, ACTION_PLAY_PAUSE))
-            .addAction(generateAction(android.R.drawable.ic_media_next, null, ACTION_NEXT))
-            .build();
-
-		startForeground(Notifications.AUDIO_PLAYER, notification);
-	}
-
-	private int getPlayPauseIcon() {
-        if(audioPlayer.isPlaying()) {
-            return android.R.drawable.ic_media_pause;
-        } else {
-            return android.R.drawable.ic_media_play;
-        }
-    }
-
-	private NotificationCompat.Action generateAction(int icon, String title, String intentAction) {
-		Intent intent = new Intent(getApplicationContext(), AudioService.class);
-		intent.setAction(intentAction);
-		PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-		return new NotificationCompat.Action.Builder(icon, title, pendingIntent).build();
-	}
-
-	private int getAudioPlayerNotificationIcon() {
-		return R.drawable.ic_notification_audio;
-	}
-
-	private Bitmap getAudioPlayerNotificationArtwork(Bitmap audioAlbumArt) {
-		int iconHeight = (int) getResources().getDimension(android.R.dimen.notification_large_icon_height);
-		int iconWidth = (int) getResources().getDimension(android.R.dimen.notification_large_icon_width);
-
-		if (audioAlbumArt == null) {
-			return null;
-		}
-
-		return Bitmap.createScaledBitmap(audioAlbumArt, iconWidth, iconHeight, false);
+		return PendingIntent.getActivity(this, 0, audioIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 	}
 
 	public ServerFile getAudioFile() {
@@ -384,26 +311,34 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	}
 
 	public void playAudio() {
+		mediaSession.setActive(true);
 		audioPlayer.start();
 		setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
-        setUpAudioPlayerNotification(audioMetadataFormatter, audioAlbumArt);
 	}
 
 	public void pauseAudio() {
+		mediaSession.setActive(false);
 		audioPlayer.pause();
 		setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
-        setUpAudioPlayerNotification(audioMetadataFormatter, audioAlbumArt);
 	}
 
 	private void setMediaPlaybackState(int state) {
 		PlaybackStateCompat.Builder playbackStateBuilder = new PlaybackStateCompat.Builder();
-		if( state == PlaybackStateCompat.STATE_PLAYING ) {
-			playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PAUSE);
-		} else {
-			playbackStateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY);
-		}
-		playbackStateBuilder.setState(state, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0);
+		playbackStateBuilder.setActions(getAvailableActions());
+		playbackStateBuilder.setState(state, audioPlayer.getCurrentPosition(), 1.0f, SystemClock.elapsedRealtime());
 		mediaSession.setPlaybackState(playbackStateBuilder.build());
+	}
+
+	private long getAvailableActions() {
+		long actions = PlaybackStateCompat.ACTION_PLAY_PAUSE |
+				PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+				PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
+		if (audioPlayer.isPlaying()) {
+			actions |= PlaybackStateCompat.ACTION_PAUSE;
+		} else {
+			actions |= PlaybackStateCompat.ACTION_PLAY;
+		}
+		return actions;
 	}
 
 	private void startNextAudio() {
@@ -426,6 +361,8 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	}
 
 	private void tearDownAudioPlayback() {
+		if(isAudioPlaying())
+			pauseAudio();
 		audioPlayer.reset();
 	}
 
@@ -552,7 +489,7 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	}
 
 	private void tearDownAudioPlayerNotification() {
-		stopForeground(true);
+		mMediaNotificationManager.stopNotification();
 	}
 
 	public static final class AudioServiceBinder extends Binder
@@ -565,6 +502,28 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 
 		public AudioService getAudioService() {
 			return audioService;
+		}
+	}
+
+	private class MediaSessionCallback extends MediaSessionCompat.Callback {
+		@Override
+		public void onPlay() {
+			playAudio();
+		}
+
+		@Override
+		public void onPause() {
+			pauseAudio();
+		}
+
+		@Override
+		public void onSkipToNext() {
+			startNextAudio();
+		}
+
+		@Override
+		public void onSkipToPrevious() {
+			startPreviousAudio();
 		}
 	}
 }

@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -185,6 +186,12 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 	private void setUpAudioMetadata(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
 		getAudioTitleView().setText(audioMetadataFormatter.getAudioTitle(audioFile));
 		getAudioSubtitleView().setText(audioMetadataFormatter.getAudioSubtitle(getShare()));
+		if (audioAlbumArt == null) {
+			audioAlbumArt = BitmapFactory.decodeResource(getResources(), R.drawable.default_audiotrack);
+			getAudioAlbumArtView().setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+		} else {
+			getAudioAlbumArtView().setScaleType(ImageView.ScaleType.CENTER_CROP);
+		}
 		getAudioAlbumArtView().setImageBitmap(audioAlbumArt);
 	}
 

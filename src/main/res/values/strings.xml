@@ -69,4 +69,9 @@
     <string name="share_screen_title">Share Using</string>
     <string name="share_permission_granted">Storage permission has been enabled please reshare to download.</string>
     <string name="share_permission_denied">You have denied the permissions for sharing. Enable permissions to continue.</string>
+
+    <string name="label_previous">Previous</string>
+    <string name="label_next">Next</string>
+    <string name="label_play">Play</string>
+    <string name="label_pause">Pause</string>
 </resources>

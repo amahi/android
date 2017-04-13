@@ -386,13 +386,17 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	public void playAudio() {
 		audioPlayer.start();
 		setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
-        setUpAudioPlayerNotification(audioMetadataFormatter, audioAlbumArt);
+		if (audioMetadataFormatter != null) {
+			setUpAudioPlayerNotification(audioMetadataFormatter, audioAlbumArt);
+		}
 	}
 
 	public void pauseAudio() {
 		audioPlayer.pause();
 		setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
-        setUpAudioPlayerNotification(audioMetadataFormatter, audioAlbumArt);
+		if (audioMetadataFormatter != null) {
+			setUpAudioPlayerNotification(audioMetadataFormatter, audioAlbumArt);
+		}
 	}
 
 	private void setMediaPlaybackState(int state) {

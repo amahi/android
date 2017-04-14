@@ -31,8 +31,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileMetadataRetrievedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
@@ -62,6 +65,8 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 
 		this.files = Collections.emptyList();
 		this.filteredFiles = Collections.emptyList();
+
+		BusProvider.getBus().register(this);
 	}
 
 	protected View newView(ViewGroup container) {
@@ -122,7 +127,12 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 		FileMetadataRetrievingTask.execute(serverClient, fileView);
 	}
 
-	public static void bindView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
+	@Subscribe
+	public void onFileMetadataRetrieved(FileMetadataRetrievedEvent event) {
+		bindView(event.getFile(), event.getFileMetadata(), event.getFileView());
+	}
+
+	private void bindView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
 		if (fileMetadata == null) {
 			bindFileView(file, fileView);
 		} else {
@@ -130,7 +140,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 		}
 	}
 
-	private static void bindFileMetadataView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
+	private void bindFileMetadataView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
 		TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
 		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
 
@@ -145,6 +155,9 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 			.placeholder(getFileIcon(file))
 			.error(getFileIcon(file))
 			.into(fileIcon);
-		fileTitle.setBackgroundResource(android.R.color.transparent);
+	}
+
+	public void tearDownCallbacks() {
+		BusProvider.getBus().unregister(this);
 	}
 }

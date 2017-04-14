@@ -639,6 +639,14 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		if (isMetadataAvailable()) {
+			getFilesMetadataAdapter().tearDownCallbacks();
+		}
+	}
+
+	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 

@@ -23,6 +23,9 @@ import android.os.AsyncTask;
 import android.view.View;
 
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
+import org.amahi.anywhere.bus.BusEvent;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileMetadataRetrievedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
@@ -32,6 +35,7 @@ import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 
 public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, ServerFileMetadata> {
+
     private final ServerClient serverClient;
 
     private final Reference<View> fileViewReference;
@@ -42,7 +46,7 @@ public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, ServerFile
     private FileMetadataRetrievingTask(ServerClient serverClient, View fileView) {
         this.serverClient = serverClient;
 
-        this.fileViewReference = new WeakReference<View>(fileView);
+        this.fileViewReference = new WeakReference<>(fileView);
 
         this.share = (ServerShare) fileView.getTag(ServerFilesMetadataAdapter.Tags.SHARE);
         this.file = (ServerFile) fileView.getTag(ServerFilesMetadataAdapter.Tags.FILE);
@@ -71,6 +75,8 @@ public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, ServerFile
             return;
         }
 
-        ServerFilesMetadataAdapter.bindView(file, fileMetadata, fileView);
+        BusEvent busEvent = new FileMetadataRetrievedEvent(file, fileMetadata, fileView);
+        BusProvider.getBus().post(busEvent);
+
     }
 }

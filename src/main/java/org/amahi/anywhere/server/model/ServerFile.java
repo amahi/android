@@ -43,14 +43,18 @@ public class ServerFile implements Parcelable
 	@SerializedName("mtime")
 	private Date modificationTime;
 
-       @SerializedName("size")
-       private long size;
+    @SerializedName("size")
+    private long size;
 
-       public long getSize() {
+    private ServerFileMetadata fileMetadata;
+
+	private boolean isMetaDataFetched;
+
+    public long getSize() {
             return size;
        }
 
-       public void setParentFile(ServerFile parentFile) {
+    public void setParentFile(ServerFile parentFile) {
 		this.parentFile = parentFile;
 	}
 
@@ -68,6 +72,22 @@ public class ServerFile implements Parcelable
 
 	public Date getModificationTime() {
 		return modificationTime;
+	}
+
+    public ServerFileMetadata getFileMetadata() {
+        return fileMetadata;
+    }
+
+    public void setFileMetadata(ServerFileMetadata fileMetadata) {
+        this.fileMetadata = fileMetadata;
+    }
+
+	public boolean isMetaDataFetched() {
+		return isMetaDataFetched;
+	}
+
+	public void setMetaDataFetched(boolean metaDataFetched) {
+		isMetaDataFetched = metaDataFetched;
 	}
 
 	public String getPath() {

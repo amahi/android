@@ -124,7 +124,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 		fileView.setTag(Tags.SHARE, serverShare);
 		fileView.setTag(Tags.FILE, file);
 
-		FileMetadataRetrievingTask.execute(serverClient, fileView);
+		new FileMetadataRetrievingTask(serverClient, fileView).execute();
 	}
 
 	@Subscribe

@@ -71,6 +71,8 @@ public class ApiConnectionDetector
 				.newCall(httpRequest)
 				.execute();
 
+			httpResponse.body().close();
+
 			Timber.d("Using local address.");
 
 			return serverRoute.getLocalAddress();

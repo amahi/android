@@ -51,6 +51,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import retrofit2.Callback;
 
 
 /**
@@ -225,17 +226,11 @@ public class ServerClient
 			.build();
 	}
 
-	public ServerFileMetadata getFileMetadata(ServerShare share, ServerFile file) {
+	public void getFileMetadata(ServerShare share, ServerFile file, Callback<ServerFileMetadata> callback) {
         if ((server == null) || (share == null) || (file == null)){
-            return null;
+            return;
         }
-
-		try {
-			return serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag()).execute().body();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+		serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag()).enqueue(callback);
 	}
 
 	public void getApps() {

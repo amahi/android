@@ -85,7 +85,11 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 		if (Mimes.match(file.getMime()) != Mimes.Type.VIDEO) {
 			bindFileView(file, fileView);
 		} else {
-			bindFileMetadataView(file, fileView);
+			if(!file.isMetaDataFetched()) {
+				bindFileMetadataView(file, fileView);
+			} else {
+				bindView(file, file.getFileMetadata(), fileView);
+			}
 		}
 		if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
 			setUpImageIcon(file, fileIcon);
@@ -103,7 +107,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 		fileIcon.setBackgroundResource(R.color.background_secondary);
 	}
 
-	private static void bindFileView(ServerFile file, View fileView) {
+	private void bindFileView(ServerFile file, View fileView) {
 		TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
 		ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
 
@@ -124,11 +128,12 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 		fileView.setTag(Tags.SHARE, serverShare);
 		fileView.setTag(Tags.FILE, file);
 
-		FileMetadataRetrievingTask.execute(serverClient, fileView);
+		new FileMetadataRetrievingTask(serverClient, fileView).execute();
 	}
 
 	@Subscribe
 	public void onFileMetadataRetrieved(FileMetadataRetrievedEvent event) {
+		event.getFile().setMetaDataFetched(true);
 		bindView(event.getFile(), event.getFileMetadata(), event.getFileView());
 	}
 
@@ -136,6 +141,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 		if (fileMetadata == null) {
 			bindFileView(file, fileView);
 		} else {
+			file.setFileMetadata(fileMetadata);
 			bindFileMetadataView(file, fileMetadata, fileView);
 		}
 	}

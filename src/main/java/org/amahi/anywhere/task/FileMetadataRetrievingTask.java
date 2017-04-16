@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.task;
 
-import android.os.AsyncTask;
 import android.view.View;
 
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
@@ -34,36 +33,32 @@ import org.amahi.anywhere.server.model.ServerShare;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 
-public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, ServerFileMetadata> {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    private final ServerClient serverClient;
+public class FileMetadataRetrievingTask implements Callback<ServerFileMetadata> {
 
     private final Reference<View> fileViewReference;
 
     private final ServerShare share;
     private final ServerFile file;
+    private final ServerClient serverClient;
 
-    private FileMetadataRetrievingTask(ServerClient serverClient, View fileView) {
+    public FileMetadataRetrievingTask(ServerClient serverClient, View fileView) {
         this.serverClient = serverClient;
-
         this.fileViewReference = new WeakReference<>(fileView);
 
         this.share = (ServerShare) fileView.getTag(ServerFilesMetadataAdapter.Tags.SHARE);
         this.file = (ServerFile) fileView.getTag(ServerFilesMetadataAdapter.Tags.FILE);
     }
 
-    public static void execute(ServerClient serverClient, View fileView) {
-        new FileMetadataRetrievingTask(serverClient, fileView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public void execute() {
+        serverClient.getFileMetadata(share, file, this);
     }
 
     @Override
-    protected ServerFileMetadata doInBackground(Void... parameters) {
-        return serverClient.getFileMetadata(share, file);
-    }
-
-    @Override
-    protected void onPostExecute(ServerFileMetadata fileMetadata) {
-        super.onPostExecute(fileMetadata);
+    public void onResponse(Call<ServerFileMetadata> call, Response<ServerFileMetadata> response) {
 
         View fileView = fileViewReference.get();
 
@@ -75,8 +70,12 @@ public class FileMetadataRetrievingTask extends AsyncTask<Void, Void, ServerFile
             return;
         }
 
-        BusEvent busEvent = new FileMetadataRetrievedEvent(file, fileMetadata, fileView);
+        BusEvent busEvent = new FileMetadataRetrievedEvent(file, response.body(), fileView);
         BusProvider.getBus().post(busEvent);
+    }
+
+    @Override
+    public void onFailure(Call<ServerFileMetadata> call, Throwable t) {
 
     }
 }

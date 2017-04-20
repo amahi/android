@@ -32,6 +32,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,7 +41,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.squareup.otto.Subscribe;
@@ -47,7 +48,7 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
-import org.amahi.anywhere.adapter.NavigationAdapter;
+import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -60,6 +61,7 @@ import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.util.RecyclerItemClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
 import java.io.IOException;
@@ -75,7 +77,6 @@ import javax.inject.Inject;
 public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
 	OnAccountsUpdateListener,
 	AdapterView.OnItemSelectedListener,
-	AdapterView.OnItemClickListener,
 	SwipeRefreshLayout.OnRefreshListener
 {
 	private static final class State
@@ -293,40 +294,44 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void setUpNavigationAdapter() {
+		//Setting the layout of a vertical list dynamically.
+		getNavigationListView().setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+
 		if (!serverClient.isConnected()) {
-			getNavigationListView().setAdapter(NavigationAdapter.newRemoteAdapter(getActivity()));
+			getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(getActivity()));
 			return;
 		}
 
 		if (serverClient.isConnectedLocal()) {
-			getNavigationListView().setAdapter(NavigationAdapter.newLocalAdapter(getActivity()));
+			getNavigationListView().setAdapter(NavigationDrawerAdapter.newLocalAdapter(getActivity()));
 		} else {
-			getNavigationListView().setAdapter(NavigationAdapter.newRemoteAdapter(getActivity()));
+			getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(getActivity()));
 		}
 	}
 
-	private ListView getNavigationListView() {
-		return (ListView) getView().findViewById(R.id.list_navigation);
+	private RecyclerView getNavigationListView() {
+		return (RecyclerView) getView().findViewById(R.id.list_navigation);
 	}
 
 	private void setUpNavigationListener() {
-		getNavigationListView().setOnItemClickListener(this);
-	}
+		getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
+			@Override
+			public void onItemClick(View view, int position) {
+				view.setActivated(true);
+				switch (position) {
+					case NavigationDrawerAdapter.NavigationItems.SHARES:
+						BusProvider.getBus().post(new SharesSelectedEvent());
+						break;
 
-	@Override
-	public void onItemClick(AdapterView<?> navigationListView, View navigationView, int navigationPosition, long navigationId) {
-		switch (navigationPosition) {
-			case NavigationAdapter.NavigationItems.SHARES:
-				BusProvider.getBus().post(new SharesSelectedEvent());
-				break;
+					case NavigationDrawerAdapter.NavigationItems.APPS:
+						BusProvider.getBus().post(new AppsSelectedEvent());
+						break;
 
-			case NavigationAdapter.NavigationItems.APPS:
-				BusProvider.getBus().post(new AppsSelectedEvent());
-				break;
-
-			default:
-				break;
-		}
+					default:
+						break;
+				}
+			}
+		}));
 	}
 
 	@Subscribe

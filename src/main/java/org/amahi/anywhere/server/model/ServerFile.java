@@ -66,6 +66,10 @@ public class ServerFile implements Parcelable
 		return name;
 	}
 
+	public String getNameOnly() {
+		return name.replace("." + getExtension(), "");
+	}
+
 	public String getMime() {
 		return mime;
 	}
@@ -100,6 +104,15 @@ public class ServerFile implements Parcelable
 		uri.appendPath(name);
 
 		return uri.build().getPath();
+	}
+
+	public String getExtension() {
+		String[] splitString = name.split("\\.");
+		if(splitString.length > 1) {
+			return splitString[splitString.length-1];
+		} else {
+			return "";
+		}
 	}
 
 	public static final Creator<ServerFile> CREATOR = new Creator<ServerFile>()

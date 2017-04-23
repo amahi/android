@@ -29,6 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -69,6 +70,9 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
 	@Inject
 	ServerClient serverClient;
+
+	private static final int TIME_INTERVAL = 2000;
+	private long mBackPressed;
 
 	private ActionBarDrawerToggle navigationDrawerToggle;
 	private String navigationTitle;
@@ -334,4 +338,17 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
 		BusProvider.getBus().unregister(this);
 	}
+
+	@Override
+    public void onBackPressed()
+    {
+        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis())
+        {
+            super.onBackPressed();
+            return;
+        }
+        else { Toast.makeText(getBaseContext(), "Press back button to exit", Toast.LENGTH_SHORT).show(); }
+
+        mBackPressed = System.currentTimeMillis();
+    }
 }

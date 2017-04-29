@@ -31,10 +31,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
+
     <FrameLayout
         android:id="@+id/layout_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
         <SurfaceView
             android:id="@+id/surface"
@@ -42,6 +44,15 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:fitsSystemWindows="false" />
+        <Button
+            android:id="@+id/button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/rotation"
+            android:layout_marginTop="80dp"
+            android:layout_marginLeft="20dp"
+
+            />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -56,5 +67,7 @@
         </FrameLayout>
 
     </FrameLayout>
+
+
 
 </ViewAnimator>

@@ -51,6 +51,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.OnSwipeListener;
 import org.amahi.anywhere.util.ViewDirector;
 import org.amahi.anywhere.view.MediaControls;
 
@@ -127,6 +128,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 		setUpAudioFile();
 		setUpAudioTitle();
 		setUpAudioMetadata(state);
+        setUpSwipeListener();
 	}
 
 	private void setUpAudioFile() {
@@ -174,6 +176,18 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 	private void showAudioMetadata() {
 		ViewDirector.of(this, R.id.animator).show(R.id.layout_content);
 	}
+
+    private void setUpSwipeListener() {
+        getAudioAlbumArtView().setOnTouchListener(new OnSwipeListener(this) {
+            public void onSwipeRight() {
+				BusProvider.getBus().post(new AudioControlPreviousEvent());
+            }
+
+            public void onSwipeLeft() {
+				BusProvider.getBus().post(new AudioControlNextEvent());
+            }
+        });
+    }
 
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {

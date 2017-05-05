@@ -23,6 +23,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
@@ -35,6 +36,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.MediaController;
 
@@ -75,6 +78,9 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	private int mVideoSarNum = 0;
 	private int mVideoSarDen = 0;
 
+	private int vari = 0;
+	Button button;
+
 	private enum SurfaceSizes {
 		SURFACE_BEST_FIT,
 		SURFACE_FIT_SCREEN,
@@ -92,6 +98,29 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_server_file_video);
+
+		button = (Button) findViewById(R.id.button);
+		button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(vari == 0)
+				{
+					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+					getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+					getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+					vari = 1;
+				}else
+				{
+					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+					getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+					getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+					vari = 0;
+				}
+			}
+		});
+
 
 		setUpInjections();
 

@@ -78,7 +78,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	private int mVideoSarNum = 0;
 	private int mVideoSarDen = 0;
 
-	static int vari = 0;
+	private int vari = 0;
 	Button button;
 
 	private enum SurfaceSizes {

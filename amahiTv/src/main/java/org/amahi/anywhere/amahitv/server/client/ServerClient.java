@@ -17,36 +17,34 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.client;
+package org.amahi.anywhere.amahitv.server.client;
 
 import android.net.Uri;
 
 import com.squareup.otto.Subscribe;
 
-import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.NetworkChangedEvent;
-import org.amahi.anywhere.bus.ServerConnectedEvent;
-import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
-import org.amahi.anywhere.bus.ServerConnectionDetectedEvent;
-import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
-import org.amahi.anywhere.server.Api;
-import org.amahi.anywhere.server.ApiAdapter;
-import org.amahi.anywhere.server.ApiConnection;
-import org.amahi.anywhere.server.api.ProxyApi;
-import org.amahi.anywhere.server.api.ServerApi;
-import org.amahi.anywhere.server.model.Server;
-import org.amahi.anywhere.server.model.ServerFile;
-import org.amahi.anywhere.server.model.ServerFileMetadata;
-import org.amahi.anywhere.server.model.ServerRoute;
-import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.server.response.ServerAppsResponse;
-import org.amahi.anywhere.server.response.ServerFilesResponse;
-import org.amahi.anywhere.server.response.ServerRouteResponse;
-import org.amahi.anywhere.server.response.ServerSharesResponse;
-import org.amahi.anywhere.task.ServerConnectionDetectingTask;
-import org.amahi.anywhere.util.Time;
-
-import java.io.IOException;
+import org.amahi.anywhere.amahitv.bus.BusProvider;
+import org.amahi.anywhere.amahitv.bus.NetworkChangedEvent;
+import org.amahi.anywhere.amahitv.bus.ServerConnectedEvent;
+import org.amahi.anywhere.amahitv.bus.ServerConnectionChangedEvent;
+import org.amahi.anywhere.amahitv.bus.ServerConnectionDetectedEvent;
+import org.amahi.anywhere.amahitv.bus.ServerRouteLoadedEvent;
+import org.amahi.anywhere.amahitv.server.Api;
+import org.amahi.anywhere.amahitv.server.ApiAdapter;
+import org.amahi.anywhere.amahitv.server.ApiConnection;
+import org.amahi.anywhere.amahitv.server.api.ProxyApi;
+import org.amahi.anywhere.amahitv.server.api.ServerApi;
+import org.amahi.anywhere.amahitv.server.model.Server;
+import org.amahi.anywhere.amahitv.server.model.ServerFile;
+import org.amahi.anywhere.amahitv.server.model.ServerFileMetadata;
+import org.amahi.anywhere.amahitv.server.model.ServerRoute;
+import org.amahi.anywhere.amahitv.server.model.ServerShare;
+import org.amahi.anywhere.amahitv.server.response.ServerAppsResponse;
+import org.amahi.anywhere.amahitv.server.response.ServerFilesResponse;
+import org.amahi.anywhere.amahitv.server.response.ServerRouteResponse;
+import org.amahi.anywhere.amahitv.server.response.ServerSharesResponse;
+import org.amahi.anywhere.amahitv.task.ServerConnectionDetectingTask;
+import org.amahi.anywhere.amahitv.util.Time;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -55,8 +53,8 @@ import retrofit2.Callback;
 
 
 /**
- * Server API implementation. Wraps {@link org.amahi.anywhere.server.api.ProxyApi} and
- * {@link org.amahi.anywhere.server.api.ServerApi}. Reacts to network connection changes as well.
+ * Server API implementation. Wraps {@link org.amahi.anywhere.amahitv.server.api.ProxyApi} and
+ * {@link org.amahi.anywhere.amahitv.server.api.ServerApi}. Reacts to network connection changes as well.
  */
 @Singleton
 public class ServerClient

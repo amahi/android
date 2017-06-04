@@ -33,7 +33,6 @@ import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Mimes;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
@@ -41,7 +40,6 @@ import org.videolan.libvlc.MediaPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.inject.Inject;
 

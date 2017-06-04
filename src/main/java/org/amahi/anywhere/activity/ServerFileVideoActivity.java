@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -49,7 +50,6 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.util.ViewDirector;
 import org.amahi.anywhere.view.MediaControls;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.Media;
@@ -94,7 +94,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	}
 
 	private static SurfaceSizes CURRENT_SIZE = SurfaceSizes.SURFACE_BEST_FIT;
-	
+
 	//TODO Add feature for changing the screen size
 
 	@Override
@@ -146,9 +146,9 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	}
 
 	private void setUpFullScreen() {
-		fullScreen = new FullScreenHelper(getSupportActionBar(), getSurfaceFrame(), getControlsContainer());
+		fullScreen = new FullScreenHelper(getSupportActionBar(), getVideoMainFrame());
 		fullScreen.enableOnClickToggle(false);
-		getSurfaceFrame().setOnClickListener(new View.OnClickListener() {
+		getVideoMainFrame().setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				fullScreen.toggle();
@@ -219,10 +219,13 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		return (FrameLayout) findViewById(R.id.video_surface_frame);
 	}
 
+	private FrameLayout getVideoMainFrame() {
+		return (FrameLayout) findViewById(R.id.video_main_frame);
+	}
+
 	private void setUpVideoControls() {
 		if (!areVideoControlsAvailable()) {
 			videoControls = new MediaControls(this);
-
 			videoControls.setMediaPlayer(this);
 			videoControls.setAnchorView(getControlsContainer());
 		}
@@ -248,7 +251,6 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
 	private void setUpVideoPlayback() {
 		if (videoService.isVideoStarted()) {
-			showVideo();
 			showThenAutoHideControls();
 		} else {
 			videoService.startVideo(getVideoShare(), getVideoFile());
@@ -260,13 +262,12 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		if (!isFinishing()) {
 			fullScreen.show();
 			fullScreen.delayedHide();
-			videoControls.showAnimated();
-			videoControls.hideControlsDelayed();
+			videoControls.show();
 		}
 	}
 
-	private void showVideo() {
-		ViewDirector.of(this, R.id.animator).show(R.id.video_surface_frame);
+	private ProgressBar getProgressBar() {
+		return (ProgressBar) findViewById(android.R.id.progress);
 	}
 
 	private ServerShare getVideoShare() {
@@ -523,9 +524,10 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
 		switch(event.type) {
 			case MediaPlayer.Event.MediaChanged:
-				showVideo();
+				getVideoMainFrame().setVisibility(View.VISIBLE);
 				break;
 			case MediaPlayer.Event.Playing:
+				getProgressBar().setVisibility(View.INVISIBLE);
 				showThenAutoHideControls();
 				break;
 			case MediaPlayer.Event.Paused:

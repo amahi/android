@@ -111,7 +111,9 @@
         <activity
             android:name=".activity.WebViewActivity"
             android:label="@string/title_version_settings" />
-        <activity android:name=".activity.WebActivity"></activity>
+        <activity android:name=".activity.WebActivity" />
+        <activity android:name=".activity.MainActivity" android:theme="@style/Theme.Leanback.Browse"/>
+        <activity android:name=".activity.IntroActivity" android:theme="@style/Theme.Leanback.Onboarding"/>
     </application>
 
 </manifest>

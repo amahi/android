@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.amahitv.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -53,6 +54,10 @@ import javax.inject.Inject;
  */
 public class ServerAppsFragment extends Fragment
 {
+	public interface OnLoadAppsListener{
+		void onLoadApps(List<ServerApp> app);
+	}
+
 	private static final class State
 	{
 		private State() {
@@ -68,6 +73,8 @@ public class ServerAppsFragment extends Fragment
 	private LinearLayout mEmptyLinearLayout;
 
 	private LinearLayout mErrorLinearLayout;
+
+	private OnLoadAppsListener onLoadAppsListener;
 
 	@Inject
 	ServerClient serverClient;
@@ -99,6 +106,16 @@ public class ServerAppsFragment extends Fragment
 		setUpInjections();
 
 		setUpApps(savedInstanceState);
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		try {
+			onLoadAppsListener = (OnLoadAppsListener) context;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(context.toString() + " must implement onLoadAppsListener");
+		}
 	}
 
 	private void setUpInjections() {
@@ -165,7 +182,7 @@ public class ServerAppsFragment extends Fragment
 	@Subscribe
 	public void onAppsLoaded(ServerAppsLoadedEvent event) {
 		setUpAppsContent(event.getServerApps());
-
+		onLoadAppsListener.onLoadApps(event.getServerApps());
 		showAppsContent();
 	}
 

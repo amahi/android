@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.amahitv.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -53,6 +54,10 @@ import javax.inject.Inject;
  */
 public class ServerSharesFragment extends Fragment
 {
+	public interface OnLoadShareListener{
+		void onLoadShare(List<ServerShare> list);
+	}
+
 	private static final class State
 	{
 		private State() {
@@ -68,6 +73,8 @@ public class ServerSharesFragment extends Fragment
 	private LinearLayout mEmptyLinearLayout;
 
     private LinearLayout mErrorLinearLayout;
+
+	private OnLoadShareListener loadShareListener;
 
 	@Inject
 	ServerClient serverClient;
@@ -101,6 +108,16 @@ public class ServerSharesFragment extends Fragment
 		setUpInjections();
 
 		setUpShares(savedInstanceState);
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		try {
+			loadShareListener = (OnLoadShareListener) context;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(context.toString() + " must implement onLoadShareListener");
+		}
 	}
 
 	private void setUpInjections() {
@@ -171,7 +188,7 @@ public class ServerSharesFragment extends Fragment
 	@Subscribe
 	public void onSharesLoaded(ServerSharesLoadedEvent event) {
 		setUpSharesContent(event.getServerShares());
-
+		loadShareListener.onLoadShare(event.getServerShares());
 		showSharesContent();
 	}
 

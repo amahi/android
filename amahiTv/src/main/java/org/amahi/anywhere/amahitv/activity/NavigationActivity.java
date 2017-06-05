@@ -20,12 +20,16 @@
 package org.amahi.anywhere.amahitv.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,12 +44,17 @@ import org.amahi.anywhere.amahitv.bus.BusProvider;
 import org.amahi.anywhere.amahitv.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.amahitv.bus.ShareSelectedEvent;
 import org.amahi.anywhere.amahitv.bus.SharesSelectedEvent;
+import org.amahi.anywhere.amahitv.fragment.ServerAppsFragment;
+import org.amahi.anywhere.amahitv.fragment.ServerSharesFragment;
 import org.amahi.anywhere.amahitv.server.client.ServerClient;
 import org.amahi.anywhere.amahitv.server.model.ServerApp;
 import org.amahi.anywhere.amahitv.server.model.ServerShare;
 import org.amahi.anywhere.amahitv.util.Android;
 import org.amahi.anywhere.amahitv.util.Fragments;
 import org.amahi.anywhere.amahitv.util.Intents;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -56,7 +65,8 @@ import javax.inject.Inject;
  * The navigation itself is done via {@link org.amahi.anywhere.amahitv.fragment.NavigationFragment},
  * {@link org.amahi.anywhere.amahitv.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.amahitv.fragment.ServerAppsFragment}.
  */
-public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener
+public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener,
+		ServerAppsFragment.OnLoadAppsListener,ServerSharesFragment.OnLoadShareListener
 {
 	private static final class State
 	{
@@ -66,6 +76,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 		public static final String NAVIGATION_TITLE = "navigation_title";
 		public static final String NAVIGATION_DRAWER_VISIBLE = "navigation_drawer_visible";
 	}
+
+	Intent intent;
 
 	@Inject
 	ServerClient serverClient;
@@ -83,6 +95,12 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 		setUpHomeNavigation();
 
 		setUpNavigation(savedInstanceState);
+
+		setUpApps();
+
+		setUpShares();
+
+		intent = new Intent(this,MainActivity.class);
 	}
 
 	private void setUpInjections() {
@@ -90,6 +108,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 	}
 
 	private void setUpHomeNavigation() {
+		getSupportActionBar().hide();
 		getSupportActionBar().setHomeButtonEnabled(isNavigationDrawerAvailable());
 		getSupportActionBar().setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
 		getSupportActionBar().setIcon(R.drawable.ic_launcher);
@@ -107,7 +126,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 		setUpNavigationFragment();
 
 		if (isNavigationDrawerAvailable() && isNavigationDrawerRequired(state)) {
-			showNavigationDrawer();
+			//showNavigationDrawer();
 		}
 
 		setUpNavigationTitle(state);
@@ -325,6 +344,15 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 	protected void onResume() {
 		super.onResume();
 
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
+		if(!previouslyStarted) {
+			SharedPreferences.Editor edit = prefs.edit();
+			edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
+			edit.commit();
+			startActivity(new Intent(this,IntroActivity.class));
+		}
+
 		BusProvider.getBus().register(this);
 	}
 
@@ -333,5 +361,16 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	@Override
+	public void onLoadApps(List<ServerApp> app) {
+		intent.putParcelableArrayListExtra("INTENT_SERVER_APPS",new ArrayList<>(app));
+	}
+
+	@Override
+	public void onLoadShare(List<ServerShare> list) {
+		intent.putParcelableArrayListExtra("INTENT_SERVER_SHARES",new ArrayList<>(list));
+		startActivity(intent);
 	}
 }

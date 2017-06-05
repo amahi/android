@@ -74,4 +74,5 @@
     <string name="label_next">Next</string>
     <string name="label_play">Play</string>
     <string name="label_pause">Pause</string>
+    <string name="pref_previously_started">Previously started</string>
 </resources>

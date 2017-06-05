@@ -19,12 +19,14 @@
 
 package org.amahi.anywhere.activity;
 
+import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -35,8 +37,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -45,7 +50,6 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.util.ViewDirector;
 import org.amahi.anywhere.view.MediaControls;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.Media;
@@ -63,6 +67,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	MediaPlayer.EventListener,
 	View.OnLayoutChangeListener {
 
+	private static final boolean ENABLE_SUBTITLES = true;
+
 	private VideoService videoService;
 	private MediaControls videoControls;
 	private FullScreenHelper fullScreen;
@@ -75,6 +81,9 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	private int mVideoSarNum = 0;
 	private int mVideoSarDen = 0;
 
+	private SurfaceView mSubtitlesSurface = null;
+	private float bufferPercent = 0.0f;
+
 	private enum SurfaceSizes {
 		SURFACE_BEST_FIT,
 		SURFACE_FIT_SCREEN,
@@ -85,7 +94,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	}
 
 	private static SurfaceSizes CURRENT_SIZE = SurfaceSizes.SURFACE_BEST_FIT;
-	
+
 	//TODO Add feature for changing the screen size
 
 	@Override
@@ -96,6 +105,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		setUpInjections();
 
 		setUpHomeNavigation();
+
+		setUpViews();
 
 		setUpVideo();
 
@@ -113,6 +124,15 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		getSupportActionBar().setIcon(R.drawable.ic_launcher);
 	}
 
+	private void setUpViews() {
+		if (ENABLE_SUBTITLES) {
+			final ViewStub stub = (ViewStub) findViewById(R.id.subtitles_stub);
+			mSubtitlesSurface = (SurfaceView) stub.inflate();
+			mSubtitlesSurface.setZOrderMediaOverlay(true);
+			mSubtitlesSurface.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+		}
+	}
+
 	private void setUpVideo() {
 		setUpVideoTitle();
 	}
@@ -126,9 +146,9 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	}
 
 	private void setUpFullScreen() {
-		fullScreen = new FullScreenHelper(getSupportActionBar(), getSurfaceFrame(), getControlsContainer());
+		fullScreen = new FullScreenHelper(getSupportActionBar(), getVideoMainFrame());
 		fullScreen.enableOnClickToggle(false);
-		getSurfaceFrame().setOnClickListener(new View.OnClickListener() {
+		getVideoMainFrame().setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				fullScreen.toggle();
@@ -185,6 +205,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		surfaceHolder.setKeepScreenOn(true);
 		final IVLCVout vlcVout = getMediaPlayer().getVLCVout();
 		vlcVout.setVideoView(getSurface());
+		if (mSubtitlesSurface != null)
+			vlcVout.setSubtitlesView(mSubtitlesSurface);
 		vlcVout.attachViews(this);
 		getMediaPlayer().setEventListener(this);
 	}
@@ -194,13 +216,16 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	}
 
 	private FrameLayout getSurfaceFrame() {
-		return (FrameLayout) findViewById(R.id.layout_content);
+		return (FrameLayout) findViewById(R.id.video_surface_frame);
+	}
+
+	private FrameLayout getVideoMainFrame() {
+		return (FrameLayout) findViewById(R.id.video_main_frame);
 	}
 
 	private void setUpVideoControls() {
 		if (!areVideoControlsAvailable()) {
 			videoControls = new MediaControls(this);
-
 			videoControls.setMediaPlayer(this);
 			videoControls.setAnchorView(getControlsContainer());
 		}
@@ -226,7 +251,6 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
 	private void setUpVideoPlayback() {
 		if (videoService.isVideoStarted()) {
-			showVideo();
 			showThenAutoHideControls();
 		} else {
 			videoService.startVideo(getVideoShare(), getVideoFile());
@@ -238,13 +262,12 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		if (!isFinishing()) {
 			fullScreen.show();
 			fullScreen.delayedHide();
-			videoControls.showAnimated();
-			videoControls.hideControlsDelayed();
+			videoControls.show();
 		}
 	}
 
-	private void showVideo() {
-		ViewDirector.of(this, R.id.animator).show(R.id.layout_content);
+	private ProgressBar getProgressBar() {
+		return (ProgressBar) findViewById(android.R.id.progress);
 	}
 
 	private ServerShare getVideoShare() {
@@ -271,6 +294,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		}
 	};
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	@Override
 	public void onNewVideoLayout(IVLCVout vout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
 		mVideoWidth = width;
@@ -372,12 +396,17 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		lp.width  = (int) Math.ceil(dw * mVideoWidth / mVideoVisibleWidth);
 		lp.height = (int) Math.ceil(dh * mVideoHeight / mVideoVisibleHeight);
 		getSurface().setLayoutParams(lp);
+		if (mSubtitlesSurface != null)
+			mSubtitlesSurface.setLayoutParams(lp);
+
 		// set frame size (crop if necessary)
 		lp = getSurfaceFrame().getLayoutParams();
 		lp.width = (int) Math.floor(dw);
 		lp.height = (int) Math.floor(dh);
 		getSurfaceFrame().setLayoutParams(lp);
 		getSurface().invalidate();
+		if (mSubtitlesSurface != null)
+			mSubtitlesSurface.invalidate();
 	}
 
 	private void changeMediaPlayerLayout(int displayW, int displayH) {
@@ -482,7 +511,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
 	@Override
 	public int getBufferPercentage() {
-		return 0;
+		return (int) bufferPercent;
 	}
 
 	@Override
@@ -495,9 +524,10 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
 		switch(event.type) {
 			case MediaPlayer.Event.MediaChanged:
-				showVideo();
+				getVideoMainFrame().setVisibility(View.VISIBLE);
 				break;
 			case MediaPlayer.Event.Playing:
+				getProgressBar().setVisibility(View.INVISIBLE);
 				showThenAutoHideControls();
 				break;
 			case MediaPlayer.Event.Paused:
@@ -507,11 +537,10 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 				finish();
 				break;
 			case MediaPlayer.Event.Buffering:
-				// Log.d("BUFFERING", ""+event.getBuffering());
-				// TODO Use this and show buffering to users
+				bufferPercent = event.getBuffering();
 				break;
 			case MediaPlayer.Event.EncounteredError:
-				// TODO Handle errors encountered if any
+				Toast.makeText(this, R.string.message_error_video, Toast.LENGTH_SHORT).show();
 				break;
 		}
 

@@ -17,44 +17,57 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/animator"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateFirstView="false"
-    android:inAnimation="@android:anim/fade_in"
-    android:outAnimation="@android:anim/fade_out">
-
-    <ProgressBar
-        android:id="@android:id/progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+    android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/layout_content"
+        android:id="@+id/video_main_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/background_dark"
+        android:keepScreenOn="true"
+        android:visibility="invisible">
 
-        <SurfaceView
-            android:id="@+id/surface"
+        <FrameLayout
+            android:id="@+id/video_surface_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:fitsSystemWindows="false" />
+            android:foregroundGravity="clip_horizontal|clip_vertical">
+
+            <SurfaceView
+                android:id="@+id/surface"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:fitsSystemWindows="false"/>
+
+        </FrameLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true">
 
+            <ViewStub
+                android:id="@+id/subtitles_stub"
+                android:layout_width="1dp"
+                android:layout_height="1dp"
+                android:layout="@layout/subtitles_surface"/>
+
             <View
                 android:id="@+id/container_controls"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"/>
 
         </FrameLayout>
-
     </FrameLayout>
 
-</ViewAnimator>
+    <ProgressBar
+        android:id="@android:id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+</FrameLayout>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2014 Amahi
+  ~
+  ~ This file is part of Amahi.
+  ~
+  ~ Amahi is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Amahi is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+  -->
+
+<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/animator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out">
+
+    <ProgressBar
+        android:id="@android:id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/layout_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <GridView
+                android:id="@android:id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:choiceMode="singleChoice"
+                android:clipToPadding="false"
+                android:columnWidth="157dp"
+                android:divider="@null"
+                android:dividerHeight="4dp"
+                android:drawSelectorOnTop="true"
+                android:horizontalSpacing="8dp"
+                android:numColumns="auto_fit"
+                android:paddingBottom="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:verticalSpacing="8dp" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <TextView
+            android:id="@+id/none_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/message_no_search_result"
+            android:textSize="@dimen/text_large"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@android:id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/message_no_files"
+                android:textSize="@dimen/text_large"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/message_create_and_try_again"
+                android:textSize="@dimen/text_small" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/message_connection_error"
+            android:textSize="@dimen/text_large"
+            android:textStyle="bold" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/message_tap_to_retry"
+            android:textSize="@dimen/text_small" />
+
+    </LinearLayout>
+
+</ViewAnimator>

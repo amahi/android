@@ -1,24 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2014 Amahi
-  ~
-  ~ This file is part of Amahi.
-  ~
-  ~ Amahi is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ Amahi is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
--->
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.amahi.anywhere"
-    android:installLocation="auto">
+    package="org.amahi.anywhere.amahitv">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
@@ -33,9 +15,17 @@
 
     <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
     <application
         android:name=".AmahiApplication"
         android:allowBackup="false"
+        android:banner="@drawable/ic_launcher"
         android:icon="@drawable/ic_launcher"
         android:label="@string/application_name"
         android:resizeableActivity="true"
@@ -44,7 +34,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
 
             <meta-data
@@ -121,6 +111,9 @@
         <activity
             android:name=".activity.WebViewActivity"
             android:label="@string/title_version_settings" />
+        <activity android:name=".activity.WebActivity" />
+        <activity android:name=".activity.MainActivity" android:theme="@style/Theme.Leanback.Browse"/>
+        <activity android:name=".activity.IntroActivity" android:theme="@style/Theme.Leanback.Onboarding"/>
     </application>
 
 </manifest>

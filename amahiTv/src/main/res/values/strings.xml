@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2014 Amahi
+  ~
+  ~ This file is part of Amahi.
+  ~
+  ~ Amahi is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Amahi is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+    <string name="application_name" translatable="false">Amahi</string>
+
+    <string name="title_apps">Apps</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_shares">Shares</string>
+
+    <string name="button_search_application">Search Google Play</string>
+    <string name="button_sign_in">Sign in</string>
+
+    <string name="hint_password">Password</string>
+    <string name="hint_username">Username</string>
+
+    <string name="menu_back">Back</string>
+    <string name="menu_forward">Forward</string>
+    <string name="menu_navigation_close">Close navigation</string>
+    <string name="menu_navigation_open">Open navigation</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_sort">Sort</string>
+    <string name="menu_search">Search</string>
+
+    <string name="message_empty_apps">No Apps</string>
+    <string name="message_empty_files">No Files</string>
+    <string name="message_empty_shares">No Shares</string>
+
+    <string name="message_error_account_exists">Account already exists.</string>
+    <string name="message_error_search_application">We haven’t found any supported apps for this file.</string>
+    <string name="message_error_authentication">The username or password are not correct. Please try again. <a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
+    <string name="message_error_authentication_connection">Connection error. Check your settings and try again.</string>
+    <string name="message_error_authentication_field_empty">Username or Password field cannot be left empty</string>
+    <string name="message_error_connection">Connection Error</string>
+    <string name="message_tap_to_retry">Tap to retry</string>
+
+    <string name="message_notice_check_settings">Check your settings and try again</string>
+    <string name="message_notice_create_some">Create some and try again</string>
+
+    <string name="message_progress_file_downloading">Downloading file…</string>
+    <string name="message_no_files">No Files</string>
+    <string name="message_create_and_try_again">Create some and try again</string>
+    <string name="message_connection_error">Connection Error</string>
+
+    <string name="share_subject">Check out my Amahi home server!</string>
+    <string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
+    <string name="title_version_settings">Amahi for Android</string>
+    <string name="message_no_search_result">No search results found.</string>
+    <string name="application_not_found">No Handler Application Found</string>
+    <string name="message_logout">Logged out successfully</string>
+    <string name="share_screen_title">Share Using</string>
+    <string name="share_permission_granted">Storage permission has been enabled please reshare to download.</string>
+    <string name="share_permission_denied">You have denied the permissions for sharing. Enable permissions to continue.</string>
+
+    <string name="label_previous">Previous</string>
+    <string name="label_next">Next</string>
+    <string name="label_play">Play</string>
+    <string name="label_pause">Pause</string>
+    <string name="pref_previously_started">Previously started</string>
+</resources>

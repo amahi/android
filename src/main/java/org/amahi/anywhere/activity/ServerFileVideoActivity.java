@@ -229,6 +229,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 			videoControls.setMediaPlayer(this);
 			videoControls.setAnchorView(getControlsContainer());
 		}
+
 	}
 
 	private boolean areVideoControlsAvailable() {

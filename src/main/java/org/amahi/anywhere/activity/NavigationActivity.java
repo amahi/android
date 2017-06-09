@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.activity;
 
+import android.app.UiModeManager;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -26,9 +27,13 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -40,12 +45,19 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.bus.SharesSelectedEvent;
+import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.ServerAppsFragment;
+import org.amahi.anywhere.fragment.ServerSharesFragment;
 import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -56,7 +68,10 @@ import javax.inject.Inject;
  * The navigation itself is done via {@link org.amahi.anywhere.fragment.NavigationFragment},
  * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
-public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener
+public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener,
+		ServerAppsFragment.passAppsEvent,
+		ServerSharesFragment.passShareEvent,
+		NavigationFragment.passServerEvent
 {
 	private static final class State
 	{
@@ -77,6 +92,25 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_navigation);
+
+		if(isATV()){
+			Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
+			if (isFirstRun) {
+				startActivity(new Intent(NavigationActivity.this, IntroActivity.class));
+				getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit().putBoolean("isFirstRun", false).apply();
+			}
+
+			FrameLayout containerContent = (FrameLayout)findViewById(R.id.container_content);
+			FrameLayout containerNavigation = (FrameLayout)findViewById(R.id.container_navigation);
+			RelativeLayout tvLoading = (RelativeLayout)findViewById(R.id.tv_loading);
+			containerContent.setVisibility(View.INVISIBLE);
+			containerNavigation.setVisibility(View.INVISIBLE);
+			tvLoading.setVisibility(View.VISIBLE);
+			getSupportActionBar().hide();
+			setUpNavigationFragment();
+			Fragments.Operator.at(this).replace(buildAppsFragment(), R.id.container_apps_dummy);
+			setUpShares();
+		}
 
 		setUpInjections();
 
@@ -104,7 +138,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 			setUpNavigationDrawer();
 		}
 
-		setUpNavigationFragment();
+		if(!isATV())setUpNavigationFragment();
 
 		if (isNavigationDrawerAvailable() && isNavigationDrawerRequired(state)) {
 			showNavigationDrawer();
@@ -191,6 +225,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 	}
 
 	private void showNavigationDrawer() {
+		if(!isATV())
 		getDrawer().openDrawer(findViewById(R.id.container_navigation));
 	}
 
@@ -333,5 +368,50 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	protected boolean isATV() {
+		UiModeManager uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
+		return (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION);
+	}
+
+	@Override
+	public void passShare(List<ServerShare> serverShares) {
+		if(isATV()){
+
+			Intent tvIntent = new Intent(this,MainTVActivity.class);
+
+
+			if(serverApps!=null){
+				ArrayList<ServerApp> serverAppsArrayList = new ArrayList<>(serverApps);
+				tvIntent.putParcelableArrayListExtra("INTENT_APPS",serverAppsArrayList);
+			}
+
+			if(serverShares!=null) {
+				ArrayList<ServerShare> serverShareArrayList = new ArrayList<>(serverShares);
+				tvIntent.putParcelableArrayListExtra("INTENT_SHARES",serverShareArrayList);
+			}
+
+			if(servers!=null){
+				ArrayList<Server> serverArrayList = new ArrayList<>(servers);
+				tvIntent.putParcelableArrayListExtra("INTENT_SERVERS",serverArrayList);
+			}
+			startActivity(tvIntent);
+		}
+	}
+
+	List<ServerApp> serverApps;
+	List<Server> servers;
+
+	@Override
+	public void passApps(List<ServerApp> serverApps) {
+		if(isATV())
+		this.serverApps = serverApps;
+	}
+
+	@Override
+	public void passServer(List<Server> serverList) {
+		if(isATV())
+		servers = serverList;
 	}
 }

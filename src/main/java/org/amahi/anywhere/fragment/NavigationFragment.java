@@ -26,6 +26,7 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -87,6 +89,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		public static final String SERVERS = "servers";
 	}
 
+	public interface passServerEvent{
+		public void passServer(List<Server> serverList);
+	}
+
+	private passServerEvent passServerEventListener;
 	@Inject
 	AmahiClient amahiClient;
 
@@ -275,12 +282,21 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		amahiClient.getServers(authenticationToken);
 	}
 
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		try {
+			passServerEventListener = (passServerEvent)context;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(context.toString() + " must implement passServerEventListener");
+		}
+	}
+
 	@Subscribe
 	public void onServersLoaded(ServersLoadedEvent event) {
 		setUpServersContent(event.getServers());
-
+		passServerEventListener.passServer(event.getServers());
 		setUpNavigation();
-
 		showContent();
 	}
 

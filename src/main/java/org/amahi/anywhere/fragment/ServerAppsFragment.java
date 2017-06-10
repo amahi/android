@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -61,6 +62,10 @@ public class ServerAppsFragment extends Fragment
 		public static final String APPS = "apps";
 	}
 
+	public interface passAppsEvent{
+		public void passApps(List<ServerApp> serverApps);
+	}
+
 	private ServerAppsAdapter mServerAppsAdapter;
 
 	private RecyclerView mRecyclerView;
@@ -69,6 +74,7 @@ public class ServerAppsFragment extends Fragment
 
 	private LinearLayout mErrorLinearLayout;
 
+	private passAppsEvent passAppsEventListener;
 	@Inject
 	ServerClient serverClient;
 
@@ -156,6 +162,15 @@ public class ServerAppsFragment extends Fragment
 			serverClient.getApps();
 		}
 	}
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		try {
+			passAppsEventListener = (passAppsEvent) context;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(context.toString() + " must implement passAppsEventListener");
+		}
+	}
 
 	@Subscribe
 	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
@@ -165,7 +180,7 @@ public class ServerAppsFragment extends Fragment
 	@Subscribe
 	public void onAppsLoaded(ServerAppsLoadedEvent event) {
 		setUpAppsContent(event.getServerApps());
-
+		passAppsEventListener.passApps(event.getServerApps());
 		showAppsContent();
 	}
 

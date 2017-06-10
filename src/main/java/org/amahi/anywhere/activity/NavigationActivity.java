@@ -384,17 +384,17 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
 			if(serverApps!=null){
 				ArrayList<ServerApp> serverAppsArrayList = new ArrayList<>(serverApps);
-				tvIntent.putParcelableArrayListExtra("INTENT_APPS",serverAppsArrayList);
+				tvIntent.putParcelableArrayListExtra(getString(R.string.intent_apps),serverAppsArrayList);
 			}
 
 			if(serverShares!=null) {
 				ArrayList<ServerShare> serverShareArrayList = new ArrayList<>(serverShares);
-				tvIntent.putParcelableArrayListExtra("INTENT_SHARES",serverShareArrayList);
+				tvIntent.putParcelableArrayListExtra(getString(R.string.intent_shares),serverShareArrayList);
 			}
 
 			if(servers!=null){
 				ArrayList<Server> serverArrayList = new ArrayList<>(servers);
-				tvIntent.putParcelableArrayListExtra("INTENT_SERVERS",serverArrayList);
+				tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers),serverArrayList);
 			}
 			startActivity(tvIntent);
 		}

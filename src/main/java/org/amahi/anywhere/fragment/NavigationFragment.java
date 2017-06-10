@@ -90,10 +90,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	public interface passServerEvent{
-		public void passServer(List<Server> serverList);
+		void passServer(List<Server> serverList);
 	}
 
 	private passServerEvent passServerEventListener;
+
 	@Inject
 	AmahiClient amahiClient;
 
@@ -295,7 +296,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	@Subscribe
 	public void onServersLoaded(ServersLoadedEvent event) {
 		setUpServersContent(event.getServers());
+
+		//FRAGMENT CALLBACK
 		passServerEventListener.passServer(event.getServers());
+
 		setUpNavigation();
 		showContent();
 	}

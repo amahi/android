@@ -14,13 +14,21 @@ public class GridItemPresenter extends Presenter {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         TextView view = new TextView(parent.getContext());
+
         view.setLayoutParams(new ViewGroup.LayoutParams(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT));
+
         view.setFocusable(true);
+
         view.setFocusableInTouchMode(true);
+
         view.setBackgroundColor(Color.DKGRAY);
+
         view.setTextColor(Color.WHITE);
+
         view.setTextSize(20);
+
         view.setGravity(Gravity.CENTER);
+
         return new ViewHolder(view);
     }
 

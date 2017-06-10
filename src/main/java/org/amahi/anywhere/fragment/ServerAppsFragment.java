@@ -63,7 +63,7 @@ public class ServerAppsFragment extends Fragment
 	}
 
 	public interface passAppsEvent{
-		public void passApps(List<ServerApp> serverApps);
+		void passApps(List<ServerApp> serverApps);
 	}
 
 	private ServerAppsAdapter mServerAppsAdapter;
@@ -162,6 +162,7 @@ public class ServerAppsFragment extends Fragment
 			serverClient.getApps();
 		}
 	}
+
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
@@ -180,7 +181,10 @@ public class ServerAppsFragment extends Fragment
 	@Subscribe
 	public void onAppsLoaded(ServerAppsLoadedEvent event) {
 		setUpAppsContent(event.getServerApps());
+
+		//FRAGMENT CALLBACK
 		passAppsEventListener.passApps(event.getServerApps());
+
 		showAppsContent();
 	}
 

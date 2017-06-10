@@ -55,7 +55,7 @@ import javax.inject.Inject;
 public class ServerSharesFragment extends Fragment
 {
 	public interface passShareEvent{
-		public void passShare(List<ServerShare> serverShares);
+		void passShare(List<ServerShare> serverShares);
 	}
 
 	private static final class State

@@ -32,7 +32,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -50,6 +52,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.VideoSwipeGestures;
 import org.amahi.anywhere.view.MediaControls;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.Media;
@@ -112,6 +115,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
 		setUpFullScreen();
 
+		setUpGestureListener();
+
 		setUpVideoService();
 	}
 
@@ -156,6 +161,10 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 			}
 		});
 		fullScreen.init();
+	}
+
+	private void setUpGestureListener() {
+		getVideoMainFrame().setOnTouchListener(new VideoSwipeGestures(this));
 	}
 
 	private MediaPlayer getMediaPlayer() {

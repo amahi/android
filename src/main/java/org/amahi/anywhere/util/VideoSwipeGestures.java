@@ -19,252 +19,160 @@
 package org.amahi.anywhere.util;
 
 import android.app.Activity;
-import android.media.AudioManager;
-import android.os.Handler;
-import android.support.v4.view.MotionEventCompat;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.WindowManager;
 
 import org.amahi.anywhere.view.PercentageView;
 import org.amahi.anywhere.view.SeekView;
 
-import static android.view.MotionEvent.INVALID_POINTER_ID;
-
 /**
  * SwipeGestures Helper class.
- * Implements touch listener to control the actions of Swipe Gestures.
+ * Implements Gesture Detector to control the actions of Swipe Gestures.
  */
 
 public class VideoSwipeGestures implements View.OnTouchListener {
 
-    private int mActivePointerId = INVALID_POINTER_ID;
-    private AudioManager audio;
+    private Activity activity;
     private PercentageView percentageView;
     private SeekView seekView;
-    private int currentVolume;
-    private int numberOfTaps = 0;
-    private long lastTapTimeMs = 0;
-    private long touchDownMs = 0;
-    private double volper;
-    private double per;
-    private float brightness;
-    private float seekDistance = 0;
-    private float distanceCovered = 0;
-    private boolean checkBrightness = true;
-    private boolean checkVolume = true;
-    private boolean checkSeek = true;
-    private String onHorizontal;
-    private String onVertical;
-    private String onCircular;
-    private Activity activity;
-    public static String color = "#FB5B0A";
 
-    public enum Orientation {
-        HORIZONTAL, VERTICAL, CIRCULAR
+
+    private enum Direction {
+        LEFT, RIGHT, UP, DOWN, NONE
+    }
+
+    private GestureDetector gestureDetector;
+
+    public VideoSwipeGestures(Activity activity) {
+        this.activity = activity;
+        this.gestureDetector = new GestureDetector(activity, new CustomGestureDetect());
+        this.gestureDetector.setIsLongpressEnabled(false);
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent ev) {
-        final int action = MotionEventCompat.getActionMasked(ev);
+    public boolean onTouch(View v, MotionEvent event) {
+        if (gestureDetector != null) {
+            gestureDetector.onTouchEvent(event);
+        }
+        return false;
+    }
 
-        switch (action) {
-            case MotionEvent.ACTION_DOWN: {
-                seekDistance = 0;
-                distanceCovered = 0;
-                touchDownMs = System.currentTimeMillis();
-                break;
-            }
-            case MotionEvent.ACTION_MOVE: {
-                final float x = ev.getX();
-                final float y = ev.getY();
-                distanceCovered = getDistance(x, y, ev);
-                try {
-                    changeBrightness(ev.getHistoricalX(0, 0), ev.getHistoricalY(0, 0), x, y, distanceCovered, "Y");
-                    changeSeek(ev.getHistoricalX(0, 0), ev.getHistoricalY(0, 0), x, y, distanceCovered, "X");
-                } catch (IllegalArgumentException | IndexOutOfBoundsException ignored) {
+    private class CustomGestureDetect implements GestureDetector.OnGestureListener {
 
-                }
+        private Direction direction = Direction.NONE;
+        private Direction xPosition;
 
-                break;
-            }
+        @Override
+        public boolean onDown(MotionEvent e) {
+            direction = Direction.NONE;
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int width = displayMetrics.widthPixels;
+            if (e.getX() >= width / 2)
+                xPosition = Direction.RIGHT;
+            else
+                xPosition = Direction.LEFT;
+            return true;
+        }
 
-            case MotionEvent.ACTION_UP: {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (percentageView.isVisible())
-                            percentageView.hide();
-                        if (seekView.isVisible())
-                            seekView.hide();
+        @Override
+        public void onShowPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        /* Check if this is the first ACTION_MOVE event in the current touch event
+        * If true then set the initial direction of the movement
+        * */
+            try {
+                if (direction == Direction.NONE) {
+                    float diffY = e2.getY() - e1.getY();
+                    float diffX = e2.getX() - e1.getX();
+                    if (Math.abs(diffX) > Math.abs(diffY)) {
+                        if (diffX > 0) {
+                            direction = Direction.RIGHT;
+                        } else {
+                            direction = Direction.LEFT;
+                        }
+
+                    } else {
+                        if (diffY > 0) {
+                            direction = Direction.DOWN;
+                        } else {
+                            direction = Direction.UP;
+                        }
                     }
-                }, 2000);
+                }
+            } catch (NullPointerException ignored) {
+                ignored.printStackTrace();
+            }
+            Log.e("ACTION_MOVE", String.format("(%f,%f) %s", distanceX, distanceY, direction.name()));
 
-                if ((System.currentTimeMillis() - touchDownMs) > ViewConfiguration.getTapTimeout()) {
-                    numberOfTaps = 0;
-                    lastTapTimeMs = 0;
+            switch (direction) {
+                case UP:
+                case DOWN:
+                    switch (xPosition) {
+                        case LEFT:
+                            Log.d("TOUCH", "UP_DOWN_LEFT");
+                            changeBrightness(distanceY);
+                            break;
+                        case RIGHT:
+                            Log.d("TOUCH", "UP_DOWN_RIGHT");
+                            changeBrightness(distanceY);
+                            break;
+                    }
                     break;
-                }
+                case LEFT:
+                case RIGHT:
 
-                if (numberOfTaps > 0 && (System.currentTimeMillis() - lastTapTimeMs) < ViewConfiguration.getDoubleTapTimeout()) {
-                    numberOfTaps += 1;
-                } else {
-                    numberOfTaps = 1;
-                }
 
-                lastTapTimeMs = System.currentTimeMillis();
-                mActivePointerId = INVALID_POINTER_ID;
-                break;
+                    break;
+                case NONE:
+                    break;
             }
-            case MotionEvent.ACTION_CANCEL: {
-                mActivePointerId = INVALID_POINTER_ID;
-                break;
-            }
-            case MotionEvent.ACTION_POINTER_UP: {
-
-                final int pointerIndex = MotionEventCompat.getActionIndex(ev);
-                final int pointerId = MotionEventCompat.getPointerId(ev, pointerIndex);
-
-                if (pointerId == mActivePointerId) {
-                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-                    mActivePointerId = MotionEventCompat.getPointerId(ev, newPointerIndex);
-                }
-                break;
-            }
+            return true;
         }
-        return true;
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return false;
+        }
+
     }
 
-    private float getDistance(float startX, float startY, MotionEvent ev) {
-        float distanceSum = 0;
-        final int historySize = ev.getHistorySize();
-        for (int h = 0; h < historySize; h++) {
-            float hx = ev.getHistoricalX(0, h);
-            float hy = ev.getHistoricalY(0, h);
-            float dx = (hx - startX);
-            float dy = (hy - startY);
-            distanceSum += Math.sqrt(dx * dx + dy * dy);
-            startX = hx;
-            startY = hy;
-        }
-        float dx = (ev.getX(0) - startX);
-        float dy = (ev.getY(0) - startY);
-        distanceSum += Math.sqrt(dx * dx + dy * dy);
-        return distanceSum;
-    }
 
-    private void changeVolume(float X, float Y, float x, float y, float distance, String type) {
-        percentageView.setTitle("Volume");
-        seekView.hide();
-        if (type.equals("Y") && x == X) {
-            if (y < Y) {
-                distance = distance / 100;
-                commonVolume(distance);
-            } else {
-                distance = distance / 150;
-                commonVolume(-distance);
-            }
-        } else if (type.equals("X") && y == Y) {
-            if (x > X) {
-                distance = distance / 200;
-                commonVolume(distance);
-            } else {
-                distance = distance / 250;
-                commonVolume(-distance);
-            }
-        }
-    }
-
-    private void commonVolume(float distance) {
-        currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
-        per = (double) currentVolume / (double) maxVolume;
-        if (per + distance <= 1 && per + distance >= 0) {
-            percentageView.show();
-            if (Math.abs(distance) > 0.05) {
-                percentageView.setProgress((int) ((per + distance) * 100));
-                percentageView.setProgressText((int) ((per + distance) * 100) + "%");
-                volper = (per + (double) distance);
-                audio.setStreamVolume(AudioManager.STREAM_MUSIC, (int) (volper * 15), 0);
-            }
-        }
-    }
-
-    private void changeBrightness(float X, float Y, float x, float y, float distance, String type) {
-        percentageView.setTitle("Brightness");
-        seekView.hide();
-        if (type.equals("Y") && x == X) {
-            distance = distance / 270;
-            if (y < Y) {
-                commonBrightness(distance);
-            } else {
-                commonBrightness(-distance);
-            }
-        } else if (type.equals("X") && y == Y) {
-            distance = distance / 160;
-            if (x > X) {
-                commonBrightness(distance);
-            } else {
-                commonBrightness(-distance);
-            }
-        }
-    }
-
-    private void commonBrightness(float distance) {
+    public void changeBrightness(float distance) {
         WindowManager.LayoutParams layout = activity.getWindow().getAttributes();
-        if (+distance <= 1
-                && activity.getWindow().getAttributes().screenBrightness + distance >= 0) {
-            percentageView.show();
-            if ((int) ((activity.getWindow().getAttributes().screenBrightness + distance) * 100) > 100) {
-                percentageView.setProgress(100);
-                percentageView.setProgressText("100");
-            } else if ((int) ((activity.getWindow().getAttributes().screenBrightness + distance) * 100) < 0) {
-                percentageView.setProgress(0);
-                percentageView.setProgressText("0");
+        layout.screenBrightness += distance;
+        Log.d("Brightness", String.valueOf(layout.screenBrightness));
+        if (distance <= 1 && layout.screenBrightness >= 0) {
+            if ((int) (layout.screenBrightness * 100) > 100) {
+//                customView.setProgress(100);
+//                customView.setProgressText("100");
+            } else if ((int) (layout.screenBrightness * 100) < 0) {
+//                customView.setProgress(0);
+//                customView.setProgressText("0");
             } else {
-                percentageView.setProgress((int) ((activity.getWindow().getAttributes().screenBrightness + distance) * 100));
-                percentageView.setProgressText(Integer.valueOf((int) ((activity.getWindow().getAttributes().screenBrightness + distance) * 100)).toString() + "%");
+//                customView.setProgress((int) ((activity.getWindow().getAttributes().screenBrightness + distance) * 100));
+//                customView.setProgressText(Integer.valueOf((int) ((activity.getWindow().getAttributes().screenBrightness + distance) * 100)).toString() + "%");
             }
-            layout.screenBrightness = activity.getWindow().getAttributes().screenBrightness + distance;
             activity.getWindow().setAttributes(layout);
         }
     }
 
-    private void changeSeek(float X, float Y, float x, float y, float distance, String type) {
-        if (type.equals("X") && y == Y) {
-            distance = distance / 200;
-            if (x > X) {
-                seekCommon(distance);
-            } else {
-                seekCommon(-distance);
-            }
-        }
-    }
-
-    private void seekCommon(float distance) {
-        seekDistance += distance * 60000;
-        seekView.show();
-//        if (mediaPlayer != null) {
-////            Log.e("after", mediaPlayer.getCurrentPosition() + (int) (distance * 60000) + "");
-////            Log.e("seek distance", (int) (seekDistance) + "");
-//            if (mediaPlayer.getCurrentPosition() + (int) (distance * 60000) > 0 && mediaPlayer.getCurrentPosition() + (int) (distance * 60000) < mediaPlayer.getDuration() + 10) {
-//                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + (int) (distance * 60000));
-//                if (seekDistance > 0)
-//                    seekView.setText("+" + Math.abs((int) (seekDistance / 60000)) + ":" + String.valueOf(Math.abs((int) ((seekDistance) % 60000))).substring(0, 2) + "(" + (int) ((mediaPlayer.getCurrentPosition() + (int) (distance * 60000)) / 60000) + ":" + String.valueOf((int) ((mediaPlayer.getCurrentPosition() + (int) (distance * 60000)) % 60000)).substring(0, 2) + ")");
-//                else
-//                    seekView.setText("-" + Math.abs((int) (seekDistance / 60000)) + ":" + String.valueOf(Math.abs((int) ((seekDistance) % 60000))).substring(0, 2) + "(" + (int) ((mediaPlayer.getCurrentPosition() + (int) (distance * 60000)) / 60000) + ":" + String.valueOf((int) ((mediaPlayer.getCurrentPosition() + (int) (distance * 60000)) % 60000)).substring(0, 2) + ")");
-//            }
-//        } else if (videoView != null) {
-////            Log.e("after", videoView.getCurrentPosition() + (int) (distance * 60000) + "");
-////            Log.e("seek distance", (int) (seekDistance) + "");
-//            if (videoView.getCurrentPosition() + (int) (distance * 60000) > 0 && videoView.getCurrentPosition() + (int) (distance * 60000) < videoView.getDuration() + 10) {
-//                videoView.seekTo(videoView.getCurrentPosition() + (int) (distance * 60000));
-//                if (seekDistance > 0)
-//                    seekView.setText("+" + Math.abs((int) (seekDistance / 60000)) + ":" + String.valueOf(Math.abs((int) ((seekDistance) % 60000))).substring(0, 2) + "(" + (int) ((videoView.getCurrentPosition() + (int) (distance * 60000)) / 60000) + ":" + String.valueOf((int) ((videoView.getCurrentPosition() + (int) (distance * 60000)) % 60000)).substring(0, 2) + ")");
-//                else
-//                    seekView.setText("-" + Math.abs((int) (seekDistance / 60000)) + ":" + String.valueOf(Math.abs((int) ((seekDistance) % 60000))).substring(0, 2) + "(" + (int) ((videoView.getCurrentPosition() + (int) (distance * 60000)) / 60000) + ":" + String.valueOf((int) ((videoView.getCurrentPosition() + (int) (distance * 60000)) % 60000)).substring(0, 2) + ")");
-//
-//            }
-    }
 }

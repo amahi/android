@@ -17,6 +17,7 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.amahi.anywhere"
     android:installLocation="auto">
 
@@ -43,11 +44,11 @@
     <application
         android:name=".AmahiApplication"
         android:allowBackup="false"
-        android:banner="@drawable/ic_banner"
         android:icon="@drawable/ic_launcher"
         android:label="@string/application_name"
         android:resizeableActivity="true"
-        android:theme="@style/Theme.Amahi">
+        android:theme="@style/Theme.Amahi"
+        tools:ignore="MissingTvBanner">
         <activity android:name=".activity.NavigationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -136,13 +137,16 @@
         <activity
             android:name=".activity.WebViewActivity"
             android:label="@string/title_version_settings" />
+
         <activity
-            android:name=".activity.MainTVActivity"
+            android:name=".tv.activity.MainTVActivity"
             android:theme="@style/Theme.Leanback.Browse"/>
 
-        <activity android:name=".activity.IntroActivity"
+        <activity android:name=".tv.activity.IntroActivity"
             android:theme="@style/Theme.Leanback.Onboarding"/>
 
+        <activity android:name=".tv.activity.SettingsActivity"
+            android:theme="@style/Theme.Leanback.GuidedStep"/>
     </application>
 
 </manifest>

@@ -1,4 +1,23 @@
-package org.amahi.anywhere.fragment;
+/*
+ * Copyright (c) 2014 Amahi
+ *
+ * This file is part of Amahi.
+ *
+ * Amahi is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Amahi is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+ */
+
+package org.amahi.anywhere.tv.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,9 +28,9 @@ import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.presenter.CardPresenter;
-import org.amahi.anywhere.presenter.GridItemPresenter;
-import org.amahi.anywhere.presenter.SettingsItemPresenter;
+import org.amahi.anywhere.tv.presenter.CardPresenter;
+import org.amahi.anywhere.tv.presenter.GridItemPresenter;
+import org.amahi.anywhere.tv.presenter.SettingsItemPresenter;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;

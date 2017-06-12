@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
     <fragment
         android:id="@+id/fragment_intro"
-        android:name="org.amahi.anywhere.fragment.IntroFragment"
+        android:name="org.amahi.anywhere.tv.fragment.IntroFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </FrameLayout>

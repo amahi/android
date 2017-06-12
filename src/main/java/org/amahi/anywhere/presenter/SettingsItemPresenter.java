@@ -7,15 +7,26 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class SettingsItemPresenter extends Presenter {
+
+    private static final int SETTINGS_ITEM_WIDTH = 400;
+    private static final int SETTINGS_ITEM_HEIGHT = 200;
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         TextView view = new TextView(parent.getContext());
-        view.setLayoutParams(new ViewGroup.LayoutParams(400,200));
+
+        view.setLayoutParams(new ViewGroup.LayoutParams(SETTINGS_ITEM_WIDTH,SETTINGS_ITEM_HEIGHT));
+
         view.setFocusable(true);
+
         view.setFocusableInTouchMode(true);
+
         view.setBackgroundColor(Color.DKGRAY);
+
         view.setTextColor(Color.WHITE);
+
         view.setGravity(Gravity.CENTER);
+
         return new ViewHolder(view);
     }
 

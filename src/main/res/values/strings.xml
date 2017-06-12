@@ -86,9 +86,26 @@
     <string name="row_apps">Apps</string>
     <string name="row_preferences">Preferences</string>
 
+    <!-- Strings related to SignOut Preference-->
     <string name="pref_title_sign_out">Sign out</string>
-    <string name="pref_title_connection">Connection</string>
+    <string name="pref_title_account">Account</string>
+    <string name="pref_sign_out_desc">Sign out from Amahi TV</string>
+    <string name="pref_action_not_defined">Action is not defined</string>
+
+    <!--Strings related to Theme Preference -->
     <string name="pref_title_select_theme">Select theme</string>
+    <string name="pref_title_theme">Theme</string>
+    <string name="pref_theme_desc">Select from Light or Dark</string>
+    <string name="pref_theme_detail_desc">Select the type of connection you want. You can set it as Amahi Light or Amahi Dark</string>
+    
+    <!--Strings related to Connection Preference -->
+    <string name="pref_title_connection">Connection</string>
+    <string name="pref_connection_detail">Select from Autodetect, Remote or LAN.</string>
+    <string name="pref_option_autodetect">Autodetect</string>
+    <string name="pref_option_lan">Local area network</string>
+    <string name="pref_option_remote">Remote</string>
+    <string name="pref_option_go_back">Go back</string>
+    <string name="pref_connection_desc">Select the type of connection you want. You can set it as Auto detect, remote or local area network.</string>
 
     <!--Introduction activity strings-->
     <string name="intro_desc_1">Presenting the all new Amahi TV.</string>

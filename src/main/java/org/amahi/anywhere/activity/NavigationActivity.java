@@ -27,13 +27,11 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -52,6 +50,8 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.activity.IntroActivity;
+import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;

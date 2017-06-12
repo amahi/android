@@ -298,7 +298,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpServersContent(event.getServers());
 
 		//FRAGMENT CALLBACK
-		passServerEventListener.passServer(event.getServers());
+		passServerEventListener.passServer(filterActiveServers(event.getServers()));
 
 		setUpNavigation();
 		showContent();

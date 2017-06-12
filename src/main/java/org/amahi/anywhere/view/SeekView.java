@@ -1,6 +1,5 @@
 package org.amahi.anywhere.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +15,9 @@ public class SeekView {
     private View view;
     private TextView textView;
 
-    public <T extends Activity> SeekView(ViewGroup viewGroup) {
+    public SeekView(ViewGroup viewGroup) {
         LayoutInflater inflater = (LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(R.layout.seek_view, viewGroup, false);
-        view.getBackground().setAlpha(100);
         view.requestLayout();
         textView = (TextView) view.findViewById(R.id.seek_value);
     }
@@ -30,5 +28,13 @@ public class SeekView {
 
     public void setText(String s) {
         textView.setText(s);
+    }
+
+    public void hide() {
+        view.setVisibility(View.GONE);
+    }
+
+    public void show() {
+        view.setVisibility(View.VISIBLE);
     }
 }

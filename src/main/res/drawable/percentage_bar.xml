@@ -3,12 +3,7 @@
 
     <item android:id="@android:id/background">
         <shape>
-            <gradient
-                android:angle="270"
-                android:centerColor="#ffffff"
-                android:centerY="1.0"
-                android:endColor="#ffffff"
-                android:startColor="#ffffff"/>
+            <solid android:color="@android:color/transparent"/>
         </shape>
     </item>
 
@@ -17,9 +12,7 @@
             android:clipOrientation="vertical"
             android:gravity="bottom">
             <shape>
-                <gradient
-                    android:angle="270"
-                    android:centerY="1.0"/>
+                <solid android:color="@android:color/white"/>
             </shape>
         </clip>
     </item>

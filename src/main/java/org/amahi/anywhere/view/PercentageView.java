@@ -37,8 +37,8 @@ import org.amahi.anywhere.R;
 import java.util.Locale;
 
 public class PercentageView {
-    static final int VOLUME = 1;
-    static final int BRIGHTNESS = 2;
+    public static final int VOLUME = 1;
+    public static final int BRIGHTNESS = 2;
 
     @IntDef({VOLUME, BRIGHTNESS})
     @interface TYPE {
@@ -47,12 +47,11 @@ public class PercentageView {
     private ViewHolder viewHolder;
     private View view;
 
-    public PercentageView(FrameLayout parentView, @TYPE int type) {
+    public PercentageView(FrameLayout parentView) {
         LayoutInflater inflater = (LayoutInflater) parentView.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(R.layout.percentage_view, parentView, false);
-        view.getBackground().setAlpha(100);
         view.requestLayout();
-        viewHolder = new ViewHolder(view, type);
+        viewHolder = new ViewHolder(view);
     }
 
     public View getView() {
@@ -63,25 +62,10 @@ public class PercentageView {
         private ProgressBar progressBar;
         private TextView valuePercent, valueName;
 
-        private int type;
-
-        ViewHolder(View itemView, @TYPE int type) {
+        ViewHolder(View itemView) {
             progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
             valueName = (TextView) itemView.findViewById(R.id.value_name);
             valuePercent = (TextView) itemView.findViewById(R.id.value_percent);
-            this.type = type;
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) itemView.getLayoutParams();
-            switch (type) {
-                case VOLUME:
-                    params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                    bind("Volume");
-                    break;
-                case BRIGHTNESS:
-                    params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    bind("Brightness");
-                    break;
-            }
-            itemView.setLayoutParams(params);
         }
 
         private void bind(String name) {
@@ -89,9 +73,32 @@ public class PercentageView {
         }
     }
 
+    public void setType(@TYPE int type) {
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.progressBar.getLayoutParams();
+        switch (type) {
+            case VOLUME:
+//                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                viewHolder.bind("Volume");
+                break;
+            case BRIGHTNESS:
+//                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                viewHolder.bind("Brightness");
+                break;
+        }
+//        viewHolder.progressBar.setLayoutParams(params);
+    }
+
     public void setProgress(int n) {
         viewHolder.progressBar.setProgress(n);
         viewHolder.valuePercent.setText(String.format(Locale.getDefault(), "%d %s", n, "%"));
+    }
+
+    public void hide() {
+        view.setVisibility(View.GONE);
+    }
+
+    public void show() {
+        view.setVisibility(View.VISIBLE);
     }
 }
 

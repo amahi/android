@@ -32,9 +32,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -68,7 +66,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	MediaController.MediaPlayerControl,
 	IVLCVout.OnNewVideoLayoutListener,
 	MediaPlayer.EventListener,
-	View.OnLayoutChangeListener {
+	View.OnLayoutChangeListener,
+    VideoSwipeGestures.SeekControl {
 
 	private static final boolean ENABLE_SUBTITLES = true;
 
@@ -164,10 +163,11 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	}
 
 	private void setUpGestureListener() {
-		getVideoMainFrame().setOnTouchListener(new VideoSwipeGestures(this));
+        FrameLayout viewGroup = (FrameLayout) findViewById(R.id.swipe_controls_frame);
+		getVideoMainFrame().setOnTouchListener(new VideoSwipeGestures(this, this, viewGroup));
 	}
 
-	private MediaPlayer getMediaPlayer() {
+    private MediaPlayer getMediaPlayer() {
 		assert videoService != null;
 		return videoService.getMediaPlayer();
 	}

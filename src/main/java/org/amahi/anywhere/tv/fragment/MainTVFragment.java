@@ -26,36 +26,57 @@ import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
+
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.tv.presenter.CardPresenter;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
+import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
+import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
+import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
+import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.presenter.GridItemPresenter;
 import org.amahi.anywhere.tv.presenter.SettingsItemPresenter;
-import org.amahi.anywhere.server.model.Server;
-import org.amahi.anywhere.server.model.ServerApp;
-import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.inject.Inject;
 
 public class MainTVFragment extends BrowseFragment {
 
-    private ArrayList<ServerApp> serverAppArrayList;
-    private ArrayList<ServerShare> serverShareArrayList;
-    private ArrayList<Server> serverArrayList;
+    @Inject
+    ServerClient serverClient;
+    List<ServerShare> serverShareList;
+    private ArrayList<ServerShare> serverShareArrayList = new ArrayList<>();
+    private ArrayList<Server> serverArrayList = new ArrayList<>();
+    private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
+    private ArrayObjectAdapter mRowsAdapter;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        serverAppArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_apps));
-
-        serverShareArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_shares));
-
-        serverArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
+        setUpInjections();
 
         setupUIElements();
 
-        loadRows(0);
+        loadRows();
+
+        loadShares();
+    }
+
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
     }
 
     private void setupUIElements() {
@@ -70,52 +91,131 @@ public class MainTVFragment extends BrowseFragment {
         setSearchAffordanceColor(Color.GREEN);
     }
 
-    private void loadRows(int index) {
-        ArrayObjectAdapter mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
+    private void loadRows() {
+        mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
+        addSettings(mRowsAdapter);
+        addSeparator(mRowsAdapter);
+    }
 
-        HeaderItem server = new HeaderItem(index, getString(R.string.row_servers));
+    private void loadShares() {
+        if (serverClient.isConnected()) {
+            serverClient.getShares();
+        }
+    }
 
-        HeaderItem shares = new HeaderItem(index, getString(R.string.row_shares));
+    @Subscribe
+    public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        serverClient.getShares();
+    }
 
-        HeaderItem apps = new HeaderItem(index, getString(R.string.row_apps));
+    @Subscribe
+    public void onSharesLoaded(ServerSharesLoadedEvent event) {
+        List<ServerShare> serverShareList = event.getServerShares();
+        this.serverShareList = serverShareList;
+        for (int i = 0; i < serverShareList.size(); i++) {
+            serverClient.getFiles(serverShareList.get(i));
+        }
+    }
 
-        HeaderItem settings = new HeaderItem(index,getString(R.string.row_preferences));
+    @Subscribe
+    public void onFilesLoaded(ServerFilesLoadedEvent event) {
+        List<ServerFile> serverFiles = sortFiles(event.getServerFiles());
+        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(new GridItemPresenter());
+        if (serverFiles.size() != 0) {
+            String shareName = serverFiles.get(0).getParentShare().getName();
+            for (int i = 0; i < serverFiles.size(); i++) {
+                gridRowAdapter.add(serverFiles.get(i).getName());
+            }
+            int i = 0;
 
-        GridItemPresenter mGridPresenter = new GridItemPresenter();
-
-        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
-
-        if(serverArrayList!=null)
-            for(int i=0;i<serverArrayList.size();i++) gridRowAdapter.add(serverArrayList.get(i).getName());
-
-        mRowsAdapter.add(new ListRow(server, gridRowAdapter));
-
+            for (i = 0; i < serverShareList.size(); i++) {
+                if (shareName.matches(serverShareList.get(i).getName())) {
+                    HeaderItem headerItem = new HeaderItem(shareName);
+                    mRowsAdapter.add(new ListRow(headerItem, gridRowAdapter));
+                    serverShareList.remove(i);
+                }
+            }
+        }
         setAdapter(mRowsAdapter);
+    }
 
-        gridRowAdapter = new ArrayObjectAdapter(mGridPresenter);
+    private void addSeparator(ArrayObjectAdapter adapter) {
+        HeaderItem separator = new HeaderItem("-------------------------");
+        adapter.add(new ListRow(separator, new ArrayObjectAdapter(new SettingsItemPresenter())));
+    }
 
-        if(serverShareArrayList!=null)
-            for(int i=0;i<serverShareArrayList.size();i++) gridRowAdapter.add(i,serverShareArrayList.get(i).getName());
+    private void addSettings(ArrayObjectAdapter adapter) {
+        ArrayObjectAdapter gridRowAdapter;
 
-        mRowsAdapter.add(new ListRow(shares, gridRowAdapter));
+        HeaderItem settings = new HeaderItem("Settings");
+        gridRowAdapter = new ArrayObjectAdapter(new SettingsItemPresenter(serverArrayList));
 
-        gridRowAdapter = new ArrayObjectAdapter(new CardPresenter());
-
-        if(serverAppArrayList!=null)
-            for(int i=0;i<serverAppArrayList.size();i++) gridRowAdapter.add(i,serverAppArrayList.get(i));
-
-        mRowsAdapter.add(new ListRow(apps,gridRowAdapter));
-
-        SettingsItemPresenter settingsItemPresenter = new SettingsItemPresenter();
-
-        gridRowAdapter = new ArrayObjectAdapter(settingsItemPresenter);
-
+        gridRowAdapter.add(getString(R.string.pref_title_server_select));
         gridRowAdapter.add(getString(R.string.pref_title_sign_out));
-
         gridRowAdapter.add(getString(R.string.pref_title_connection));
-
         gridRowAdapter.add(getString(R.string.pref_title_select_theme));
+        adapter.add(new ListRow(settings, gridRowAdapter));
+    }
 
-        mRowsAdapter.add(new ListRow(settings,gridRowAdapter));
+    private List<ServerFile> sortFiles(List<ServerFile> files) {
+        List<ServerFile> sortedFiles = new ArrayList<ServerFile>(files);
+
+        Collections.sort(sortedFiles, getFilesComparator());
+
+        return sortedFiles;
+    }
+
+    private Comparator<ServerFile> getFilesComparator() {
+        switch (filesSort) {
+            case NAME:
+                return new FileNameComparator();
+
+            case MODIFICATION_TIME:
+                return new FileModificationTimeComparator();
+
+            default:
+                return null;
+        }
+    }
+
+    @Subscribe
+    public void onSharesLoadFailed(ServerSharesLoadFailedEvent event) {
+        showSharesError();
+    }
+
+    private void showSharesError() {
+        Toast.makeText(getActivity(), getString(R.string.message_connection_error), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        BusProvider.getBus().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        BusProvider.getBus().unregister(this);
+    }
+
+    private enum FilesSort {
+        NAME, MODIFICATION_TIME
+    }
+
+    private static final class FileNameComparator implements Comparator<ServerFile> {
+        @Override
+        public int compare(ServerFile firstFile, ServerFile secondFile) {
+            return firstFile.getName().compareTo(secondFile.getName());
+        }
+    }
+
+    private static final class FileModificationTimeComparator implements Comparator<ServerFile> {
+        @Override
+        public int compare(ServerFile firstFile, ServerFile secondFile) {
+            return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
+        }
     }
 }

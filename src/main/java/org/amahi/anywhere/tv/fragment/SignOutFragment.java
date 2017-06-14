@@ -49,10 +49,13 @@ public class SignOutFragment extends GuidedStepFragment implements AccountManage
 
     private Context mContext;
 
-    public SignOutFragment(){}
+    public SignOutFragment() {
+    }
 
     @SuppressLint("ValidFragment")
-    public SignOutFragment(Context context){mContext = context;}
+    public SignOutFragment(Context context) {
+        mContext = context;
+    }
 
     @NonNull
     @Override
@@ -73,7 +76,7 @@ public class SignOutFragment extends GuidedStepFragment implements AccountManage
     }
 
     @Override
-    public void onCreateActions(@NonNull List actions, Bundle savedInstanceState) {
+    public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
 
         addAction(actions, ACTION_CONTINUE, getString(R.string.pref_title_sign_out), "");
 
@@ -83,7 +86,7 @@ public class SignOutFragment extends GuidedStepFragment implements AccountManage
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
 
-        switch ((int) action.getId()){
+        switch ((int) action.getId()) {
             case ACTION_CONTINUE:
                 tearDownAccount();
                 break;
@@ -98,7 +101,7 @@ public class SignOutFragment extends GuidedStepFragment implements AccountManage
         }
     }
 
-    private void addAction(List actions, long id, String title, String desc) {
+    private void addAction(List<GuidedAction> actions, long id, String title, String desc) {
         actions.add(new GuidedAction.Builder(mContext)
                 .id(id)
                 .title(title)

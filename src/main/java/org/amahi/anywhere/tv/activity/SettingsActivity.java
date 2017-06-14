@@ -27,6 +27,7 @@ import android.support.v17.leanback.app.GuidedStepFragment;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.tv.fragment.ConnectionFragment;
+import org.amahi.anywhere.tv.fragment.ServerSelectFragment;
 import org.amahi.anywhere.tv.fragment.SignOutFragment;
 import org.amahi.anywhere.tv.fragment.ThemeFragment;
 
@@ -37,16 +38,38 @@ public class SettingsActivity extends Activity {
 
         String settingsType = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 
-        if(savedInstanceState==null){
+        if (settingsType.matches(getString(R.string.pref_title_server_select)))
+            buildServerSettingsFragment();
 
-            if(settingsType.matches(getString(R.string.pref_title_sign_out)))
-                GuidedStepFragment.add(getFragmentManager(),new SignOutFragment(this));
+        if (settingsType.matches(getString(R.string.pref_title_sign_out)))
+            buildSignOutSettingsFragment();
 
-            if(settingsType.matches(getString(R.string.pref_title_connection)))
-                GuidedStepFragment.add(getFragmentManager(),new ConnectionFragment(this));
+        if (settingsType.matches(getString(R.string.pref_title_connection)))
+            buildConnectionSettingsFragment();
 
-            if(settingsType.matches(getString(R.string.pref_title_select_theme)))
-                GuidedStepFragment.add(getFragmentManager(),new ThemeFragment(this));
-        }
+        if (settingsType.matches(getString(R.string.pref_title_select_theme)))
+            buildSelectThemeSettingsFragment();
+    }
+
+    private void buildServerSettingsFragment() {
+        GuidedStepFragment.add(getFragmentManager(), new ServerSelectFragment(this));
+    }
+
+    private void buildSignOutSettingsFragment() {
+        GuidedStepFragment.add(getFragmentManager(), new SignOutFragment(this));
+    }
+
+    private void buildConnectionSettingsFragment() {
+        GuidedStepFragment.add(getFragmentManager(), new ConnectionFragment(this));
+    }
+
+    private void buildSelectThemeSettingsFragment() {
+        GuidedStepFragment.add(getFragmentManager(), new ThemeFragment(this));
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

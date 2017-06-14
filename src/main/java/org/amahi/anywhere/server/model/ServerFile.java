@@ -33,6 +33,7 @@ import java.util.Date;
 public class ServerFile implements Parcelable
 {
 	private ServerFile parentFile;
+	private ServerShare parentShare;
 
 	@SerializedName("name")
 	private String name;
@@ -57,6 +58,12 @@ public class ServerFile implements Parcelable
     public void setParentFile(ServerFile parentFile) {
 		this.parentFile = parentFile;
 	}
+
+	public void setParentShare(ServerShare parentShare){
+		this.parentShare = parentShare;
+	}
+
+	public ServerShare getParentShare(){return parentShare;}
 
 	public ServerFile getParentFile() {
 		return parentFile;

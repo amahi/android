@@ -26,16 +26,15 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
-import android.content.Context;
-import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,6 +62,8 @@ import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.tv.activity.MainTVActivity;
+import org.amahi.anywhere.util.CheckTV;
 import org.amahi.anywhere.util.RecyclerItemClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
@@ -88,12 +89,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 		public static final String SERVERS = "servers";
 	}
-
-	public interface passServerEvent{
-		void passServer(List<Server> serverList);
-	}
-
-	private passServerEvent passServerEventListener;
 
 	@Inject
 	AmahiClient amahiClient;
@@ -283,24 +278,12 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		amahiClient.getServers(authenticationToken);
 	}
 
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		try {
-			passServerEventListener = (passServerEvent)context;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(context.toString() + " must implement passServerEventListener");
-		}
-	}
-
 	@Subscribe
 	public void onServersLoaded(ServersLoadedEvent event) {
 		setUpServersContent(event.getServers());
 
-		//FRAGMENT CALLBACK
-		passServerEventListener.passServer(filterActiveServers(event.getServers()));
-
 		setUpNavigation();
+
 		showContent();
 	}
 
@@ -397,6 +380,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	private void setUpServerConnection() {
 		if (!isConnectionAvailable() || isConnectionAuto()) {
 			serverClient.connectAuto();
+			if (CheckTV.isATV(getContext()))
+				launchTV();
 			return;
 		}
 
@@ -405,7 +390,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		} else {
 			serverClient.connectRemote();
 		}
+		if (CheckTV.isATV(getContext()))
+			launchTV();
 	}
+
+	private void launchTV(){startActivity(new Intent(getContext(),MainTVActivity.class));}
 
 	private boolean isConnectionAvailable() {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());

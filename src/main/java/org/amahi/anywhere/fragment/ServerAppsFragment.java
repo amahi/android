@@ -62,10 +62,6 @@ public class ServerAppsFragment extends Fragment
 		public static final String APPS = "apps";
 	}
 
-	public interface passAppsEvent{
-		void passApps(List<ServerApp> serverApps);
-	}
-
 	private ServerAppsAdapter mServerAppsAdapter;
 
 	private RecyclerView mRecyclerView;
@@ -74,7 +70,6 @@ public class ServerAppsFragment extends Fragment
 
 	private LinearLayout mErrorLinearLayout;
 
-	private passAppsEvent passAppsEventListener;
 	@Inject
 	ServerClient serverClient;
 
@@ -163,16 +158,6 @@ public class ServerAppsFragment extends Fragment
 		}
 	}
 
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		try {
-			passAppsEventListener = (passAppsEvent) context;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(context.toString() + " must implement passAppsEventListener");
-		}
-	}
-
 	@Subscribe
 	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
 		serverClient.getApps();
@@ -181,9 +166,6 @@ public class ServerAppsFragment extends Fragment
 	@Subscribe
 	public void onAppsLoaded(ServerAppsLoadedEvent event) {
 		setUpAppsContent(event.getServerApps());
-
-		//FRAGMENT CALLBACK
-		passAppsEventListener.passApps(event.getServerApps());
 
 		showAppsContent();
 	}

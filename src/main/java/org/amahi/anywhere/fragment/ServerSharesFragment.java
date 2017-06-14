@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -54,10 +53,6 @@ import javax.inject.Inject;
  */
 public class ServerSharesFragment extends Fragment
 {
-	public interface passShareEvent{
-		void passShare(List<ServerShare> serverShares);
-	}
-
 	private static final class State
 	{
 		private State() {
@@ -74,7 +69,6 @@ public class ServerSharesFragment extends Fragment
 
     private LinearLayout mErrorLinearLayout;
 
-	private passShareEvent passShareEventListener;
 	@Inject
 	ServerClient serverClient;
 
@@ -169,16 +163,6 @@ public class ServerSharesFragment extends Fragment
 		}
 	}
 
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		try {
-			passShareEventListener = (passShareEvent) context;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(context.toString() + " must implement onSomeEventListener");
-		}
-	}
-
 	@Subscribe
 	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
 		serverClient.getShares();
@@ -187,7 +171,6 @@ public class ServerSharesFragment extends Fragment
 	@Subscribe
 	public void onSharesLoaded(ServerSharesLoadedEvent event) {
 		setUpSharesContent(event.getServerShares());
-		passShareEventListener.passShare(event.getServerShares());
 		showSharesContent();
 	}
 

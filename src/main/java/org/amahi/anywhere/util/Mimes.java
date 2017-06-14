@@ -73,8 +73,9 @@ public class Mimes {
 
         types.put("application/x-quicktimeplayer", Type.VIDEO);
 
-		types.put("application/x-subrip", Mimes.Type.SUBTITLE);
-		types.put("image/vnd.dvb.subtitle", Mimes.Type.SUBTITLE);
+        types.put("application/x-subrip", Mimes.Type.SUBTITLE);
+        types.put("image/vnd.dvb.subtitle", Mimes.Type.SUBTITLE);
+        types.put("application/x-subtitle", Type.SUBTITLE);
     }
 
     public static int match(String mime) {
@@ -130,7 +131,8 @@ public class Mimes {
         public static final int PRESENTATION = 7;
         public static final int SPREADSHEET = 8;
         public static final int VIDEO = 9;
-		public static final int SUBTITLE = 10;
+        public static final int SUBTITLE = 10;
+
         private Type() {
         }
 

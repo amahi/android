@@ -88,17 +88,19 @@ public class VideoService extends Service
 		return (videoShare != null) && (videoFile != null);
 	}
 
-	public void startVideo(ServerShare videoShare, ServerFile videoFile) {
+	public void startVideo(ServerShare videoShare, ServerFile videoFile, boolean isSubtitleEnabled) {
 		this.videoShare = videoShare;
 		this.videoFile = videoFile;
 
-		setUpVideoPlayback();
+		setUpVideoPlayback(isSubtitleEnabled);
 	}
 
-	private void setUpVideoPlayback() {
+	private void setUpVideoPlayback(boolean isSubtitleEnabled) {
 		Media media = new Media(mLibVLC, getVideoUri());
 		mMediaPlayer.setMedia(media);
-		searchSubtitleFile();
+		if (isSubtitleEnabled) {
+			searchSubtitleFile();
+		}
 		media.release();
 		mMediaPlayer.play();
 	}
@@ -122,9 +124,7 @@ public class VideoService extends Service
 		List<ServerFile> files = event.getServerFiles();
 		for (ServerFile file:files) {
 			if (videoFile.getNameOnly().equals(file.getNameOnly())) {
-				if (Mimes.match(file.getMime()) == Mimes.Type.SUBTITLE
-						|| file.getExtension().equals("srt")
-						|| file.getExtension().equals("sub")) {
+				if (Mimes.match(file.getMime()) == Mimes.Type.SUBTITLE) {
 					mMediaPlayer.getMedia().addSlave(
 							new Media.Slave(
 									Media.Slave.Type.Subtitle, 4, getSubtitleUri(file)));

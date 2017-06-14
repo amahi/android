@@ -67,7 +67,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 	MediaPlayer.EventListener,
 	View.OnLayoutChangeListener {
 
-	private static final boolean ENABLE_SUBTITLES = true;
+	private static final boolean ENABLE_SUBTITLES = false;
+	// TODO: Make UI changes to enable/disable subtitles
 
 	private VideoService videoService;
 	private MediaControls videoControls;
@@ -253,7 +254,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 		if (videoService.isVideoStarted()) {
 			showThenAutoHideControls();
 		} else {
-			videoService.startVideo(getVideoShare(), getVideoFile());
+			videoService.startVideo(getVideoShare(), getVideoFile(), ENABLE_SUBTITLES);
 			addLayoutChangeListener();
 		}
 	}

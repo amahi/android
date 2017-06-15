@@ -265,9 +265,9 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     private void setUpVideoPlayback() {
         if (videoService.isVideoStarted()) {
             showThenAutoHideControls();
-        } else {
             getVideoMainFrame().setVisibility(View.VISIBLE);
             getProgressBar().setVisibility(View.INVISIBLE);
+        } else {
             videoService.startVideo(getVideoShare(), getVideoFile());
             addLayoutChangeListener();
         }
@@ -419,6 +419,10 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         lp.width = (int) Math.floor(dw);
         lp.height = (int) Math.floor(dh);
         getSurfaceFrame().setLayoutParams(lp);
+        lp = getSwipeContainer().getLayoutParams();
+        lp.width = (int) Math.floor(dw);
+        lp.height = (int) Math.floor(dh);
+        getSwipeContainer().setLayoutParams(lp);
         getSurface().invalidate();
         if (mSubtitlesSurface != null)
             mSubtitlesSurface.invalidate();

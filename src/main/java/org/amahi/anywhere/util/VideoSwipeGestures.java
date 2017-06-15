@@ -22,7 +22,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -140,12 +139,12 @@ public class VideoSwipeGestures implements View.OnTouchListener {
                         seekView.show();
                     } else {
                         if (xPosition == Direction.LEFT) {
+                            percentageView.setType(PercentageView.VOLUME);
+                            percentageView.setProgress((int) (volumePer * 100));
+                        } else if (xPosition == Direction.RIGHT) {
                             percentageView.setType(PercentageView.BRIGHTNESS);
                             WindowManager.LayoutParams layout = activity.getWindow().getAttributes();
                             percentageView.setProgress((int) (layout.screenBrightness * 100));
-                        } else if (xPosition == Direction.RIGHT) {
-                            percentageView.setType(PercentageView.VOLUME);
-                            percentageView.setProgress((int) (volumePer * 100));
                         }
                         if (diffY > 0) {
                             direction = Direction.DOWN;
@@ -157,19 +156,16 @@ public class VideoSwipeGestures implements View.OnTouchListener {
                 }
             } catch (NullPointerException ignored) {
             }
-            Log.e("ACTION_MOVE", String.format("(%f,%f) %s", distanceX, distanceY, direction.name()));
 
             switch (direction) {
                 case UP:
                 case DOWN:
                     switch (xPosition) {
                         case LEFT:
-                            Log.d("TOUCH", "UP_DOWN_LEFT");
-                            changeBrightness(distanceY / 400);
+                            changeVolume(distanceY / 400);
                             break;
                         case RIGHT:
-                            Log.d("TOUCH", "UP_DOWN_RIGHT");
-                            changeVolume(distanceY / 400);
+                            changeBrightness(distanceY / 400);
                             break;
                     }
                     break;
@@ -203,7 +199,6 @@ public class VideoSwipeGestures implements View.OnTouchListener {
 
     private void changeBrightness(float distance) {
         WindowManager.LayoutParams layout = activity.getWindow().getAttributes();
-        Log.d("Brightness", String.valueOf(layout.screenBrightness));
         layout.screenBrightness += distance;
         if (layout.screenBrightness > 1f) {
             layout.screenBrightness = 1f;
@@ -222,8 +217,6 @@ public class VideoSwipeGestures implements View.OnTouchListener {
             val = 0f;
         }
         percentageView.setProgress((int) (val * 100));
-        Log.e("vol per", String.valueOf(volumePer) + ", " + String.valueOf(distance));
-        Log.e("Volume", String.valueOf((int) (val * maxVolume)));
         audio.setStreamVolume(AudioManager.STREAM_MUSIC, Math.round(val * maxVolume), 0);
         volumePer = val;
 
@@ -236,7 +229,7 @@ public class VideoSwipeGestures implements View.OnTouchListener {
             if (seekValue > 0 && seekValue < seekControl.getDuration()) {
                 seekControl.seekTo((int) seekValue);
                 String displayText = String.format(Locale.getDefault(),
-                        "%d:%d (%d:%d)",
+                        "%02d:%02d (%02d:%02d)",
                         (int) Math.abs(seekDistance / 60000),
                         (int) Math.abs((seekDistance % 60000) / 1000),
                         (int) (seekValue / 60000),

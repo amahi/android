@@ -24,12 +24,13 @@ package org.amahi.anywhere.view;
  */
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.IntDef;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.amahi.anywhere.R;
@@ -60,32 +61,29 @@ public class PercentageView {
 
     private class ViewHolder {
         private ProgressBar progressBar;
-        private TextView valuePercent, valueName;
+        private TextView valuePercent;
+        private ImageView icon;
 
         ViewHolder(View itemView) {
             progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
-            valueName = (TextView) itemView.findViewById(R.id.value_name);
+            icon = (ImageView) itemView.findViewById(R.id.type_icon);
             valuePercent = (TextView) itemView.findViewById(R.id.value_percent);
-        }
-
-        private void bind(String name) {
-            valueName.setText(name);
         }
     }
 
     public void setType(@TYPE int type) {
-//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.progressBar.getLayoutParams();
         switch (type) {
             case VOLUME:
-//                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                viewHolder.bind("Volume");
+                viewHolder.icon.setImageResource(R.drawable.ic_volume_up);
+                viewHolder.progressBar.getProgressDrawable().setColorFilter(
+                        Color.BLUE, android.graphics.PorterDuff.Mode.SRC_IN);
                 break;
             case BRIGHTNESS:
-//                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                viewHolder.bind("Brightness");
+                viewHolder.icon.setImageResource(R.drawable.ic_brightness);
+                viewHolder.progressBar.getProgressDrawable().setColorFilter(
+                        Color.YELLOW, android.graphics.PorterDuff.Mode.SRC_IN);
                 break;
         }
-//        viewHolder.progressBar.setLayoutParams(params);
     }
 
     public void setProgress(int n) {

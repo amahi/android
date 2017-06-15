@@ -68,7 +68,7 @@
             android:id="@+id/swipe_controls_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"/>
+            android:fitsSystemWindows="false"/>
     </FrameLayout>
 
     <ProgressBar

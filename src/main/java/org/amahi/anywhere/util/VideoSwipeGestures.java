@@ -32,6 +32,8 @@ import android.widget.FrameLayout;
 import org.amahi.anywhere.view.PercentageView;
 import org.amahi.anywhere.view.SeekView;
 
+import java.util.Locale;
+
 /**
  * SwipeGestures Helper class.
  * Implements Gesture Detector to control the actions of Swipe Gestures.
@@ -40,7 +42,7 @@ import org.amahi.anywhere.view.SeekView;
 public class VideoSwipeGestures implements View.OnTouchListener {
 
     private final AudioManager audio;
-    private int currentVolume;
+    private float volumePer;
     private final int maxVolume;
     private Activity activity;
     private PercentageView percentageView;
@@ -73,8 +75,9 @@ public class VideoSwipeGestures implements View.OnTouchListener {
         seekView = new SeekView(container);
         container.addView(seekView.getView());
         audio = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-        currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
         maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        volumePer = (float) currentVolume / (float) maxVolume;
     }
 
     @Override
@@ -138,8 +141,11 @@ public class VideoSwipeGestures implements View.OnTouchListener {
                     } else {
                         if (xPosition == Direction.LEFT) {
                             percentageView.setType(PercentageView.BRIGHTNESS);
+                            WindowManager.LayoutParams layout = activity.getWindow().getAttributes();
+                            percentageView.setProgress((int) (layout.screenBrightness * 100));
                         } else if (xPosition == Direction.RIGHT) {
                             percentageView.setType(PercentageView.VOLUME);
+                            percentageView.setProgress((int) (volumePer * 100));
                         }
                         if (diffY > 0) {
                             direction = Direction.DOWN;
@@ -150,7 +156,6 @@ public class VideoSwipeGestures implements View.OnTouchListener {
                     }
                 }
             } catch (NullPointerException ignored) {
-                ignored.printStackTrace();
             }
             Log.e("ACTION_MOVE", String.format("(%f,%f) %s", distanceX, distanceY, direction.name()));
 
@@ -160,11 +165,11 @@ public class VideoSwipeGestures implements View.OnTouchListener {
                     switch (xPosition) {
                         case LEFT:
                             Log.d("TOUCH", "UP_DOWN_LEFT");
-                            changeBrightness(distanceY / 270);
+                            changeBrightness(distanceY / 400);
                             break;
                         case RIGHT:
                             Log.d("TOUCH", "UP_DOWN_RIGHT");
-                            changeVolume(distanceY / 250);
+                            changeVolume(distanceY / 400);
                             break;
                     }
                     break;
@@ -198,38 +203,44 @@ public class VideoSwipeGestures implements View.OnTouchListener {
 
     private void changeBrightness(float distance) {
         WindowManager.LayoutParams layout = activity.getWindow().getAttributes();
-        layout.screenBrightness += distance;
         Log.d("Brightness", String.valueOf(layout.screenBrightness));
-        if (layout.screenBrightness <= 1 && layout.screenBrightness >= 0) {
-            percentageView.setProgress((int) (layout.screenBrightness * 100));
-            activity.getWindow().setAttributes(layout);
+        layout.screenBrightness += distance;
+        if (layout.screenBrightness > 1f) {
+            layout.screenBrightness = 1f;
+        } else if (layout.screenBrightness < 0f) {
+            layout.screenBrightness = 0f;
         }
+        percentageView.setProgress((int) (layout.screenBrightness * 100));
+        activity.getWindow().setAttributes(layout);
     }
 
     private void changeVolume(float distance) {
-        currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
-        double per = (double) currentVolume / (double) maxVolume;
-        Log.e("audio per", String.valueOf(per));
-        double val = per + distance;
-        if (val <= 1d && val >= 0d) {
-            percentageView.setProgress((int) (val * 100));
-            audio.setStreamVolume(AudioManager.STREAM_MUSIC, (int) (val * 15), 0);
-
+        float val = volumePer + distance;
+        if (val > 1f) {
+            val = 1f;
+        } else if (val < 0f) {
+            val = 0f;
         }
+        percentageView.setProgress((int) (val * 100));
+        Log.e("vol per", String.valueOf(volumePer) + ", " + String.valueOf(distance));
+        Log.e("Volume", String.valueOf((int) (val * maxVolume)));
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, Math.round(val * maxVolume), 0);
+        volumePer = val;
+
     }
 
     private void seek(float distance) {
         seekDistance += distance;
         if (seekControl != null && seekView != null) {
-            Log.e("after", String.valueOf(seekControl.getCurrentPosition() + (int) (distance)));
-            Log.e("seek distance", String.valueOf(seekDistance));
             float seekValue = seekControl.getCurrentPosition() + distance;
             if (seekValue > 0 && seekValue < seekControl.getDuration()) {
                 seekControl.seekTo((int) seekValue);
-                String displayText = Math.abs((int) (seekDistance)) + ":" +
-                        String.valueOf(Math.abs((int) (seekDistance % 1))) +
-                        "(" + (int) seekValue +
-                        ":" + String.valueOf((int) (seekValue % 1)) + ")";
+                String displayText = String.format(Locale.getDefault(),
+                        "%d:%d (%d:%d)",
+                        (int) Math.abs(seekDistance / 60000),
+                        (int) Math.abs((seekDistance % 60000) / 1000),
+                        (int) (seekValue / 60000),
+                        (int) ((seekValue % 60000) / 1000));
                 if (seekDistance > 0)
                     seekView.setText("+" + displayText);
                 else

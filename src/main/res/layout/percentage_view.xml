@@ -2,37 +2,42 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:alpha="0.5"
-    android:background="@android:color/black"
-    android:visibility="visible">
+    android:layout_height="match_parent">
 
     <ProgressBar
         android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="14dp"
+        android:layout_width="24dp"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
         android:layout_margin="12dp"
+        android:background="#40000000"
+        android:padding="6dp"
         android:progressDrawable="@drawable/percentage_bar"/>
 
-    <TextView
-        android:id="@+id/value_name"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textColor="@android:color/white"
-        android:textSize="30sp"/>
+        android:gravity="center">
 
-    <TextView
-        android:id="@+id/value_percent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/value_name"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="10dp"
-        android:textColor="@android:color/white"
-        android:textSize="25sp"/>
+        <ImageView
+            android:id="@+id/type_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"/>
+
+        <TextView
+            android:id="@+id/value_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_toEndOf="@id/type_icon"
+            android:layout_toRightOf="@id/type_icon"
+            android:textColor="@android:color/white"
+            android:textSize="25sp"/>
+    </RelativeLayout>
 
 </RelativeLayout>

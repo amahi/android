@@ -49,9 +49,12 @@ import javax.inject.Inject;
  * The playback itself is done via {@link org.amahi.anywhere.service}.
  * Backed up by {@link android.media.MediaPlayer}.
  */
-public class NativeVideoActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener {
+public class NativeVideoActivity extends AppCompatActivity implements
+        MediaPlayer.OnPreparedListener,
+        MediaPlayer.OnCompletionListener {
 
     private static final Set<String> SUPPORTED_FORMATS;
+    private static final String VIDEO_POSITION = "video_position";
 
     static {
         SUPPORTED_FORMATS = new HashSet<>(Arrays.asList(
@@ -69,6 +72,7 @@ public class NativeVideoActivity extends AppCompatActivity implements MediaPlaye
 
     @Inject
     ServerClient serverClient;
+
     private MediaControls videoControls;
     private VideoView videoView;
 
@@ -118,6 +122,10 @@ public class NativeVideoActivity extends AppCompatActivity implements MediaPlaye
 
     private View getControlsContainer() {
         return findViewById(R.id.container_controls);
+    }
+
+    private FrameLayout getVideoSurfaceFrame() {
+        return (FrameLayout) findViewById(R.id.video_surface_frame);
     }
 
     private ProgressBar getProgressBar() {
@@ -190,5 +198,26 @@ public class NativeVideoActivity extends AppCompatActivity implements MediaPlaye
     @Override
     public void onPrepared(MediaPlayer mp) {
         getProgressBar().setVisibility(View.GONE);
+        getVideoMainFrame().setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(VIDEO_POSITION, videoView.getCurrentPosition());
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        int videoPosition = savedInstanceState.getInt(VIDEO_POSITION, 0);
+        if (videoPosition > 0) {
+            videoView.seekTo(videoPosition);
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        finish();
     }
 }

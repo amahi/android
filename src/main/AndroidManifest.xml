@@ -65,6 +65,9 @@
         <activity
             android:name=".activity.ServerFileVideoActivity"
             android:theme="@style/Theme.Amahi.Fullscreen" />
+        <activity
+            android:name=".activity.NativeVideoActivity"
+            android:theme="@style/Theme.Amahi.Fullscreen" />
         <activity android:name=".activity.ServerFileWebActivity" />
         <activity
             android:name=".activity.SettingsActivity"

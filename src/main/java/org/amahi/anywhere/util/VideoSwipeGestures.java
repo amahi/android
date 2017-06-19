@@ -83,8 +83,12 @@ public class VideoSwipeGestures implements View.OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         if (gestureDetector != null) {
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                percentageView.hide();
-                seekView.hide();
+                if (percentageView.isShowing() || seekView.isShowing()) {
+                    percentageView.hide();
+                    seekView.hide();
+                    return true;
+                }
+                return false;
             }
             return gestureDetector.onTouchEvent(event);
         }
@@ -175,10 +179,6 @@ public class VideoSwipeGestures implements View.OnTouchListener {
                     break;
                 case NONE:
                     break;
-            }
-            if (e2.getAction() == MotionEvent.ACTION_UP) {
-                percentageView.hide();
-                seekView.hide();
             }
             return true;
 

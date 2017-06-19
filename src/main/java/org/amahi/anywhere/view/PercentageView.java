@@ -98,5 +98,9 @@ public class PercentageView {
     public void show() {
         view.setVisibility(View.VISIBLE);
     }
+
+    public boolean isShowing() {
+        return view.getVisibility() == View.VISIBLE;
+    }
 }
 

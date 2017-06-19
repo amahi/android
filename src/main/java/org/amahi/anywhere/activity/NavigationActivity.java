@@ -29,6 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -90,6 +91,50 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         setUpHomeNavigation();
 
         setUpNavigation(savedInstanceState);
+    }
+
+    private void showTvLoading() {
+
+        inflateStubs();
+
+        hideMobileContainers();
+
+        hideActionBar();
+
+        setUpNavigationFragment();
+
+        setUpShares();
+    }
+
+    private void inflateStubs(){
+        ViewStub tvLoadingStub = (ViewStub)findViewById(R.id.view_stub_tv_loading);
+        tvLoadingStub.inflate();
+    }
+
+    private void hideMobileContainers() {
+        RelativeLayout tvLoading = (RelativeLayout) findViewById(R.id.tv_loading);
+
+        getContainerContent().setVisibility(View.INVISIBLE);
+
+        getContainerNavigation().setVisibility(View.INVISIBLE);
+
+        displayTvLoading(tvLoading);
+    }
+
+    private FrameLayout getContainerContent() {
+        return (FrameLayout) findViewById(R.id.container_content);
+    }
+
+    private FrameLayout getContainerNavigation() {
+        return (FrameLayout) findViewById(R.id.container_navigation);
+    }
+
+    private void displayTvLoading(RelativeLayout tvLoading) {
+        tvLoading.setVisibility(View.VISIBLE);
+    }
+
+    private void hideActionBar() {
+        getSupportActionBar().hide();
     }
 
     private void setUpInjections() {
@@ -342,42 +387,4 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
         BusProvider.getBus().unregister(this);
     }
-
-    private void showTvLoading() {
-
-        hideMobileContainers();
-
-        hideActionBar();
-
-        setUpNavigationFragment();
-
-        setUpShares();
-    }
-
-    private void hideMobileContainers() {
-        RelativeLayout tvLoading = (RelativeLayout) findViewById(R.id.tv_loading);
-
-        getContainerContent().setVisibility(View.INVISIBLE);
-
-        getContainerNavigation().setVisibility(View.INVISIBLE);
-
-        displayTvLoading(tvLoading);
-    }
-
-    private FrameLayout getContainerContent() {
-        return (FrameLayout) findViewById(R.id.container_content);
-    }
-
-    private FrameLayout getContainerNavigation() {
-        return (FrameLayout) findViewById(R.id.container_navigation);
-    }
-
-    private void displayTvLoading(RelativeLayout tvLoading) {
-        tvLoading.setVisibility(View.VISIBLE);
-    }
-
-    private void hideActionBar() {
-        getSupportActionBar().hide();
-    }
-
 }

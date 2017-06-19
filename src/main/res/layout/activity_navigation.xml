@@ -29,12 +29,6 @@
         android:layout_height="match_parent" />
 
     <ViewStub
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout="@layout/container_files_dummy"
-        android:id="@+id/view_stub_container_files_dummy"/>
-
-    <ViewStub
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout="@layout/tv_loading"

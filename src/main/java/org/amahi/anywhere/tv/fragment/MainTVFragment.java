@@ -19,24 +19,19 @@
 
 package org.amahi.anywhere.tv.fragment;
 
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
-import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
@@ -48,7 +43,6 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.presenter.GridItemPresenter;
 import org.amahi.anywhere.tv.presenter.SettingsItemPresenter;
-import org.amahi.anywhere.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +76,7 @@ public class MainTVFragment extends BrowseFragment {
         AmahiApplication.from(getActivity()).inject(this);
     }
 
-    private ArrayList<Server> getServers(){
+    private ArrayList<Server> getServers() {
         return getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
     }
 
@@ -155,7 +149,7 @@ public class MainTVFragment extends BrowseFragment {
         ArrayObjectAdapter gridRowAdapter;
 
         HeaderItem settings = new HeaderItem("Settings");
-        ArrayList<Server> serverArrayList =getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
+        ArrayList<Server> serverArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
         gridRowAdapter = new ArrayObjectAdapter(new SettingsItemPresenter(serverArrayList));
         gridRowAdapter.add(getString(R.string.pref_title_server_select));
         gridRowAdapter.add(getString(R.string.pref_title_sign_out));

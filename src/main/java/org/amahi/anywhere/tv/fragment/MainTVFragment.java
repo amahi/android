@@ -19,14 +19,16 @@
 
 package org.amahi.anywhere.tv.fragment;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -34,6 +36,7 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
@@ -45,6 +48,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.presenter.GridItemPresenter;
 import org.amahi.anywhere.tv.presenter.SettingsItemPresenter;
+import org.amahi.anywhere.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +62,6 @@ public class MainTVFragment extends BrowseFragment {
     @Inject
     ServerClient serverClient;
     List<ServerShare> serverShareList;
-    private ArrayList<Server> serverArrayList;
     private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
     private ArrayObjectAdapter mRowsAdapter;
 
@@ -77,6 +80,10 @@ public class MainTVFragment extends BrowseFragment {
 
     private void setUpInjections() {
         AmahiApplication.from(getActivity()).inject(this);
+    }
+
+    private ArrayList<Server> getServers(){
+        return getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
     }
 
     private void setupUIElements() {

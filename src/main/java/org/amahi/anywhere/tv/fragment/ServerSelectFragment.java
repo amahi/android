@@ -30,8 +30,8 @@ import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist;
 import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v4.content.ContextCompat;
-import android.widget.Toast;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.server.model.Server;
@@ -77,21 +77,22 @@ public class ServerSelectFragment extends GuidedStepFragment {
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         super.onCreateActions(actions, savedInstanceState);
         mSharedPref = Preferences.getPreference(mContext);
-
         mServerArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
-        Toast.makeText(getActivity(),mServerArrayList.get(0).getName(),Toast.LENGTH_SHORT).show();
         setTitle(actions);
         populateData();
         String serverName = Preferences.getServerFromPref(mContext, mSharedPref);
-
         if (serverName == null) {
-//            OPTION_CHECKED.set(0, true);
+            setDefaultChecked();
         } else {
-            int i = 0;
-            for (; i < mServerArrayList.size(); i++) {
-                if (mServerArrayList.get(i).getName().matches(serverName)) break;
+            int indexSelected = 0;
+            for (int i = 0; i < mServerArrayList.size(); i++) {
+                if (serverName.matches(mServerArrayList.get(i).getName())) {
+                    indexSelected = i;
+                    break;
+                }
             }
-            OPTION_CHECKED.set(i, true);
+            setFalseChecked();
+            OPTION_CHECKED.set(indexSelected, true);
         }
 
         setCheckedActionButtons(actions);
@@ -116,7 +117,6 @@ public class ServerSelectFragment extends GuidedStepFragment {
         for (int i = 0; i < mServerArrayList.size(); i++) {
             setName(i);
             setDesc();
-            setChecked(i);
         }
     }
 
@@ -128,12 +128,24 @@ public class ServerSelectFragment extends GuidedStepFragment {
         OPTION_DESCRIPTIONS.add("");
     }
 
-    private void setChecked(int i) {
-        if (i > 0)
+    private void setDefaultChecked() {
+        OPTION_CHECKED.add(true);
+        for (int i = 1; i < mServerArrayList.size(); i++)
             OPTION_CHECKED.add(false);
+    }
 
-        else
-            OPTION_CHECKED.add(true);
+    private void setFalseChecked() {
+        if (OPTION_CHECKED != null) {
+            setFalse();
+        } else {
+            OPTION_CHECKED.clear();
+            setFalse();
+        }
+    }
+
+    private void setFalse() {
+        for (int i = 0; i < mServerArrayList.size(); i++)
+            OPTION_CHECKED.add(false);
     }
 
     private void setCheckedActionButtons(List<GuidedAction> actions) {

@@ -43,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -63,7 +64,7 @@ import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.activity.MainTVActivity;
-import org.amahi.anywhere.util.CheckTV;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.RecyclerItemClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
@@ -97,6 +98,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	ServerClient serverClient;
 
 	private Intent tvIntent;
+
+	private List<Server> mServerList;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -288,7 +291,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 		showContent();
 
+		mServerList = event.getServers();
+
 		tvIntent = new Intent(getContext(), MainTVActivity.class);
+
 		tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers), new ArrayList<>(event.getServers()));
 	}
 
@@ -380,13 +386,21 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	public void onServerConnected(ServerConnectedEvent event) {
 		setUpServerConnection();
 		setUpServerNavigation();
+		String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), mServerList.get(0).getName());
+		if (serverName.matches(event.getServer().getName())) {
+			Toast.makeText(getContext(),serverName,Toast.LENGTH_SHORT).show();
+			launchTV();
+		} else {
+			int i = 0;
+			for (; i < mServerList.size(); i++)
+				if (mServerList.get(i).getName().matches(serverName)) break;
+			serverClient.connect(mServerList.get(i));
+		}
 	}
 
 	private void setUpServerConnection() {
 		if (!isConnectionAvailable() || isConnectionAuto()) {
 			serverClient.connectAuto();
-			if (CheckTV.isATV(getContext()))
-				launchTV();
 			return;
 		}
 
@@ -395,8 +409,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		} else {
 			serverClient.connectRemote();
 		}
-		if (CheckTV.isATV(getContext()))
-			launchTV();
 	}
 
 	private void launchTV(){startActivity(tvIntent);}

@@ -166,7 +166,7 @@ public class ServerClient
 	}
 
 	private void finishServerConnection() {
-		BusProvider.getBus().post(new ServerConnectedEvent());
+		BusProvider.getBus().post(new ServerConnectedEvent(server));
 	}
 
 	public void connectAuto() {

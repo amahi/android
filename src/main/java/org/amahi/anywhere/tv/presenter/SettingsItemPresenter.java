@@ -22,6 +22,7 @@ package org.amahi.anywhere.tv.presenter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Parcelable;
 import android.support.v17.leanback.widget.Presenter;
 import android.view.Gravity;
 import android.view.View;
@@ -34,6 +35,7 @@ import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.activity.SettingsActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsItemPresenter extends Presenter {
 
@@ -42,11 +44,11 @@ public class SettingsItemPresenter extends Presenter {
     private Context mContext;
     private ArrayList<Server> serverArrayList;
 
-    public SettingsItemPresenter(ArrayList<Server> serverArrayList) {
-        this.serverArrayList = serverArrayList;
+    public SettingsItemPresenter() {
     }
 
-    public SettingsItemPresenter() {
+    public SettingsItemPresenter(ArrayList<Server> serverArrayList){
+        this.serverArrayList = serverArrayList;
     }
 
     @Override
@@ -85,8 +87,7 @@ public class SettingsItemPresenter extends Presenter {
                     Intent intent = new Intent(mContext, SettingsActivity.class);
                     intent.putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_server_select));
                     intent.putParcelableArrayListExtra(mContext.getString(R.string.intent_servers), serverArrayList);
-                    //mContext.startActivity(intent);
-                    Toast.makeText(mContext, "Under construction", Toast.LENGTH_SHORT).show();
+                    mContext.startActivity(intent);
                 }
 
                 if (settingsText.matches(mContext.getString(R.string.pref_title_sign_out))) {

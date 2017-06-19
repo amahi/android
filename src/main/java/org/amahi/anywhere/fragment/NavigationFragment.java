@@ -96,6 +96,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	@Inject
 	ServerClient serverClient;
 
+	private Intent tvIntent;
+
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
 		return layoutInflater.inflate(R.layout.fragment_navigation, container, false);
@@ -285,6 +287,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpNavigation();
 
 		showContent();
+
+		tvIntent = new Intent(getContext(), MainTVActivity.class);
+		tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers), new ArrayList<>(event.getServers()));
 	}
 
 	private SwipeRefreshLayout getRefreshLayout() {
@@ -394,7 +399,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 			launchTV();
 	}
 
-	private void launchTV(){startActivity(new Intent(getContext(),MainTVActivity.class));}
+	private void launchTV(){startActivity(tvIntent);}
 
 	private boolean isConnectionAvailable() {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());

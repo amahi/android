@@ -21,6 +21,7 @@ package org.amahi.anywhere.tv.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
@@ -57,8 +58,7 @@ public class MainTVFragment extends BrowseFragment {
     @Inject
     ServerClient serverClient;
     List<ServerShare> serverShareList;
-    private ArrayList<ServerShare> serverShareArrayList = new ArrayList<>();
-    private ArrayList<Server> serverArrayList = new ArrayList<>();
+    private ArrayList<Server> serverArrayList;
     private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
     private ArrayObjectAdapter mRowsAdapter;
 
@@ -126,7 +126,7 @@ public class MainTVFragment extends BrowseFragment {
             for (int i = 0; i < serverFiles.size(); i++) {
                 gridRowAdapter.add(serverFiles.get(i).getName());
             }
-            int i = 0;
+            int i;
 
             for (i = 0; i < serverShareList.size(); i++) {
                 if (shareName.matches(serverShareList.get(i).getName())) {
@@ -148,8 +148,8 @@ public class MainTVFragment extends BrowseFragment {
         ArrayObjectAdapter gridRowAdapter;
 
         HeaderItem settings = new HeaderItem("Settings");
+        ArrayList<Server> serverArrayList =getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
         gridRowAdapter = new ArrayObjectAdapter(new SettingsItemPresenter(serverArrayList));
-
         gridRowAdapter.add(getString(R.string.pref_title_server_select));
         gridRowAdapter.add(getString(R.string.pref_title_sign_out));
         gridRowAdapter.add(getString(R.string.pref_title_connection));

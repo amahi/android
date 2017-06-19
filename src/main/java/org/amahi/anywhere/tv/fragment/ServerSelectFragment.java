@@ -30,6 +30,7 @@ import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist;
 import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NavigationActivity;
@@ -78,12 +79,13 @@ public class ServerSelectFragment extends GuidedStepFragment {
         mSharedPref = Preferences.getPreference(mContext);
 
         mServerArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
+        Toast.makeText(getActivity(),mServerArrayList.get(0).getName(),Toast.LENGTH_SHORT).show();
         setTitle(actions);
         populateData();
         String serverName = Preferences.getServerFromPref(mContext, mSharedPref);
 
         if (serverName == null) {
-            OPTION_CHECKED.set(0, true);
+//            OPTION_CHECKED.set(0, true);
         } else {
             int i = 0;
             for (; i < mServerArrayList.size(); i++) {

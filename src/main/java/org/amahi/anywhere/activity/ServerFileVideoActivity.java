@@ -56,6 +56,8 @@ import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
+import java.util.Locale;
+
 /**
  * Video activity. Shows videos, supports basic operations such as pausing, resuming, scrolling.
  * The playback itself is done via {@link org.amahi.anywhere.service.VideoService}.
@@ -69,7 +71,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         View.OnLayoutChangeListener,
         VideoSwipeGestures.SeekControl {
 
-    private static final boolean ENABLE_SUBTITLES = true;
+    private static final boolean ENABLE_SUBTITLES = false;
 
     private VideoService videoService;
     private MediaControls videoControls;
@@ -129,12 +131,10 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     }
 
     private void setUpViews() {
-        if (ENABLE_SUBTITLES) {
-            final ViewStub stub = (ViewStub) findViewById(R.id.subtitles_stub);
-            mSubtitlesSurface = (SurfaceView) stub.inflate();
-            mSubtitlesSurface.setZOrderMediaOverlay(true);
-            mSubtitlesSurface.getHolder().setFormat(PixelFormat.TRANSLUCENT);
-        }
+        final ViewStub stub = (ViewStub) findViewById(R.id.subtitles_stub);
+        mSubtitlesSurface = (SurfaceView) stub.inflate();
+        mSubtitlesSurface.setZOrderMediaOverlay(true);
+        mSubtitlesSurface.getHolder().setFormat(PixelFormat.TRANSLUCENT);
     }
 
     private void setUpVideo() {
@@ -268,7 +268,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
             getVideoMainFrame().setVisibility(View.VISIBLE);
             getProgressBar().setVisibility(View.INVISIBLE);
         } else {
-            videoService.startVideo(getVideoShare(), getVideoFile());
+            videoService.startVideo(getVideoShare(), getVideoFile(), ENABLE_SUBTITLES);
             addLayoutChangeListener();
         }
     }

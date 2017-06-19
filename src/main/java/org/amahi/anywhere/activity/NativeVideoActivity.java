@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
+import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -62,7 +63,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
                 "video/mp4",
                 "video/ts",
                 "video/webm",
-                "video/mkv"
+                "video/x-matroska"
         ));
     }
 
@@ -80,6 +81,9 @@ public class NativeVideoActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_native_video);
+
+        // NOTE-cpg: used for debugging - to visually display when the native player is being used
+        // Toast.makeText(this, "NATIVE PLAYER", Toast.LENGTH_SHORT).show();
 
         setUpInjections();
 

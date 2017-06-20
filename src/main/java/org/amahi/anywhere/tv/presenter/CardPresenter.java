@@ -32,19 +32,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerApp;
 
-public class CardPresenter extends Presenter{
+public class CardPresenter extends Presenter {
     private Context mContext;
-
-    private static class ViewHolder extends Presenter.ViewHolder{
-
-        private ImageCardView mCardView;
-
-        ViewHolder(View view) {
-            super(view);
-            mCardView = (ImageCardView) view;
-        }
-
-    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
@@ -61,13 +50,14 @@ public class CardPresenter extends Presenter{
 
     @Override
     public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
-        if(item!=null) {
+        if (item != null) {
 
             ServerApp serverApp = (ServerApp) item;
 
             ((ViewHolder) viewHolder).mCardView.setTitleText(serverApp.getName());
 
-            int CARD_WIDTH = 400;int CARD_HEIGHT = 300;
+            int CARD_WIDTH = 400;
+            int CARD_HEIGHT = 300;
 
             ((ViewHolder) viewHolder).mCardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
 
@@ -82,5 +72,16 @@ public class CardPresenter extends Presenter{
     @Override
     public void onUnbindViewHolder(Presenter.ViewHolder viewHolder) {
         //Do Nothing
+    }
+
+    private static class ViewHolder extends Presenter.ViewHolder {
+
+        private ImageCardView mCardView;
+
+        ViewHolder(View view) {
+            super(view);
+            mCardView = (ImageCardView) view;
+        }
+
     }
 }

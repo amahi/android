@@ -26,16 +26,15 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
-import android.content.Context;
-import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -63,6 +63,9 @@ import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.tv.activity.MainTVActivity;
+import org.amahi.anywhere.util.CheckTV;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.RecyclerItemClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
@@ -89,17 +92,15 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		public static final String SERVERS = "servers";
 	}
 
-	public interface passServerEvent{
-		void passServer(List<Server> serverList);
-	}
-
-	private passServerEvent passServerEventListener;
-
 	@Inject
 	AmahiClient amahiClient;
 
 	@Inject
 	ServerClient serverClient;
+
+	private Intent tvIntent;
+
+	private List<Server> mServerList;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -283,25 +284,19 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		amahiClient.getServers(authenticationToken);
 	}
 
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		try {
-			passServerEventListener = (passServerEvent)context;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(context.toString() + " must implement passServerEventListener");
-		}
-	}
-
 	@Subscribe
 	public void onServersLoaded(ServersLoadedEvent event) {
 		setUpServersContent(event.getServers());
 
-		//FRAGMENT CALLBACK
-		passServerEventListener.passServer(filterActiveServers(event.getServers()));
-
 		setUpNavigation();
+
 		showContent();
+
+		mServerList = event.getServers();
+
+		tvIntent = new Intent(getContext(), MainTVActivity.class);
+
+		tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers), new ArrayList<>(event.getServers()));
 	}
 
 	private SwipeRefreshLayout getRefreshLayout() {
@@ -392,6 +387,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	public void onServerConnected(ServerConnectedEvent event) {
 		setUpServerConnection();
 		setUpServerNavigation();
+		setUpTvServer(event);
 	}
 
 	private void setUpServerConnection() {
@@ -406,6 +402,23 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 			serverClient.connectRemote();
 		}
 	}
+
+	private void setUpTvServer(ServerConnectedEvent event){
+		if(CheckTV.isATV(getActivity())) {
+			String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), mServerList.get(0).getName());
+			if (serverName.matches(event.getServer().getName())) {
+				Toast.makeText(getContext(), serverName, Toast.LENGTH_SHORT).show();
+				launchTV();
+			} else {
+				int i = 0;
+				for (; i < mServerList.size(); i++)
+					if (mServerList.get(i).getName().matches(serverName)) break;
+				serverClient.connect(mServerList.get(i));
+			}
+		}
+	}
+	
+	private void launchTV(){startActivity(tvIntent);}
 
 	private boolean isConnectionAvailable() {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());

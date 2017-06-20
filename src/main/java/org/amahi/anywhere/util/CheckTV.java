@@ -17,18 +17,18 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.bus;
+package org.amahi.anywhere.util;
 
-import org.amahi.anywhere.server.model.Server;
+import android.app.UiModeManager;
+import android.content.Context;
+import android.content.res.Configuration;
 
-public class ServerConnectedEvent implements BusEvent {
-    public Server server;
+import static android.content.Context.UI_MODE_SERVICE;
 
-    public ServerConnectedEvent(Server server){
-        this.server = server;
-    }
+public class CheckTV {
 
-    public Server getServer() {
-        return server;
+    public static boolean isATV(Context context) {
+        UiModeManager uiModeManager = (UiModeManager) context.getSystemService(UI_MODE_SERVICE);
+        return (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION);
     }
 }

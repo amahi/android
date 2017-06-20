@@ -40,6 +40,7 @@ import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.server.ApiModule;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.service.VideoService;
+import org.amahi.anywhere.tv.fragment.MainTVFragment;
 
 import javax.inject.Singleton;
 
@@ -71,7 +72,8 @@ import dagger.Provides;
                 ServerFileDownloadingFragment.class,
                 SettingsFragment.class,
                 AudioService.class,
-                VideoService.class
+                VideoService.class,
+                MainTVFragment.class
         }
 )
 class AmahiModule {

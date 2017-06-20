@@ -21,71 +21,87 @@ package org.amahi.anywhere.tv.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist;
 import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v4.content.ContextCompat;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.activity.NavigationActivity;
+import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThemeFragment extends GuidedStepFragment {
+public class ServerSelectFragment extends GuidedStepFragment {
 
     private static final int OPTION_CHECK_SET_ID = 10;
-    private static final int ACTION_BACK = 1;
+    private static final int ACTION_BACK = 0;
+    private Context mContext;
+    private ArrayList<Server> mServerArrayList;
     private ArrayList<String> OPTION_NAMES = new ArrayList<>();
     private ArrayList<String> OPTION_DESCRIPTIONS = new ArrayList<>();
     private ArrayList<Boolean> OPTION_CHECKED = new ArrayList<>();
-    private Context mContext;
-    private SharedPreferences mSharedPreferences;
-
-    public ThemeFragment() {
-    }
+    private SharedPreferences mSharedPref;
 
     @SuppressLint("ValidFragment")
-    public ThemeFragment(Context context) {
+    public ServerSelectFragment(Context context) {
         mContext = context;
+    }
+
+    public ServerSelectFragment() {
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     @NonNull
     @Override
     public GuidanceStylist.Guidance onCreateGuidance(Bundle savedInstanceState) {
-        return new GuidanceStylist.Guidance(getString(R.string.pref_title_select_theme),
-                getString(R.string.pref_theme_desc),
+        return new GuidanceStylist.Guidance(getString(R.string.pref_title_server_select),
+                getString(R.string.pref_title_server_select_desc),
                 "",
                 ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo));
     }
 
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-
+        super.onCreateActions(actions, savedInstanceState);
+        mSharedPref = Preferences.getPreference(mContext);
+        mServerArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
         setTitle(actions);
-
-        setPreference();
-
-        setOPTION_NAMES();
-
-        setOptionDesc();
-
-        String prefCheck = mSharedPreferences.getString(getString(R.string.pref_key_theme), getString(R.string.pref_theme_dark));
-
-        setChecked(prefCheck);
+        populateData();
+        String serverName = Preferences.getServerFromPref(mContext, mSharedPref);
+        if (serverName == null) {
+            setDefaultChecked();
+        } else {
+            int indexSelected = 0;
+            for (int i = 0; i < mServerArrayList.size(); i++) {
+                if (serverName.matches(mServerArrayList.get(i).getName())) {
+                    indexSelected = i;
+                    break;
+                }
+            }
+            setFalseChecked();
+            OPTION_CHECKED.set(indexSelected, true);
+        }
 
         setCheckedActionButtons(actions);
-
         setBackButton(actions);
     }
 
     private void setTitle(List<GuidedAction> actions) {
-        String title = getString(R.string.pref_title_theme);
+        String title = getString(R.string.pref_title_server_active_list);
 
-        String desc = getString(R.string.pref_theme_detail_desc);
+        String desc = getString(R.string.pref_server_active_list_desc);
 
         actions.add(new GuidedAction.Builder(mContext)
                 .title(title)
@@ -94,33 +110,41 @@ public class ThemeFragment extends GuidedStepFragment {
                 .infoOnly(true)
                 .enabled(false)
                 .build());
-
     }
 
-    private void setPreference() {
-        mSharedPreferences = Preferences.getPreference(mContext);
-    }
-
-    private void setOPTION_NAMES() {
-        OPTION_NAMES.add(getString(R.string.pref_theme_light));
-        OPTION_NAMES.add(getString(R.string.pref_theme_dark));
-    }
-
-    private void setOptionDesc() {
-        for (int i = 0; i < 2; i++) {
-            OPTION_DESCRIPTIONS.add("");
-            setOptionCheck();
+    private void populateData() {
+        for (int i = 0; i < mServerArrayList.size(); i++) {
+            setName(i);
+            setDesc();
         }
     }
 
-    private void setOptionCheck() {
-        OPTION_CHECKED.add(false);
+    private void setName(int i) {
+        OPTION_NAMES.add(mServerArrayList.get(i).getName());
     }
 
-    private void setChecked(String prefCheck) {
-        if (prefCheck.matches(getString(R.string.pref_theme_light))) OPTION_CHECKED.set(0, true);
+    private void setDesc() {
+        OPTION_DESCRIPTIONS.add("");
+    }
 
-        if (prefCheck.matches(getString(R.string.pref_theme_dark))) OPTION_CHECKED.set(1, true);
+    private void setDefaultChecked() {
+        OPTION_CHECKED.add(true);
+        for (int i = 1; i < mServerArrayList.size(); i++)
+            OPTION_CHECKED.add(false);
+    }
+
+    private void setFalseChecked() {
+        if (OPTION_CHECKED != null) {
+            setFalse();
+        } else {
+            OPTION_CHECKED.clear();
+            setFalse();
+        }
+    }
+
+    private void setFalse() {
+        for (int i = 0; i < mServerArrayList.size(); i++)
+            OPTION_CHECKED.add(false);
     }
 
     private void setCheckedActionButtons(List<GuidedAction> actions) {
@@ -168,19 +192,11 @@ public class ThemeFragment extends GuidedStepFragment {
 
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
-
-        if (getSelectedActionPosition() <= 2) {
-            if (OPTION_NAMES.get(getSelectedActionPosition() - 1).matches("Amahi light")) {
-                Preferences.setLight(mContext, mSharedPreferences);
-            }
-
-            if (OPTION_NAMES.get(getSelectedActionPosition() - 1).matches("Amahi dark")) {
-                Preferences.setDark(mContext, mSharedPreferences);
-            }
-        }
-
-        if (getSelectedActionPosition() == 3) {
-            getActivity().finish();
+        if (getSelectedActionPosition() <= mServerArrayList.size()) {
+            String server = mServerArrayList.get(getSelectedActionPosition() - 1).getName();
+            Preferences.setServertoPref(server, mContext, mSharedPref);
+        } else {
+            startActivity(new Intent(getActivity(), NavigationActivity.class));
         }
     }
 }

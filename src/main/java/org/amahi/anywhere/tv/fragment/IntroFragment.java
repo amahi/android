@@ -43,8 +43,6 @@ import java.util.ArrayList;
 
 public class IntroFragment extends OnboardingFragment {
 
-    private ArrayList<String> mTitles,mDescriptions;
-
     private static final int[] CONTENT_IMAGES = {
             R.drawable.ic_app_logo,
             R.drawable.network,
@@ -53,7 +51,7 @@ public class IntroFragment extends OnboardingFragment {
             R.drawable.movies,
             R.drawable.tick,
     };
-
+    private ArrayList<String> mTitles, mDescriptions;
     private ArrayList<Integer> mColors;
 
     private View mBackgroundView;
@@ -141,6 +139,7 @@ public class IntroFragment extends OnboardingFragment {
     protected View onCreateForegroundView(LayoutInflater inflater, ViewGroup container) {
         return null;
     }
+
     @Override
     protected Animator onCreateEnterAnimation() {
         ArrayList<Animator> animators = new ArrayList<>();
@@ -177,7 +176,7 @@ public class IntroFragment extends OnboardingFragment {
             public void onAnimationEnd(Animator animation) {
                 Log.d(getClass().getName(), String.valueOf(newPage));
                 mContentView.setImageResource(CONTENT_IMAGES[newPage]);
-                switch (newPage){
+                switch (newPage) {
                     case 0:
                         mBackgroundView.setBackground(new ColorDrawable(mColors.get(newPage)));
                         break;

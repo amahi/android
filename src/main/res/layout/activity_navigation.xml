@@ -28,29 +28,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:id="@+id/container_apps_dummy"/>
-
-    <RelativeLayout
+    <ViewStub
         android:layout_width="match_parent"
-        android:id="@+id/tv_loading"
-        android:visibility="invisible"
-        android:layout_height="match_parent">
-        <ImageView
-            android:layout_width="300dp"
-            android:layout_height="200dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_banner"
-            android:id="@+id/banner_loading"/>
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/banner_loading"
-            android:layout_centerHorizontal="true"/>
-    </RelativeLayout>
+        android:layout_height="match_parent"
+        android:layout="@layout/tv_loading"
+        android:id="@+id/view_stub_tv_loading"/>
 
     <FrameLayout
         android:id="@+id/container_navigation"

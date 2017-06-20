@@ -29,13 +29,24 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.activity.SettingsActivity;
+
+import java.util.ArrayList;
 
 public class SettingsItemPresenter extends Presenter {
 
     private static final int SETTINGS_ITEM_WIDTH = 400;
     private static final int SETTINGS_ITEM_HEIGHT = 200;
     private Context mContext;
+    private ArrayList<Server> serverArrayList;
+
+    public SettingsItemPresenter() {
+    }
+
+    public SettingsItemPresenter(ArrayList<Server> serverArrayList) {
+        this.serverArrayList = serverArrayList;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
@@ -43,7 +54,7 @@ public class SettingsItemPresenter extends Presenter {
 
         TextView view = new TextView(mContext);
 
-        view.setLayoutParams(new ViewGroup.LayoutParams(SETTINGS_ITEM_WIDTH,SETTINGS_ITEM_HEIGHT));
+        view.setLayoutParams(new ViewGroup.LayoutParams(SETTINGS_ITEM_WIDTH, SETTINGS_ITEM_HEIGHT));
 
         view.setFocusable(true);
 
@@ -62,21 +73,26 @@ public class SettingsItemPresenter extends Presenter {
     public void onBindViewHolder(final ViewHolder viewHolder, Object item) {
         TextView settingsTv = (TextView) viewHolder.view;
 
-        final String settingsText = (String)item;
+        final String settingsText = (String) item;
 
         settingsTv.setText(settingsText);
 
         settingsTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(settingsText.matches(mContext.getString(R.string.pref_title_sign_out))){
-                    mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT,mContext.getString(R.string.pref_title_sign_out)));
+                if (settingsText.matches(mContext.getString(R.string.pref_title_server_select))) {
+                    Intent intent = new Intent(mContext, SettingsActivity.class);
+                    intent.putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_server_select));
+                    intent.putParcelableArrayListExtra(mContext.getString(R.string.intent_servers), serverArrayList);
+                    mContext.startActivity(intent);
                 }
-                else if(settingsText.matches(mContext.getString(R.string.pref_title_connection))){
-                    mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT,mContext.getString(R.string.pref_title_connection)));
-                }
-                else if(settingsText.matches(mContext.getString(R.string.pref_title_select_theme))){
-                    mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT,mContext.getString(R.string.pref_title_select_theme)));
+
+                if (settingsText.matches(mContext.getString(R.string.pref_title_sign_out))) {
+                    mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_sign_out)));
+                } else if (settingsText.matches(mContext.getString(R.string.pref_title_connection))) {
+                    mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_connection)));
+                } else if (settingsText.matches(mContext.getString(R.string.pref_title_select_theme))) {
+                    mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_select_theme)));
                 }
             }
         });

@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.tv.fragment.MainTVFragment;
+import org.amahi.anywhere.util.Preferences;
 
 public class MainTVActivity extends Activity {
 
@@ -31,6 +33,17 @@ public class MainTVActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tv);
+        handleTvFirstRun();
+        getFragmentManager().beginTransaction().add(R.id.main_tv_fragment_container, new MainTVFragment()).commit();
+    }
+
+    private void handleTvFirstRun() {
+        Boolean isFirstRun = Preferences.getFirstRun(this);
+
+        if (isFirstRun) {
+            startActivity(new Intent(MainTVActivity.this, IntroActivity.class));
+            Preferences.setFirstRun(this);
+        }
     }
 
 
@@ -38,7 +51,7 @@ public class MainTVActivity extends Activity {
     public void onBackPressed() {
         super.onBackPressed();
         Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-        homeIntent.addCategory( Intent.CATEGORY_HOME );
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(homeIntent);
     }

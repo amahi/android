@@ -142,6 +142,10 @@
 
         <activity android:name=".tv.activity.SettingsActivity"
             android:theme="@style/Theme.Leanback.GuidedStep"/>
+
+        <activity android:name=".tv.activity.TVWebViewActivity"
+            android:theme="@style/Theme.Design.NoActionBar"/>
+
     </application>
 
 </manifest>

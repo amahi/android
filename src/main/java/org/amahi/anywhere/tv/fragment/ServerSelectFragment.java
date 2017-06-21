@@ -32,8 +32,8 @@ import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v4.content.ContextCompat;
 
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.util.Preferences;
 
 import java.util.ArrayList;
@@ -77,6 +77,7 @@ public class ServerSelectFragment extends GuidedStepFragment {
         super.onCreateActions(actions, savedInstanceState);
         mSharedPref = Preferences.getPreference(mContext);
         mServerArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
+
         setTitle(actions);
         populateData();
         String serverName = Preferences.getServerFromPref(mContext, mSharedPref);
@@ -196,7 +197,7 @@ public class ServerSelectFragment extends GuidedStepFragment {
             String server = mServerArrayList.get(getSelectedActionPosition() - 1).getName();
             Preferences.setServertoPref(server, mContext, mSharedPref);
         } else {
-            startActivity(new Intent(getActivity(), NavigationActivity.class));
+            startActivity(new Intent(mContext, MainTVActivity.class));
         }
     }
 }

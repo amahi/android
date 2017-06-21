@@ -54,6 +54,7 @@ public class ThemeFragment extends GuidedStepFragment {
     }
 
     @NonNull
+
     @Override
     public GuidanceStylist.Guidance onCreateGuidance(Bundle savedInstanceState) {
         return new GuidanceStylist.Guidance(getString(R.string.pref_title_select_theme),

@@ -47,6 +47,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.activity.IntroActivity;
+import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.CheckTV;
 import org.amahi.anywhere.util.Fragments;
@@ -83,6 +84,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         setContentView(R.layout.activity_navigation);
 
         if (CheckTV.isATV(this)) {
+            handleTvFirstRun();
             showTvLoading();
         }
 
@@ -91,6 +93,15 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         setUpHomeNavigation();
 
         setUpNavigation(savedInstanceState);
+    }
+
+    private void handleTvFirstRun() {
+        Boolean isFirstRun = Preferences.getFirstRun(this);
+
+        if (isFirstRun) {
+            startActivity(new Intent(this, IntroActivity.class));
+            Preferences.setFirstRun(this);
+        }
     }
 
     private void showTvLoading() {

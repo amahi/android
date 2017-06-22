@@ -38,6 +38,7 @@ import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
 
 import java.util.ArrayList;
@@ -87,6 +88,14 @@ public final class Intents {
 
         public Intent buildServerFilesActivity(ServerShare share) {
             Intent intent = new Intent(context, ServerFilesActivity.class);
+            intent.putExtra(Extras.SERVER_SHARE, share);
+
+            return intent;
+        }
+
+        public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file){
+            Intent intent = new Intent(context, ServerFileTvActivity.class);
+            intent.putExtra(Extras.SERVER_FILE, file);
             intent.putExtra(Extras.SERVER_SHARE, share);
 
             return intent;

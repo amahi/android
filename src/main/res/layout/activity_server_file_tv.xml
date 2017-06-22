@@ -3,12 +3,5 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fragment_container_server_file_tv"
-        android:name="org.amahi.anywhere.tv.fragment.ServerFileTvFragment" />
-
-</FrameLayout>
+    android:layout_height="match_parent"
+    android:id="@+id/server_file_tv_container"/>

@@ -20,15 +20,84 @@
 package org.amahi.anywhere.tv.activity;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.squareup.otto.Subscribe;
+
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
+import org.amahi.anywhere.util.Intents;
+
+import java.util.List;
 
 public class ServerFileTvActivity extends Activity {
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_file_tv);
+        setFirstFragment();
+    }
+
+    private void setFirstFragment(){
+        getFragmentManager().beginTransaction().add(R.id.server_file_tv_container, buildFirstTvFragment()).commit();
+    }
+
+    private Fragment buildFirstTvFragment(){
+        Fragment fragment = new ServerFileTvFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Intents.Extras.SERVER_FILE,getServerFile());
+        bundle.putParcelable(Intents.Extras.SERVER_SHARE,getServerShare());
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    private ServerFile getServerFile(){
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
+    }
+
+    private ServerShare getServerShare(){
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+    }
+
+    @Subscribe
+    public void onFileOpening(FileOpeningEvent event) {
+        setUpFile(event.getShare(), event.getFiles(), event.getFile());
+    }
+
+    private void setUpFile(ServerShare share, List<ServerFile> files, ServerFile file) {
+        setUpFileActivity(share, files, file);
+    }
+
+    private void setUpFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
+        if (Intents.Builder.with(this).isServerFileSupported(file)) {
+            startFileActivity(share, files, file);
+        }
+    }
+
+    private void startFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
+        Intent intent = Intents.Builder.with(this).buildServerFileIntent(share, files, file);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        BusProvider.getBus().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        BusProvider.getBus().unregister(this);
     }
 }

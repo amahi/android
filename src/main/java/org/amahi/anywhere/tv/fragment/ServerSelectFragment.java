@@ -32,6 +32,7 @@ import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v4.content.ContextCompat;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.util.Preferences;
@@ -197,7 +198,7 @@ public class ServerSelectFragment extends GuidedStepFragment {
             String server = mServerArrayList.get(getSelectedActionPosition() - 1).getName();
             Preferences.setServertoPref(server, mContext, mSharedPref);
         } else {
-            startActivity(new Intent(mContext, MainTVActivity.class));
+            startActivity(new Intent(mContext, NavigationActivity.class));
         }
     }
 }

@@ -46,6 +46,7 @@ public class ConnectionFragment extends GuidedStepFragment {
     private ArrayList<Boolean> OPTION_CHECKED = new ArrayList<>();
     private Context mContext;
     private SharedPreferences preference;
+    private String initialSelected;
 
     public ConnectionFragment() {
     }
@@ -79,6 +80,8 @@ public class ConnectionFragment extends GuidedStepFragment {
         populateDesc();
 
         String selected = getServerConnectionStatus();
+
+        initialSelected = selected;
 
         markSelected(selected);
 
@@ -190,7 +193,10 @@ public class ConnectionFragment extends GuidedStepFragment {
                 Preferences.setPrefLocal(preference, mContext);
             }
         } else {
-            startActivity(new Intent(getActivity(), NavigationActivity.class));
+            if (initialSelected.matches(Preferences.getServerConnection(preference, mContext)))
+                getActivity().finish();
+            else
+                startActivity(new Intent(getActivity(), NavigationActivity.class));
         }
     }
 }

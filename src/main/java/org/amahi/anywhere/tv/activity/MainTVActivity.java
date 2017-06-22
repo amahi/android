@@ -33,19 +33,8 @@ public class MainTVActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tv);
-        handleTvFirstRun();
         getFragmentManager().beginTransaction().add(R.id.main_tv_fragment_container, new MainTVFragment()).commit();
     }
-
-    private void handleTvFirstRun() {
-        Boolean isFirstRun = Preferences.getFirstRun(this);
-
-        if (isFirstRun) {
-            startActivity(new Intent(MainTVActivity.this, IntroActivity.class));
-            Preferences.setFirstRun(this);
-        }
-    }
-
 
     @Override
     public void onBackPressed() {

@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.tv.fragment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v17.leanback.app.BrowseFragment;
@@ -26,13 +27,13 @@ import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
-import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
@@ -43,6 +44,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.presenter.GridItemPresenter;
 import org.amahi.anywhere.tv.presenter.SettingsItemPresenter;
+import org.amahi.anywhere.util.Intents;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,11 +123,11 @@ public class MainTVFragment extends BrowseFragment {
     @Subscribe
     public void onFilesLoaded(ServerFilesLoadedEvent event) {
         List<ServerFile> serverFiles = sortFiles(event.getServerFiles());
-        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(new GridItemPresenter());
+        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(new GridItemPresenter(getActivity(), serverFiles));
         if (serverFiles.size() != 0) {
             String shareName = serverFiles.get(0).getParentShare().getName();
             for (int i = 0; i < serverFiles.size(); i++) {
-                gridRowAdapter.add(serverFiles.get(i).getName());
+                gridRowAdapter.add(serverFiles.get(i));
             }
             int i;
 
@@ -181,11 +183,27 @@ public class MainTVFragment extends BrowseFragment {
 
     @Subscribe
     public void onSharesLoadFailed(ServerSharesLoadFailedEvent event) {
-        showSharesError();
+
     }
 
-    private void showSharesError() {
-        Toast.makeText(getActivity(), getString(R.string.message_connection_error), Toast.LENGTH_LONG).show();
+    @Subscribe
+    public void onFileOpening(FileOpeningEvent event) {
+        setUpFile(event.getShare(), event.getFiles(), event.getFile());
+    }
+
+    private void setUpFile(ServerShare share, List<ServerFile> files, ServerFile file) {
+        setUpFileActivity(share, files, file);
+    }
+
+    private void setUpFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
+        if (Intents.Builder.with(getActivity()).isServerFileSupported(file)) {
+            startFileActivity(share, files, file);
+        }
+    }
+
+    private void startFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
+        Intent intent = Intents.Builder.with(getActivity()).buildServerFileIntent(share, files, file);
+        startActivity(intent);
     }
 
     @Override

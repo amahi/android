@@ -19,16 +19,32 @@
 
 package org.amahi.anywhere.tv.presenter;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.v17.leanback.widget.Presenter;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.util.Mimes;
+
+import java.util.List;
 
 public class GridItemPresenter extends Presenter {
 
     private static final int GRID_ITEM_WIDTH = 400;
     private static final int GRID_ITEM_HEIGHT = 300;
+    private Context mContext;
+    private List<ServerFile> mServerFileList;
+
+    public GridItemPresenter(Context context, List<ServerFile> serverFileList) {
+        mContext = context;
+        mServerFileList = serverFileList;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
@@ -53,11 +69,32 @@ public class GridItemPresenter extends Presenter {
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
-        ((TextView) viewHolder.view).setText((String) item);
+        TextView textView = (TextView) viewHolder.view;
+        final ServerFile file = (ServerFile) item;
+        textView.setText(file.getName());
+
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isDirectory(file)) {
+                    //mContext.startActivity(new Intent(mContext,FileDisplayingActivity.class));
+                } else {
+                    startFileOpening(file);
+                }
+            }
+        });
+    }
+
+    private void startFileOpening(ServerFile file) {
+        BusProvider.getBus().post(new FileOpeningEvent(file.getParentShare(), mServerFileList, file));
     }
 
     @Override
     public void onUnbindViewHolder(ViewHolder viewHolder) {
+    }
+
+    private boolean isDirectory(ServerFile file) {
+        return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
     }
 }
 

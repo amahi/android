@@ -21,11 +21,9 @@ package org.amahi.anywhere.fragment;
 
 import android.Manifest;
 import android.app.SearchManager;
-import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -78,7 +76,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import static android.content.Context.UI_MODE_SERVICE;
 import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
 /**

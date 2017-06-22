@@ -43,7 +43,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -99,8 +98,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	ServerClient serverClient;
 
 	private Intent tvIntent;
-
-	private List<Server> mServerList;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -242,7 +239,37 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void setUpServersContent(List<Server> servers) {
-		getServersAdapter().replaceWith(filterActiveServers(servers));
+		if (!CheckTV.isATV(getContext()))
+			getServersAdapter().replaceWith(filterActiveServers(servers));
+		else {
+			List<Server> serverList = filterActiveServers(servers);
+			String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), servers.get(0).getName());
+
+            if (serverList.get(0).getName().matches(serverName))
+				getServersAdapter().replaceWith(serverList);
+
+            else {
+				int index = findTheServer(serverList);
+				getServersAdapter().replaceWith(swappedServers(index,serverList));
+			}
+		}
+	}
+
+	private int findTheServer(List<Server> serverList) {
+		String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), serverList.get(0).getName());
+		int i;
+		for (i = 0; i < serverList.size(); i++) {
+			if (serverName.matches(serverList.get(i).getName()))
+				return i;
+		}
+		return 0;
+	}
+
+	private List<Server> swappedServers(int index, List<Server> serverList){
+		Server firstServer = serverList.get(0);
+		serverList.set(0, serverList.get(index));
+		serverList.set(index, firstServer);
+		return serverList;
 	}
 
 	private ServersAdapter getServersAdapter() {
@@ -291,8 +318,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpNavigation();
 
 		showContent();
-
-		mServerList = event.getServers();
 
 		tvIntent = new Intent(getContext(), MainTVActivity.class);
 
@@ -387,7 +412,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	public void onServerConnected(ServerConnectedEvent event) {
 		setUpServerConnection();
 		setUpServerNavigation();
-		setUpTvServer(event);
+		if (CheckTV.isATV(getContext())) launchTV();
 	}
 
 	private void setUpServerConnection() {
@@ -403,21 +428,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		}
 	}
 
-	private void setUpTvServer(ServerConnectedEvent event){
-		if(CheckTV.isATV(getActivity())) {
-			String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), mServerList.get(0).getName());
-			if (serverName.matches(event.getServer().getName())) {
-				Toast.makeText(getContext(), serverName, Toast.LENGTH_SHORT).show();
-				launchTV();
-			} else {
-				int i = 0;
-				for (; i < mServerList.size(); i++)
-					if (mServerList.get(i).getName().matches(serverName)) break;
-				serverClient.connect(mServerList.get(i));
-			}
-		}
-	}
-	
 	private void launchTV(){startActivity(tvIntent);}
 
 	private boolean isConnectionAvailable() {

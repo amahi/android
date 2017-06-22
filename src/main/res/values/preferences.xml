@@ -56,4 +56,35 @@
         <item>@string/preference_key_server_connection_local</item>
     </string-array>
 
+    <!-- String related to server selection preference-->
+    <string name="pref_title_server_select">Select server</string>
+    <string name="pref_title_server_select_desc">Choose the server whose shares you want to access.</string>
+    <string name="pref_title_server_active_list">List of active servers</string>
+    <string name="pref_server_active_list_desc">Choose the active server whose shares you want to access.</string>
+    <string name="pref_server_select_key">select_server</string>
+
+    <!-- Strings related to SignOut Preference-->
+    <string name="pref_title_sign_out">Sign out</string>
+    <string name="pref_title_account">Account</string>
+    <string name="pref_sign_out_desc">Sign out from Amahi TV</string>
+    <string name="pref_action_not_defined">Action is not defined</string>
+
+    <!--Strings related to Theme Preference -->
+    <string name="pref_key_theme">theme selected</string>
+    <string name="pref_title_select_theme">Select theme</string>
+    <string name="pref_title_theme">Theme</string>
+    <string name="pref_theme_desc">Select from Light or Dark</string>
+    <string name="pref_theme_detail_desc">Select the type of connection you want. You can set it as Amahi Light or Amahi Dark</string>
+    <string name="pref_theme_light">Amahi light</string>
+    <string name="pref_theme_dark">Amahi dark</string>
+
+    <!--Strings related to Connection Preference -->
+    <string name="pref_title_connection">Connection</string>
+    <string name="pref_connection_detail">Select from Autodetect, Remote or LAN.</string>
+    <string name="pref_option_autodetect">Autodetect</string>
+    <string name="pref_option_lan">Local area network</string>
+    <string name="pref_option_remote">Remote</string>
+    <string name="pref_option_go_back">Go back</string>
+    <string name="pref_connection_desc">Select the type of connection you want. You can set it as Auto detect, remote or local area network.</string>
+
 </resources>

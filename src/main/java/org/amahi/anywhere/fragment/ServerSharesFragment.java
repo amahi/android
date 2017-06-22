@@ -171,7 +171,6 @@ public class ServerSharesFragment extends Fragment
 	@Subscribe
 	public void onSharesLoaded(ServerSharesLoadedEvent event) {
 		setUpSharesContent(event.getServerShares());
-
 		showSharesContent();
 	}
 

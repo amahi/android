@@ -38,6 +38,7 @@ import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.activity.TVWebViewActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +112,10 @@ public final class Intents {
             }
 
             if (ServerFileWebActivity.supports(fileFormat)) {
-                return ServerFileWebActivity.class;
+                if(!CheckTV.isATV(context))
+                    return ServerFileWebActivity.class;
+                else
+                    return TVWebViewActivity.class;
             }
 
             return null;

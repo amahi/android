@@ -17,18 +17,18 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.bus;
+package org.amahi.anywhere.tv.activity;
 
-import org.amahi.anywhere.server.model.Server;
+import android.app.Activity;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 
-public class ServerConnectedEvent implements BusEvent {
-    public Server server;
+import org.amahi.anywhere.R;
 
-    public ServerConnectedEvent(Server server){
-        this.server = server;
-    }
-
-    public Server getServer() {
-        return server;
+public class IntroActivity extends Activity {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_intro);
     }
 }

@@ -19,10 +19,13 @@
 
 package org.amahi.anywhere.server.response;
 
+import android.util.Log;
+
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,10 +42,15 @@ import retrofit2.Response;
  */
 public class ServerFilesResponse implements Callback<List<ServerFile>>
 {
-	private final ServerFile serverDirectory;
+	private ServerFile serverDirectory;
+	private ServerShare serverShare;
 
 	public ServerFilesResponse(ServerFile serverDirectory) {
 		this.serverDirectory = serverDirectory;
+	}
+
+	public ServerFilesResponse(ServerShare serverShare){
+		this.serverShare = serverShare;
 	}
 
 	@Override
@@ -55,6 +63,7 @@ public class ServerFilesResponse implements Callback<List<ServerFile>>
 
 			for (ServerFile serverFile : serverFiles) {
 				serverFile.setParentFile(serverDirectory);
+				serverFile.setParentShare(serverShare);
 			}
 
 			BusProvider.getBus().post(new ServerFilesLoadedEvent(serverFiles));

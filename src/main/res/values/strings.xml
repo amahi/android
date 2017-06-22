@@ -51,6 +51,7 @@
     <string name="message_error_authentication_field_empty">Username or Password field cannot be left empty</string>
     <string name="message_error_connection">Connection Error</string>
     <string name="message_tap_to_retry">Tap to retry</string>
+    <string name="message_error_video">Error playing the video</string>
 
     <string name="message_notice_check_settings">Check your settings and try again</string>
     <string name="message_notice_create_some">Create some and try again</string>
@@ -77,8 +78,8 @@
 
     <!--ANDROID TV RELATED STRINGS-->
     <string name="app_title">Amahi TV</string>
-    <string name="intent_files">INTENT_FILES</string>
-    <string name="intent_shares">INTENT_SHARES</string>
+    <string name="intent_files">INTENT_FILE</string>
+    <string name="intent_shares">INTENT_SHARE</string>
     <string name="intent_servers">INTENT_SERVERS</string>
     <string name="preference">PREFERENCE</string>
     <string name="is_first_run">isFirstRun</string>

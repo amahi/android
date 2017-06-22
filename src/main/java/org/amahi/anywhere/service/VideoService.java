@@ -24,16 +24,23 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
+
+import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Mimes;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -63,6 +70,8 @@ public class VideoService extends Service
 		setUpInjections();
 
 		setUpVideoPlayer();
+
+		BusProvider.getBus().register(this);
 	}
 
 	private void setUpInjections() {
@@ -80,22 +89,62 @@ public class VideoService extends Service
 		return (videoShare != null) && (videoFile != null);
 	}
 
-	public void startVideo(ServerShare videoShare, ServerFile videoFile) {
+	public void startVideo(ServerShare videoShare, ServerFile videoFile, boolean isSubtitleEnabled) {
 		this.videoShare = videoShare;
 		this.videoFile = videoFile;
 
-		setUpVideoPlayback();
+		setUpVideoPlayback(isSubtitleEnabled);
 	}
 
-	private void setUpVideoPlayback() {
+	private void setUpVideoPlayback(boolean isSubtitleEnabled) {
 		Media media = new Media(mLibVLC, getVideoUri());
 		mMediaPlayer.setMedia(media);
 		media.release();
+		if (isSubtitleEnabled) {
+			searchSubtitleFile();
+		}
 		mMediaPlayer.play();
 	}
 
 	private Uri getVideoUri() {
 		return serverClient.getFileUri(videoShare, videoFile);
+	}
+
+	private void searchSubtitleFile() {
+		if (serverClient.isConnected()){
+			if (!isDirectoryAvailable()) {
+				serverClient.getFiles(videoShare);
+			} else {
+				serverClient.getFiles(videoShare, getDirectory());
+			}
+		}
+	}
+
+	@Subscribe
+	public void onFilesLoaded(ServerFilesLoadedEvent event) {
+		List<ServerFile> files = event.getServerFiles();
+		for (ServerFile file:files) {
+			if (videoFile.getNameOnly().equals(file.getNameOnly())) {
+				if (Mimes.match(file.getMime()) == Mimes.Type.SUBTITLE) {
+					mMediaPlayer.getMedia().addSlave(
+							new Media.Slave(
+									Media.Slave.Type.Subtitle, 4, getSubtitleUri(file)));
+					break;
+				}
+			}
+		}
+	}
+
+	private String getSubtitleUri(ServerFile file) {
+		return serverClient.getFileUri(videoShare, file).toString();
+	}
+
+	private boolean isDirectoryAvailable() {
+		return getDirectory() != null;
+	}
+
+	private ServerFile getDirectory() {
+		return videoFile.getParentFile();
 	}
 
 	public MediaPlayer getMediaPlayer() {
@@ -114,12 +163,12 @@ public class VideoService extends Service
 		mMediaPlayer.pause();
 	}
 
-
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 
 		tearDownVideoPlayback();
+		BusProvider.getBus().unregister(this);
 	}
 
 

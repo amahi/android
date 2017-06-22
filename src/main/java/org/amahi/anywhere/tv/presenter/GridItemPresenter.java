@@ -20,19 +20,31 @@
 package org.amahi.anywhere.tv.presenter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v17.leanback.widget.Presenter;
+import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
+import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
+import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class GridItemPresenter extends Presenter {
 
@@ -77,7 +89,8 @@ public class GridItemPresenter extends Presenter {
             @Override
             public void onClick(View v) {
                 if (isDirectory(file)) {
-                    //mContext.startActivity(new Intent(mContext,FileDisplayingActivity.class));
+                    Intent intent = Intents.Builder.with(mContext).buildServerTvFilesActivity(file.getParentShare(), file);
+                    mContext.startActivity(intent);
                 } else {
                     startFileOpening(file);
                 }

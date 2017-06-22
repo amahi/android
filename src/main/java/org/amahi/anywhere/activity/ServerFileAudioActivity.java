@@ -290,7 +290,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 
 	private void showAudioControls() {
 		if (areAudioControlsAvailable() && !audioControls.isShowing()) {
-			audioControls.showAnimated();
+			audioControls.show(0);
 		}
 	}
 
@@ -339,7 +339,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 
 	private void hideAudioControls() {
 		if (areAudioControlsAvailable() && audioControls.isShowing()) {
-			audioControls.hideAnimated();
+			audioControls.hide();
 		}
 	}
 
@@ -423,7 +423,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 
 	private void showAudioControlsForced() {
 		if (areAudioControlsAvailable() && !audioControls.isShowing()) {
-			audioControls.show();
+			audioControls.show(0);
 		}
 	}
 

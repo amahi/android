@@ -19,22 +19,31 @@
 
 package org.amahi.anywhere.tv.fragment;
 
+import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.app.VerticalGridFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
+import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.VerticalGridPresenter;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.tv.presenter.ServerFileTvPresenter;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Mimes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,7 +83,7 @@ public class ServerFileTvFragment extends VerticalGridFragment {
         gridPresenter.setNumberOfColumns(4);
         setGridPresenter(gridPresenter);
         setContent();
-        mAdapter = new ArrayObjectAdapter(new ServerFileTvPresenter(getFragmentManager(), mServerFileList));
+        mAdapter = new ArrayObjectAdapter(new ServerFileTvPresenter());
     }
 
     private void setContent() {
@@ -92,7 +101,7 @@ public class ServerFileTvFragment extends VerticalGridFragment {
     }
 
     private List<ServerFile> sortFiles(List<ServerFile> files) {
-        List<ServerFile> sortedFiles = new ArrayList<ServerFile>(files);
+        List<ServerFile> sortedFiles = new ArrayList<>(files);
 
         Collections.sort(sortedFiles, getFilesComparator());
 
@@ -141,6 +150,63 @@ public class ServerFileTvFragment extends VerticalGridFragment {
         @Override
         public int compare(ServerFile firstFile, ServerFile secondFile) {
             return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
+        }
+    }
+
+    private class ServerFileTvPresenter extends Presenter {
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent) {
+            TextView view = new TextView(parent.getContext());
+            view.setLayoutParams(new ViewGroup.LayoutParams(400, 300));
+            view.setFocusable(true);
+            view.setFocusableInTouchMode(true);
+            view.setBackgroundColor(Color.DKGRAY);
+            view.setTextColor(Color.WHITE);
+            view.setTextSize(20);
+            view.setGravity(Gravity.CENTER);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder viewHolder, Object item) {
+            TextView textView = (TextView) viewHolder.view;
+            final ServerFile serverFile = (ServerFile) item;
+            textView.setText(serverFile.getName());
+            textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (isDirectory(serverFile)) {
+                        setFragment(serverFile, serverFile.getParentShare());
+                    } else {
+                        startFileOpening(serverFile);
+                    }
+                }
+            });
+        }
+
+        private void setFragment(ServerFile serverFile, ServerShare serverShare) {
+            getFragmentManager().beginTransaction().replace(R.id.server_file_tv_container, buildTvFragment(serverFile, serverShare), getClass().getSimpleName()).addToBackStack(getClass().getSimpleName()).commit();
+        }
+
+        private Fragment buildTvFragment(ServerFile serverFile, ServerShare serverShare) {
+            Fragment fragment = new ServerFileTvFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
+            bundle.putParcelable(Intents.Extras.SERVER_SHARE, serverShare);
+            fragment.setArguments(bundle);
+            return fragment;
+        }
+
+        private void startFileOpening(ServerFile file) {
+            BusProvider.getBus().post(new FileOpeningEvent(file.getParentShare(), mServerFileList, file));
+        }
+
+        private boolean isDirectory(ServerFile file) {
+            return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
+        }
+
+        @Override
+        public void onUnbindViewHolder(ViewHolder viewHolder) {
         }
     }
 }

@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.squareup.otto.Subscribe;
 
@@ -98,10 +99,10 @@ public class VideoService extends Service
 	private void setUpVideoPlayback(boolean isSubtitleEnabled) {
 		Media media = new Media(mLibVLC, getVideoUri());
 		mMediaPlayer.setMedia(media);
+		media.release();
 		if (isSubtitleEnabled) {
 			searchSubtitleFile();
 		}
-		media.release();
 		mMediaPlayer.play();
 	}
 

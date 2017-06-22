@@ -28,7 +28,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
-import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -140,6 +139,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
         setUpVideoControls();
         videoView = (VideoView) findViewById(R.id.video_view);
         videoView.setOnPreparedListener(this);
+        videoView.setOnCompletionListener(this);
         videoView.setVideoURI(getVideoUri());
         videoView.setMediaController(videoControls);
         videoView.start();
@@ -152,8 +152,6 @@ public class NativeVideoActivity extends AppCompatActivity implements
     private void setUpVideoControls() {
         if (!areVideoControlsAvailable()) {
             videoControls = new MediaControls(this);
-            videoControls.setMediaPlayer(videoView);
-            videoControls.setAnchorView(getControlsContainer());
         }
     }
 
@@ -203,6 +201,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
     public void onPrepared(MediaPlayer mp) {
         getProgressBar().setVisibility(View.GONE);
         getVideoMainFrame().setVisibility(View.VISIBLE);
+        videoControls.setAnchorView(getControlsContainer());
     }
 
     @Override

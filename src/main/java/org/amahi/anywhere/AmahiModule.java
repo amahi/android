@@ -23,6 +23,7 @@ import android.app.Application;
 import android.content.Context;
 
 import org.amahi.anywhere.activity.AuthenticationActivity;
+import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
@@ -62,6 +63,7 @@ import dagger.Provides;
                 ServerFileAudioActivity.class,
                 ServerFileImageActivity.class,
                 ServerFileVideoActivity.class,
+                NativeVideoActivity.class,
                 ServerFileWebActivity.class,
                 NavigationFragment.class,
                 ServerSharesFragment.class,

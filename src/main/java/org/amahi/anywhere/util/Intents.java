@@ -39,6 +39,8 @@ import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
+import org.amahi.anywhere.tv.activity.TVWebViewActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +94,14 @@ public final class Intents {
             return intent;
         }
 
+        public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file){
+            Intent intent = new Intent(context, ServerFileTvActivity.class);
+            intent.putExtra(Extras.SERVER_FILE, file);
+            intent.putExtra(Extras.SERVER_SHARE, share);
+
+            return intent;
+        }
+
         public boolean isServerFileSupported(ServerFile file) {
             return getServerFileActivity(file) != null;
         }
@@ -115,7 +125,10 @@ public final class Intents {
             }
 
             if (ServerFileWebActivity.supports(fileFormat)) {
-                return ServerFileWebActivity.class;
+                if(!CheckTV.isATV(context))
+                    return ServerFileWebActivity.class;
+                else
+                    return TVWebViewActivity.class;
             }
 
             return null;

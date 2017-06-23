@@ -75,4 +75,36 @@
     <string name="label_next">Next</string>
     <string name="label_play">Play</string>
     <string name="label_pause">Pause</string>
+
+    <!--ANDROID TV RELATED STRINGS-->
+    <string name="app_title">Amahi TV</string>
+    <string name="intent_files">INTENT_FILE</string>
+    <string name="intent_shares">INTENT_SHARE</string>
+    <string name="intent_servers">INTENT_SERVERS</string>
+    <string name="preference">PREFERENCE</string>
+    <string name="is_first_run">isFirstRun</string>
+
+    <string name="row_servers">Servers</string>
+    <string name="row_shares">Shares</string>
+    <string name="row_apps">Apps</string>
+    <string name="row_preferences">Preferences</string>
+
+    <!--Introduction activity strings-->
+    <string name="intro_desc_1">Presenting the all new Amahi TV.</string>
+
+    <string name="intro_title_2">Access your HDA</string>
+    <string name="intro_desc_2">Amahi TV lets you access your HDA. Play your Videos, Listen to your music and yes! View your photos</string>
+
+    <string name="intro_title_3">Watch your photos</string>
+    <string name="intro_desc_3">View all your photos backed in your HDA directly in your Android TV.</string>
+
+    <string name="intro_title_4">Listen to your music</string>
+    <string name="intro_desc_4">Listen to all of your songs backed in your HDA directly in your Android TV.</string>
+
+    <string name="intro_title_5">Play your videos</string>
+    <string name="intro_desc_5">Play Videos directly on your Android TV</string>
+
+    <string name="intro_title_6">Ready</string>
+    <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
+
 </resources>

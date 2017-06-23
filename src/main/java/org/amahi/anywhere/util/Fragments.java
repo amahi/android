@@ -29,9 +29,9 @@ import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.ServerSharesFragment;
-import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
 
 /**
  * Fragments accessor. Provides a factory for building fragments and an operator for placing them.

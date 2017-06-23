@@ -26,11 +26,12 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
-import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -61,6 +62,9 @@ import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.tv.activity.MainTVActivity;
+import org.amahi.anywhere.util.CheckTV;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.RecyclerItemClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
@@ -92,6 +96,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
 	@Inject
 	ServerClient serverClient;
+
+	private Intent tvIntent;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -233,7 +239,37 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void setUpServersContent(List<Server> servers) {
-		getServersAdapter().replaceWith(filterActiveServers(servers));
+		if (!CheckTV.isATV(getContext()))
+			getServersAdapter().replaceWith(filterActiveServers(servers));
+		else {
+			List<Server> serverList = filterActiveServers(servers);
+			String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), servers.get(0).getName());
+
+            if (serverList.get(0).getName().matches(serverName))
+				getServersAdapter().replaceWith(serverList);
+
+            else {
+				int index = findTheServer(serverList);
+				getServersAdapter().replaceWith(swappedServers(index,serverList));
+			}
+		}
+	}
+
+	private int findTheServer(List<Server> serverList) {
+		String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), serverList.get(0).getName());
+		int i;
+		for (i = 0; i < serverList.size(); i++) {
+			if (serverName.matches(serverList.get(i).getName()))
+				return i;
+		}
+		return 0;
+	}
+
+	private List<Server> swappedServers(int index, List<Server> serverList){
+		Server firstServer = serverList.get(0);
+		serverList.set(0, serverList.get(index));
+		serverList.set(index, firstServer);
+		return serverList;
 	}
 
 	private ServersAdapter getServersAdapter() {
@@ -282,6 +318,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpNavigation();
 
 		showContent();
+
+		tvIntent = new Intent(getContext(), MainTVActivity.class);
+
+		tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers), new ArrayList<>(event.getServers()));
 	}
 
 	private SwipeRefreshLayout getRefreshLayout() {
@@ -372,6 +412,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	public void onServerConnected(ServerConnectedEvent event) {
 		setUpServerConnection();
 		setUpServerNavigation();
+		if (CheckTV.isATV(getContext())) launchTV();
 	}
 
 	private void setUpServerConnection() {
@@ -386,6 +427,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 			serverClient.connectRemote();
 		}
 	}
+
+	private void launchTV(){startActivity(tvIntent);}
 
 	private boolean isConnectionAvailable() {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());

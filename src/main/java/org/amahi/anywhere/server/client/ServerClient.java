@@ -166,7 +166,7 @@ public class ServerClient
 	}
 
 	private void finishServerConnection() {
-		BusProvider.getBus().post(new ServerConnectedEvent());
+		BusProvider.getBus().post(new ServerConnectedEvent(server));
 	}
 
 	public void connectAuto() {
@@ -208,11 +208,11 @@ public class ServerClient
 			return;
 		}
 
-		serverApi.getFiles(server.getSession(), share.getName(), null).enqueue(new ServerFilesResponse(null));
+		serverApi.getFiles(server.getSession(), share.getName(), null).enqueue(new ServerFilesResponse(share));
 	}
 
 	public void getFiles(ServerShare share, ServerFile directory) {
-		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory));
+		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
 	}
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {

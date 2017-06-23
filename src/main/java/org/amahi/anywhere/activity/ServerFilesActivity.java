@@ -37,7 +37,6 @@ import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
-import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;

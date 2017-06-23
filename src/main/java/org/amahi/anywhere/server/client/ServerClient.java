@@ -212,7 +212,7 @@ public class ServerClient
 	}
 
 	public void getFiles(ServerShare share, ServerFile directory) {
-		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory));
+		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
 	}
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {

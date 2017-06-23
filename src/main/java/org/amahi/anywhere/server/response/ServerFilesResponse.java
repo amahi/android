@@ -45,8 +45,9 @@ public class ServerFilesResponse implements Callback<List<ServerFile>>
 	private ServerFile serverDirectory;
 	private ServerShare serverShare;
 
-	public ServerFilesResponse(ServerFile serverDirectory) {
+	public ServerFilesResponse(ServerFile serverDirectory, ServerShare serverShare) {
 		this.serverDirectory = serverDirectory;
+		this.serverShare = serverShare;
 	}
 
 	public ServerFilesResponse(ServerShare serverShare){

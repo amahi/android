@@ -27,6 +27,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 
+import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -117,6 +118,9 @@ public final class Intents {
             }
 
             if (ServerFileVideoActivity.supports(fileFormat)) {
+                if (NativeVideoActivity.supports(fileFormat)) {
+                    return NativeVideoActivity.class;
+                }
                 return ServerFileVideoActivity.class;
             }
 

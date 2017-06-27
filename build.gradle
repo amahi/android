@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath 'io.fabric.tools:gradle:1.22.1'
     }
 }
@@ -39,8 +39,8 @@ android {
 
     defaultConfig {
         def versionMajor = 2
-        def versionMinor = 4
-        def versionPatch = 0
+        def versionMinor = 5
+        def versionPatch = 1
 
         versionName buildVersionName(versionMajor, versionMinor, versionPatch)
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)

@@ -20,14 +20,25 @@
 package org.amahi.anywhere.tv.fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
+import android.support.v17.leanback.widget.OnItemViewSelectedListener;
+import android.support.v17.leanback.widget.Presenter;
+import android.support.v17.leanback.widget.Row;
+import android.support.v17.leanback.widget.RowPresenter;
+import android.util.DisplayMetrics;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -42,9 +53,10 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.tv.presenter.GridItemPresenter;
+import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 import org.amahi.anywhere.tv.presenter.SettingsItemPresenter;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Mimes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,6 +72,8 @@ public class MainTVFragment extends BrowseFragment {
     List<ServerShare> serverShareList;
     private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
     private ArrayObjectAdapter mRowsAdapter;
+    private BackgroundManager mBackgroundManager;
+    private DisplayMetrics mMetrics;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -67,15 +81,27 @@ public class MainTVFragment extends BrowseFragment {
 
         setUpInjections();
 
+        prepareBackgroundManager();
+
         setupUIElements();
 
         loadRows();
 
         loadShares();
+
+        setUpEventListeners();
     }
 
     private void setUpInjections() {
         AmahiApplication.from(getActivity()).inject(this);
+    }
+
+    private void prepareBackgroundManager() {
+        mBackgroundManager = BackgroundManager.getInstance(getActivity());
+        if (!mBackgroundManager.isAttached())
+            mBackgroundManager.attach(getActivity().getWindow());
+        mMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
     }
 
     private void setupUIElements() {
@@ -102,6 +128,50 @@ public class MainTVFragment extends BrowseFragment {
         }
     }
 
+    private void setUpEventListeners() {
+        setOnItemViewSelectedListener(getDefaultSelectedListener());
+    }
+
+    private OnItemViewSelectedListener getDefaultSelectedListener() {
+        return new OnItemViewSelectedListener() {
+            @Override
+            public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
+                if (item instanceof ServerFile) {
+                    ServerFile serverFile = (ServerFile) item;
+                    if (isImage(serverFile)) {
+                        updateBackground(getImageUri(serverFile).toString());
+                    } else {
+                        mBackgroundManager.clearDrawable();
+                    }
+                }
+            }
+        };
+    }
+
+    private boolean isImage(ServerFile file) {
+        return Mimes.match(file.getMime()) == Mimes.Type.IMAGE;
+    }
+
+    private void updateBackground(String uri) {
+        int width = mMetrics.widthPixels;
+        int height = mMetrics.heightPixels;
+        Glide.with(this)
+                .load(uri)
+                .asBitmap()
+                .centerCrop()
+                .into(new SimpleTarget<Bitmap>(width, height) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap>
+                            glideAnimation) {
+                        mBackgroundManager.setBitmap(resource);
+                    }
+                });
+    }
+
+    private Uri getImageUri(ServerFile file) {
+        return serverClient.getFileUri(file.getParentShare(), file);
+    }
+
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
         serverClient.getShares();
@@ -119,7 +189,7 @@ public class MainTVFragment extends BrowseFragment {
     @Subscribe
     public void onFilesLoaded(ServerFilesLoadedEvent event) {
         List<ServerFile> serverFiles = sortFiles(event.getServerFiles());
-        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(new GridItemPresenter(getActivity(), serverFiles));
+        ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(new MainTVPresenter(getActivity(), serverClient, serverFiles));
         if (serverFiles.size() != 0) {
             String shareName = serverFiles.get(0).getParentShare().getName();
             for (int i = 0; i < serverFiles.size(); i++) {
@@ -141,6 +211,7 @@ public class MainTVFragment extends BrowseFragment {
     private void addSeparator(ArrayObjectAdapter adapter) {
         HeaderItem separator = new HeaderItem("-------------------------");
         adapter.add(new ListRow(separator, new ArrayObjectAdapter(new SettingsItemPresenter())));
+        setAdapter(adapter);
     }
 
     private void addSettings(ArrayObjectAdapter adapter) {

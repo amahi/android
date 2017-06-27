@@ -92,7 +92,7 @@ public class ServerFilesAdapter extends FilesFilterBaseAdapter
 		if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
 			setUpImageIcon(file, fileIconView);
 		} else {
-			fileIconView.setImageResource(getFileIcon(file));
+			fileIconView.setImageResource(Mimes.getFileIcon(file));
 		}
 	}
 

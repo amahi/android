@@ -157,47 +157,12 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
         }
     }
 
-    @DrawableRes
-    static int getFileIcon(ServerFile file) {
-        switch (Mimes.match(file.getMime())) {
-            case Mimes.Type.ARCHIVE:
-                return R.drawable.ic_file_archive;
-
-            case Mimes.Type.AUDIO:
-                return R.drawable.ic_file_audio;
-
-            case Mimes.Type.CODE:
-                return R.drawable.ic_file_code;
-
-            case Mimes.Type.DOCUMENT:
-                return R.drawable.ic_file_text;
-
-            case Mimes.Type.DIRECTORY:
-                return R.drawable.ic_file_directory;
-
-            case Mimes.Type.IMAGE:
-                return R.drawable.ic_file_image;
-
-            case Mimes.Type.PRESENTATION:
-                return R.drawable.ic_file_presentation;
-
-            case Mimes.Type.SPREADSHEET:
-                return R.drawable.ic_file_spreadsheet;
-
-            case Mimes.Type.VIDEO:
-                return R.drawable.ic_file_video;
-
-            default:
-                return R.drawable.ic_file_generic;
-        }
-    }
-
     void setUpImageIcon(ServerFile file, ImageView fileIconView) {
         Glide.with(fileIconView.getContext())
                 .load(getImageUri(file))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
-                .placeholder(getFileIcon(file))
+                .placeholder(Mimes.getFileIcon(file))
                 .into(fileIconView);
     }
 

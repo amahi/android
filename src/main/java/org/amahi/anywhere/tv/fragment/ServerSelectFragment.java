@@ -34,7 +34,6 @@ import android.support.v4.content.ContextCompat;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.server.model.Server;
-import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.util.Preferences;
 
 import java.util.ArrayList;

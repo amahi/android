@@ -61,7 +61,7 @@
         android:label="@string/application_name"
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi"
-        tools:ignore="MissingTvBanner">
+        android:banner="@drawable/ic_app_logo">
 
         <activity
             android:name=".tv.activity.MainTVActivity"

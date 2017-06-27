@@ -78,10 +78,6 @@ public class MainTVFragment extends BrowseFragment {
         AmahiApplication.from(getActivity()).inject(this);
     }
 
-    private ArrayList<Server> getServers() {
-        return getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
-    }
-
     private void setupUIElements() {
         setTitle(getString(R.string.app_title));
 

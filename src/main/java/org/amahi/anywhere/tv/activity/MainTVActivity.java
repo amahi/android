@@ -24,8 +24,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.activity.NavigationActivity;
+import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.fragment.MainTVFragment;
 import org.amahi.anywhere.util.Preferences;
+
+import java.util.ArrayList;
 
 public class MainTVActivity extends Activity {
 
@@ -33,7 +37,14 @@ public class MainTVActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tv);
-        getFragmentManager().beginTransaction().add(R.id.main_tv_fragment_container, new MainTVFragment()).commit();
+        if(getServers()!=null)
+            getFragmentManager().beginTransaction().add(R.id.main_tv_fragment_container, new MainTVFragment()).commit();
+        else
+            startActivity(new Intent(this, NavigationActivity.class));
+    }
+
+    private ArrayList<Server> getServers() {
+        return getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
     }
 
     @Override

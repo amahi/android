@@ -46,24 +46,24 @@ public class ServerFileTvActivity extends Activity {
         setFirstFragment();
     }
 
-    private void setFirstFragment(){
+    private void setFirstFragment() {
         getFragmentManager().beginTransaction().add(R.id.server_file_tv_container, buildFirstTvFragment()).commit();
     }
 
-    private Fragment buildFirstTvFragment(){
+    private Fragment buildFirstTvFragment() {
         Fragment fragment = new ServerFileTvFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Intents.Extras.SERVER_FILE,getServerFile());
-        bundle.putParcelable(Intents.Extras.SERVER_SHARE,getServerShare());
+        bundle.putParcelable(Intents.Extras.SERVER_FILE, getServerFile());
+        bundle.putParcelable(Intents.Extras.SERVER_SHARE, getServerShare());
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    private ServerFile getServerFile(){
+    private ServerFile getServerFile() {
         return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
     }
 
-    private ServerShare getServerShare(){
+    private ServerShare getServerShare() {
         return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
     }
 

@@ -103,7 +103,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 		fileTitle.setText(null);
 		fileTitle.setBackgroundResource(android.R.color.transparent);
 
-		fileIcon.setImageResource(getFileIcon(file));
+		fileIcon.setImageResource(Mimes.getFileIcon(file));
 		fileIcon.setBackgroundResource(R.color.background_secondary);
 	}
 
@@ -120,7 +120,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 		fileTitle.setText(sb);
 		fileTitle.setBackgroundResource(R.color.background_transparent_secondary);
 
-		fileIcon.setImageResource(getFileIcon(file));
+		fileIcon.setImageResource(Mimes.getFileIcon(file));
 		fileIcon.setBackgroundResource(R.color.background_secondary);
 	}
 
@@ -158,8 +158,8 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter
 			.diskCacheStrategy(DiskCacheStrategy.ALL)
 			.centerCrop()
 			.fitCenter()
-			.placeholder(getFileIcon(file))
-			.error(getFileIcon(file))
+			.placeholder(Mimes.getFileIcon(file))
+			.error(Mimes.getFileIcon(file))
 			.into(fileIcon);
 	}
 

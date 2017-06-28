@@ -20,3 +20,5 @@ fabric.properties
 
 # Key
 signing.properties
+
+.DS*

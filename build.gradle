@@ -40,7 +40,7 @@ android {
     defaultConfig {
         def versionMajor = 2
         def versionMinor = 5
-        def versionPatch = 1
+        def versionPatch = 3
 
         versionName buildVersionName(versionMajor, versionMinor, versionPatch)
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
@@ -49,13 +49,10 @@ android {
         targetSdkVersion 25
 
         def apiFile = file("api.properties")
-        def fakeApiFile = file("fakeApi.properties")
         def apiProperties = new Properties()
 
         if (apiFile.exists()) {
             apiProperties.load(apiFile.newInputStream())
-        } else {
-            apiProperties.load(fakeApiFile.newInputStream())
         }
         buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
         buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])

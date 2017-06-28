@@ -51,9 +51,8 @@ android {
         def apiFile = file("api.properties")
         def apiProperties = new Properties()
 
-        if (apiFile.exists()) {
-            apiProperties.load(apiFile.newInputStream())
-        }
+        apiProperties.load(apiFile.newInputStream())
+
         buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
         buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
         buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])

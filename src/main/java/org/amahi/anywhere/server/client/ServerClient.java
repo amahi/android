@@ -40,13 +40,12 @@ import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.server.response.ServerAppsResponse;
+import org.amahi.anywhere.server.response.ServerFileDeleteResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 import org.amahi.anywhere.util.Time;
-
-import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -213,6 +212,11 @@ public class ServerClient
 
 	public void getFiles(ServerShare share, ServerFile directory) {
 		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
+	}
+
+	public void deleteFile(ServerShare share, ServerFile serverFile) {
+		serverApi.deleteFile(server.getSession(), share.getName(), serverFile.getPath(), serverFile.getName())
+                .enqueue(new ServerFileDeleteResponse());
 	}
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {

@@ -20,8 +20,10 @@
 package org.amahi.anywhere.fragment;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -33,6 +35,7 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -47,6 +50,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -58,6 +62,7 @@ import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.bus.ServerFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
@@ -91,8 +96,10 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
 	private LinearLayout mErrorLinearLayout;
+    private ProgressDialog deleteProgressDialog;
+    private int deleteFilePosition;
 
-	private static final class State
+    private static final class State
 	{
 		private State() {
 		}
@@ -134,9 +141,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		setUpInjections();
 
 		setUpFiles(savedInstanceState);
+
+        setUpDeleteProgressDialog();
 	}
 
-	private void setUpInjections() {
+    private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
 	}
 
@@ -147,6 +156,13 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		setUpFilesContent(state);
 		setUpFilesContentRefreshing();
 	}
+
+    private void setUpDeleteProgressDialog() {
+        deleteProgressDialog = new ProgressDialog(getContext());
+        deleteProgressDialog.setMessage(getString(R.string.message_delete_progress));
+        deleteProgressDialog.setIndeterminate(true);
+        deleteProgressDialog.setCancelable(false);
+    }
 
 	private void setUpFilesMenu() {
 		setHasOptionsMenu(true);
@@ -212,7 +228,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 			case R.id.menu_share:
 				checkPermissions();
 				break;
-
+			case R.id.menu_delete:
+				deleteFile(getCheckedFile());
+                break;
 			default:
 				return false;
 		}
@@ -221,6 +239,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 		return true;
 	}
+
 	@RequiresApi(api = Build.VERSION_CODES.M)
 	private void checkPermissions(){
 	int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -261,6 +280,35 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	private void startFileSharing(ServerFile file) {
 		BusProvider.getBus().post(new ServerFileSharingEvent(getShare(), file));
 	}
+
+    private void deleteFile(final ServerFile file) {
+        deleteFilePosition = getListView().getCheckedItemPosition();
+        new AlertDialog.Builder(getContext())
+                .setMessage(R.string.message_delete_file)
+                .setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteProgressDialog.show();
+                        serverClient.deleteFile(getShare(), file);
+                    }
+                })
+                .setNegativeButton(R.string.button_no, null)
+                .show();
+    }
+
+    @Subscribe
+    public void onFileDeleteEvent(ServerFileDeleteEvent fileDeleteEvent) {
+        deleteProgressDialog.dismiss();
+        if (fileDeleteEvent.isDeleted()) {
+            if (!isMetadataAvailable()) {
+                getFilesAdapter().removeFile(deleteFilePosition);
+            } else {
+                getFilesMetadataAdapter().removeFile(deleteFilePosition);
+            }
+        } else {
+            Toast.makeText(getContext(), R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
+        }
+    }
 
 	private ServerFile getCheckedFile() {
 		return getFile(getListView().getCheckedItemPosition());

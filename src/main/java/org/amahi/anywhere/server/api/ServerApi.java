@@ -27,6 +27,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Query;
@@ -45,6 +46,13 @@ public interface ServerApi
 		@Header("Session") String session,
 		@Query("s") String share,
 		@Query("p") String path);
+
+    @DELETE("/file")
+    Call<Void> deleteFile(
+    		@Header("Session") String session,
+            @Query("s") String share,
+            @Query("p") String path,
+			@Query("f") String fileName);
 
 	@GET("/md")
 	Call<ServerFileMetadata> getFileMetadata(

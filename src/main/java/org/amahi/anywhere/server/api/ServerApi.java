@@ -47,12 +47,11 @@ public interface ServerApi
 		@Query("s") String share,
 		@Query("p") String path);
 
-    @DELETE("/file")
+    @DELETE("/files")
     Call<Void> deleteFile(
-    		@Header("Session") String session,
-            @Query("s") String share,
-            @Query("p") String path,
-			@Query("f") String fileName);
+    	@Header("Session") String session,
+		@Query("s") String share,
+		@Query("p") String path);
 
 	@GET("/md")
 	Call<ServerFileMetadata> getFileMetadata(

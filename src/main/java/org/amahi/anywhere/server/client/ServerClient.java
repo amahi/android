@@ -215,7 +215,7 @@ public class ServerClient
 	}
 
 	public void deleteFile(ServerShare share, ServerFile serverFile) {
-		serverApi.deleteFile(server.getSession(), share.getName(), serverFile.getPath(), serverFile.getName())
+		serverApi.deleteFile(server.getSession(), share.getName(), serverFile.getPath())
                 .enqueue(new ServerFileDeleteResponse());
 	}
 

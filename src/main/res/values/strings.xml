@@ -90,7 +90,7 @@
     <string name="row_preferences">Preferences</string>
 
     <!--Introduction activity strings-->
-    <string name="intro_desc_1">Presenting the all new Amahi TV.</string>
+    <string name="intro_desc_1">Welcome to Amahi TV.</string>
 
     <string name="intro_title_2">Access your HDA</string>
     <string name="intro_desc_2">Amahi TV lets you access your HDA. Play your Videos, Listen to your music and yes! View your photos</string>

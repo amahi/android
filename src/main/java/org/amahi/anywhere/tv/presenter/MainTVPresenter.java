@@ -21,22 +21,25 @@ package org.amahi.anywhere.tv.presenter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
-import android.text.format.Formatter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.squareup.otto.Subscribe;
 
+import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.task.FileMetadataRetrievingTask;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 
@@ -54,6 +57,7 @@ public class MainTVPresenter extends Presenter {
         mContext = context;
         mServerClient = serverClient;
         mServerFileList = serverFiles;
+        BusProvider.getBus().register(this);
     }
 
     @Override
@@ -65,28 +69,29 @@ public class MainTVPresenter extends Presenter {
     }
 
     @Override
-    public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
+    public void onBindViewHolder(Presenter.ViewHolder viewHolderArgs, Object item) {
         final ServerFile serverFile = (ServerFile) item;
-        ViewHolder view = (ViewHolder) viewHolder;
-        view.mCardView.setTitleText(serverFile.getName());
-
-        if (isDirectory(serverFile)) {
-            Date d = serverFile.getModificationTime();
-            SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
-            view.mCardView.setContentText(dt.format(d));
+        ViewHolder viewHolder = (ViewHolder) viewHolderArgs;
+        viewHolder.mCardView.setTitleText(serverFile.getName());
+        if (isMetadataAvailable(serverFile)) {
+            View fileView = viewHolder.view;
+            fileView.setTag(ServerFilesMetadataAdapter.Tags.SHARE, serverFile.getParentShare());
+            fileView.setTag(ServerFilesMetadataAdapter.Tags.FILE, serverFile);
+            setUpMetaDimensions(viewHolder);
+            new FileMetadataRetrievingTask(mServerClient, fileView, viewHolder).execute();
         } else {
-            view.mCardView.setContentText(Formatter.formatFileSize(mContext, serverFile.getSize()));
+            setUpDimensions(viewHolder);
+            if (isDirectory(serverFile))
+                setDate(serverFile, viewHolder);
+            else
+                setSize(serverFile, viewHolder);
+            if (isImage(serverFile)) {
+                setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), getImageUri(serverFile));
+            } else {
+                setUpDrawable(serverFile, viewHolder);
+            }
         }
-
-        view.mCardView.setMainImageDimensions(400, 300);
-
-        if (isImage(serverFile)) {
-            setUpImageIcon(serverFile, view.mCardView.getMainImageView());
-        } else {
-            view.mCardView.setMainImage(ContextCompat.getDrawable(mContext, Mimes.getFileIcon(serverFile)));
-        }
-
-        view.mCardView.setOnClickListener(new View.OnClickListener() {
+        viewHolder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isDirectory(serverFile)) {
@@ -99,6 +104,50 @@ public class MainTVPresenter extends Presenter {
         });
     }
 
+
+    private boolean isMetadataAvailable(ServerFile serverFile) {
+        return ServerShare.Tag.MOVIES.equals(serverFile.getParentShare().getTag());
+    }
+
+    private void setUpMetaDimensions(ViewHolder viewHolder) {
+        viewHolder.mCardView.setMainImageDimensions(400, 500);
+    }
+
+    private void setDate(ServerFile serverFile, ViewHolder viewHolder) {
+        Date d = serverFile.getModificationTime();
+        SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
+        viewHolder.mCardView.setContentText(dt.format(d));
+    }
+
+    private void setSize(ServerFile serverFile, ViewHolder viewHolder) {
+        viewHolder.mCardView.setContentText(android.text.format.Formatter.formatFileSize(mContext, serverFile.getSize()));
+    }
+
+    private void setUpDimensions(ViewHolder viewHolder) {
+        viewHolder.mCardView.setMainImageDimensions(400, 300);
+    }
+
+    private void setUpDrawable(ServerFile serverFile, ViewHolder viewHolder) {
+        viewHolder.mCardView.setMainImage(ContextCompat.getDrawable(mContext, Mimes.getFileIcon(serverFile)));
+    }
+
+    @Subscribe
+    public void onFileMetadataRetrieved(FileMetadataRetrievedEvent event) {
+        ServerFile serverFile = event.getFile();
+        ViewHolder viewHolder = event.getViewHolder();
+        serverFile.setMetaDataFetched(true);
+        setDate(serverFile, viewHolder);
+        if (event.getFileMetadata() == null) {
+            if (isImage(serverFile)) {
+                setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), getImageUri(serverFile));
+            } else {
+                setUpDrawable(serverFile, viewHolder);
+            }
+        } else {
+            setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), event.getFileMetadata().getArtworkUrl());
+        }
+    }
+
     private boolean isImage(ServerFile file) {
         return Mimes.match(file.getMime()) == Mimes.Type.IMAGE;
     }
@@ -107,17 +156,17 @@ public class MainTVPresenter extends Presenter {
         return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
     }
 
-    private void setUpImageIcon(ServerFile file, ImageView fileIconView) {
+    private void setUpImageIcon(ServerFile file, ImageView fileIconView, String url) {
         Glide.with(fileIconView.getContext())
-                .load(getImageUri(file))
+                .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .placeholder(Mimes.getFileIcon(file))
                 .into(fileIconView);
     }
 
-    private Uri getImageUri(ServerFile file) {
-        return mServerClient.getFileUri(file.getParentShare(), file);
+    private String getImageUri(ServerFile file) {
+        return mServerClient.getFileUri(file.getParentShare(), file).toString();
     }
 
     private void startFileOpening(ServerFile file) {
@@ -129,7 +178,7 @@ public class MainTVPresenter extends Presenter {
 
     }
 
-    private class ViewHolder extends Presenter.ViewHolder {
+    public class ViewHolder extends Presenter.ViewHolder {
         private ImageCardView mCardView;
 
         ViewHolder(View view) {

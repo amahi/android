@@ -195,9 +195,7 @@ public class MainTVFragment extends BrowseFragment {
             for (int i = 0; i < serverFiles.size(); i++) {
                 gridRowAdapter.add(serverFiles.get(i));
             }
-            int i;
-
-            for (i = 0; i < serverShareList.size(); i++) {
+            for (int i = 0; i < serverShareList.size(); i++) {
                 if (shareName.matches(serverShareList.get(i).getName())) {
                     HeaderItem headerItem = new HeaderItem(shareName);
                     mRowsAdapter.add(new ListRow(headerItem, gridRowAdapter));

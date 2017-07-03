@@ -64,7 +64,7 @@ public class ServerFilesActivity extends AppCompatActivity
 		public static final String FILE_ACTION = "file_action";
 	}
 
-	private static enum FileAction
+	private enum FileAction
 	{
 		OPEN, SHARE
 	}

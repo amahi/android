@@ -26,40 +26,52 @@ import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 /**
  * Server API declaration.
  */
-public interface ServerApi
-{
-	@GET("/shares")
-	Call<List<ServerShare>> getShares(
-		@Header("Session") String session);
+public interface ServerApi {
+    @GET("/shares")
+    Call<List<ServerShare>> getShares(
+            @Header("Session") String session);
 
-	@GET("/files")
-	Call<List<ServerFile>> getFiles(
-		@Header("Session") String session,
-		@Query("s") String share,
-		@Query("p") String path);
+    @GET("/files")
+    Call<List<ServerFile>> getFiles(
+            @Header("Session") String session,
+            @Query("s") String share,
+            @Query("p") String path);
 
     @DELETE("/files")
     Call<Void> deleteFile(
-    	@Header("Session") String session,
-		@Query("s") String share,
-		@Query("p") String path);
+            @Header("Session") String session,
+            @Query("s") String share,
+            @Query("p") String path);
 
-	@GET("/md")
-	Call<ServerFileMetadata> getFileMetadata(
-		@Header("Session") String session,
-		@Query("f") String fileName,
-		@Query("h") String hint);
+    @Multipart
+    @POST("/files")
+    Call<ResponseBody> uploadFile(
+            @Header("Session") String session,
+            @Part("s") String share,
+            @Part("p") String path,
+            @Part MultipartBody.Part file);
 
-	@GET("/apps")
-	Call<List<ServerApp>> getApps(
-		@Header("Session") String session);
+    @GET("/md")
+    Call<ServerFileMetadata> getFileMetadata(
+            @Header("Session") String session,
+            @Query("f") String fileName,
+            @Query("h") String hint);
+
+    @GET("/apps")
+    Call<List<ServerApp>> getApps(
+            @Header("Session") String session);
 }

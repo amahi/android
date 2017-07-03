@@ -20,6 +20,7 @@
 package org.amahi.anywhere.server.client;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.squareup.otto.Subscribe;
 
@@ -41,16 +42,26 @@ import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.server.response.ServerAppsResponse;
 import org.amahi.anywhere.server.response.ServerFileDeleteResponse;
+import org.amahi.anywhere.server.response.ServerFileUploadResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 import org.amahi.anywhere.util.Time;
 
+import java.io.File;
+import java.net.URI;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -217,6 +228,20 @@ public class ServerClient
 	public void deleteFile(ServerShare share, ServerFile serverFile) {
 		serverApi.deleteFile(server.getSession(), share.getName(), serverFile.getPath())
                 .enqueue(new ServerFileDeleteResponse());
+	}
+
+	public void uploadFile(URI fileUri, ServerShare share, ServerFile serverFile) {
+		final File file = new File(fileUri);
+//        ProgressRequestBody requestBody = new ProgressRequestBody(file, uploadCallbacks);
+		MultipartBody.Part filePart = MultipartBody.Part.createFormData("file",
+				file.getName(),
+				RequestBody.create(MediaType.parse("image/*"), file));
+		String path = "";
+		if (serverFile.getParentFile() != null)
+			path = serverFile.getParentFile().getPath();
+
+		serverApi.uploadFile(server.getSession(), share.getName(), path, filePart)
+				.enqueue(new ServerFileUploadResponse());
 	}
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {

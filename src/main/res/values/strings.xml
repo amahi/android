@@ -42,6 +42,7 @@
     <string name="menu_delete">Delete</string>
     <string name="menu_sort">Sort</string>
     <string name="menu_search">Search</string>
+    <string name="menu_file_upload">Upload File</string>
 
     <string name="message_empty_apps">No Apps</string>
     <string name="message_empty_files">No Files</string>
@@ -67,6 +68,11 @@
     <string name="message_delete_file">Are you sure you want to delete this file?\nThis action cannot be undone.</string>
     <string name="message_delete_progress">Deleting</string>
     <string name="message_delete_file_error">Some error occurred while deleting file</string>
+    <string name="message_file_chooser">Select Picture to Upload</string>
+    <string name="message_file_upload_title">Uploading your file</string>
+    <string name="message_file_upload_body">This may take some time.</string>
+    <string name="message_file_upload_complete">File uploaded successfully</string>
+    <string name="message_file_upload_error">There was some error in uploading your file</string>
 
     <string name="share_subject">Check out my Amahi home server!</string>
     <string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>

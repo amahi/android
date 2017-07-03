@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -64,6 +65,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
+import org.amahi.anywhere.bus.ServerFileUploadEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -74,6 +76,7 @@ import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.ViewDirector;
 
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -81,6 +84,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import static android.app.Activity.RESULT_OK;
 import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
 /**
@@ -96,7 +100,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
 	private LinearLayout mErrorLinearLayout;
-    private ProgressDialog deleteProgressDialog;
+    private ProgressDialog deleteProgressDialog, uploadProgressDialog;
     private int deleteFilePosition;
 
     private static final class State
@@ -109,6 +113,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private static final int CALLBACK_NUMBER = 100;
+	private static final int RESULT_UPLOAD_IMAGE = 101;
 
 	private enum FilesSort
 	{
@@ -142,7 +147,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 		setUpFiles(savedInstanceState);
 
-        setUpDeleteProgressDialog();
+        setUpProgressDialogs();
 	}
 
     private void setUpInjections() {
@@ -157,11 +162,16 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		setUpFilesContentRefreshing();
 	}
 
-    private void setUpDeleteProgressDialog() {
+    private void setUpProgressDialogs() {
         deleteProgressDialog = new ProgressDialog(getContext());
         deleteProgressDialog.setMessage(getString(R.string.message_delete_progress));
         deleteProgressDialog.setIndeterminate(true);
         deleteProgressDialog.setCancelable(false);
+
+		uploadProgressDialog = new ProgressDialog(getContext());
+		uploadProgressDialog.setTitle(getString(R.string.message_file_upload_title));
+		uploadProgressDialog.setMessage(getString(R.string.message_file_upload_body));
+		uploadProgressDialog.setCancelable(false);
     }
 
 	private void setUpFilesMenu() {
@@ -613,6 +623,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 				setUpFilesContentSortSwitched();
 				setUpFilesContentSortIcon(menuItem);
 				return true;
+			case R.id.menu_file_upload:
+				showFileChooser();
+				return true;
 
 			default:
 				return super.onOptionsItemSelected(menuItem);
@@ -672,7 +685,64 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		}
 	}
 
-	@Override
+	private void showFileChooser() {
+		Intent intent = new Intent();
+		// Show only images
+		intent.setType("image/*");
+		intent.setAction(Intent.ACTION_GET_CONTENT);
+		// Always show the chooser (if there are multiple options available)
+		this.startActivityForResult(Intent.createChooser(intent, getString(R.string.message_file_chooser)), RESULT_UPLOAD_IMAGE);
+	}
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case RESULT_UPLOAD_IMAGE:
+                    if (data != null) {
+                        Uri selectedImageUri = data.getData();
+						String filePath = null;
+						if ("content".equals(selectedImageUri.getScheme())) {
+							Cursor cursor = getContext().getContentResolver()
+									.query(selectedImageUri,
+											new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }
+											, null, null, null);
+							if (cursor != null) {
+								cursor.moveToFirst();
+								filePath = "file://" + cursor.getString(0).replace(" ", "%20");
+								cursor.close();
+							}
+						} else {
+							filePath = selectedImageUri.toString();
+						}
+
+						if (filePath != null) {
+							serverClient.uploadFile(URI.create(filePath), getShare(), getFile(0));
+							uploadProgressDialog.show();
+						}
+                    }
+                    break;
+            }
+        }
+    }
+
+	@Subscribe
+	public void onFileUploadEvent(ServerFileUploadEvent fileUploadEvent) {
+		uploadProgressDialog.dismiss();
+		if (fileUploadEvent.wasUploadSuccessful()) {
+			if (!isMetadataAvailable()) {
+				getFilesAdapter().notifyDataSetChanged();
+			} else {
+				getFilesAdapter().notifyDataSetChanged();
+			}
+			Toast.makeText(getContext(), R.string.message_file_upload_complete, Toast.LENGTH_SHORT).show();
+		} else {
+			Toast.makeText(getContext(), R.string.message_file_upload_error, Toast.LENGTH_SHORT).show();
+		}
+	}
+
+		@Override
 	public void onResume() {
 		super.onResume();
 

@@ -61,8 +61,8 @@ public interface ServerApi {
     @POST("/files")
     Call<ResponseBody> uploadFile(
             @Header("Session") String session,
-            @Part("s") String share,
-            @Part("p") String path,
+            @Query("s") String share,
+            @Query("p") String path,
             @Part MultipartBody.Part file);
 
     @GET("/md")

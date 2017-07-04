@@ -230,15 +230,19 @@ public class ServerClient
                 .enqueue(new ServerFileDeleteResponse());
 	}
 
-	public void uploadFile(URI fileUri, ServerShare share, ServerFile serverFile) {
+	public void uploadFile(URI fileUri, ServerShare share) {
+		this.uploadFile(fileUri, share, null);
+	}
+
+	public void uploadFile(URI fileUri, ServerShare share, ServerFile directory) {
 		final File file = new File(fileUri);
 //        ProgressRequestBody requestBody = new ProgressRequestBody(file, uploadCallbacks);
 		MultipartBody.Part filePart = MultipartBody.Part.createFormData("file",
 				file.getName(),
 				RequestBody.create(MediaType.parse("image/*"), file));
-		String path = "";
-		if (serverFile.getParentFile() != null)
-			path = serverFile.getParentFile().getPath();
+		String path = null;
+		if (directory != null)
+			path = directory.getPath();
 
 		serverApi.uploadFile(server.getSession(), share.getName(), path, filePart)
 				.enqueue(new ServerFileUploadResponse());

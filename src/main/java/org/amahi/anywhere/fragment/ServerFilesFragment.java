@@ -31,7 +31,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -112,7 +114,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		public static final String FILES_SORT = "files_sort";
 	}
 
-	private static final int CALLBACK_NUMBER = 100;
+	private static final int RESULT_PERMISSION = 100;
 	private static final int RESULT_UPLOAD_IMAGE = 101;
 
 	private enum FilesSort
@@ -251,39 +253,39 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	@RequiresApi(api = Build.VERSION_CODES.M)
-	private void checkPermissions(){
-	int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+	private void checkPermissions() {
+		int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-	if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {
+		if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {
 
-		requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CALLBACK_NUMBER);
+			requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RESULT_PERMISSION);
 
-	} else {
-		startFileSharing(getCheckedFile());
+		} else {
+			startFileSharing(getCheckedFile());
 		}
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-	switch (requestCode) {
-		case 100: {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				Snackbar.make(getView(),getString(R.string.share_permission_granted),Snackbar.LENGTH_LONG).show();
-			} else {
-				Snackbar.make(getView(),getString(R.string.share_permission_denied),Snackbar.LENGTH_LONG)
-						.setAction("Permissions", new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								Intent intent = new Intent();
-								intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-								Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
-								intent.setData(uri);
-								startActivity(intent);
-							}
-						})
-						.show();
+	public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+		switch (requestCode) {
+			case RESULT_PERMISSION: {
+				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					Snackbar.make(getView(), getString(R.string.share_permission_granted), Snackbar.LENGTH_LONG).show();
+				} else {
+					Snackbar.make(getView(), getString(R.string.share_permission_denied), Snackbar.LENGTH_LONG)
+							.setAction("Permissions", new View.OnClickListener() {
+								@Override
+								public void onClick(View v) {
+									Intent intent = new Intent();
+									intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+									Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+									intent.setData(uri);
+									startActivity(intent);
+								}
+							})
+							.show();
+				}
 			}
-		   }
 		}
 	}
 
@@ -294,7 +296,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
     private void deleteFile(final ServerFile file) {
         deleteFilePosition = getListView().getCheckedItemPosition();
         new AlertDialog.Builder(getContext())
-                .setMessage(R.string.message_delete_file)
+				.setTitle(R.string.message_delete_file_title)
+                .setMessage(R.string.message_delete_file_body)
                 .setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -686,10 +689,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void showFileChooser() {
-		Intent intent = new Intent();
+		Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 		// Show only images
 		intent.setType("image/*");
-		intent.setAction(Intent.ACTION_GET_CONTENT);
 		// Always show the chooser (if there are multiple options available)
 		this.startActivityForResult(Intent.createChooser(intent, getString(R.string.message_file_chooser)), RESULT_UPLOAD_IMAGE);
 	}
@@ -704,13 +706,13 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
                         Uri selectedImageUri = data.getData();
 						String filePath = null;
 						if ("content".equals(selectedImageUri.getScheme())) {
+							String[] filePathColumn = {MediaStore.Images.Media.DATA};
 							Cursor cursor = getContext().getContentResolver()
-									.query(selectedImageUri,
-											new String[] { android.provider.MediaStore.Images.ImageColumns.DATA }
-											, null, null, null);
+									.query(selectedImageUri, filePathColumn, null, null, null);
 							if (cursor != null) {
 								cursor.moveToFirst();
-								filePath = "file://" + cursor.getString(0).replace(" ", "%20");
+								int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+								filePath = "file://" + cursor.getString(columnIndex).replace(" ", "%20");
 								cursor.close();
 							}
 						} else {
@@ -718,7 +720,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 						}
 
 						if (filePath != null) {
-							serverClient.uploadFile(URI.create(filePath), getShare(), getFile(0));
+							if (!isDirectoryAvailable()) {
+								serverClient.uploadFile(URI.create(filePath), getShare());
+							} else {
+								serverClient.uploadFile(URI.create(filePath), getShare(), getDirectory());
+							}
 							uploadProgressDialog.show();
 						}
                     }

@@ -22,6 +22,9 @@ package org.amahi.anywhere.util;
 import android.os.Handler;
 import android.os.Looper;
 
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,21 +39,11 @@ import okio.BufferedSink;
  */
 public class ProgressRequestBody extends RequestBody {
     private File mFile;
-    private UploadCallbacks mListener;
 
     private static final int DEFAULT_BUFFER_SIZE = 2048;
 
-    public interface UploadCallbacks {
-        void onProgressUpdate(int percentage);
-
-        void onError();
-
-        void onFinish();
-    }
-
-    public ProgressRequestBody(final File file, final UploadCallbacks listener) {
+    public ProgressRequestBody(final File file) {
         mFile = file;
-        mListener = listener;
     }
 
     @Override
@@ -92,14 +85,14 @@ public class ProgressRequestBody extends RequestBody {
         private long mUploaded;
         private long mTotal;
 
-        public ProgressUpdater(long uploaded, long total) {
+        ProgressUpdater(long uploaded, long total) {
             mUploaded = uploaded;
             mTotal = total;
         }
 
         @Override
         public void run() {
-            mListener.onProgressUpdate((int) (100 * mUploaded / mTotal));
+            BusProvider.getBus().post(new ServerFileUploadProgressEvent((int) (100 * mUploaded / mTotal)));
         }
     }
 }

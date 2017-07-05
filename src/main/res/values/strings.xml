@@ -71,7 +71,6 @@
     <string name="message_delete_file_error">Some error occurred while deleting file</string>
     <string name="message_file_chooser">Select Picture to Upload</string>
     <string name="message_file_upload_title">Uploading your file</string>
-    <string name="message_file_upload_body">This may take some time.</string>
     <string name="message_file_upload_complete">File uploaded successfully</string>
     <string name="message_file_upload_error">There was some error in uploading your file</string>
 

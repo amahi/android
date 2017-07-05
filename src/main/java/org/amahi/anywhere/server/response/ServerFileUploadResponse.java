@@ -20,7 +20,7 @@
 package org.amahi.anywhere.server.response;
 
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.ServerFileUploadEvent;
+import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -37,13 +37,13 @@ public class ServerFileUploadResponse implements Callback<ResponseBody> {
     @Override
     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
         if (response.isSuccessful()) {
-            BusProvider.getBus().post(new ServerFileUploadEvent(true));
+            BusProvider.getBus().post(new ServerFileUploadCompleteEvent(true));
         } else
             this.onFailure(call, new HttpException(response));
     }
 
     @Override
     public void onFailure(Call<ResponseBody> call, Throwable t) {
-        BusProvider.getBus().post(new ServerFileUploadEvent(false));
+        BusProvider.getBus().post(new ServerFileUploadCompleteEvent(false));
     }
 }

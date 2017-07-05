@@ -47,6 +47,7 @@ import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
+import org.amahi.anywhere.util.ProgressRequestBody;
 import org.amahi.anywhere.util.Time;
 
 import java.io.File;
@@ -236,10 +237,9 @@ public class ServerClient
 
 	public void uploadFile(URI fileUri, ServerShare share, ServerFile directory) {
 		final File file = new File(fileUri);
-//        ProgressRequestBody requestBody = new ProgressRequestBody(file, uploadCallbacks);
 		MultipartBody.Part filePart = MultipartBody.Part.createFormData("file",
 				file.getName(),
-				RequestBody.create(MediaType.parse("image/*"), file));
+                new ProgressRequestBody(file));
 		String path = null;
 		if (directory != null)
 			path = directory.getPath();

@@ -67,7 +67,8 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
-import org.amahi.anywhere.bus.ServerFileUploadEvent;
+import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
+import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -172,8 +173,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 		uploadProgressDialog = new ProgressDialog(getContext());
 		uploadProgressDialog.setTitle(getString(R.string.message_file_upload_title));
-		uploadProgressDialog.setMessage(getString(R.string.message_file_upload_body));
 		uploadProgressDialog.setCancelable(false);
+		uploadProgressDialog.setIndeterminate(false);
+		uploadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
     }
 
 	private void setUpFilesMenu() {
@@ -734,9 +736,16 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
     }
 
 	@Subscribe
-	public void onFileUploadEvent(ServerFileUploadEvent fileUploadEvent) {
+	public void onFileUploadProgressEvent(ServerFileUploadProgressEvent fileUploadProgressEvent) {
+		if (uploadProgressDialog.isShowing()) {
+			uploadProgressDialog.setProgress(fileUploadProgressEvent.getProgress());
+		}
+	}
+
+		@Subscribe
+	public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent fileUploadCompleteEvent) {
 		uploadProgressDialog.dismiss();
-		if (fileUploadEvent.wasUploadSuccessful()) {
+		if (fileUploadCompleteEvent.wasUploadSuccessful()) {
 			if (!isMetadataAvailable()) {
 				getFilesAdapter().notifyDataSetChanged();
 			} else {

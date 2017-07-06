@@ -25,14 +25,12 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -87,8 +85,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+
 import static android.app.Activity.RESULT_OK;
-import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
 /**
  * Files fragment. Shows files list.
@@ -98,15 +98,17 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	AdapterView.OnItemLongClickListener,
 	ActionMode.Callback,
 	SearchView.OnQueryTextListener,
-	FilesFilterBaseAdapter.onFilterListChange
+	FilesFilterBaseAdapter.onFilterListChange,
+	EasyPermissions.PermissionCallbacks
 {
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
 	private LinearLayout mErrorLinearLayout;
     private ProgressDialog deleteProgressDialog, uploadProgressDialog;
     private int deleteFilePosition;
+	private int lastCheckedFileIndex = -1;
 
-    private static final class State
+	private static final class State
 	{
 		private State() {
 		}
@@ -115,8 +117,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		public static final String FILES_SORT = "files_sort";
 	}
 
-	private static final int RESULT_PERMISSION = 100;
-	private static final int RESULT_UPLOAD_IMAGE = 101;
+	private static final int SHARE_PERMISSIONS = 101;
+	private static final int FILE_UPLOAD_PERMISSION = 102;
+	private static final int RESULT_UPLOAD_IMAGE = 201;
 
 	private enum FilesSort
 	{
@@ -235,67 +238,87 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		getListView().requestLayout();
 	}
 
-	@RequiresApi(api = Build.VERSION_CODES.M)
 	@Override
 	public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
 			case R.id.menu_share:
-				checkPermissions();
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+					checkSharePermissions(actionMode);
+				} else {
+					startFileSharing(getCheckedFile());
+					actionMode.finish();
+				}
 				break;
 			case R.id.menu_delete:
-				deleteFile(getCheckedFile());
+				deleteFile(getCheckedFile(), actionMode);
                 break;
 			default:
 				return false;
 		}
 
-		actionMode.finish();
-
 		return true;
 	}
 
 	@RequiresApi(api = Build.VERSION_CODES.M)
-	private void checkPermissions() {
-		int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-		if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {
-
-			requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, RESULT_PERMISSION);
-
-		} else {
+	private void checkSharePermissions(ActionMode actionMode) {
+		String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+		if (EasyPermissions.hasPermissions(getContext(), perms)) {
 			startFileSharing(getCheckedFile());
+		} else {
+			lastCheckedFileIndex = getListView().getCheckedItemPosition();
+			EasyPermissions.requestPermissions(this, getString(R.string.share_permission),
+					SHARE_PERMISSIONS, perms);
+		}
+		actionMode.finish();
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		// Forward results to EasyPermissions
+		EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+	}
+
+	@Override
+	public void onPermissionsGranted(int requestCode, List<String> perms) {
+		if (requestCode == SHARE_PERMISSIONS) {
+			if (lastCheckedFileIndex != -1) {
+				startFileSharing(getFile(lastCheckedFileIndex));
+			}
+		} else if (requestCode == FILE_UPLOAD_PERMISSION) {
+			showFileChooser();
 		}
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-		switch (requestCode) {
-			case RESULT_PERMISSION: {
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					Snackbar.make(getView(), getString(R.string.share_permission_granted), Snackbar.LENGTH_LONG).show();
-				} else {
-					Snackbar.make(getView(), getString(R.string.share_permission_denied), Snackbar.LENGTH_LONG)
-							.setAction("Permissions", new View.OnClickListener() {
-								@Override
-								public void onClick(View v) {
-									Intent intent = new Intent();
-									intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-									Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
-									intent.setData(uri);
-									startActivity(intent);
-								}
-							})
-							.show();
-				}
+	public void onPermissionsDenied(int requestCode, List<String> perms) {
+		if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+			if (requestCode == SHARE_PERMISSIONS) {
+				showPermissionSnackBar(getString(R.string.share_permission_denied));
+			} else if (requestCode == FILE_UPLOAD_PERMISSION) {
+				showPermissionSnackBar(getString(R.string.file_upload_permission_denied));
 			}
 		}
+
+	}
+
+	private void showPermissionSnackBar(String message) {
+		Snackbar.make(getView(), message, Snackbar.LENGTH_LONG)
+				.setAction(R.string.menu_settings, new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						new AppSettingsDialog.Builder(ServerFilesFragment.this).build().show();
+					}
+				})
+				.show();
 	}
 
 	private void startFileSharing(ServerFile file) {
 		BusProvider.getBus().post(new ServerFileSharingEvent(getShare(), file));
 	}
 
-    private void deleteFile(final ServerFile file) {
+    private void deleteFile(final ServerFile file, final ActionMode actionMode) {
         deleteFilePosition = getListView().getCheckedItemPosition();
         new AlertDialog.Builder(getContext())
 				.setTitle(R.string.message_delete_file_title)
@@ -305,6 +328,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
                     public void onClick(DialogInterface dialog, int which) {
                         deleteProgressDialog.show();
                         serverClient.deleteFile(getShare(), file);
+						actionMode.finish();
                     }
                 })
                 .setNegativeButton(R.string.button_no, null)
@@ -629,7 +653,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 				setUpFilesContentSortIcon(menuItem);
 				return true;
 			case R.id.menu_file_upload:
-				showFileChooser();
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+					checkFileReadPermissions();
+				} else {
+					showFileChooser();
+				}
 				return true;
 
 			default:
@@ -690,11 +718,20 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		}
 	}
 
+	@RequiresApi(api = Build.VERSION_CODES.M)
+	private void checkFileReadPermissions() {
+		String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+		if (EasyPermissions.hasPermissions(getContext(), perms)) {
+			showFileChooser();
+		} else {
+			EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
+					FILE_UPLOAD_PERMISSION, perms);
+		}
+	}
+
 	private void showFileChooser() {
 		Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-		// Show only images
 		intent.setType("image/*");
-		// Always show the chooser (if there are multiple options available)
 		this.startActivityForResult(Intent.createChooser(intent, getString(R.string.message_file_chooser)), RESULT_UPLOAD_IMAGE);
 	}
 

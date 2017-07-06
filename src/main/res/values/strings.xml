@@ -81,8 +81,10 @@
     <string name="application_not_found">No Handler Application Found</string>
     <string name="message_logout">Logged out successfully</string>
     <string name="share_screen_title">Share Using</string>
-    <string name="share_permission_granted">Storage permission has been enabled please reshare to download.</string>
-    <string name="share_permission_denied">You have denied the permissions for sharing. Enable permissions to continue.</string>
+    <string name="share_permission">Storage permission is required to download the file</string>
+    <string name="share_permission_denied">You have denied permissions for storage. Enable to continue</string>
+    <string name="file_upload_permission">File read permission is required to access files on your device</string>
+    <string name="file_upload_permission_denied">You have denied permissions for reading files. Enable to continue</string>
 
     <string name="label_previous">Previous</string>
     <string name="label_next">Next</string>

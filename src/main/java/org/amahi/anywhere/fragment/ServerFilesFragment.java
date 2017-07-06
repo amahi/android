@@ -76,8 +76,8 @@ import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.ViewDirector;
 
+import java.io.File;
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -751,7 +751,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 							if (cursor != null) {
 								cursor.moveToFirst();
 								int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-								filePath = "file://" + cursor.getString(columnIndex).replace(" ", "%20");
+								filePath = "file://" + cursor.getString(columnIndex);
 								cursor.close();
 							}
 						} else {
@@ -759,18 +759,53 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 						}
 
 						if (filePath != null) {
-							if (!isDirectoryAvailable()) {
-								serverClient.uploadFile(URI.create(filePath), getShare());
+							final File file = new File(filePath);
+							String fileName = file.getName();
+							if (checkForDuplicateFile(fileName)) {
+								new AlertDialog.Builder(getContext())
+										.setTitle(R.string.duplicate_file_upload)
+										.setMessage(getString(R.string.duplicate_file_upload_body, fileName))
+										.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												uploadFile(file);
+											}
+										})
+										.setNegativeButton(R.string.button_no, null)
+										.show();
 							} else {
-								serverClient.uploadFile(URI.create(filePath), getShare(), getDirectory());
+								uploadFile(file);
 							}
-							uploadProgressDialog.show();
 						}
-                    }
-                    break;
-            }
-        }
-    }
+					}
+					break;
+			}
+		}
+	}
+
+    private void uploadFile(File file) {
+		if (!isDirectoryAvailable()) {
+			serverClient.uploadFile(file, getShare());
+		} else {
+			serverClient.uploadFile(file, getShare(), getDirectory());
+		}
+		uploadProgressDialog.show();
+	}
+
+    private boolean checkForDuplicateFile(String fileName) {
+		List<ServerFile> files;
+		if (!isMetadataAvailable()) {
+			files = getFilesAdapter().getItems();
+		} else {
+			files = getFilesAdapter().getItems();
+		}
+		for (ServerFile serverFile : files) {
+			if (serverFile.getName().equals(fileName)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	@Subscribe
 	public void onFileUploadProgressEvent(ServerFileUploadProgressEvent fileUploadProgressEvent) {

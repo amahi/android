@@ -231,16 +231,15 @@ public class ServerClient
                 .enqueue(new ServerFileDeleteResponse());
 	}
 
-	public void uploadFile(URI fileUri, ServerShare share) {
-		this.uploadFile(fileUri, share, null);
+	public void uploadFile(File file, ServerShare share) {
+		this.uploadFile(file, share, null);
 	}
 
-	public void uploadFile(URI fileUri, ServerShare share, ServerFile directory) {
-		final File file = new File(fileUri);
+	public void uploadFile(File file, ServerShare share, ServerFile directory) {
 		MultipartBody.Part filePart = MultipartBody.Part.createFormData("file",
 				file.getName(),
                 new ProgressRequestBody(file));
-		String path = null;
+		String path = "/";
 		if (directory != null)
 			path = directory.getPath();
 

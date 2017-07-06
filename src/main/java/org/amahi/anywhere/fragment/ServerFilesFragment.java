@@ -731,7 +731,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	private void showFileChooser() {
 		Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-		intent.setType("image/*");
+		intent.setType("image/* video/*");
 		this.startActivityForResult(Intent.createChooser(intent, getString(R.string.message_file_chooser)), RESULT_UPLOAD_IMAGE);
 	}
 

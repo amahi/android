@@ -69,7 +69,7 @@
     <string name="message_delete_file_body">This action cannot be undone.</string>
     <string name="message_delete_progress">Deleting</string>
     <string name="message_delete_file_error">Some error occurred while deleting file</string>
-    <string name="message_file_chooser">Select Picture to Upload</string>
+    <string name="message_file_chooser">Select Media Files to Upload</string>
     <string name="message_file_upload_title">Uploading your file</string>
     <string name="message_file_upload_complete">File uploaded successfully</string>
     <string name="message_file_upload_error">There was some error in uploading your file</string>

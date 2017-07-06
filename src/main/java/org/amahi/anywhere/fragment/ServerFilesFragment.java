@@ -751,7 +751,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 							if (cursor != null) {
 								cursor.moveToFirst();
 								int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-								filePath = "file://" + cursor.getString(columnIndex);
+								filePath = cursor.getString(columnIndex);
 								cursor.close();
 							}
 						} else {

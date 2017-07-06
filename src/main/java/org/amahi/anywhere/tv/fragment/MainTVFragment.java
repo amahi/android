@@ -136,12 +136,11 @@ public class MainTVFragment extends BrowseFragment {
         return new OnItemViewSelectedListener() {
             @Override
             public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
+                mBackgroundManager.clearDrawable();
                 if (item instanceof ServerFile) {
                     ServerFile serverFile = (ServerFile) item;
                     if (isImage(serverFile)) {
                         updateBackground(getImageUri(serverFile).toString());
-                    } else {
-                        mBackgroundManager.clearDrawable();
                     }
                 }
             }

@@ -66,7 +66,7 @@ public class MainTVPresenter extends Presenter {
     @Override
     public Presenter.ViewHolder onCreateViewHolder(ViewGroup parent) {
         mDefaultBackgroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.background_primary);
+                ContextCompat.getColor(parent.getContext(), R.color.background_secondary);
         mSelectedBackgroundColor =
                 ContextCompat.getColor(parent.getContext(), R.color.primary);
         ImageCardView cardView = new ImageCardView(parent.getContext()) {
@@ -93,6 +93,7 @@ public class MainTVPresenter extends Presenter {
         final ServerFile serverFile = (ServerFile) item;
         ViewHolder viewHolder = (ViewHolder) viewHolderArgs;
         viewHolder.mCardView.setTitleText(serverFile.getName());
+        viewHolder.mCardView.setInfoAreaBackgroundColor(mDefaultBackgroundColor);
         if (isMetadataAvailable(serverFile)) {
             View fileView = viewHolder.view;
             fileView.setTag(ServerFilesMetadataAdapter.Tags.SHARE, serverFile.getParentShare());

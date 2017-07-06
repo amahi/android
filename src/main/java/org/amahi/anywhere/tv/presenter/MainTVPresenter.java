@@ -32,6 +32,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.squareup.otto.Subscribe;
 
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileMetadataRetrievedEvent;
@@ -50,6 +51,8 @@ import java.util.List;
 public class MainTVPresenter extends Presenter {
 
     private Context mContext;
+    private int mSelectedBackgroundColor = -1;
+    private int mDefaultBackgroundColor = -1;
     private ServerClient mServerClient;
     private List<ServerFile> mServerFileList;
 
@@ -62,10 +65,27 @@ public class MainTVPresenter extends Presenter {
 
     @Override
     public Presenter.ViewHolder onCreateViewHolder(ViewGroup parent) {
-        ImageCardView cardView = new ImageCardView(mContext);
+        mDefaultBackgroundColor =
+                ContextCompat.getColor(parent.getContext(), R.color.background_primary);
+        mSelectedBackgroundColor =
+                ContextCompat.getColor(parent.getContext(), R.color.primary);
+        ImageCardView cardView = new ImageCardView(parent.getContext()) {
+            @Override
+            public void setSelected(boolean selected) {
+                updateCardBackgroundColor(this, selected);
+                super.setSelected(selected);
+            }
+        };
+
         cardView.setFocusable(true);
         cardView.setFocusableInTouchMode(true);
         return new ViewHolder(cardView);
+    }
+
+    private void updateCardBackgroundColor(ImageCardView view, boolean selected) {
+        int color = selected ? mSelectedBackgroundColor : mDefaultBackgroundColor;
+
+        view.setInfoAreaBackgroundColor(color);
     }
 
     @Override
@@ -175,7 +195,6 @@ public class MainTVPresenter extends Presenter {
 
     @Override
     public void onUnbindViewHolder(Presenter.ViewHolder viewHolder) {
-
     }
 
     public class ViewHolder extends Presenter.ViewHolder {

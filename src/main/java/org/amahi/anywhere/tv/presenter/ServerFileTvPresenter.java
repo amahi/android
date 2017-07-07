@@ -20,10 +20,12 @@
 package org.amahi.anywhere.tv.presenter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
+import android.text.format.Formatter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -61,15 +63,14 @@ public class ServerFileTvPresenter extends Presenter {
         final ServerFile serverFile = (ServerFile) item;
         ViewHolder view = ((ViewHolder) viewHolder);
         view.mCardView.setTitleText(serverFile.getName());
-
+        view.mCardView.setBackgroundColor(Color.WHITE);
         if (isDirectory(serverFile)) {
             Date d = serverFile.getModificationTime();
             SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
             view.mCardView.setContentText(dt.format(d));
+        } else {
+            //view.mCardView.setContentText(Formatter.formatFileSize(mContext, serverFile.getSize()));
         }
-//        else {
-//            view.mCardView.setContentText(Formatter.formatFileSize(mContext, serverFile.getSize()));
-//        }
 
         view.mCardView.setMainImageDimensions(400, 300);
 

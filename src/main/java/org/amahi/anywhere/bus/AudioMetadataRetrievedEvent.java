@@ -21,17 +21,21 @@ package org.amahi.anywhere.bus;
 
 import android.graphics.Bitmap;
 
+import org.amahi.anywhere.tv.presenter.MainTVPresenter;
+
 public class AudioMetadataRetrievedEvent implements BusEvent {
     private final String audioTitle;
     private final String audioArtist;
     private final String audioAlbum;
     private final Bitmap audioAlbumArt;
+    private final MainTVPresenter.ViewHolder viewHolder;
 
-    public AudioMetadataRetrievedEvent(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {
+    public AudioMetadataRetrievedEvent(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt, MainTVPresenter.ViewHolder viewHolder) {
         this.audioTitle = audioTitle;
         this.audioArtist = audioArtist;
         this.audioAlbum = audioAlbum;
         this.audioAlbumArt = audioAlbumArt;
+        this.viewHolder = viewHolder;
     }
 
     public String getAudioTitle() {
@@ -48,5 +52,9 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
 
     public Bitmap getAudioAlbumArt() {
         return audioAlbumArt;
+    }
+
+    public MainTVPresenter.ViewHolder getViewHolder() {
+        return viewHolder;
     }
 }

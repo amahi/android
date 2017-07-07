@@ -28,6 +28,7 @@ import android.os.AsyncTask;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 
 import java.util.HashMap;
 
@@ -37,13 +38,24 @@ import java.util.HashMap;
  */
 public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent> {
     private final Uri audioUri;
+    private final MainTVPresenter.ViewHolder viewHolder;
 
     private AudioMetadataRetrievingTask(Uri audioUri) {
         this.audioUri = audioUri;
+        this.viewHolder = null;
+    }
+
+    private AudioMetadataRetrievingTask(Uri audioUri, MainTVPresenter.ViewHolder viewHolder) {
+        this.audioUri = audioUri;
+        this.viewHolder = viewHolder;
     }
 
     public static void execute(Uri audioUri) {
         new AudioMetadataRetrievingTask(audioUri).execute();
+    }
+
+    public static void execute(Uri audioUri, MainTVPresenter.ViewHolder viewHolder) {
+        new AudioMetadataRetrievingTask(audioUri, viewHolder).execute();
     }
 
     @Override
@@ -58,9 +70,9 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
             String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
             Bitmap audioAlbumArt = extractAlbumArt(audioMetadataRetriever);
 
-            return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt);
+            return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt, viewHolder);
         } catch (RuntimeException e) {
-            return new AudioMetadataRetrievedEvent(null, null, null, null);
+            return new AudioMetadataRetrievedEvent(null, null, null, null, viewHolder);
         } finally {
             audioMetadataRetriever.release();
         }

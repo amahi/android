@@ -21,6 +21,8 @@ package org.amahi.anywhere.tv.presenter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
@@ -34,12 +36,14 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
+import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.task.FileMetadataRetrievingTask;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -94,6 +98,7 @@ public class MainTVPresenter extends Presenter {
         ViewHolder viewHolder = (ViewHolder) viewHolderArgs;
         viewHolder.mCardView.setTitleText(serverFile.getName());
         viewHolder.mCardView.setInfoAreaBackgroundColor(mDefaultBackgroundColor);
+        viewHolder.mCardView.setBackgroundColor(Color.WHITE);
         if (isMetadataAvailable(serverFile)) {
             View fileView = viewHolder.view;
             fileView.setTag(ServerFilesMetadataAdapter.Tags.SHARE, serverFile.getParentShare());
@@ -108,6 +113,8 @@ public class MainTVPresenter extends Presenter {
 //                setSize(serverFile, viewHolder);
             if (isImage(serverFile)) {
                 setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), getImageUri(serverFile));
+            } else if (isAudio(serverFile)) {
+                AudioMetadataRetrievingTask.execute(getImageUri(serverFile), viewHolder);
             } else {
                 setUpDrawable(serverFile, viewHolder);
             }
@@ -166,29 +173,49 @@ public class MainTVPresenter extends Presenter {
                 setUpDrawable(serverFile, viewHolder);
             }
         } else {
-            setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), event.getFileMetadata().getArtworkUrl());
+            setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), Uri.parse(event.getFileMetadata().getArtworkUrl()));
         }
+    }
+
+    @Subscribe
+    public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
+        if (event.getAudioAlbumArt() != null) {
+            ViewHolder viewHolder = event.getViewHolder();
+            if(viewHolder!=null) {
+                viewHolder.mCardView.setContentText(event.getAudioArtist() + " - " + event.getAudioAlbum());
+                viewHolder.mCardView.getMainImageView().setImageBitmap(event.getAudioAlbumArt());
+            }
+        } else
+            setUpMusicLogo(event.getViewHolder());
+    }
+
+    private void setUpMusicLogo(ViewHolder viewHolder) {
+        viewHolder.mCardView.setMainImage(ContextCompat.getDrawable(mContext, R.drawable.tv_ic_audio));
     }
 
     private boolean isImage(ServerFile file) {
         return Mimes.match(file.getMime()) == Mimes.Type.IMAGE;
     }
 
+    private boolean isAudio(ServerFile file) {
+        return Mimes.match(file.getMime()) == Mimes.Type.AUDIO;
+    }
+
     private boolean isDirectory(ServerFile file) {
         return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
     }
 
-    private void setUpImageIcon(ServerFile file, ImageView fileIconView, String url) {
+    private void setUpImageIcon(ServerFile file, ImageView fileIconView, Uri url) {
         Glide.with(fileIconView.getContext())
-                .load(url)
+                .load(url.toString())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .placeholder(Mimes.getTVFileIcon(file))
                 .into(fileIconView);
     }
 
-    private String getImageUri(ServerFile file) {
-        return mServerClient.getFileUri(file.getParentShare(), file).toString();
+    private Uri getImageUri(ServerFile file) {
+        return mServerClient.getFileUri(file.getParentShare(), file);
     }
 
     private void startFileOpening(ServerFile file) {

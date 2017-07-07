@@ -104,8 +104,8 @@ public class MainTVPresenter extends Presenter {
             setUpDimensions(viewHolder);
             if (isDirectory(serverFile))
                 setDate(serverFile, viewHolder);
-            else
-                setSize(serverFile, viewHolder);
+//            else
+//                setSize(serverFile, viewHolder);
             if (isImage(serverFile)) {
                 setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), getImageUri(serverFile));
             } else {
@@ -149,7 +149,8 @@ public class MainTVPresenter extends Presenter {
     }
 
     private void setUpDrawable(ServerFile serverFile, ViewHolder viewHolder) {
-        viewHolder.mCardView.setMainImage(ContextCompat.getDrawable(mContext, Mimes.getFileIcon(serverFile)));
+        viewHolder.mCardView.setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        viewHolder.mCardView.setMainImage(ContextCompat.getDrawable(mContext, Mimes.getTVFileIcon(serverFile)));
     }
 
     @Subscribe
@@ -182,7 +183,7 @@ public class MainTVPresenter extends Presenter {
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
-                .placeholder(Mimes.getFileIcon(file))
+                .placeholder(Mimes.getTVFileIcon(file))
                 .into(fileIconView);
     }
 

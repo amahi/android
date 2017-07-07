@@ -32,6 +32,7 @@ import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
+import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.util.DisplayMetrics;
@@ -53,6 +54,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.presenter.IconHeaderPresenter;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 import org.amahi.anywhere.tv.presenter.SettingsItemPresenter;
 import org.amahi.anywhere.util.Intents;
@@ -74,6 +76,7 @@ public class MainTVFragment extends BrowseFragment {
     private ArrayObjectAdapter mRowsAdapter;
     private BackgroundManager mBackgroundManager;
     private DisplayMetrics mMetrics;
+    private ListRow settingsRow;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -109,6 +112,8 @@ public class MainTVFragment extends BrowseFragment {
 
         setHeadersState(HEADERS_ENABLED);
 
+        setHeaderPresenter();
+
         setHeadersTransitionOnBackEnabled(true);
 
         setBrandColor(Color.parseColor("#0277bd"));
@@ -116,10 +121,18 @@ public class MainTVFragment extends BrowseFragment {
         setSearchAffordanceColor(Color.GREEN);
     }
 
+    private void setHeaderPresenter() {
+        setHeaderPresenterSelector(new PresenterSelector() {
+            @Override
+            public Presenter getPresenter(Object item) {
+                return new IconHeaderPresenter();
+            }
+        });
+    }
+
     private void loadRows() {
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         addSettings(mRowsAdapter);
-        addSeparator(mRowsAdapter);
     }
 
     private void loadShares() {
@@ -188,6 +201,7 @@ public class MainTVFragment extends BrowseFragment {
     @Subscribe
     public void onFilesLoaded(ServerFilesLoadedEvent event) {
         List<ServerFile> serverFiles = sortFiles(event.getServerFiles());
+        ListRow listRow = null;
         ArrayObjectAdapter gridRowAdapter = new ArrayObjectAdapter(new MainTVPresenter(getActivity(), serverClient, serverFiles));
         if (serverFiles.size() != 0) {
             String shareName = serverFiles.get(0).getParentShare().getName();
@@ -197,18 +211,20 @@ public class MainTVFragment extends BrowseFragment {
             for (int i = 0; i < serverShareList.size(); i++) {
                 if (shareName.matches(serverShareList.get(i).getName())) {
                     HeaderItem headerItem = new HeaderItem(shareName);
-                    mRowsAdapter.add(new ListRow(headerItem, gridRowAdapter));
+                    listRow = new ListRow(headerItem, gridRowAdapter);
+                    mRowsAdapter.add(listRow);
                     serverShareList.remove(i);
+                    break;
                 }
             }
         }
+        if (listRow != null) {
+            int index1 = mRowsAdapter.indexOf(listRow);
+            int index2 = mRowsAdapter.indexOf(settingsRow);
+            mRowsAdapter.replace(index1, settingsRow);
+            mRowsAdapter.replace(index2, listRow);
+        }
         setAdapter(mRowsAdapter);
-    }
-
-    private void addSeparator(ArrayObjectAdapter adapter) {
-        HeaderItem separator = new HeaderItem("-------------------------");
-        adapter.add(new ListRow(separator, new ArrayObjectAdapter(new SettingsItemPresenter())));
-        setAdapter(adapter);
     }
 
     private void addSettings(ArrayObjectAdapter adapter) {
@@ -221,7 +237,8 @@ public class MainTVFragment extends BrowseFragment {
         gridRowAdapter.add(getString(R.string.pref_title_sign_out));
         gridRowAdapter.add(getString(R.string.pref_title_connection));
         gridRowAdapter.add(getString(R.string.pref_title_select_theme));
-        adapter.add(new ListRow(settings, gridRowAdapter));
+        settingsRow = new ListRow(settings, gridRowAdapter);
+        adapter.add(0, settingsRow);
     }
 
     private List<ServerFile> sortFiles(List<ServerFile> files) {

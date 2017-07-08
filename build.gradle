@@ -51,7 +51,14 @@ android {
         def apiFile = file("api.properties")
         def apiProperties = new Properties()
 
-        apiProperties.load(apiFile.newInputStream())
+        // NOTE-cpg: this fake api is here for the tests to pass
+        def fakeApiFile = file("fakeApi.properties")
+
+        if (apiFile.exists()) {
+            apiProperties.load(apiFile.newInputStream())
+        } else {
+            apiProperties.load(fakeApiFile.newInputStream())
+        }
 
         buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
         buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])

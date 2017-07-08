@@ -20,7 +20,6 @@
 package org.amahi.anywhere.server.client;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.squareup.otto.Subscribe;
 
@@ -51,18 +50,12 @@ import org.amahi.anywhere.util.ProgressRequestBody;
 import org.amahi.anywhere.util.Time;
 
 import java.io.File;
-import java.net.URI;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 
 /**
@@ -70,8 +63,7 @@ import retrofit2.Response;
  * {@link org.amahi.anywhere.server.api.ServerApi}. Reacts to network connection changes as well.
  */
 @Singleton
-public class ServerClient
-{
+public class ServerClient {
 	private final ApiAdapter apiAdapter;
 	private final ProxyApi proxyApi;
 	private ServerApi serverApi;
@@ -190,18 +182,18 @@ public class ServerClient
 
 	public void connectLocal() {
 		this.serverConnection = ApiConnection.LOCAL;
-        if (!isServerRouteLoaded()) {
-            return;
-        }
+		if (!isServerRouteLoaded()) {
+			return;
+		}
 		this.serverAddress = serverRoute.getLocalAddress();
 		this.serverApi = buildServerApi();
 	}
 
 	public void connectRemote() {
 		this.serverConnection = ApiConnection.REMOTE;
-        if (!isServerRouteLoaded()) {
-            return;
-        }
+		if (!isServerRouteLoaded()) {
+			return;
+		}
 		this.serverAddress = serverRoute.getRemoteAddress();
 		this.serverApi = buildServerApi();
 	}
@@ -228,7 +220,7 @@ public class ServerClient
 
 	public void deleteFile(ServerShare share, ServerFile serverFile) {
 		serverApi.deleteFile(server.getSession(), share.getName(), serverFile.getPath())
-                .enqueue(new ServerFileDeleteResponse());
+				.enqueue(new ServerFileDeleteResponse());
 	}
 
 	public void uploadFile(File file, ServerShare share) {
@@ -238,7 +230,7 @@ public class ServerClient
 	public void uploadFile(File file, ServerShare share, ServerFile directory) {
 		MultipartBody.Part filePart = MultipartBody.Part.createFormData("file",
 				file.getName(),
-                new ProgressRequestBody(file));
+				new ProgressRequestBody(file));
 		String path = "/";
 		if (directory != null)
 			path = directory.getPath();
@@ -249,19 +241,19 @@ public class ServerClient
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {
 		return Uri.parse(serverAddress)
-			.buildUpon()
-			.path("files")
-			.appendQueryParameter("s", share.getName())
-			.appendQueryParameter("p", file.getPath())
-			.appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
-			.appendQueryParameter("session", server.getSession())
-			.build();
+				.buildUpon()
+				.path("files")
+				.appendQueryParameter("s", share.getName())
+				.appendQueryParameter("p", file.getPath())
+				.appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
+				.appendQueryParameter("session", server.getSession())
+				.build();
 	}
 
 	public void getFileMetadata(ServerShare share, ServerFile file, Callback<ServerFileMetadata> callback) {
-        if ((server == null) || (share == null) || (file == null)){
-            return;
-        }
+		if ((server == null) || (share == null) || (file == null)) {
+			return;
+		}
 		serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag()).enqueue(callback);
 	}
 

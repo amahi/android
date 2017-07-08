@@ -73,6 +73,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.ViewDirector;
 
@@ -94,22 +95,20 @@ import static android.app.Activity.RESULT_OK;
  * Files fragment. Shows files list.
  */
 public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
-	AdapterView.OnItemClickListener,
-	AdapterView.OnItemLongClickListener,
-	ActionMode.Callback,
-	SearchView.OnQueryTextListener,
-	FilesFilterBaseAdapter.onFilterListChange,
-	EasyPermissions.PermissionCallbacks
-{
+		AdapterView.OnItemClickListener,
+		AdapterView.OnItemLongClickListener,
+		ActionMode.Callback,
+		SearchView.OnQueryTextListener,
+		FilesFilterBaseAdapter.onFilterListChange,
+		EasyPermissions.PermissionCallbacks {
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
 	private LinearLayout mErrorLinearLayout;
-    private ProgressDialog deleteProgressDialog, uploadProgressDialog;
-    private int deleteFilePosition;
+	private ProgressDialog deleteProgressDialog, uploadProgressDialog;
+	private int deleteFilePosition;
 	private int lastCheckedFileIndex = -1;
 
-	private static final class State
-	{
+	private static final class State {
 		private State() {
 		}
 
@@ -121,8 +120,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	private static final int FILE_UPLOAD_PERMISSION = 102;
 	private static final int RESULT_UPLOAD_IMAGE = 201;
 
-	private enum FilesSort
-	{
+	private enum FilesSort {
 		NAME, MODIFICATION_TIME
 	}
 
@@ -153,10 +151,10 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 		setUpFiles(savedInstanceState);
 
-        setUpProgressDialogs();
+		setUpProgressDialogs();
 	}
 
-    private void setUpInjections() {
+	private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
 	}
 
@@ -168,18 +166,18 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		setUpFilesContentRefreshing();
 	}
 
-    private void setUpProgressDialogs() {
-        deleteProgressDialog = new ProgressDialog(getContext());
-        deleteProgressDialog.setMessage(getString(R.string.message_delete_progress));
-        deleteProgressDialog.setIndeterminate(true);
-        deleteProgressDialog.setCancelable(false);
+	private void setUpProgressDialogs() {
+		deleteProgressDialog = new ProgressDialog(getContext());
+		deleteProgressDialog.setMessage(getString(R.string.message_delete_progress));
+		deleteProgressDialog.setIndeterminate(true);
+		deleteProgressDialog.setCancelable(false);
 
 		uploadProgressDialog = new ProgressDialog(getContext());
 		uploadProgressDialog.setTitle(getString(R.string.message_file_upload_title));
 		uploadProgressDialog.setCancelable(false);
 		uploadProgressDialog.setIndeterminate(false);
 		uploadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-    }
+	}
 
 	private void setUpFilesMenu() {
 		setHasOptionsMenu(true);
@@ -251,7 +249,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 				break;
 			case R.id.menu_delete:
 				deleteFile(getCheckedFile(), actionMode);
-                break;
+				break;
 			default:
 				return false;
 		}
@@ -318,36 +316,36 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		BusProvider.getBus().post(new ServerFileSharingEvent(getShare(), file));
 	}
 
-    private void deleteFile(final ServerFile file, final ActionMode actionMode) {
-        deleteFilePosition = getListView().getCheckedItemPosition();
-        new AlertDialog.Builder(getContext())
+	private void deleteFile(final ServerFile file, final ActionMode actionMode) {
+		deleteFilePosition = getListView().getCheckedItemPosition();
+		new AlertDialog.Builder(getContext())
 				.setTitle(R.string.message_delete_file_title)
-                .setMessage(R.string.message_delete_file_body)
-                .setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        deleteProgressDialog.show();
-                        serverClient.deleteFile(getShare(), file);
+				.setMessage(R.string.message_delete_file_body)
+				.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						deleteProgressDialog.show();
+						serverClient.deleteFile(getShare(), file);
 						actionMode.finish();
-                    }
-                })
-                .setNegativeButton(R.string.button_no, null)
-                .show();
-    }
+					}
+				})
+				.setNegativeButton(R.string.button_no, null)
+				.show();
+	}
 
-    @Subscribe
-    public void onFileDeleteEvent(ServerFileDeleteEvent fileDeleteEvent) {
-        deleteProgressDialog.dismiss();
-        if (fileDeleteEvent.isDeleted()) {
-            if (!isMetadataAvailable()) {
-                getFilesAdapter().removeFile(deleteFilePosition);
-            } else {
-                getFilesMetadataAdapter().removeFile(deleteFilePosition);
-            }
-        } else {
-            Toast.makeText(getContext(), R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
-        }
-    }
+	@Subscribe
+	public void onFileDeleteEvent(ServerFileDeleteEvent fileDeleteEvent) {
+		deleteProgressDialog.dismiss();
+		if (fileDeleteEvent.isDeleted()) {
+			if (!isMetadataAvailable()) {
+				getFilesAdapter().removeFile(deleteFilePosition);
+			} else {
+				getFilesMetadataAdapter().removeFile(deleteFilePosition);
+			}
+		} else {
+			Toast.makeText(getContext(), R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
+		}
+	}
 
 	private ServerFile getCheckedFile() {
 		return getFile(getListView().getCheckedItemPosition());
@@ -463,14 +461,14 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setUpFilesContent() {
-        if (serverClient.isConnected()){
-            if (!isDirectoryAvailable()) {
-                serverClient.getFiles(getShare());
-            } else {
-                serverClient.getFiles(getShare(), getDirectory());
-            }
-        }
-    }
+		if (serverClient.isConnected()) {
+			if (!isDirectoryAvailable()) {
+				serverClient.getFiles(getShare());
+			} else {
+				serverClient.getFiles(getShare(), getDirectory());
+			}
+		}
+	}
 
 	private boolean isDirectoryAvailable() {
 		return getDirectory() != null;
@@ -552,10 +550,10 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		SwipeRefreshLayout refreshLayout = getRefreshLayout();
 
 		refreshLayout.setColorSchemeResources(
-			android.R.color.holo_blue_light,
-			android.R.color.holo_orange_light,
-			android.R.color.holo_green_light,
-			android.R.color.holo_red_light);
+				android.R.color.holo_blue_light,
+				android.R.color.holo_orange_light,
+				android.R.color.holo_green_light,
+				android.R.color.holo_red_light);
 
 		refreshLayout.setOnRefreshListener(this);
 	}
@@ -571,7 +569,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 			collapseSearchView();
 			startFileOpening(getFile(filePosition));
 
-			if(isDirectory(getFile(filePosition))){
+			if (isDirectory(getFile(filePosition))) {
 				setUpTitle(getFile(filePosition).getName());
 			}
 		}
@@ -582,8 +580,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setUpTitle(String title) {
-		((ServerFilesActivity)getActivity()).getSupportActionBar().setTitle(title);
-       }
+		((ServerFilesActivity) getActivity()).getSupportActionBar().setTitle(title);
+	}
 
 	private List<ServerFile> getFiles() {
 		if (!isMetadataAvailable()) {
@@ -620,13 +618,14 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setSearchCursor() {
-		final int textViewID = searchView.getContext().getResources().getIdentifier("android:id/search_src_text",null, null);
+		final int textViewID = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
 		final AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(textViewID);
 		try {
 			Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
 			mCursorDrawableRes.setAccessible(true);
 			mCursorDrawableRes.set(searchTextView, R.drawable.white_cursor);
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 	}
 
 	private void setUpFilesContentSortIcon(MenuItem menuItem) {
@@ -707,8 +706,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	@Override
 	public void isListEmpty(boolean empty) {
-		if(getView().findViewById(R.id.none_text)!=null)
-			getView().findViewById(R.id.none_text).setVisibility(empty?View.VISIBLE:View.GONE);
+		if (getView().findViewById(R.id.none_text) != null)
+			getView().findViewById(R.id.none_text).setVisibility(empty ? View.VISIBLE : View.GONE);
 	}
 
 	private void collapseSearchView() {
@@ -730,49 +729,23 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void showFileChooser() {
-		Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-		intent.setType("image/* video/*");
-		this.startActivityForResult(Intent.createChooser(intent, getString(R.string.message_file_chooser)), RESULT_UPLOAD_IMAGE);
+		Intent intent = Intents.Builder.with(getContext()).buildMediaPickerIntent();
+		this.startActivityForResult(intent, RESULT_UPLOAD_IMAGE);
 	}
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case RESULT_UPLOAD_IMAGE:
-                    if (data != null) {
-                        Uri selectedImageUri = data.getData();
-						String filePath = null;
-						if ("content".equals(selectedImageUri.getScheme())) {
-							String[] filePathColumn = {MediaStore.Images.Media.DATA};
-							Cursor cursor = getContext().getContentResolver()
-									.query(selectedImageUri, filePathColumn, null, null, null);
-							if (cursor != null) {
-								cursor.moveToFirst();
-								int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-								filePath = cursor.getString(columnIndex);
-								cursor.close();
-							}
-						} else {
-							filePath = selectedImageUri.toString();
-						}
-
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode == RESULT_OK) {
+			switch (requestCode) {
+				case RESULT_UPLOAD_IMAGE:
+					if (data != null) {
+						Uri selectedImageUri = data.getData();
+						String filePath = querySelectedImagePath(selectedImageUri);
 						if (filePath != null) {
-							final File file = new File(filePath);
-							String fileName = file.getName();
-							if (checkForDuplicateFile(fileName)) {
-								new AlertDialog.Builder(getContext())
-										.setTitle(R.string.duplicate_file_upload)
-										.setMessage(getString(R.string.duplicate_file_upload_body, fileName))
-										.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
-											@Override
-											public void onClick(DialogInterface dialog, int which) {
-												uploadFile(file);
-											}
-										})
-										.setNegativeButton(R.string.button_no, null)
-										.show();
+							File file = new File(filePath);
+							if (checkForDuplicateFile(file.getName())) {
+								showDuplicateFileUploadDialog(file);
 							} else {
 								uploadFile(file);
 							}
@@ -783,7 +756,39 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		}
 	}
 
-    private void uploadFile(File file) {
+	private String querySelectedImagePath(Uri selectedImageUri) {
+		String filePath = null;
+		if ("content".equals(selectedImageUri.getScheme())) {
+			String[] filePathColumn = {MediaStore.Images.Media.DATA};
+			Cursor cursor = getContext().getContentResolver()
+					.query(selectedImageUri, filePathColumn, null, null, null);
+			if (cursor != null) {
+				cursor.moveToFirst();
+				int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+				filePath = cursor.getString(columnIndex);
+				cursor.close();
+			}
+		} else {
+			filePath = selectedImageUri.toString();
+		}
+		return filePath;
+	}
+
+	private void showDuplicateFileUploadDialog(final File file) {
+		new AlertDialog.Builder(getContext())
+				.setTitle(R.string.message_duplicate_file_upload)
+				.setMessage(getString(R.string.message_duplicate_file_upload_body, file.getName()))
+				.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						uploadFile(file);
+					}
+				})
+				.setNegativeButton(R.string.button_no, null)
+				.show();
+	}
+
+	private void uploadFile(File file) {
 		if (!isDirectoryAvailable()) {
 			serverClient.uploadFile(file, getShare());
 		} else {
@@ -792,7 +797,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		uploadProgressDialog.show();
 	}
 
-    private boolean checkForDuplicateFile(String fileName) {
+	private boolean checkForDuplicateFile(String fileName) {
 		List<ServerFile> files;
 		if (!isMetadataAvailable()) {
 			files = getFilesAdapter().getItems();
@@ -814,7 +819,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		}
 	}
 
-		@Subscribe
+	@Subscribe
 	public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent fileUploadCompleteEvent) {
 		uploadProgressDialog.dismiss();
 		if (fileUploadCompleteEvent.wasUploadSuccessful()) {
@@ -829,7 +834,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		}
 	}
 
-		@Override
+	@Override
 	public void onResume() {
 		super.onResume();
 
@@ -878,16 +883,14 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		}
 	}
 
-	private static final class FileNameComparator implements Comparator<ServerFile>
-	{
+	private static final class FileNameComparator implements Comparator<ServerFile> {
 		@Override
 		public int compare(ServerFile firstFile, ServerFile secondFile) {
 			return firstFile.getName().compareTo(secondFile.getName());
 		}
 	}
 
-	private static final class FileModificationTimeComparator implements Comparator<ServerFile>
-	{
+	private static final class FileModificationTimeComparator implements Comparator<ServerFile> {
 		@Override
 		public int compare(ServerFile firstFile, ServerFile secondFile) {
 			return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());

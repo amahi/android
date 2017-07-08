@@ -69,12 +69,12 @@
     <string name="message_delete_file_body">This action cannot be undone.</string>
     <string name="message_delete_progress">Deleting</string>
     <string name="message_delete_file_error">Some error occurred while deleting file</string>
-    <string name="message_file_chooser">Select Media Files to Upload</string>
+    <string name="message_media_upload">Select Media Files to Upload</string>
     <string name="message_file_upload_title">Uploading your file</string>
     <string name="message_file_upload_complete">File uploaded successfully</string>
     <string name="message_file_upload_error">There was some error in uploading your file</string>
-    <string name="duplicate_file_upload">Overwrite existing file?</string>
-    <string name="duplicate_file_upload_body">The file %1$s already exists.\nAre you sure you want to replace the existing file?</string>
+    <string name="message_duplicate_file_upload">Overwrite existing file?</string>
+    <string name="message_duplicate_file_upload_body">The file %1$s already exists.\nAre you sure you want to replace the existing file?</string>
 
     <string name="share_subject">Check out my Amahi home server!</string>
     <string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>

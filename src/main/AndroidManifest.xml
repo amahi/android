@@ -72,16 +72,18 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.NavigationActivity">
+        <activity android:name=".activity.SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
             <meta-data
                 android:name="android.max_aspect"
                 android:value="2.1" />
         </activity>
+
+        <activity android:name=".activity.NavigationActivity"/>
         <activity android:name=".activity.ServerAppActivity"/>
         <activity android:name=".activity.ServerFilesActivity">
             <meta-data
@@ -105,6 +107,9 @@
         <activity
             android:name=".activity.SettingsActivity"
             android:label="@string/title_settings"/>
+        <activity android:name=".activity.IntroductionActivity"
+            android:label="@string/intro_desc_phone_1"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity
             android:name=".activity.AuthenticationActivity"
             android:theme="@style/Theme.Amahi.Authentication"

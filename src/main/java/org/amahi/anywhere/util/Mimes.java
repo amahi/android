@@ -157,6 +157,40 @@ public class Mimes {
         }
     }
 
+    public static int getTVFileIcon(ServerFile file) {
+        switch (Mimes.match(file.getMime())) {
+            case Mimes.Type.ARCHIVE:
+                return R.drawable.tv_ic_archive;
+
+            case Mimes.Type.AUDIO:
+                return R.drawable.tv_ic_audio;
+
+            case Mimes.Type.CODE:
+                return R.drawable.tv_ic_code;
+
+            case Mimes.Type.DOCUMENT:
+                return R.drawable.tv_ic_document;
+
+            case Mimes.Type.DIRECTORY:
+                return R.drawable.tv_ic_folder;
+
+            case Mimes.Type.IMAGE:
+                return R.drawable.tv_ic_images;
+
+            case Mimes.Type.PRESENTATION:
+                return R.drawable.tv_ic_presentation;
+
+            case Mimes.Type.SPREADSHEET:
+                return R.drawable.tv_ic_spreadsheet;
+
+            case Mimes.Type.VIDEO:
+                return R.drawable.tv_ic_video;
+
+            default:
+                return R.drawable.tv_ic_generic;
+        }
+    }
+
     public static final class Type {
         public static final int UNDEFINED = 0;
         public static final int ARCHIVE = 1;

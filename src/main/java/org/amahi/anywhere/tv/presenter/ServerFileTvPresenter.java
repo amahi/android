@@ -20,6 +20,7 @@
 package org.amahi.anywhere.tv.presenter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
@@ -62,13 +63,13 @@ public class ServerFileTvPresenter extends Presenter {
         final ServerFile serverFile = (ServerFile) item;
         ViewHolder view = ((ViewHolder) viewHolder);
         view.mCardView.setTitleText(serverFile.getName());
-
+        view.mCardView.setBackgroundColor(Color.WHITE);
         if (isDirectory(serverFile)) {
             Date d = serverFile.getModificationTime();
             SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
             view.mCardView.setContentText(dt.format(d));
         } else {
-            view.mCardView.setContentText(Formatter.formatFileSize(mContext, serverFile.getSize()));
+            //view.mCardView.setContentText(Formatter.formatFileSize(mContext, serverFile.getSize()));
         }
 
         view.mCardView.setMainImageDimensions(400, 300);
@@ -76,7 +77,7 @@ public class ServerFileTvPresenter extends Presenter {
         if (isImage(serverFile)) {
             setUpImageIcon(serverFile, view.mCardView.getMainImageView());
         } else {
-            view.mCardView.setMainImage(ContextCompat.getDrawable(mContext, Mimes.getFileIcon(serverFile)));
+            view.mCardView.setMainImage(ContextCompat.getDrawable(mContext, Mimes.getTVFileIcon(serverFile)));
         }
 
     }
@@ -94,7 +95,7 @@ public class ServerFileTvPresenter extends Presenter {
                 .load(getImageUri(file))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
-                .placeholder(Mimes.getFileIcon(file))
+                .placeholder(Mimes.getTVFileIcon(file))
                 .into(fileIconView);
     }
 

@@ -29,6 +29,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -44,6 +45,7 @@ public class FileMetadataRetrievingTask implements Callback<ServerFileMetadata> 
     private final ServerShare share;
     private final ServerFile file;
     private final ServerClient serverClient;
+    private MainTVPresenter.ViewHolder viewHolder;
 
     public FileMetadataRetrievingTask(ServerClient serverClient, View fileView) {
         this.serverClient = serverClient;
@@ -51,6 +53,15 @@ public class FileMetadataRetrievingTask implements Callback<ServerFileMetadata> 
 
         this.share = (ServerShare) fileView.getTag(ServerFilesMetadataAdapter.Tags.SHARE);
         this.file = (ServerFile) fileView.getTag(ServerFilesMetadataAdapter.Tags.FILE);
+    }
+
+    public FileMetadataRetrievingTask(ServerClient serverClient, View fileView, MainTVPresenter.ViewHolder viewHolder) {
+        this.serverClient = serverClient;
+        this.fileViewReference = new WeakReference<>(fileView);
+
+        this.share = (ServerShare) fileView.getTag(ServerFilesMetadataAdapter.Tags.SHARE);
+        this.file = (ServerFile) fileView.getTag(ServerFilesMetadataAdapter.Tags.FILE);
+        this.viewHolder = viewHolder;
     }
 
     public void execute() {
@@ -70,7 +81,7 @@ public class FileMetadataRetrievingTask implements Callback<ServerFileMetadata> 
             return;
         }
 
-        BusEvent busEvent = new FileMetadataRetrievedEvent(file, response.body(), fileView);
+        BusEvent busEvent = new FileMetadataRetrievedEvent(file, response.body(), fileView, viewHolder);
         BusProvider.getBus().post(busEvent);
     }
 

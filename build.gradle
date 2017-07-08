@@ -103,6 +103,7 @@ dependencies {
         mavenLocal()
         maven { url 'https://maven.fabric.io/public' }
         maven { url 'http://dl.bintray.com/megabitdragon/maven' }
+        maven { url 'https://jitpack.io' }
     }
 
     def SUPPORT_LIBRARY_VERSION = "25.3.1"
@@ -123,6 +124,7 @@ dependencies {
     compile 'com.jakewharton.timber:timber:4.5.1'
     compile 'com.squareup.dagger:dagger:1.2.5'
     compile 'com.squareup:otto:1.3.8'
+    compile 'com.github.apl-devs:appintro:v4.2.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
@@ -135,6 +137,7 @@ dependencies {
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support:support-annotations:25.3.1'
     provided 'com.squareup.dagger:dagger-compiler:1.2.5'
+    compile 'com.android.support:cardview-v7:25.3.1'
 }
 
 task generateWrapper(type: Wrapper) {

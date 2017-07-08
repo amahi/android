@@ -23,16 +23,19 @@ import android.view.View;
 
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
+import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 
 public class FileMetadataRetrievedEvent implements BusEvent {
     private final ServerFile file;
     private final ServerFileMetadata fileMetadata;
     private final View fileView;
+    private MainTVPresenter.ViewHolder viewHolder;
 
-    public FileMetadataRetrievedEvent(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
+    public FileMetadataRetrievedEvent(ServerFile file, ServerFileMetadata fileMetadata, View fileView, MainTVPresenter.ViewHolder viewHolder) {
         this.file = file;
         this.fileMetadata = fileMetadata;
         this.fileView = fileView;
+        this.viewHolder = viewHolder;
     }
 
     public ServerFile getFile() {
@@ -45,5 +48,9 @@ public class FileMetadataRetrievedEvent implements BusEvent {
 
     public View getFileView() {
         return fileView;
+    }
+
+    public MainTVPresenter.ViewHolder getViewHolder() {
+        return viewHolder;
     }
 }

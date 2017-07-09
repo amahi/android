@@ -20,24 +20,16 @@
 package org.amahi.anywhere.tv.fragment;
 
 import android.app.Fragment;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.VerticalGridFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
-import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v17.leanback.widget.VerticalGridPresenter;
-import android.util.DisplayMetrics;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -48,7 +40,7 @@ import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.tv.presenter.ServerFileTvPresenter;
+import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 
@@ -69,17 +61,15 @@ public class ServerFileTvFragment extends VerticalGridFragment {
     private ArrayObjectAdapter mAdapter;
     private List<ServerFile> mServerFileList;
     private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
-    private BackgroundManager mBackgroundManager;
-    private DisplayMetrics mMetrics;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setUpInjections();
-        prepareBackgroundManager();
         mServerShare = getArguments().getParcelable(Intents.Extras.SERVER_SHARE);
         mServerFile = getArguments().getParcelable(Intents.Extras.SERVER_FILE);
-        setTitle(mServerFile.getName());
+        if (mServerFile != null)
+            setTitle(mServerFile.getName());
         setDefaultListeners();
         setUpFragment();
     }
@@ -88,47 +78,8 @@ public class ServerFileTvFragment extends VerticalGridFragment {
         AmahiApplication.from(getActivity()).inject(this);
     }
 
-    private void prepareBackgroundManager() {
-        mBackgroundManager = BackgroundManager.getInstance(getActivity());
-        if (!mBackgroundManager.isAttached())
-            mBackgroundManager.attach(getActivity().getWindow());
-        mMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
-    }
-
     private void setDefaultListeners() {
-        setOnItemViewSelectedListener(getDefaultItemSelectedListener());
         setOnItemViewClickedListener(getDefaultItemClickedListener());
-    }
-
-    protected OnItemViewSelectedListener getDefaultItemSelectedListener() {
-        return new OnItemViewSelectedListener() {
-            @Override
-            public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-                ServerFile serverFile = (ServerFile) item;
-                if (isImage(serverFile)) {
-                    updateBackground(getImageUri(serverFile).toString());
-                } else {
-                    mBackgroundManager.clearDrawable();
-                }
-            }
-        };
-    }
-
-    private void updateBackground(String uri) {
-        int width = mMetrics.widthPixels;
-        int height = mMetrics.heightPixels;
-        Glide.with(this)
-                .load(uri)
-                .asBitmap()
-                .centerCrop()
-                .into(new SimpleTarget<Bitmap>(width, height) {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap>
-                            glideAnimation) {
-                        mBackgroundManager.setBitmap(resource);
-                    }
-                });
     }
 
     protected OnItemViewClickedListener getDefaultItemClickedListener() {
@@ -171,7 +122,7 @@ public class ServerFileTvFragment extends VerticalGridFragment {
         gridPresenter.setNumberOfColumns(4);
         setGridPresenter(gridPresenter);
         setContent();
-        mAdapter = new ArrayObjectAdapter(new ServerFileTvPresenter(getActivity(), serverClient));
+        mAdapter = new ArrayObjectAdapter(new MainTVPresenter(getActivity(), serverClient));
     }
 
     private void setContent() {
@@ -221,14 +172,6 @@ public class ServerFileTvFragment extends VerticalGridFragment {
         super.onPause();
 
         BusProvider.getBus().unregister(this);
-    }
-
-    private boolean isImage(ServerFile file) {
-        return Mimes.match(file.getMime()) == Mimes.Type.IMAGE;
-    }
-
-    private Uri getImageUri(ServerFile file) {
-        return serverClient.getFileUri(file.getParentShare(), file);
     }
 
     private enum FilesSort {

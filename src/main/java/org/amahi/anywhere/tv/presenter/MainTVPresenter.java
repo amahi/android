@@ -21,7 +21,6 @@ package org.amahi.anywhere.tv.presenter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
@@ -67,6 +66,12 @@ public class MainTVPresenter extends Presenter {
         BusProvider.getBus().register(this);
     }
 
+    public MainTVPresenter(Context context, ServerClient serverClient) {
+        mContext = context;
+        mServerClient = serverClient;
+        BusProvider.getBus().register(this);
+    }
+
     @Override
     public Presenter.ViewHolder onCreateViewHolder(ViewGroup parent) {
         mDefaultBackgroundColor =
@@ -80,7 +85,6 @@ public class MainTVPresenter extends Presenter {
                 super.setSelected(selected);
             }
         };
-
         cardView.setFocusable(true);
         cardView.setFocusableInTouchMode(true);
         return new ViewHolder(cardView);
@@ -98,27 +102,22 @@ public class MainTVPresenter extends Presenter {
         ViewHolder viewHolder = (ViewHolder) viewHolderArgs;
         viewHolder.mCardView.setTitleText(serverFile.getName());
         viewHolder.mCardView.setInfoAreaBackgroundColor(mDefaultBackgroundColor);
-        viewHolder.mCardView.setBackgroundColor(Color.WHITE);
+        viewHolder.mCardView.setBackgroundColor(mDefaultBackgroundColor);
         if (isMetadataAvailable(serverFile)) {
-            View fileView = viewHolder.view;
-            fileView.setTag(ServerFilesMetadataAdapter.Tags.SHARE, serverFile.getParentShare());
-            fileView.setTag(ServerFilesMetadataAdapter.Tags.FILE, serverFile);
             setUpMetaDimensions(viewHolder);
-            new FileMetadataRetrievingTask(mServerClient, fileView, viewHolder).execute();
+            if (isVideo(serverFile)) {
+                View fileView = viewHolder.view;
+                fileView.setTag(ServerFilesMetadataAdapter.Tags.SHARE, serverFile.getParentShare());
+                fileView.setTag(ServerFilesMetadataAdapter.Tags.FILE, serverFile);
+                new FileMetadataRetrievingTask(mServerClient, fileView, viewHolder).execute();
+            } else if (isDirectory(serverFile))
+                viewHolder.mCardView.setVisibility(View.VISIBLE);
+            else
+                viewHolder.mCardView.setVisibility(View.GONE);
         } else {
             setUpDimensions(viewHolder);
-            if (isDirectory(serverFile))
-                setDate(serverFile, viewHolder);
-//            else
-//                setSize(serverFile, viewHolder);
-            if (isImage(serverFile)) {
-                setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), getImageUri(serverFile));
-            } else if (isAudio(serverFile)) {
-                AudioMetadataRetrievingTask.execute(getImageUri(serverFile), viewHolder);
-            } else {
-                setUpDrawable(serverFile, viewHolder);
-            }
         }
+        populateData(serverFile, viewHolder);
         viewHolder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,8 +146,18 @@ public class MainTVPresenter extends Presenter {
         viewHolder.mCardView.setContentText(dt.format(d));
     }
 
-    private void setSize(ServerFile serverFile, ViewHolder viewHolder) {
-        viewHolder.mCardView.setContentText(android.text.format.Formatter.formatFileSize(mContext, serverFile.getSize()));
+    private void populateData(ServerFile serverFile, ViewHolder viewHolder) {
+        if (isDirectory(serverFile))
+            setDate(serverFile, viewHolder);
+        if (isMetadataAvailable(serverFile) && isVideo(serverFile))
+            viewHolder.mCardView.setContentText("");
+        if (isImage(serverFile)) {
+            setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), getImageUri(serverFile));
+        } else if (isAudio(serverFile)) {
+            AudioMetadataRetrievingTask.execute(getImageUri(serverFile), viewHolder);
+        } else {
+            setUpDrawable(serverFile, viewHolder);
+        }
     }
 
     private void setUpDimensions(ViewHolder viewHolder) {
@@ -158,21 +167,20 @@ public class MainTVPresenter extends Presenter {
     private void setUpDrawable(ServerFile serverFile, ViewHolder viewHolder) {
         viewHolder.mCardView.setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE);
         viewHolder.mCardView.setMainImage(ContextCompat.getDrawable(mContext, Mimes.getTVFileIcon(serverFile)));
+        if(!isMetadataAvailable(serverFile))
+            viewHolder.mCardView.getMainImageView().setPadding(50, 50, 50, 50);
     }
 
     @Subscribe
     public void onFileMetadataRetrieved(FileMetadataRetrievedEvent event) {
         ServerFile serverFile = event.getFile();
         ViewHolder viewHolder = event.getViewHolder();
+        viewHolder.mCardView.setTitleText("");
         serverFile.setMetaDataFetched(true);
-        setDate(serverFile, viewHolder);
         if (event.getFileMetadata() == null) {
-            if (isImage(serverFile)) {
-                setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), getImageUri(serverFile));
-            } else {
-                setUpDrawable(serverFile, viewHolder);
-            }
+            populateData(serverFile, viewHolder);
         } else {
+            viewHolder.mCardView.setMainImageScaleType(ImageView.ScaleType.CENTER_CROP);
             setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), Uri.parse(event.getFileMetadata().getArtworkUrl()));
         }
     }
@@ -181,8 +189,7 @@ public class MainTVPresenter extends Presenter {
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
         if (event.getAudioAlbumArt() != null) {
             ViewHolder viewHolder = event.getViewHolder();
-            if(viewHolder!=null) {
-                viewHolder.mCardView.setContentText(event.getAudioArtist() + " - " + event.getAudioAlbum());
+            if (viewHolder != null) {
                 viewHolder.mCardView.getMainImageView().setImageBitmap(event.getAudioAlbumArt());
             }
         } else
@@ -203,6 +210,10 @@ public class MainTVPresenter extends Presenter {
 
     private boolean isDirectory(ServerFile file) {
         return Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY;
+    }
+
+    private boolean isVideo(ServerFile file) {
+        return Mimes.match(file.getMime()) == Mimes.Type.VIDEO;
     }
 
     private void setUpImageIcon(ServerFile file, ImageView fileIconView, Uri url) {

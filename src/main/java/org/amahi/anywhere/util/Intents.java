@@ -41,6 +41,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
+import org.amahi.anywhere.tv.activity.TvPlaybackOverlayActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,10 +62,10 @@ public final class Intents {
         }
     }
 
-    public static final class Uris {
-        public static final String EMAIL = "mailto:%s?subject=%s";
-        public static final String GOOGLE_PLAY = "market://details?id=%s";
-        public static final String GOOGLE_PLAY_SEARCH = "market://search?q=%s";
+    private static final class Uris {
+        static final String EMAIL = "mailto:%s?subject=%s";
+        static final String GOOGLE_PLAY = "market://details?id=%s";
+        static final String GOOGLE_PLAY_SEARCH = "market://search?q=%s";
         private Uris() {
         }
     }
@@ -119,7 +120,10 @@ public final class Intents {
 
             if (ServerFileVideoActivity.supports(fileFormat)) {
                 if (NativeVideoActivity.supports(fileFormat)) {
-                    return NativeVideoActivity.class;
+                    if(CheckTV.isATV(context))
+                        return TvPlaybackOverlayActivity.class;
+                    else
+                        return NativeVideoActivity.class;
                 }
                 return ServerFileVideoActivity.class;
             }

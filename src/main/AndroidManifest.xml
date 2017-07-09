@@ -173,6 +173,8 @@
         <activity android:name=".tv.activity.TVWebViewActivity"
             android:theme="@style/Theme.Design.NoActionBar"/>
 
+        <activity android:name=".tv.activity.TvPlaybackOverlayActivity"
+            android:theme="@style/Theme.Leanback"/>
     </application>
 
 </manifest>

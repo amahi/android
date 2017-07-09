@@ -67,7 +67,7 @@ public class ConnectionFragment extends GuidedStepFragment {
         return new GuidanceStylist.Guidance(getString(R.string.pref_title_connection),
                 getString(R.string.pref_connection_desc),
                 "",
-                ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo));
+                ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo_shadowless));
     }
 
 

@@ -69,7 +69,7 @@ public class ServerSelectFragment extends GuidedStepFragment {
         return new GuidanceStylist.Guidance(getString(R.string.pref_title_server_select),
                 getString(R.string.pref_title_server_select_desc),
                 "",
-                ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo));
+                ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo_shadowless));
     }
 
     @Override

@@ -42,9 +42,11 @@ import org.amahi.anywhere.server.ApiModule;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
+import org.amahi.anywhere.tv.activity.TvPlaybackOverlayActivity;
 import org.amahi.anywhere.tv.fragment.MainTVFragment;
 import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
 import org.amahi.anywhere.tv.fragment.ServerSelectFragment;
+import org.amahi.anywhere.tv.fragment.TvPlaybackOverlayFragment;
 
 import javax.inject.Singleton;
 
@@ -80,7 +82,9 @@ import dagger.Provides;
                 VideoService.class,
                 MainTVFragment.class,
                 TVWebViewActivity.class,
-                ServerFileTvFragment.class
+                ServerFileTvFragment.class,
+                TvPlaybackOverlayFragment.class,
+                TvPlaybackOverlayActivity.class
         }
 )
 class AmahiModule {

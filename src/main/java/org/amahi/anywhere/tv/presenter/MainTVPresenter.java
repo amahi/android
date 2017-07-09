@@ -103,7 +103,7 @@ public class MainTVPresenter extends Presenter {
         ViewHolder viewHolder = (ViewHolder) viewHolderArgs;
         viewHolder.mCardView.setTitleText(serverFile.getName());
         viewHolder.mCardView.setInfoAreaBackgroundColor(mDefaultBackgroundColor);
-        viewHolder.mCardView.setBackgroundColor(Color.TRANSPARENT);
+        viewHolder.mCardView.setBackgroundColor(mDefaultBackgroundColor);
         if (isMetadataAvailable(serverFile)) {
             setUpMetaDimensions(viewHolder);
             if (isVideo(serverFile)) {
@@ -189,7 +189,6 @@ public class MainTVPresenter extends Presenter {
         if (event.getAudioAlbumArt() != null) {
             ViewHolder viewHolder = event.getViewHolder();
             if (viewHolder != null) {
-                viewHolder.mCardView.setContentText(event.getAudioArtist() + " - " + event.getAudioAlbum());
                 viewHolder.mCardView.getMainImageView().setImageBitmap(event.getAudioAlbumArt());
             }
         } else

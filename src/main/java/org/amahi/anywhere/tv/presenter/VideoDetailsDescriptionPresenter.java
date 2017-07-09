@@ -41,8 +41,8 @@ public class VideoDetailsDescriptionPresenter extends AbstractDetailsDescription
     protected void onBindDescription(ViewHolder viewHolder, Object item) {
         ServerFile serverFile = (ServerFile) item;
         viewHolder.getTitle().setText(serverFile.getName());
-        viewHolder.getSubtitle().setText(getSize(serverFile));
-        viewHolder.getBody().setText(getDate(serverFile));
+        viewHolder.getSubtitle().setText(getDate(serverFile));
+        viewHolder.getBody().setText(getSize(serverFile));
     }
 
     private String getDate(ServerFile serverFile) {

@@ -19,7 +19,10 @@
 
 package org.amahi.anywhere.util;
 
+import android.media.MediaMetadataRetriever;
+
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Time formats accessor.
@@ -37,5 +40,11 @@ public class Time {
 
         private Format() {
         }
+    }
+
+    public static long getDuration(String videoUrl) {
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(videoUrl, new HashMap<String, String>());
+        return Long.parseLong(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
     }
 }

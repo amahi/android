@@ -73,6 +73,8 @@ public class MainTVPresenter extends Presenter {
         BusProvider.getBus().register(this);
     }
 
+    public MainTVPresenter(){}
+
     @Override
     public Presenter.ViewHolder onCreateViewHolder(ViewGroup parent) {
         mDefaultBackgroundColor =

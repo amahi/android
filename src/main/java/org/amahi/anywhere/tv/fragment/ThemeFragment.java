@@ -60,7 +60,7 @@ public class ThemeFragment extends GuidedStepFragment {
         return new GuidanceStylist.Guidance(getString(R.string.pref_title_select_theme),
                 getString(R.string.pref_theme_desc),
                 "",
-                ContextCompat.getDrawable(getActivity(), R.drawable.tv_banner));
+                ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo_shadowless));
     }
 
     @Override

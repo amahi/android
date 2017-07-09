@@ -21,7 +21,6 @@ package org.amahi.anywhere.tv.presenter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
@@ -73,8 +72,6 @@ public class MainTVPresenter extends Presenter {
         BusProvider.getBus().register(this);
     }
 
-    public MainTVPresenter(){}
-
     @Override
     public Presenter.ViewHolder onCreateViewHolder(ViewGroup parent) {
         mDefaultBackgroundColor =
@@ -113,8 +110,7 @@ public class MainTVPresenter extends Presenter {
                 fileView.setTag(ServerFilesMetadataAdapter.Tags.SHARE, serverFile.getParentShare());
                 fileView.setTag(ServerFilesMetadataAdapter.Tags.FILE, serverFile);
                 new FileMetadataRetrievingTask(mServerClient, fileView, viewHolder).execute();
-            }
-            else if (isDirectory(serverFile))
+            } else if (isDirectory(serverFile))
                 viewHolder.mCardView.setVisibility(View.VISIBLE);
             else
                 viewHolder.mCardView.setVisibility(View.GONE);
@@ -171,6 +167,8 @@ public class MainTVPresenter extends Presenter {
     private void setUpDrawable(ServerFile serverFile, ViewHolder viewHolder) {
         viewHolder.mCardView.setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE);
         viewHolder.mCardView.setMainImage(ContextCompat.getDrawable(mContext, Mimes.getTVFileIcon(serverFile)));
+        if(!isMetadataAvailable(serverFile))
+            viewHolder.mCardView.getMainImageView().setPadding(50, 50, 50, 50);
     }
 
     @Subscribe

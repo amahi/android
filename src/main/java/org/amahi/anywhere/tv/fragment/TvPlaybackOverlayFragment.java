@@ -90,7 +90,7 @@ public class TvPlaybackOverlayFragment extends PlaybackOverlayFragment {
         mRowsAdapter = new ArrayObjectAdapter(ps);
 
         addPlaybackControlsRow();
-
+        playbackStateChanged();
         playbackControlsRowPresenter.setOnActionClickedListener(new OnActionClickedListener() {
             public void onActionClicked(Action action) {
                 if (action.getId() == mPlayPauseAction.getId()) {

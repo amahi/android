@@ -41,7 +41,7 @@ public class TvPlaybackOverlayActivity extends Activity {
 
     private VideoView mVideoView;
 
-    private LeanbackPlaybackState mPlaybackState = LeanbackPlaybackState.IDLE;
+    private LeanbackPlaybackState mPlaybackState = LeanbackPlaybackState.PLAYING;
 
     private int mPosition = 0;
     private long mStartTimeMillis;
@@ -78,6 +78,7 @@ public class TvPlaybackOverlayActivity extends Activity {
         mVideoView.setVideoPath(videoUrl);
         mStartTimeMillis = 0;
         mDuration = Time.getDuration(videoUrl);
+        mVideoView.start();
     }
 
     private void setPosition(int position) {

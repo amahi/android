@@ -175,6 +175,7 @@ public class MainTVPresenter extends Presenter {
     public void onFileMetadataRetrieved(FileMetadataRetrievedEvent event) {
         ServerFile serverFile = event.getFile();
         ViewHolder viewHolder = event.getViewHolder();
+        viewHolder.mCardView.setTitleText("");
         serverFile.setMetaDataFetched(true);
         if (event.getFileMetadata() == null) {
             populateData(serverFile, viewHolder);

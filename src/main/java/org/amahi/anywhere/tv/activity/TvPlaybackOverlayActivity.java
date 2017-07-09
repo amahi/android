@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import org.amahi.anywhere.AmahiApplication;

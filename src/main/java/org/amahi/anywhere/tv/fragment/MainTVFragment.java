@@ -179,7 +179,8 @@ public class MainTVFragment extends BrowseFragment {
         gridRowAdapter.add(getString(R.string.pref_title_server_select));
         gridRowAdapter.add(getString(R.string.pref_title_sign_out));
         gridRowAdapter.add(getString(R.string.pref_title_connection));
-        gridRowAdapter.add(getString(R.string.pref_title_select_theme));
+//        Note - @octacode: Theme settings haven't been implemented yet.
+//        gridRowAdapter.add(getString(R.string.pref_title_select_theme));
         settingsRow = new ListRow(settings, gridRowAdapter);
         adapter.add(0, settingsRow);
     }

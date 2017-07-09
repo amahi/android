@@ -74,8 +74,6 @@ public class MainTVFragment extends BrowseFragment {
     List<ServerShare> serverShareList;
     private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
     private ArrayObjectAdapter mRowsAdapter;
-    private BackgroundManager mBackgroundManager;
-    private DisplayMetrics mMetrics;
     private ListRow settingsRow;
 
     @Override
@@ -84,27 +82,15 @@ public class MainTVFragment extends BrowseFragment {
 
         setUpInjections();
 
-        prepareBackgroundManager();
-
         setupUIElements();
 
         loadRows();
 
         loadShares();
-
-        setUpEventListeners();
     }
 
     private void setUpInjections() {
         AmahiApplication.from(getActivity()).inject(this);
-    }
-
-    private void prepareBackgroundManager() {
-        mBackgroundManager = BackgroundManager.getInstance(getActivity());
-        if (!mBackgroundManager.isAttached())
-            mBackgroundManager.attach(getActivity().getWindow());
-        mMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
     }
 
     private void setupUIElements() {
@@ -139,49 +125,6 @@ public class MainTVFragment extends BrowseFragment {
         if (serverClient.isConnected()) {
             serverClient.getShares();
         }
-    }
-
-    private void setUpEventListeners() {
-        setOnItemViewSelectedListener(getDefaultSelectedListener());
-    }
-
-    private OnItemViewSelectedListener getDefaultSelectedListener() {
-        return new OnItemViewSelectedListener() {
-            @Override
-            public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-                mBackgroundManager.clearDrawable();
-                if (item instanceof ServerFile) {
-                    ServerFile serverFile = (ServerFile) item;
-                    if (isImage(serverFile)) {
-                        updateBackground(getImageUri(serverFile).toString());
-                    }
-                }
-            }
-        };
-    }
-
-    private boolean isImage(ServerFile file) {
-        return Mimes.match(file.getMime()) == Mimes.Type.IMAGE;
-    }
-
-    private void updateBackground(String uri) {
-        int width = mMetrics.widthPixels;
-        int height = mMetrics.heightPixels;
-        Glide.with(this)
-                .load(uri)
-                .asBitmap()
-                .centerCrop()
-                .into(new SimpleTarget<Bitmap>(width, height) {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap>
-                            glideAnimation) {
-                        mBackgroundManager.setBitmap(resource);
-                    }
-                });
-    }
-
-    private Uri getImageUri(ServerFile file) {
-        return serverClient.getFileUri(file.getParentShare(), file);
     }
 
     @Subscribe

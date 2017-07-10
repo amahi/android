@@ -161,12 +161,14 @@ public class MainTVFragment extends BrowseFragment {
                 }
             }
         }
+
         if (listRow != null) {
             int index1 = mRowsAdapter.indexOf(listRow);
             int index2 = mRowsAdapter.indexOf(settingsRow);
             mRowsAdapter.replace(index1, settingsRow);
             mRowsAdapter.replace(index2, listRow);
         }
+        sortHeaders();
         setAdapter(mRowsAdapter);
     }
 
@@ -183,6 +185,21 @@ public class MainTVFragment extends BrowseFragment {
 //        gridRowAdapter.add(getString(R.string.pref_title_select_theme));
         settingsRow = new ListRow(settings, gridRowAdapter);
         adapter.add(0, settingsRow);
+    }
+
+    private void sortHeaders(){
+        for(int i=0;i<mRowsAdapter.size()-1;i++){
+            for(int j=i+1;j<mRowsAdapter.size()-1;j++){
+                ListRow listRow1 = (ListRow)mRowsAdapter.get(i);
+                ListRow listRow2 = (ListRow)mRowsAdapter.get(j);
+                if((int)listRow2.getHeaderItem().getName().charAt(0)<(int)listRow1.getHeaderItem().getName().charAt(0)){
+                    int index1 = mRowsAdapter.indexOf(listRow1);
+                    int index2 = mRowsAdapter.indexOf(listRow2);
+                    mRowsAdapter.replace(index1, listRow2);
+                    mRowsAdapter.replace(index2, listRow1);
+                }
+            }
+        }
     }
 
     private List<ServerFile> sortFiles(List<ServerFile> files) {

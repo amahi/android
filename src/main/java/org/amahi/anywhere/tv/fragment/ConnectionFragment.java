@@ -87,7 +87,6 @@ public class ConnectionFragment extends GuidedStepFragment {
 
         setCheckedActionButtons(actions);
 
-        setBackButton(actions);
     }
 
     private void setTitle(List<GuidedAction> actions) {
@@ -165,18 +164,6 @@ public class ConnectionFragment extends GuidedStepFragment {
         actions.add(guidedAction);
     }
 
-    private void setBackButton(List<GuidedAction> actions) {
-        addAction(actions, ACTION_BACK, getString(R.string.pref_option_go_back), "");
-    }
-
-    private void addAction(List<GuidedAction> actions, long id, String title, String desc) {
-        actions.add(new GuidedAction.Builder(mContext)
-                .id(id)
-                .title(title)
-                .description(desc)
-                .build());
-    }
-
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
 
@@ -192,11 +179,14 @@ public class ConnectionFragment extends GuidedStepFragment {
             if (OPTION_NAMES.get(getSelectedActionPosition() - 1).matches(getString(R.string.preference_entry_server_connection_local))) {
                 Preferences.setPrefLocal(preference, mContext);
             }
-        } else {
-            if (initialSelected.matches(Preferences.getServerConnection(preference, mContext)))
-                getActivity().finish();
-            else
-                startActivity(new Intent(getActivity(), NavigationActivity.class));
+            keepCheck();
         }
+    }
+
+    private void keepCheck() {
+        if (initialSelected.matches(Preferences.getServerConnection(preference, mContext)))
+            getActivity().finish();
+        else
+            startActivity(new Intent(getActivity(), NavigationActivity.class));
     }
 }

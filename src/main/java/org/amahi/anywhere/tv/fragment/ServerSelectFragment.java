@@ -30,6 +30,7 @@ import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist;
 import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NavigationActivity;
@@ -42,7 +43,7 @@ import java.util.List;
 public class ServerSelectFragment extends GuidedStepFragment {
 
     private static final int OPTION_CHECK_SET_ID = 10;
-    private static final int ACTION_BACK = 0;
+    private int indexSelected = 0;
     private Context mContext;
     private ArrayList<Server> mServerArrayList;
     private ArrayList<String> OPTION_NAMES = new ArrayList<>();
@@ -84,7 +85,6 @@ public class ServerSelectFragment extends GuidedStepFragment {
         if (serverName == null) {
             setDefaultChecked();
         } else {
-            int indexSelected = 0;
             for (int i = 0; i < mServerArrayList.size(); i++) {
                 if (serverName.matches(mServerArrayList.get(i).getName())) {
                     indexSelected = i;
@@ -96,7 +96,6 @@ public class ServerSelectFragment extends GuidedStepFragment {
         }
 
         setCheckedActionButtons(actions);
-        setBackButton(actions);
     }
 
     private void setTitle(List<GuidedAction> actions) {
@@ -179,25 +178,16 @@ public class ServerSelectFragment extends GuidedStepFragment {
         actions.add(guidedAction);
     }
 
-    private void setBackButton(List<GuidedAction> actions) {
-        addAction(actions, ACTION_BACK, getString(R.string.pref_option_go_back), "");
-    }
-
-    private void addAction(List<GuidedAction> actions, long id, String title, String desc) {
-        actions.add(new GuidedAction.Builder(mContext)
-                .id(id)
-                .title(title)
-                .description(desc)
-                .build());
-    }
-
     @Override
     public void onGuidedActionClicked(GuidedAction action) {
         if (getSelectedActionPosition() <= mServerArrayList.size()) {
             String server = mServerArrayList.get(getSelectedActionPosition() - 1).getName();
-            Preferences.setServertoPref(server, mContext, mSharedPref);
-        } else {
-            startActivity(new Intent(mContext, NavigationActivity.class));
+            if (indexSelected == (getSelectedActionPosition() - 1))
+                getActivity().finish();
+            else {
+                Preferences.setServertoPref(server, mContext, mSharedPref);
+                startActivity(new Intent(mContext, NavigationActivity.class));
+            }
         }
     }
 }

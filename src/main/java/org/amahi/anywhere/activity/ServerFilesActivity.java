@@ -28,11 +28,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -62,12 +64,15 @@ import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
+import timber.log.Timber;
 
 /**
  * Files activity. Shows files navigation and operates basic file actions,
@@ -101,8 +106,8 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
 	private static final int FILE_UPLOAD_PERMISSION = 102;
 	private static final int CAMERA_PERMISSION = 103;
-	private static final int RESULT_UPLOAD_IMAGE = 201;
-	private static final int RESULT_CAMERA_IMAGE = 202;
+	private static final int REQUEST_UPLOAD_IMAGE = 201;
+	private static final int REQUEST_CAMERA_IMAGE = 202;
 
 	private File cameraImage;
 
@@ -330,7 +335,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
 	@RequiresApi(api = Build.VERSION_CODES.M)
 	private void checkCameraPermissions() {
-		String[] perms = {Manifest.permission.CAMERA};
+		String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
 		if (EasyPermissions.hasPermissions(this, perms)) {
 			openCamera();
 		} else {
@@ -340,8 +345,26 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 	}
 
 	private void openCamera() {
-		Intent intent = Intents.Builder.with(this).buildCameraIntent();
-		startActivityForResult(intent, RESULT_CAMERA_IMAGE);
+		Intent cameraIntent = Intents.Builder.with(this).buildCameraIntent();
+		if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+			cameraImage = null;
+			try {
+				cameraImage = createImageFile();
+				Uri photoURI = FileProvider.getUriForFile(this,
+						"org.amahi.anywhere.fileprovider", cameraImage);
+				cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+				startActivityForResult(cameraIntent, REQUEST_CAMERA_IMAGE);
+			} catch (IOException ex) {
+				Timber.d(ex);
+			}
+		}
+	}
+
+	private File createImageFile() throws IOException {
+		String timeStamp = String.valueOf(new Date().getTime());
+		String imageFileName = "photo-" + timeStamp;
+		File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+		return File.createTempFile(imageFileName, ".jpg", storageDir);
 	}
 
 	@RequiresApi(api = Build.VERSION_CODES.M)
@@ -357,7 +380,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
 	private void showFileChooser() {
 		Intent intent = Intents.Builder.with(this).buildMediaPickerIntent();
-		this.startActivityForResult(intent, RESULT_UPLOAD_IMAGE);
+		this.startActivityForResult(intent, REQUEST_UPLOAD_IMAGE);
 	}
 
 	@Override
@@ -365,7 +388,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
-				case RESULT_UPLOAD_IMAGE:
+				case REQUEST_UPLOAD_IMAGE:
 					if (data != null) {
 						Uri selectedImageUri = data.getData();
 						String filePath = querySelectedImagePath(selectedImageUri);
@@ -379,8 +402,10 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 						}
 					}
 					break;
-				case RESULT_CAMERA_IMAGE:
-
+				case REQUEST_CAMERA_IMAGE:
+					if (cameraImage.exists()) {
+						uploadFile(cameraImage);
+					}
 					break;
 			}
 		}
@@ -419,11 +444,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 	}
 
 	private void uploadFile(File uploadFile) {
-		if (!isDirectory(file)) {
-			serverClient.uploadFile(uploadFile, getShare());
-		} else {
-			serverClient.uploadFile(uploadFile, getShare(), file);
-		}
+		serverClient.uploadFile(uploadFile, getShare(), file);
 		uploadProgressDialog.show();
 	}
 
@@ -450,9 +471,9 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 	}
 
 	@Subscribe
-	public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent fileUploadCompleteEvent) {
+	public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent event) {
 		uploadProgressDialog.dismiss();
-		if (fileUploadCompleteEvent.wasUploadSuccessful()) {
+		if (event.wasUploadSuccessful()) {
 //			if (!isMetadataAvailable()) {
 //				getFilesAdapter().notifyDataSetChanged();
 //			} else {
@@ -461,6 +482,11 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 			Toast.makeText(this, R.string.message_file_upload_complete, Toast.LENGTH_SHORT).show();
 		} else {
 			Toast.makeText(this, R.string.message_file_upload_error, Toast.LENGTH_SHORT).show();
+		}
+		if (cameraImage != null && cameraImage.exists()) {
+			//noinspection ResultOfMethodCallIgnored
+			cameraImage.delete();
+			cameraImage = null;
 		}
 	}
 

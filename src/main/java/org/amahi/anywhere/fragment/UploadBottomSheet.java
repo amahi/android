@@ -81,5 +81,6 @@ public class UploadBottomSheet extends BottomSheetDialogFragment implements Adap
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		UploadOption uploadOption = getListItems().get(position);
 		BusProvider.getBus().post(new UploadClickEvent(uploadOption.getType()));
+		dismiss();
 	}
 }

@@ -24,6 +24,7 @@
     <string name="title_apps">Apps</string>
     <string name="title_settings">Settings</string>
     <string name="title_shares">Shares</string>
+    <string name="title_upload_list">Upload</string>
 
     <string name="button_search_application">Search Google Play</string>
     <string name="button_sign_in">Sign in</string>
@@ -92,6 +93,9 @@
     <string name="label_next">Next</string>
     <string name="label_play">Play</string>
     <string name="label_pause">Pause</string>
+
+    <string name="upload_camera">Use Camera</string>
+    <string name="upload_photo">Upload Photos / Videos</string>
 
     <!--ANDROID TV RELATED STRINGS-->
     <string name="app_title">Amahi TV</string>

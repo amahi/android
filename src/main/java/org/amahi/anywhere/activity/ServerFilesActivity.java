@@ -20,12 +20,14 @@
 package org.amahi.anywhere.activity;
 
 import android.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.squareup.otto.Subscribe;
 
@@ -35,14 +37,15 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
-import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
+import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.fragment.UploadBottomSheet;
 
 import java.util.List;
 
@@ -53,10 +56,8 @@ import javax.inject.Inject;
  * such as opening and sharing.
  * The files navigation itself is done via {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
-public class ServerFilesActivity extends AppCompatActivity
-{
-	private static final class State
-	{
+public class ServerFilesActivity extends AppCompatActivity {
+	private static final class State {
 		private State() {
 		}
 
@@ -64,8 +65,7 @@ public class ServerFilesActivity extends AppCompatActivity
 		public static final String FILE_ACTION = "file_action";
 	}
 
-	private enum FileAction
-	{
+	private enum FileAction {
 		OPEN, SHARE
 	}
 
@@ -98,6 +98,7 @@ public class ServerFilesActivity extends AppCompatActivity
 
 	private void setUpFiles(Bundle state) {
 		setUpFilesTitle();
+		setUpUploadFAB();
 		setUpFilesFragment();
 		setUpFilesState(state);
 	}
@@ -106,13 +107,24 @@ public class ServerFilesActivity extends AppCompatActivity
 		getSupportActionBar().setTitle(getShare().getName());
 	}
 
-       @Override
-       public void onBackPressed() {
-           super.onBackPressed();
-           setUpFilesTitle();
-       }
 
-       private ServerShare getShare() {
+	private void setUpUploadFAB() {
+		final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_upload);
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				new UploadBottomSheet().show(getSupportFragmentManager(), "upload_dialog");
+			}
+		});
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		setUpFilesTitle();
+	}
+
+	private ServerShare getShare() {
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
@@ -264,7 +276,7 @@ public class ServerFilesActivity extends AppCompatActivity
 		BusProvider.getBus().unregister(this);
 	}
 
-       @Override
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 

@@ -24,13 +24,9 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -65,19 +61,16 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
-import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
-import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
-import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.ViewDirector;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,8 +81,6 @@ import javax.inject.Inject;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
-
-import static android.app.Activity.RESULT_OK;
 
 /**
  * Files fragment. Shows files list.
@@ -232,7 +223,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
 			case R.id.menu_share:
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				if (Android.isPermissionRequired()) {
 					checkSharePermissions(actionMode);
 				} else {
 					startFileSharing(getCheckedFile());
@@ -694,6 +685,30 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		if (searchView.isShown()) {
 			searchMenuItem.collapseActionView();
 			searchView.setQuery("", false);
+		}
+	}
+
+	public boolean checkForDuplicateFile(String fileName) {
+		List<ServerFile> files;
+
+		if (!isMetadataAvailable()) {
+			files = getFilesAdapter().getItems();
+		} else {
+			files = getFilesAdapter().getItems();
+		}
+		for (ServerFile serverFile : files) {
+			if (serverFile.getName().equals(fileName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void refreshFileList() {
+		if (!isMetadataAvailable()) {
+			getFilesAdapter().notifyDataSetChanged();
+		} else {
+			getFilesAdapter().notifyDataSetChanged();
 		}
 	}
 

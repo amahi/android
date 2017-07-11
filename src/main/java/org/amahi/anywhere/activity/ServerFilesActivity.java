@@ -39,7 +39,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -54,11 +53,13 @@ import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
+import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.UploadBottomSheet;
 import org.amahi.anywhere.model.UploadOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -301,8 +302,12 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 		}
 	}
 
+	private View getParentView() {
+		return findViewById(R.id.coordinator_files);
+	}
+
 	private void showPermissionSnackBar(String message) {
-		Snackbar.make(findViewById(R.id.coordinator_files), message, Snackbar.LENGTH_LONG)
+		Snackbar.make(getParentView(), message, Snackbar.LENGTH_LONG)
 				.setAction(R.string.menu_settings, new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
@@ -317,14 +322,14 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 		int option = event.getUploadOption();
 		switch (option) {
 			case UploadOption.CAMERA:
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				if (Android.isPermissionRequired()) {
 					checkCameraPermissions();
 				} else {
 					openCamera();
 				}
 				break;
 			case UploadOption.FILE:
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				if (Android.isPermissionRequired()) {
 					checkFileReadPermissions();
 				} else {
 					showFileChooser();
@@ -394,7 +399,10 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 						String filePath = querySelectedImagePath(selectedImageUri);
 						if (filePath != null) {
 							File file = new File(filePath);
-							if (checkForDuplicateFile(file.getName())) {
+							ServerFilesFragment fragment = (ServerFilesFragment)
+									getSupportFragmentManager()
+											.findFragmentById(R.id.container_files);
+							if (fragment.checkForDuplicateFile(file.getName())) {
 								showDuplicateFileUploadDialog(file);
 							} else {
 								uploadFile(file);
@@ -448,20 +456,6 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 		uploadProgressDialog.show();
 	}
 
-	private boolean checkForDuplicateFile(String fileName) {
-		List<ServerFile> files;
-//		if (!isMetadataAvailable()) {
-//			files = getFilesAdapter().getItems();
-//		} else {
-//			files = getFilesAdapter().getItems();
-//		}
-//		for (ServerFile serverFile : files) {
-//			if (serverFile.getName().equals(fileName)) {
-//				return true;
-//			}
-//		}
-		return false;
-	}
 
 	@Subscribe
 	public void onFileUploadProgressEvent(ServerFileUploadProgressEvent fileUploadProgressEvent) {
@@ -474,20 +468,39 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 	public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent event) {
 		uploadProgressDialog.dismiss();
 		if (event.wasUploadSuccessful()) {
-//			if (!isMetadataAvailable()) {
-//				getFilesAdapter().notifyDataSetChanged();
-//			} else {
-//				getFilesAdapter().notifyDataSetChanged();
-//			}
-			Toast.makeText(this, R.string.message_file_upload_complete, Toast.LENGTH_SHORT).show();
+			Fragments.Operator.at(this).replace(buildFilesFragment(getShare(), file), R.id.container_files);
+			Snackbar.make(getParentView(), R.string.message_file_upload_complete, Snackbar.LENGTH_LONG).show();
+			if (cameraImage != null && cameraImage.exists()) {
+				clearCameraImage();
+			}
 		} else {
-			Toast.makeText(this, R.string.message_file_upload_error, Toast.LENGTH_SHORT).show();
+			Snackbar snackbar = Snackbar.make(getParentView(), R.string.message_file_upload_error, Snackbar.LENGTH_LONG);
+			if (cameraImage != null && cameraImage.exists()) {
+				snackbar
+						.setAction(R.string.button_retry, new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								uploadFile(cameraImage);
+							}
+						})
+						.addCallback(new Snackbar.Callback() {
+							@Override
+							public void onDismissed(Snackbar transientBottomBar, int event) {
+								super.onDismissed(transientBottomBar, event);
+								if (event != DISMISS_EVENT_ACTION) {
+									clearCameraImage();
+								}
+							}
+						});
+			}
+			snackbar.show();
 		}
-		if (cameraImage != null && cameraImage.exists()) {
-			//noinspection ResultOfMethodCallIgnored
-			cameraImage.delete();
-			cameraImage = null;
-		}
+	}
+
+	private void clearCameraImage() {
+		//noinspection ResultOfMethodCallIgnored
+		cameraImage.delete();
+		cameraImage = null;
 	}
 
 	@Subscribe

@@ -34,11 +34,4 @@
         android:title="@string/menu_sort"
         app:showAsAction="always"/>
 
-    <item
-        android:id="@+id/menu_file_upload"
-        android:icon="@drawable/ic_file_upload"
-        android:orderInCategory="102"
-        android:title="@string/menu_file_upload"
-        app:showAsAction="always"/>
-
 </menu>

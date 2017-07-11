@@ -220,5 +220,9 @@ public final class Intents {
             intent = Intent.createChooser(intent, context.getString(R.string.message_media_upload));
             return intent;
         }
+
+        public Intent buildCameraIntent() {
+			return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		}
     }
 }

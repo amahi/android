@@ -25,10 +25,13 @@ import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.UploadOptionsAdapter;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.model.UploadOption;
 
 import java.util.ArrayList;
@@ -37,7 +40,7 @@ import java.util.ArrayList;
  * Bottom sheet component for showing upload related options.
  * Extends {@link android.support.design.widget.BottomSheetDialog}
  */
-public class UploadBottomSheet extends BottomSheetDialogFragment {
+public class UploadBottomSheet extends BottomSheetDialogFragment implements AdapterView.OnItemClickListener {
 
 	@Nullable
 	@Override
@@ -54,10 +57,15 @@ public class UploadBottomSheet extends BottomSheetDialogFragment {
 
 	private ArrayList<UploadOption> getListItems() {
 		ArrayList<UploadOption> uploadOptions = new ArrayList<>();
-		uploadOptions.add(new UploadOption(getString(R.string.upload_camera),
+
+		uploadOptions.add(new UploadOption(UploadOption.CAMERA,
+				getString(R.string.upload_camera),
 				R.drawable.ic_camera));
-		uploadOptions.add(new UploadOption(getString(R.string.upload_photo),
+
+		uploadOptions.add(new UploadOption(UploadOption.FILE,
+				getString(R.string.upload_photo),
 				R.drawable.ic_cloud_upload));
+
 		return uploadOptions;
 	}
 
@@ -66,5 +74,12 @@ public class UploadBottomSheet extends BottomSheetDialogFragment {
 		ListView listView = (ListView) view.findViewById(R.id.upload_options_list);
 		assert listView != null;
 		listView.setAdapter(adapter);
+		listView.setOnItemClickListener(this);
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		UploadOption uploadOption = getListItems().get(position);
+		BusProvider.getBus().post(new UploadClickEvent(uploadOption.getType()));
 	}
 }

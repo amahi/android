@@ -88,6 +88,9 @@
     <string name="share_permission_denied">You have denied permissions for storage. Enable to continue</string>
     <string name="file_upload_permission">File read permission is required to access files on your device</string>
     <string name="file_upload_permission_denied">You have denied permissions for reading files. Enable to continue</string>
+    <string name="camera_permission">Camera access is required to capture photos and videos</string>
+    <string name="camera_permission_denied">Could not access the camera. Permissions denied</string>
+
 
     <string name="label_previous">Previous</string>
     <string name="label_next">Next</string>

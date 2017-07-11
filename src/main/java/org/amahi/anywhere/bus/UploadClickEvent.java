@@ -17,44 +17,19 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.model;
+package org.amahi.anywhere.bus;
 
-import android.support.annotation.IntDef;
+import org.amahi.anywhere.model.UploadOption;
 
-import org.amahi.anywhere.fragment.UploadBottomSheet;
+public class UploadClickEvent implements BusEvent {
+	private int uploadOption;
 
-/**
- * Upload option model for display in {@link UploadBottomSheet}
- */
-public class UploadOption {
-	public static final int CAMERA = 1;
-	public static final int FILE = 2;
-
-	@IntDef({CAMERA, FILE})
-	public @interface Types {
+	public UploadClickEvent(@UploadOption.Types int uploadOption) {
+		this.uploadOption = uploadOption;
 	}
 
-	@Types
-	private int type;
-	private String name;
-	private int icon;
-
-	public UploadOption(@Types int type, String name, int icon) {
-		this.name = name;
-		this.icon = icon;
-		this.type = type;
-	}
-
-	@Types
-	public int getType() {
-		return type;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public int getIcon() {
-		return icon;
+	@UploadOption.Types
+	public int getUploadOption() {
+		return uploadOption;
 	}
 }

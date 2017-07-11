@@ -104,7 +104,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
 	private LinearLayout mErrorLinearLayout;
-	private ProgressDialog deleteProgressDialog, uploadProgressDialog;
+	private ProgressDialog deleteProgressDialog;
 	private int deleteFilePosition;
 	private int lastCheckedFileIndex = -1;
 
@@ -117,8 +117,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private static final int SHARE_PERMISSIONS = 101;
-	private static final int FILE_UPLOAD_PERMISSION = 102;
-	private static final int RESULT_UPLOAD_IMAGE = 201;
 
 	private enum FilesSort {
 		NAME, MODIFICATION_TIME
@@ -151,7 +149,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 		setUpFiles(savedInstanceState);
 
-		setUpProgressDialogs();
+		setUpProgressDialog();
 	}
 
 	private void setUpInjections() {
@@ -166,17 +164,11 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		setUpFilesContentRefreshing();
 	}
 
-	private void setUpProgressDialogs() {
+	private void setUpProgressDialog() {
 		deleteProgressDialog = new ProgressDialog(getContext());
 		deleteProgressDialog.setMessage(getString(R.string.message_delete_progress));
 		deleteProgressDialog.setIndeterminate(true);
 		deleteProgressDialog.setCancelable(false);
-
-		uploadProgressDialog = new ProgressDialog(getContext());
-		uploadProgressDialog.setTitle(getString(R.string.message_file_upload_title));
-		uploadProgressDialog.setCancelable(false);
-		uploadProgressDialog.setIndeterminate(false);
-		uploadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 	}
 
 	private void setUpFilesMenu() {
@@ -284,8 +276,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 			if (lastCheckedFileIndex != -1) {
 				startFileSharing(getFile(lastCheckedFileIndex));
 			}
-		} else if (requestCode == FILE_UPLOAD_PERMISSION) {
-			showFileChooser();
 		}
 	}
 
@@ -294,8 +284,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
 			if (requestCode == SHARE_PERMISSIONS) {
 				showPermissionSnackBar(getString(R.string.share_permission_denied));
-			} else if (requestCode == FILE_UPLOAD_PERMISSION) {
-				showPermissionSnackBar(getString(R.string.file_upload_permission_denied));
 			}
 		}
 
@@ -651,14 +639,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 				setUpFilesContentSortSwitched();
 				setUpFilesContentSortIcon(menuItem);
 				return true;
-			case R.id.menu_file_upload:
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-					checkFileReadPermissions();
-				} else {
-					showFileChooser();
-				}
-				return true;
-
 			default:
 				return super.onOptionsItemSelected(menuItem);
 		}
@@ -714,123 +694,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		if (searchView.isShown()) {
 			searchMenuItem.collapseActionView();
 			searchView.setQuery("", false);
-		}
-	}
-
-	@RequiresApi(api = Build.VERSION_CODES.M)
-	private void checkFileReadPermissions() {
-		String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
-		if (EasyPermissions.hasPermissions(getContext(), perms)) {
-			showFileChooser();
-		} else {
-			EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
-					FILE_UPLOAD_PERMISSION, perms);
-		}
-	}
-
-	private void showFileChooser() {
-		Intent intent = Intents.Builder.with(getContext()).buildMediaPickerIntent();
-		this.startActivityForResult(intent, RESULT_UPLOAD_IMAGE);
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (resultCode == RESULT_OK) {
-			switch (requestCode) {
-				case RESULT_UPLOAD_IMAGE:
-					if (data != null) {
-						Uri selectedImageUri = data.getData();
-						String filePath = querySelectedImagePath(selectedImageUri);
-						if (filePath != null) {
-							File file = new File(filePath);
-							if (checkForDuplicateFile(file.getName())) {
-								showDuplicateFileUploadDialog(file);
-							} else {
-								uploadFile(file);
-							}
-						}
-					}
-					break;
-			}
-		}
-	}
-
-	private String querySelectedImagePath(Uri selectedImageUri) {
-		String filePath = null;
-		if ("content".equals(selectedImageUri.getScheme())) {
-			String[] filePathColumn = {MediaStore.Images.Media.DATA};
-			Cursor cursor = getContext().getContentResolver()
-					.query(selectedImageUri, filePathColumn, null, null, null);
-			if (cursor != null) {
-				cursor.moveToFirst();
-				int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-				filePath = cursor.getString(columnIndex);
-				cursor.close();
-			}
-		} else {
-			filePath = selectedImageUri.toString();
-		}
-		return filePath;
-	}
-
-	private void showDuplicateFileUploadDialog(final File file) {
-		new AlertDialog.Builder(getContext())
-				.setTitle(R.string.message_duplicate_file_upload)
-				.setMessage(getString(R.string.message_duplicate_file_upload_body, file.getName()))
-				.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						uploadFile(file);
-					}
-				})
-				.setNegativeButton(R.string.button_no, null)
-				.show();
-	}
-
-	private void uploadFile(File file) {
-		if (!isDirectoryAvailable()) {
-			serverClient.uploadFile(file, getShare());
-		} else {
-			serverClient.uploadFile(file, getShare(), getDirectory());
-		}
-		uploadProgressDialog.show();
-	}
-
-	private boolean checkForDuplicateFile(String fileName) {
-		List<ServerFile> files;
-		if (!isMetadataAvailable()) {
-			files = getFilesAdapter().getItems();
-		} else {
-			files = getFilesAdapter().getItems();
-		}
-		for (ServerFile serverFile : files) {
-			if (serverFile.getName().equals(fileName)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Subscribe
-	public void onFileUploadProgressEvent(ServerFileUploadProgressEvent fileUploadProgressEvent) {
-		if (uploadProgressDialog.isShowing()) {
-			uploadProgressDialog.setProgress(fileUploadProgressEvent.getProgress());
-		}
-	}
-
-	@Subscribe
-	public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent fileUploadCompleteEvent) {
-		uploadProgressDialog.dismiss();
-		if (fileUploadCompleteEvent.wasUploadSuccessful()) {
-			if (!isMetadataAvailable()) {
-				getFilesAdapter().notifyDataSetChanged();
-			} else {
-				getFilesAdapter().notifyDataSetChanged();
-			}
-			Toast.makeText(getContext(), R.string.message_file_upload_complete, Toast.LENGTH_SHORT).show();
-		} else {
-			Toast.makeText(getContext(), R.string.message_file_upload_error, Toast.LENGTH_SHORT).show();
 		}
 	}
 

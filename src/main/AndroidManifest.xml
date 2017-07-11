@@ -18,7 +18,6 @@
 -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="org.amahi.anywhere"
     android:installLocation="auto">
 
@@ -46,6 +45,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false"/>
 
     <uses-feature
         android:name="android.software.leanback"

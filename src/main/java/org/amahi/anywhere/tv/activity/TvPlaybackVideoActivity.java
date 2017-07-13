@@ -38,7 +38,7 @@ import org.amahi.anywhere.util.Time;
 
 import javax.inject.Inject;
 
-public class TvPlaybackOverlayActivity extends Activity {
+public class TvPlaybackVideoActivity extends Activity {
 
     private VideoView mVideoView;
 

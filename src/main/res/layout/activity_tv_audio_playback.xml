@@ -3,14 +3,16 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <VideoView android:id="@+id/videoView"
+    <ImageView android:id="@+id/imageViewBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scaleType="centerCrop"
         android:layout_gravity="center"/>
 
-    <fragment android:id="@+id/playback_controls_fragment"
-        android:name="org.amahi.anywhere.tv.fragment.TvPlaybackVideoFragment"
-        android:layout_width="match_parent" android:layout_height="match_parent" />
+    <FrameLayout
+        android:id="@+id/playback_controls_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </FrameLayout>
 

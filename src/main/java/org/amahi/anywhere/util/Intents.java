@@ -41,7 +41,8 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
-import org.amahi.anywhere.tv.activity.TvPlaybackOverlayActivity;
+import org.amahi.anywhere.tv.activity.TvPlaybackAudioActivity;
+import org.amahi.anywhere.tv.activity.TvPlaybackVideoActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,7 @@ public final class Intents {
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_FILES = "server_files";
         public static final String SERVER_SHARE = "server_share";
+
         private Extras() {
         }
     }
@@ -66,6 +68,7 @@ public final class Intents {
         static final String EMAIL = "mailto:%s?subject=%s";
         static final String GOOGLE_PLAY = "market://details?id=%s";
         static final String GOOGLE_PLAY_SEARCH = "market://search?q=%s";
+
         private Uris() {
         }
     }
@@ -95,7 +98,7 @@ public final class Intents {
             return intent;
         }
 
-        public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file){
+        public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file) {
             Intent intent = new Intent(context, ServerFileTvActivity.class);
             intent.putExtra(Extras.SERVER_FILE, file);
             intent.putExtra(Extras.SERVER_SHARE, share);
@@ -111,6 +114,8 @@ public final class Intents {
             String fileFormat = file.getMime();
 
             if (ServerFileAudioActivity.supports(fileFormat)) {
+                if(CheckTV.isATV(context))
+                    return TvPlaybackAudioActivity.class;
                 return ServerFileAudioActivity.class;
             }
 
@@ -120,8 +125,8 @@ public final class Intents {
 
             if (ServerFileVideoActivity.supports(fileFormat)) {
                 if (NativeVideoActivity.supports(fileFormat)) {
-                    if(CheckTV.isATV(context))
-                        return TvPlaybackOverlayActivity.class;
+                    if (CheckTV.isATV(context))
+                        return TvPlaybackVideoActivity.class;
                     else
                         return NativeVideoActivity.class;
                 }
@@ -129,7 +134,7 @@ public final class Intents {
             }
 
             if (ServerFileWebActivity.supports(fileFormat)) {
-                if(!CheckTV.isATV(context))
+                if (!CheckTV.isATV(context))
                     return ServerFileWebActivity.class;
                 else
                     return TVWebViewActivity.class;

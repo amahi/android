@@ -58,6 +58,7 @@ public class MainTVPresenter extends Presenter {
     private int mDefaultBackgroundColor = -1;
     private ServerClient mServerClient;
     private List<ServerFile> mServerFileList;
+    private ServerShare parentShare;
 
     public MainTVPresenter(Context context, ServerClient serverClient, List<ServerFile> serverFiles) {
         mContext = context;
@@ -70,6 +71,12 @@ public class MainTVPresenter extends Presenter {
         mContext = context;
         mServerClient = serverClient;
         BusProvider.getBus().register(this);
+    }
+
+    public MainTVPresenter(Context context, ServerClient serverClient, ServerShare parentShare) {
+        mContext = context;
+        mServerClient = serverClient;
+        this.parentShare = parentShare;
     }
 
     @Override
@@ -133,7 +140,10 @@ public class MainTVPresenter extends Presenter {
 
 
     private boolean isMetadataAvailable(ServerFile serverFile) {
-        return ServerShare.Tag.MOVIES.equals(serverFile.getParentShare().getTag());
+        if (parentShare == null)
+            return ServerShare.Tag.MOVIES.equals(serverFile.getParentShare().getTag());
+        else
+            return ServerShare.Tag.MOVIES.equals(parentShare.getTag());
     }
 
     private void setUpMetaDimensions(ViewHolder viewHolder) {
@@ -154,7 +164,7 @@ public class MainTVPresenter extends Presenter {
         if (isImage(serverFile)) {
             setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), getImageUri(serverFile));
         } else if (isAudio(serverFile)) {
-            AudioMetadataRetrievingTask.execute(getImageUri(serverFile), viewHolder);
+            AudioMetadataRetrievingTask.execute(getImageUri(serverFile), serverFile,viewHolder);
         } else {
             setUpDrawable(serverFile, viewHolder);
         }
@@ -167,7 +177,7 @@ public class MainTVPresenter extends Presenter {
     private void setUpDrawable(ServerFile serverFile, ViewHolder viewHolder) {
         viewHolder.mCardView.setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE);
         viewHolder.mCardView.setMainImage(ContextCompat.getDrawable(mContext, Mimes.getTVFileIcon(serverFile)));
-        if(!isMetadataAvailable(serverFile))
+        if (!isMetadataAvailable(serverFile))
             viewHolder.mCardView.getMainImageView().setPadding(50, 50, 50, 50);
     }
 
@@ -197,7 +207,8 @@ public class MainTVPresenter extends Presenter {
     }
 
     private void setUpMusicLogo(ViewHolder viewHolder) {
-        viewHolder.mCardView.setMainImage(ContextCompat.getDrawable(mContext, R.drawable.tv_ic_audio));
+        if (viewHolder != null)
+            viewHolder.mCardView.setMainImage(ContextCompat.getDrawable(mContext, R.drawable.tv_ic_audio));
     }
 
     private boolean isImage(ServerFile file) {
@@ -226,7 +237,10 @@ public class MainTVPresenter extends Presenter {
     }
 
     private Uri getImageUri(ServerFile file) {
-        return mServerClient.getFileUri(file.getParentShare(), file);
+        if (parentShare == null)
+            return mServerClient.getFileUri(file.getParentShare(), file);
+        else
+            return mServerClient.getFileUri(parentShare, file);
     }
 
     private void startFileOpening(ServerFile file) {
@@ -243,6 +257,7 @@ public class MainTVPresenter extends Presenter {
         ViewHolder(View view) {
             super(view);
             mCardView = (ImageCardView) view;
+            mCardView.getMainImageView().setImageDrawable(ContextCompat.getDrawable(mContext,R.drawable.tv_ic_audio));
         }
     }
 }

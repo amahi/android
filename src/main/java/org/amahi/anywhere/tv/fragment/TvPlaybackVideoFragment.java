@@ -20,7 +20,9 @@
 package org.amahi.anywhere.tv.fragment;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.media.session.PlaybackState;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -34,19 +36,22 @@ import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
 import android.support.v17.leanback.widget.PlaybackControlsRowPresenter;
+import android.support.v4.content.ContextCompat;
 
 import org.amahi.anywhere.AmahiApplication;
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
-import org.amahi.anywhere.tv.activity.TvPlaybackOverlayActivity;
+import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.activity.TvPlaybackVideoActivity;
 import org.amahi.anywhere.tv.presenter.VideoDetailsDescriptionPresenter;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Time;
 
 import javax.inject.Inject;
 
 
-public class TvPlaybackOverlayFragment extends PlaybackOverlayFragment {
-    private static final int SIMULATED_BUFFERED_TIME = 10000;
+public class TvPlaybackVideoFragment extends PlaybackOverlayFragment {
     private static final int DEFAULT_UPDATE_PERIOD = 1000;
     private static final int UPDATE_PERIOD = 16;
 
@@ -88,9 +93,11 @@ public class TvPlaybackOverlayFragment extends PlaybackOverlayFragment {
         ps.addClassPresenter(PlaybackControlsRow.class, playbackControlsRowPresenter);
         ps.addClassPresenter(ListRow.class, new ListRowPresenter());
         mRowsAdapter = new ArrayObjectAdapter(ps);
-
+        playbackControlsRowPresenter.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.primary));
+        playbackControlsRowPresenter.setProgressColor(Color.WHITE);
         addPlaybackControlsRow();
         playbackStateChanged();
+        mPlaybackControlsRow.setTotalTimeLong(Time.getDuration(getFileUri().toString()));
         playbackControlsRowPresenter.setOnActionClickedListener(new OnActionClickedListener() {
             public void onActionClicked(Action action) {
                 if (action.getId() == mPlayPauseAction.getId()) {
@@ -105,11 +112,16 @@ public class TvPlaybackOverlayFragment extends PlaybackOverlayFragment {
                 }
             }
         });
+        playbackControlsRowPresenter.setProgressColor(Color.WHITE);
         setAdapter(mRowsAdapter);
     }
 
+    private Uri getFileUri() {
+        return serverClient.getFileUri(getVideoShare(), getVideoFile());
+    }
+
     private void togglePlayback(boolean playPause) {
-        ((TvPlaybackOverlayActivity) getActivity()).playPause(playPause);
+        ((TvPlaybackVideoActivity) getActivity()).playPause(playPause);
         playbackStateChanged();
     }
 
@@ -131,10 +143,8 @@ public class TvPlaybackOverlayFragment extends PlaybackOverlayFragment {
             notifyChanged(mPlayPauseAction);
         }
 
-        int currentTime = ((TvPlaybackOverlayActivity) getActivity()).getPosition();
+        int currentTime = ((TvPlaybackVideoActivity) getActivity()).getPosition();
         mPlaybackControlsRow.setCurrentTime(currentTime);
-        mPlaybackControlsRow.setBufferedProgress(currentTime + SIMULATED_BUFFERED_TIME);
-
     }
 
     private void notifyChanged(Action action) {
@@ -153,7 +163,6 @@ public class TvPlaybackOverlayFragment extends PlaybackOverlayFragment {
                     int currentTime = mPlaybackControlsRow.getCurrentTime() + updatePeriod;
                     int totalTime = mPlaybackControlsRow.getTotalTime();
                     mPlaybackControlsRow.setCurrentTime(currentTime);
-                    mPlaybackControlsRow.setBufferedProgress(currentTime + SIMULATED_BUFFERED_TIME);
 
                     if (totalTime > 0 && totalTime <= currentTime) {
                         stopProgressAutomation();
@@ -202,19 +211,21 @@ public class TvPlaybackOverlayFragment extends PlaybackOverlayFragment {
         return getActivity().getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
     }
 
-    private void fastForward() {
-        ((TvPlaybackOverlayActivity) getActivity()).fastForward();
+    private ServerShare getVideoShare() {
+        return getActivity().getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+    }
 
-        int currentTime = ((TvPlaybackOverlayActivity) getActivity()).getPosition();
+    private void fastForward() {
+        ((TvPlaybackVideoActivity) getActivity()).fastForward();
+
+        int currentTime = ((TvPlaybackVideoActivity) getActivity()).getPosition();
         mPlaybackControlsRow.setCurrentTime(currentTime);
-        mPlaybackControlsRow.setBufferedProgress(currentTime + SIMULATED_BUFFERED_TIME);
     }
 
     private void rewind() {
-        ((TvPlaybackOverlayActivity) getActivity()).rewind();
+        ((TvPlaybackVideoActivity) getActivity()).rewind();
 
-        int currentTime = ((TvPlaybackOverlayActivity) getActivity()).getPosition();
+        int currentTime = ((TvPlaybackVideoActivity) getActivity()).getPosition();
         mPlaybackControlsRow.setCurrentTime(currentTime);
-        mPlaybackControlsRow.setBufferedProgress(currentTime + SIMULATED_BUFFERED_TIME);
     }
 }

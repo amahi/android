@@ -222,7 +222,7 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	}
 
 	private void setUpAudioMetadata() {
-		AudioMetadataRetrievingTask.execute(getAudioUri());
+		AudioMetadataRetrievingTask.execute(getAudioUri(), audioFile);
 	}
 
 	@Subscribe

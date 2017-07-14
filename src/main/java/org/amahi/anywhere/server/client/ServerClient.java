@@ -40,17 +40,21 @@ import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.server.response.ServerAppsResponse;
+import org.amahi.anywhere.server.response.ServerFileDeleteResponse;
+import org.amahi.anywhere.server.response.ServerFileUploadResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
 import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
+import org.amahi.anywhere.util.ProgressRequestBody;
 import org.amahi.anywhere.util.Time;
 
-import java.io.IOException;
+import java.io.File;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import okhttp3.MultipartBody;
 import retrofit2.Callback;
 
 
@@ -59,8 +63,7 @@ import retrofit2.Callback;
  * {@link org.amahi.anywhere.server.api.ServerApi}. Reacts to network connection changes as well.
  */
 @Singleton
-public class ServerClient
-{
+public class ServerClient {
 	private final ApiAdapter apiAdapter;
 	private final ProxyApi proxyApi;
 	private ServerApi serverApi;
@@ -179,18 +182,18 @@ public class ServerClient
 
 	public void connectLocal() {
 		this.serverConnection = ApiConnection.LOCAL;
-        if (!isServerRouteLoaded()) {
-            return;
-        }
+		if (!isServerRouteLoaded()) {
+			return;
+		}
 		this.serverAddress = serverRoute.getLocalAddress();
 		this.serverApi = buildServerApi();
 	}
 
 	public void connectRemote() {
 		this.serverConnection = ApiConnection.REMOTE;
-        if (!isServerRouteLoaded()) {
-            return;
-        }
+		if (!isServerRouteLoaded()) {
+			return;
+		}
 		this.serverAddress = serverRoute.getRemoteAddress();
 		this.serverApi = buildServerApi();
 	}
@@ -215,21 +218,42 @@ public class ServerClient
 		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
 	}
 
+	public void deleteFile(ServerShare share, ServerFile serverFile) {
+		serverApi.deleteFile(server.getSession(), share.getName(), serverFile.getPath())
+				.enqueue(new ServerFileDeleteResponse());
+	}
+
+	public void uploadFile(File file, ServerShare share) {
+		this.uploadFile(file, share, null);
+	}
+
+	public void uploadFile(File file, ServerShare share, ServerFile directory) {
+		MultipartBody.Part filePart = MultipartBody.Part.createFormData("file",
+				file.getName(),
+				new ProgressRequestBody(file));
+		String path = "/";
+		if (directory != null)
+			path = directory.getPath();
+
+		serverApi.uploadFile(server.getSession(), share.getName(), path, filePart)
+				.enqueue(new ServerFileUploadResponse());
+	}
+
 	public Uri getFileUri(ServerShare share, ServerFile file) {
 		return Uri.parse(serverAddress)
-			.buildUpon()
-			.path("files")
-			.appendQueryParameter("s", share.getName())
-			.appendQueryParameter("p", file.getPath())
-			.appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
-			.appendQueryParameter("session", server.getSession())
-			.build();
+				.buildUpon()
+				.path("files")
+				.appendQueryParameter("s", share.getName())
+				.appendQueryParameter("p", file.getPath())
+				.appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
+				.appendQueryParameter("session", server.getSession())
+				.build();
 	}
 
 	public void getFileMetadata(ServerShare share, ServerFile file, Callback<ServerFileMetadata> callback) {
-        if ((server == null) || (share == null) || (file == null)){
-            return;
-        }
+		if ((server == null) || (share == null) || (file == null)) {
+			return;
+		}
 		serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag()).enqueue(callback);
 	}
 

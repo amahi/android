@@ -20,19 +20,19 @@
 package org.amahi.anywhere.fragment;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -47,6 +47,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -58,12 +59,14 @@ import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.bus.ServerFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.ViewDirector;
@@ -76,24 +79,27 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import static android.support.v4.content.PermissionChecker.checkSelfPermission;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Files fragment. Shows files list.
  */
 public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
-	AdapterView.OnItemClickListener,
-	AdapterView.OnItemLongClickListener,
-	ActionMode.Callback,
-	SearchView.OnQueryTextListener,
-	FilesFilterBaseAdapter.onFilterListChange
-{
+		AdapterView.OnItemClickListener,
+		AdapterView.OnItemLongClickListener,
+		ActionMode.Callback,
+		SearchView.OnQueryTextListener,
+		FilesFilterBaseAdapter.onFilterListChange,
+		EasyPermissions.PermissionCallbacks {
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
 	private LinearLayout mErrorLinearLayout;
+	private ProgressDialog deleteProgressDialog;
+	private int deleteFilePosition;
+	private int lastCheckedFileIndex = -1;
 
-	private static final class State
-	{
+	private static final class State {
 		private State() {
 		}
 
@@ -101,10 +107,9 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		public static final String FILES_SORT = "files_sort";
 	}
 
-	private static final int CALLBACK_NUMBER = 100;
+	private static final int SHARE_PERMISSIONS = 101;
 
-	private enum FilesSort
-	{
+	private enum FilesSort {
 		NAME, MODIFICATION_TIME
 	}
 
@@ -134,6 +139,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		setUpInjections();
 
 		setUpFiles(savedInstanceState);
+
+		setUpProgressDialog();
 	}
 
 	private void setUpInjections() {
@@ -146,6 +153,13 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		setUpFilesAdapter();
 		setUpFilesContent(state);
 		setUpFilesContentRefreshing();
+	}
+
+	private void setUpProgressDialog() {
+		deleteProgressDialog = new ProgressDialog(getContext());
+		deleteProgressDialog.setMessage(getString(R.string.message_delete_progress));
+		deleteProgressDialog.setIndeterminate(true);
+		deleteProgressDialog.setCancelable(false);
 	}
 
 	private void setUpFilesMenu() {
@@ -205,61 +219,111 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		getListView().requestLayout();
 	}
 
-	@RequiresApi(api = Build.VERSION_CODES.M)
 	@Override
 	public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
 			case R.id.menu_share:
-				checkPermissions();
+				if (Android.isPermissionRequired()) {
+					checkSharePermissions(actionMode);
+				} else {
+					startFileSharing(getCheckedFile());
+					actionMode.finish();
+				}
 				break;
-
+			case R.id.menu_delete:
+				deleteFile(getCheckedFile(), actionMode);
+				break;
 			default:
 				return false;
 		}
 
-		actionMode.finish();
-
 		return true;
 	}
+
 	@RequiresApi(api = Build.VERSION_CODES.M)
-	private void checkPermissions(){
-	int permissionCheck = checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+	private void checkSharePermissions(ActionMode actionMode) {
+		String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+		if (EasyPermissions.hasPermissions(getContext(), perms)) {
+			startFileSharing(getCheckedFile());
+		} else {
+			lastCheckedFileIndex = getListView().getCheckedItemPosition();
+			EasyPermissions.requestPermissions(this, getString(R.string.share_permission),
+					SHARE_PERMISSIONS, perms);
+		}
+		actionMode.finish();
+	}
 
-	if (!(permissionCheck == PackageManager.PERMISSION_GRANTED)) {
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-		requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, CALLBACK_NUMBER);
+		// Forward results to EasyPermissions
+		EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+	}
 
-	} else {
-		startFileSharing(getCheckedFile());
+	@Override
+	public void onPermissionsGranted(int requestCode, List<String> perms) {
+		if (requestCode == SHARE_PERMISSIONS) {
+			if (lastCheckedFileIndex != -1) {
+				startFileSharing(getFile(lastCheckedFileIndex));
+			}
 		}
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-	switch (requestCode) {
-		case 100: {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				Snackbar.make(getView(),getString(R.string.share_permission_granted),Snackbar.LENGTH_LONG).show();
-			} else {
-				Snackbar.make(getView(),getString(R.string.share_permission_denied),Snackbar.LENGTH_LONG)
-						.setAction("Permissions", new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								Intent intent = new Intent();
-								intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-								Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
-								intent.setData(uri);
-								startActivity(intent);
-							}
-						})
-						.show();
+	public void onPermissionsDenied(int requestCode, List<String> perms) {
+		if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+			if (requestCode == SHARE_PERMISSIONS) {
+				showPermissionSnackBar(getString(R.string.share_permission_denied));
 			}
-		   }
 		}
+
+	}
+
+	private void showPermissionSnackBar(String message) {
+		Snackbar.make(getView(), message, Snackbar.LENGTH_LONG)
+				.setAction(R.string.menu_settings, new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						new AppSettingsDialog.Builder(ServerFilesFragment.this).build().show();
+					}
+				})
+				.show();
 	}
 
 	private void startFileSharing(ServerFile file) {
 		BusProvider.getBus().post(new ServerFileSharingEvent(getShare(), file));
+	}
+
+	private void deleteFile(final ServerFile file, final ActionMode actionMode) {
+		deleteFilePosition = getListView().getCheckedItemPosition();
+		new AlertDialog.Builder(getContext())
+				.setTitle(R.string.message_delete_file_title)
+				.setMessage(R.string.message_delete_file_body)
+				.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						deleteProgressDialog.show();
+						serverClient.deleteFile(getShare(), file);
+						actionMode.finish();
+					}
+				})
+				.setNegativeButton(R.string.button_no, null)
+				.show();
+	}
+
+	@Subscribe
+	public void onFileDeleteEvent(ServerFileDeleteEvent fileDeleteEvent) {
+		deleteProgressDialog.dismiss();
+		if (fileDeleteEvent.isDeleted()) {
+			if (!isMetadataAvailable()) {
+				getFilesAdapter().removeFile(deleteFilePosition);
+			} else {
+				getFilesMetadataAdapter().removeFile(deleteFilePosition);
+			}
+		} else {
+			Toast.makeText(getContext(), R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	private ServerFile getCheckedFile() {
@@ -376,14 +440,14 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setUpFilesContent() {
-        if (serverClient.isConnected()){
-            if (!isDirectoryAvailable()) {
-                serverClient.getFiles(getShare());
-            } else {
-                serverClient.getFiles(getShare(), getDirectory());
-            }
-        }
-    }
+		if (serverClient.isConnected()) {
+			if (!isDirectoryAvailable()) {
+				serverClient.getFiles(getShare());
+			} else {
+				serverClient.getFiles(getShare(), getDirectory());
+			}
+		}
+	}
 
 	private boolean isDirectoryAvailable() {
 		return getDirectory() != null;
@@ -465,10 +529,10 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		SwipeRefreshLayout refreshLayout = getRefreshLayout();
 
 		refreshLayout.setColorSchemeResources(
-			android.R.color.holo_blue_light,
-			android.R.color.holo_orange_light,
-			android.R.color.holo_green_light,
-			android.R.color.holo_red_light);
+				android.R.color.holo_blue_light,
+				android.R.color.holo_orange_light,
+				android.R.color.holo_green_light,
+				android.R.color.holo_red_light);
 
 		refreshLayout.setOnRefreshListener(this);
 	}
@@ -484,7 +548,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 			collapseSearchView();
 			startFileOpening(getFile(filePosition));
 
-			if(isDirectory(getFile(filePosition))){
+			if (isDirectory(getFile(filePosition))) {
 				setUpTitle(getFile(filePosition).getName());
 			}
 		}
@@ -495,8 +559,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setUpTitle(String title) {
-		((ServerFilesActivity)getActivity()).getSupportActionBar().setTitle(title);
-       }
+		((ServerFilesActivity) getActivity()).getSupportActionBar().setTitle(title);
+	}
 
 	private List<ServerFile> getFiles() {
 		if (!isMetadataAvailable()) {
@@ -533,13 +597,14 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	}
 
 	private void setSearchCursor() {
-		final int textViewID = searchView.getContext().getResources().getIdentifier("android:id/search_src_text",null, null);
+		final int textViewID = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
 		final AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(textViewID);
 		try {
 			Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
 			mCursorDrawableRes.setAccessible(true);
 			mCursorDrawableRes.set(searchTextView, R.drawable.white_cursor);
-		} catch (Exception ignored) {}
+		} catch (Exception ignored) {
+		}
 	}
 
 	private void setUpFilesContentSortIcon(MenuItem menuItem) {
@@ -565,7 +630,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 				setUpFilesContentSortSwitched();
 				setUpFilesContentSortIcon(menuItem);
 				return true;
-
 			default:
 				return super.onOptionsItemSelected(menuItem);
 		}
@@ -613,14 +677,38 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 	@Override
 	public void isListEmpty(boolean empty) {
-		if(getView().findViewById(R.id.none_text)!=null)
-			getView().findViewById(R.id.none_text).setVisibility(empty?View.VISIBLE:View.GONE);
+		if (getView().findViewById(R.id.none_text) != null)
+			getView().findViewById(R.id.none_text).setVisibility(empty ? View.VISIBLE : View.GONE);
 	}
 
 	private void collapseSearchView() {
 		if (searchView.isShown()) {
 			searchMenuItem.collapseActionView();
 			searchView.setQuery("", false);
+		}
+	}
+
+	public boolean checkForDuplicateFile(String fileName) {
+		List<ServerFile> files;
+
+		if (!isMetadataAvailable()) {
+			files = getFilesAdapter().getItems();
+		} else {
+			files = getFilesAdapter().getItems();
+		}
+		for (ServerFile serverFile : files) {
+			if (serverFile.getName().equals(fileName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void refreshFileList() {
+		if (!isMetadataAvailable()) {
+			getFilesAdapter().notifyDataSetChanged();
+		} else {
+			getFilesAdapter().notifyDataSetChanged();
 		}
 	}
 
@@ -673,16 +761,14 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		}
 	}
 
-	private static final class FileNameComparator implements Comparator<ServerFile>
-	{
+	private static final class FileNameComparator implements Comparator<ServerFile> {
 		@Override
 		public int compare(ServerFile firstFile, ServerFile secondFile) {
 			return firstFile.getName().compareTo(secondFile.getName());
 		}
 	}
 
-	private static final class FileModificationTimeComparator implements Comparator<ServerFile>
-	{
+	private static final class FileModificationTimeComparator implements Comparator<ServerFile> {
 		@Override
 		public int compare(ServerFile firstFile, ServerFile secondFile) {
 			return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());

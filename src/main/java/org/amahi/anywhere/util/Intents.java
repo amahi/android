@@ -25,8 +25,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
@@ -210,5 +213,20 @@ public final class Intents {
 
             return intent;
         }
+
+        public Intent buildMediaPickerIntent () {
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.setType("image/* video/*");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"image/*", "video/*"});
+            }
+            intent = Intent.createChooser(intent, context.getString(R.string.message_media_upload));
+            return intent;
+        }
+
+        public Intent buildCameraIntent() {
+			return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		}
     }
 }

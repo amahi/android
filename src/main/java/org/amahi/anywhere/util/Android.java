@@ -38,6 +38,10 @@ public final class Android {
         return context.getResources().getBoolean(R.bool.tablet);
     }
 
+    public static boolean isPermissionRequired() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    }
+
     public static String getVersion() {
         return Build.VERSION.RELEASE;
     }

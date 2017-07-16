@@ -39,4 +39,12 @@ public class ServerRoute
 	public String getRemoteAddress() {
 		return remoteAddress;
 	}
+
+	public void setLocalAddress(String localAddress) {
+		this.localAddress = localAddress;
+	}
+
+	public void setRemoteAddress(String remoteAddress) {
+		this.remoteAddress = remoteAddress;
+	}
 }

@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.server.client;
 
+import android.content.Context;
 import android.net.Uri;
 
 import com.squareup.otto.Subscribe;
@@ -48,6 +49,9 @@ import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 import org.amahi.anywhere.util.ProgressRequestBody;
 import org.amahi.anywhere.util.Time;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 
@@ -56,6 +60,8 @@ import javax.inject.Singleton;
 
 import okhttp3.MultipartBody;
 import retrofit2.Callback;
+
+import static org.amahi.anywhere.util.Android.loadServersFromAsset;
 
 
 /**
@@ -151,10 +157,23 @@ public class ServerClient {
 		return serverAddress.equals(serverRoute.getLocalAddress());
 	}
 
-	public void connect(Server server) {
+	public void connect(Context context, Server server) {
 		this.server = server;
 
-		startServerConnection();
+		if (server.isDebug()) {
+			try {
+				ServerRoute serverRoute = new ServerRoute();
+				JSONArray jsonArray = new JSONArray(loadServersFromAsset(context));
+				JSONObject jsonObject = jsonArray.getJSONObject(server.getIndex());
+				serverRoute.setLocalAddress(jsonObject.getString("local_address"));
+				serverRoute.setRemoteAddress(jsonObject.getString("remote_address"));
+				BusProvider.getBus().post(new ServerRouteLoadedEvent(serverRoute));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		} else {
+			startServerConnection();
+		}
 	}
 
 	private void startServerConnection() {

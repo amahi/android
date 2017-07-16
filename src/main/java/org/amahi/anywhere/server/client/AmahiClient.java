@@ -19,6 +19,8 @@
 
 package org.amahi.anywhere.server.client;
 
+import android.content.Context;
+
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.api.AmahiApi;
@@ -49,7 +51,7 @@ public class AmahiClient
 		api.authenticate(Api.getClientId(), Api.getClientSecret(), username, password).enqueue(new AuthenticationResponse());
 	}
 
-	public void getServers(String authenticationToken) {
-		api.getServers(authenticationToken).enqueue(new ServersResponse());
+	public void getServers(Context context, String authenticationToken) {
+		api.getServers(authenticationToken).enqueue(new ServersResponse(context));
 	}
 }

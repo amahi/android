@@ -38,6 +38,10 @@ public class Server implements Parcelable
 	@SerializedName("active")
 	private boolean active;
 
+	private boolean debug = false;
+
+	private int index;
+
 	public String getName() {
 		return name;
 	}
@@ -46,12 +50,19 @@ public class Server implements Parcelable
 		return session;
 	}
 
+	public int getIndex() {
+		return index;
+	}
+
 	public boolean isActive() {
 		return active;
 	}
 
-	public static final Creator<Server> CREATOR = new Creator<Server>()
-	{
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public static final Creator<Server> CREATOR = new Creator<Server>() {
 		@Override
 		public Server createFromParcel(Parcel parcel) {
 			return new Server(parcel);
@@ -63,7 +74,15 @@ public class Server implements Parcelable
 		}
 	};
 
-	private Server(Parcel parcel) {
+	public Server(int index, String name, String session) {
+		this.index = index;
+		this.name = name;
+		this.session = session;
+		this.active = true;
+		this.debug = true;
+	}
+
+	public Server(Parcel parcel) {
 		this.name = parcel.readString();
 		this.session = parcel.readString();
 		this.active = Boolean.valueOf(parcel.readString());

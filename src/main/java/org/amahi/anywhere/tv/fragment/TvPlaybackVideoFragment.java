@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.tv.fragment;
 
+import android.app.Fragment;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.media.session.PlaybackState;
@@ -49,6 +50,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.presenter.VideoDetailsDescriptionPresenter;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Mimes;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
@@ -57,6 +59,8 @@ import org.videolan.libvlc.MediaPlayer;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
+
+import wseemann.media.FFmpegMediaMetadataRetriever;
 
 
 public class TvPlaybackVideoFragment extends PlaybackFragment {
@@ -73,30 +77,72 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
     private PlaybackControlsRow mPlaybackControlsRow;
     private int mCurrentPlaybackState;
     private int mDuration;
+    private ArrayList<ServerFile> mVideoList;
     private ArrayObjectAdapter mRowsAdapter;
     private ArrayObjectAdapter mPrimaryActionsAdapter;
+    private PlaybackControlsRow.SkipPreviousAction mSkipPreviousAction;
     private PlaybackControlsRow.PlayPauseAction mPlayPauseAction;
     private PlaybackControlsRow.FastForwardAction mFastForwardAction;
     private PlaybackControlsRow.RewindAction mRewindAction;
+    private PlaybackControlsRow.SkipNextAction mSkipNextAction;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setUpInjections();
+        setAllVideoFiles();
         setDuration();
         playVideo();
         setBackgroundType(BG_DARK);
         setFadingEnabled(false);
         mHandler = new Handler(Looper.getMainLooper());
         setUpRows();
+        mediaPlayer.setEventListener(new MediaPlayer.EventListener() {
+            @Override
+            public void onEvent(MediaPlayer.Event event) {
+                if (event.type == MediaPlayer.Event.EndReached) {
+                    skipNext();
+                }
+            }
+        });
+    }
+
+    private ArrayList<ServerFile> setAllVideoFiles() {
+        mVideoList = new ArrayList<>();
+        ArrayList<ServerFile> allFiles = getArguments().getParcelableArrayList(Intents.Extras.SERVER_FILES);
+        if (allFiles != null) {
+            for (ServerFile serverFile : allFiles) {
+                if (isVideo(serverFile)) {
+                    mVideoList.add(serverFile);
+                }
+            }
+        }
+        return mVideoList;
+    }
+
+    private void replaceFragment(ServerFile serverFile) {
+        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, buildVideoFragment(serverFile)).commit();
+    }
+
+    private Fragment buildVideoFragment(ServerFile serverFile) {
+        Fragment fragment = new TvPlaybackVideoFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Intents.Extras.SERVER_SHARE, getVideoShare());
+        bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
+        bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, getVideoFiles());
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    private boolean isVideo(ServerFile serverFile) {
+        return Mimes.match(serverFile.getMime()) == Mimes.Type.VIDEO;
     }
 
     private void setDuration() {
-        android.media.MediaPlayer mediaPlayer = android.media.MediaPlayer.create(getActivity(), getFileUri());
-        if(mediaPlayer!=null) {
-            mDuration = mediaPlayer.getDuration();
-            mediaPlayer.release();
-        }
+        FFmpegMediaMetadataRetriever mFFmpegMediaMetadataRetriever = new FFmpegMediaMetadataRetriever();
+        mFFmpegMediaMetadataRetriever.setDataSource(getFileUri().toString());
+        String mVideoDuration = mFFmpegMediaMetadataRetriever.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
+        mDuration = Integer.parseInt(mVideoDuration);
     }
 
     private void playVideo() {
@@ -159,6 +205,10 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
                     rewind();
                 } else if (action.getId() == mFastForwardAction.getId()) {
                     fastForward();
+                } else if (action.getId() == mSkipNextAction.getId()) {
+                    skipNext();
+                } else if (action.getId() == mSkipPreviousAction.getId()) {
+                    skipPrevious();
                 }
                 if (action instanceof PlaybackControlsRow.MultiAction) {
                     notifyChanged(action);
@@ -191,6 +241,22 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         }
     }
 
+    private void skipPrevious() {
+        int presentIndex = mVideoList.indexOf(getVideoFile());
+        if (presentIndex < mVideoList.size() - 1)
+            replaceFragment(mVideoList.get(presentIndex + 1));
+        else
+            replaceFragment(mVideoList.get(0));
+    }
+
+    private void skipNext() {
+        int presentIndex = mVideoList.indexOf(getVideoFile());
+        if (presentIndex > 0)
+            replaceFragment(mVideoList.get(presentIndex - 1));
+        else
+            replaceFragment(mVideoList.get(mVideoList.size() - 1));
+    }
+
     private void addPlaybackControlsRow() {
         mPlaybackControlsRow = new PlaybackControlsRow(getVideoFile());
         mRowsAdapter.add(mPlaybackControlsRow);
@@ -202,9 +268,13 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         mRewindAction = new PlaybackControlsRow.RewindAction(getActivity());
         mPlayPauseAction = new PlaybackControlsRow.PlayPauseAction(getActivity());
         mFastForwardAction = new PlaybackControlsRow.FastForwardAction(getActivity());
+        mSkipNextAction = new PlaybackControlsRow.SkipNextAction(getActivity());
+        mSkipPreviousAction = new PlaybackControlsRow.SkipPreviousAction(getActivity());
+        mPrimaryActionsAdapter.add(mSkipPreviousAction);
         mPrimaryActionsAdapter.add(mRewindAction);
         mPrimaryActionsAdapter.add(mPlayPauseAction);
         mPrimaryActionsAdapter.add(mFastForwardAction);
+        mPrimaryActionsAdapter.add(mSkipNextAction);
         playbackStateChanged();
     }
 
@@ -281,6 +351,10 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     private ServerFile getVideoFile() {
         return getArguments().getParcelable(Intents.Extras.SERVER_FILE);
+    }
+
+    private ArrayList<ServerFile> getVideoFiles() {
+        return getArguments().getParcelableArrayList(Intents.Extras.SERVER_FILES);
     }
 
     @Override

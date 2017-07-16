@@ -33,11 +33,16 @@ import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.ControlButtonPresenterSelector;
+import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnActionClickedListener;
+import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
 import android.support.v17.leanback.widget.PlaybackControlsRowPresenter;
+import android.support.v17.leanback.widget.Presenter;
+import android.support.v17.leanback.widget.Row;
+import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.SurfaceHolder;
@@ -48,6 +53,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 import org.amahi.anywhere.tv.presenter.VideoDetailsDescriptionPresenter;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -97,11 +103,22 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         setFadingEnabled(false);
         mHandler = new Handler(Looper.getMainLooper());
         setUpRows();
+        addOtherRows();
         mediaPlayer.setEventListener(new MediaPlayer.EventListener() {
             @Override
             public void onEvent(MediaPlayer.Event event) {
                 if (event.type == MediaPlayer.Event.EndReached) {
                     skipNext();
+                }
+            }
+        });
+
+        setOnItemViewClickedListener(new OnItemViewClickedListener() {
+            @Override
+            public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
+                if(item instanceof ServerFile){
+                    ServerFile serverFile = (ServerFile)item;
+                    replaceFragment(serverFile);
                 }
             }
         });
@@ -216,6 +233,20 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
             }
         });
         setAdapter(mRowsAdapter);
+    }
+
+    private void addOtherRows(){
+        ArrayObjectAdapter adapter = new ArrayObjectAdapter(new MainTVPresenter(getActivity(), serverClient, getVideoShare()));
+        for(ServerFile serverFile:mVideoList){
+            adapter.add(serverFile);
+        }
+        HeaderItem headerItem;
+        if(getVideoFile().getParentFile()==null)
+            headerItem = new HeaderItem("Video(s) in "+getVideoShare().getName());
+        else
+            headerItem = new HeaderItem("Video(s) in "+getVideoFile().getParentFile().getName());
+
+        mRowsAdapter.add(new ListRow(headerItem,adapter));
     }
 
     private void togglePlayPause(boolean isPaused) {
@@ -372,6 +403,8 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mLibVlc.release();
+        mediaPlayer.stop();
         mediaPlayer.release();
         mediaPlayer = null;
     }

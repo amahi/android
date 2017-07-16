@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -282,6 +283,14 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 	private void showGooglePlaySearchFragment(ServerFile file) {
 		GooglePlaySearchFragment fragment = GooglePlaySearchFragment.newInstance(file);
 		fragment.show(getFragmentManager(), GooglePlaySearchFragment.TAG);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		// Forward results to EasyPermissions
+		EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
 	}
 
 	@Override

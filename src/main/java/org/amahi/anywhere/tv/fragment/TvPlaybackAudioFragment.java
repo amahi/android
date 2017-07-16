@@ -26,10 +26,12 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.session.PlaybackState;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v17.leanback.app.PlaybackOverlayFragment;
+import android.support.annotation.RequiresApi;
+import android.support.v17.leanback.app.PlaybackFragment;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
@@ -59,7 +61,6 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.tv.presenter.AudioDetailsDescriptionPresenter;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
-import org.amahi.anywhere.tv.presenter.VideoDetailsDescriptionPresenter;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 
@@ -68,11 +69,12 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-public class TvPlaybackAudioFragment extends PlaybackOverlayFragment {
+public class TvPlaybackAudioFragment extends PlaybackFragment {
 
+    private static final int DEFAULT_UPDATE_PERIOD = 1000;
+    private static final int UPDATE_PERIOD = 16;
     @Inject
     ServerClient serverClient;
-
     private ArrayObjectAdapter mRowsAdapter;
     private PlaybackControlsRow mPlaybackControlsRow;
     private ArrayObjectAdapter mPrimaryActionsAdapter;
@@ -81,9 +83,6 @@ public class TvPlaybackAudioFragment extends PlaybackOverlayFragment {
     private PlaybackControlsRow.SkipPreviousAction mSkipPreviousAction;
     private PlaybackControlsRow.FastForwardAction mFastForwardAction;
     private PlaybackControlsRow.RewindAction mRewindAction;
-
-    private static final int DEFAULT_UPDATE_PERIOD = 1000;
-    private static final int UPDATE_PERIOD = 16;
     private int mCurrentPlaybackState;
 
     private Handler mHandler;
@@ -164,6 +163,7 @@ public class TvPlaybackAudioFragment extends PlaybackOverlayFragment {
         playbackControlsRowPresenter.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.primary));
         playbackControlsRowPresenter.setProgressColor(Color.WHITE);
         playbackControlsRowPresenter.setOnActionClickedListener(new OnActionClickedListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onActionClicked(Action action) {
                 if (action.getId() == mPlayPauseAction.getId()) {
@@ -185,6 +185,7 @@ public class TvPlaybackAudioFragment extends PlaybackOverlayFragment {
         setAdapter(mRowsAdapter);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void togglePlayPause(boolean isPaused) {
         if (isPaused) {
             mediaPlayer.pause();
@@ -224,6 +225,7 @@ public class TvPlaybackAudioFragment extends PlaybackOverlayFragment {
             replaceFragment(getAudioFiles().get(getAudioFiles().size() - 1));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void playbackStateChanged() {
 
         if (mCurrentPlaybackState != PlaybackState.STATE_PLAYING) {
@@ -233,7 +235,7 @@ public class TvPlaybackAudioFragment extends PlaybackOverlayFragment {
             mPlayPauseAction.setIndex(PlaybackControlsRow.PlayPauseAction.PAUSE);
             mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PAUSE));
             notifyChanged(mPlayPauseAction);
-        } else if (mCurrentPlaybackState != PlaybackState.STATE_PAUSED) {
+        } else {
             mCurrentPlaybackState = PlaybackState.STATE_PAUSED;
             stopProgressAutomation();
             mPlayPauseAction.setIndex(PlaybackControlsRow.PlayPauseAction.PLAY);
@@ -284,6 +286,7 @@ public class TvPlaybackAudioFragment extends PlaybackOverlayFragment {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void addPlaybackControlsRow(AudioMetadataRetrievedEvent event) {
         mPlaybackControlsRow = new PlaybackControlsRow(event);
         mRowsAdapter.add(mPlaybackControlsRow);
@@ -358,6 +361,7 @@ public class TvPlaybackAudioFragment extends PlaybackOverlayFragment {
         return (ImageView) getActivity().findViewById(R.id.imageViewBackground);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
         addPlaybackControlsRow(event);

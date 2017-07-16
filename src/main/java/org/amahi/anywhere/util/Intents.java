@@ -114,7 +114,7 @@ public final class Intents {
             String fileFormat = file.getMime();
 
             if (ServerFileAudioActivity.supports(fileFormat)) {
-                if(CheckTV.isATV(context))
+                if (CheckTV.isATV(context))
                     return TvPlaybackAudioActivity.class;
                 return ServerFileAudioActivity.class;
             }
@@ -124,11 +124,11 @@ public final class Intents {
             }
 
             if (ServerFileVideoActivity.supports(fileFormat)) {
+                if (CheckTV.isATV(context)) {
+                    return TvPlaybackVideoActivity.class;
+                }
                 if (NativeVideoActivity.supports(fileFormat)) {
-                    if (CheckTV.isATV(context))
-                        return TvPlaybackVideoActivity.class;
-                    else
-                        return NativeVideoActivity.class;
+                    return NativeVideoActivity.class;
                 }
                 return ServerFileVideoActivity.class;
             }

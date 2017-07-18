@@ -77,19 +77,19 @@ public class IntroFragment extends OnboardingFragment {
         mColors.add(ContextCompat.getColor(context, R.color.intro_6));
 
         mTitles.add(getString(R.string.app_title));
-        mDescriptions.add(getString(R.string.intro_desc_1));
+        mDescriptions.add(getString(R.string.intro_tv_1));
 
         mTitles.add(getString(R.string.intro_title_2));
         mDescriptions.add(getString(R.string.intro_desc_2));
 
         mTitles.add(getString(R.string.intro_title_3));
-        mDescriptions.add(getString(R.string.intro_desc_3));
+        mDescriptions.add(getString(R.string.intro_desc_tv_3));
 
         mTitles.add(getString(R.string.intro_title_4));
-        mDescriptions.add(getString(R.string.intro_desc_4));
+        mDescriptions.add(getString(R.string.intro_desc_tv_4));
 
         mTitles.add(getString(R.string.intro_title_5));
-        mDescriptions.add(getString(R.string.intro_desc_5));
+        mDescriptions.add(getString(R.string.intro_desc_tv_5));
 
         mTitles.add(getString(R.string.intro_title_6));
         mDescriptions.add(getString(R.string.intro_desc_6));

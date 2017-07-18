@@ -91,23 +91,23 @@
 
     <!--Introduction TV activity strings-->
     <string name="intro_tv_1">Welcome to Amahi for Android TV</string>
-    <string name="intro_phone_1">Welcome to Amahi</string>
+    <string name="intro_phone_1">Welcome to Amahi for Android.</string>
     <string name="intro_desc_phone_1">An Android app that lets you access the files in your Amahi Home Server.</string>
 
     <string name="intro_title_2">Access your HDA</string>
     <string name="intro_desc_2">Amahi lets you play your videos, view your photos, listen to your music and more!</string>
 
-    <string name="intro_title_3">Access Your Photos</string>
-    <string name="intro_desc_tv_3">View all your photos library in your TV in great resolution.</string>
-    <string name="intro_desc_phone_3">View all your photos library easily in your phone, upload photos directly from your phone.</string>
+    <string name="intro_title_3">Browse Your Photos</string>
+    <string name="intro_desc_tv_3">Browse your photo library in your TV, fast and at amazing resolution.</string>
+    <string name="intro_desc_phone_3">Browse your photo library easily, upload photos directly from your phone.</string>
 
     <string name="intro_title_4">Play Your Music</string>
-    <string name="intro_desc_tv_4">Play your music library in your TV, perfect for parties or relaxing with your favorite tunes.</string>
-    <string name="intro_desc_phone_4">Play your music library on phone, at home or on the road!</string>
+    <string name="intro_desc_tv_4">Listen to your music library in your TV, perfect for parties, or for relaxing with your favorite tunes.</string>
+    <string name="intro_desc_phone_4">Listen to your music library, at home or on the road.</string>
 
     <string name="intro_title_5">Play your Movies and Video Library</string>
-    <string name="intro_desc_tv_5">Access your video and movie library on your TV in glorious resolution</string>
-    <string name="intro_desc_phone_5">Access your video and movie library on your phone any time anywhere</string>
+    <string name="intro_desc_tv_5">Watch your video and movie library on your big screen in amazing full resolution.</string>
+    <string name="intro_desc_phone_5">Watch your video and movie library on your phone any time anywhere.</string>
 
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>

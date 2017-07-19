@@ -166,6 +166,18 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".receiver.CameraReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.android.camera.NEW_PICTURE" />
+                <action android:name="android.hardware.action.NEW_PICTURE" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+
+
+        </receiver>
+
         <meta-data
             android:name="com.crashlytics.ApiKey"
             android:value="d7b65346d3cf0028328f006bff447501d70f8996"/>

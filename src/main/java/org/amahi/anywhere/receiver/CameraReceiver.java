@@ -22,9 +22,9 @@ package org.amahi.anywhere.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.provider.MediaStore;
-import android.widget.Toast;
+import android.util.Log;
+
+import org.amahi.anywhere.service.UploadService;
 
 /**
  * Camera new picture event receiver.
@@ -32,14 +32,9 @@ import android.widget.Toast;
 public class CameraReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Cursor cursor = context.getContentResolver().query(intent.getData(),
-				null, null, null, null);
-		if (cursor != null) {
-			cursor.moveToFirst();
-			String image_path = cursor.getString(cursor
-					.getColumnIndex(MediaStore.Images.Media.DATA));
-			Toast.makeText(context, "New Photo " + image_path, Toast.LENGTH_SHORT).show();
-			cursor.close();
-		}
+		Log.e("NEW_IMAGE", "onReceive");
+		Intent uploadService = new Intent(context, UploadService.class);
+		uploadService.setData(intent.getData());
+		context.startService(uploadService);
 	}
 }

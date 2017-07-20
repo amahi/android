@@ -40,6 +40,7 @@ import org.amahi.anywhere.fragment.ServerSharesFragment;
 import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.server.ApiModule;
 import org.amahi.anywhere.service.AudioService;
+import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
 import org.amahi.anywhere.tv.activity.TvPlaybackOverlayActivity;
@@ -84,7 +85,8 @@ import dagger.Provides;
                 TVWebViewActivity.class,
                 ServerFileTvFragment.class,
                 TvPlaybackOverlayFragment.class,
-                TvPlaybackOverlayActivity.class
+                TvPlaybackOverlayActivity.class,
+                UploadService.class
         }
 )
 class AmahiModule {

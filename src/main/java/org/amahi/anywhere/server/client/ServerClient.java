@@ -242,14 +242,21 @@ public class ServerClient {
 				.enqueue(new ServerFileDeleteResponse());
 	}
 
-	public void uploadFile(File file, ServerShare share) {
-		this.uploadFile(file, share, null);
+	private MultipartBody.Part createFilePart(File file) {
+		return MultipartBody.Part.createFormData("file",
+				file.getName(),
+				new ProgressRequestBody(file));
+	}
+
+	public void uploadFile(File file, String shareName) {
+		MultipartBody.Part filePart = createFilePart(file);
+		String path = "/";
+		serverApi.uploadFile(server.getSession(), shareName, path, filePart)
+				.enqueue(new ServerFileUploadResponse());
 	}
 
 	public void uploadFile(File file, ServerShare share, ServerFile directory) {
-		MultipartBody.Part filePart = MultipartBody.Part.createFormData("file",
-				file.getName(),
-				new ProgressRequestBody(file));
+		MultipartBody.Part filePart = createFilePart(file);
 		String path = "/";
 		if (directory != null)
 			path = directory.getPath();

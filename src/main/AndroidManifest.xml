@@ -147,6 +147,7 @@
             </intent-filter>
         </service>
         <service android:name=".service.VideoService"/>
+        <service android:name=".service.UploadService"/>
 
         <receiver android:name=".receiver.AudioReceiver">
             <intent-filter>
@@ -170,12 +171,10 @@
             android:name=".receiver.CameraReceiver"
             android:enabled="true">
             <intent-filter>
-                <action android:name="com.android.camera.NEW_PICTURE" />
+                <!--<action android:name="com.android.camera.NEW_PICTURE" />-->
                 <action android:name="android.hardware.action.NEW_PICTURE" />
                 <data android:mimeType="image/*" />
             </intent-filter>
-
-
         </receiver>
 
         <meta-data

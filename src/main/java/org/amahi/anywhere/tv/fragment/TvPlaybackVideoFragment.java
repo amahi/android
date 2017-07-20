@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.tv.fragment;
 
-import android.app.Fragment;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.media.session.PlaybackState;
@@ -55,6 +54,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 import org.amahi.anywhere.tv.presenter.VideoDetailsDescriptionPresenter;
+import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 import org.videolan.libvlc.IVLCVout;
@@ -73,37 +73,54 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     private static final int DEFAULT_UPDATE_PERIOD = 1000;
     private static final int UPDATE_PERIOD = 16;
-    @Inject
-    ServerClient serverClient;
+
     private SurfaceHolder mSurfaceHolder;
     private MediaPlayer mediaPlayer;
     private LibVLC mLibVlc;
+
     private Handler mHandler;
     private Runnable mRunnable;
+
     private PlaybackControlsRow mPlaybackControlsRow;
+
     private int mCurrentPlaybackState;
     private int mDuration;
+
     private ArrayList<ServerFile> mVideoList;
+
     private ArrayObjectAdapter mRowsAdapter;
     private ArrayObjectAdapter mPrimaryActionsAdapter;
+
     private PlaybackControlsRow.SkipPreviousAction mSkipPreviousAction;
     private PlaybackControlsRow.PlayPauseAction mPlayPauseAction;
     private PlaybackControlsRow.FastForwardAction mFastForwardAction;
     private PlaybackControlsRow.RewindAction mRewindAction;
     private PlaybackControlsRow.SkipNextAction mSkipNextAction;
 
+    @Inject
+    ServerClient serverClient;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setUpInjections();
+
         setAllVideoFiles();
+
         setDuration();
+
         playVideo();
+
         setBackgroundType(BG_DARK);
+
         setFadingEnabled(false);
+
         mHandler = new Handler(Looper.getMainLooper());
+
         setUpRows();
+
         addOtherRows();
+
         mediaPlayer.setEventListener(new MediaPlayer.EventListener() {
             @Override
             public void onEvent(MediaPlayer.Event event) {
@@ -138,17 +155,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
     }
 
     private void replaceFragment(ServerFile serverFile) {
-        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, buildVideoFragment(serverFile)).commit();
-    }
-
-    private Fragment buildVideoFragment(ServerFile serverFile) {
-        Fragment fragment = new TvPlaybackVideoFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Intents.Extras.SERVER_SHARE, getVideoShare());
-        bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
-        bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, getVideoFiles());
-        fragment.setArguments(bundle);
-        return fragment;
+        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, Fragments.Builder.buildVideoFragment(serverFile,getVideoShare(),getVideoFiles())).commit();
     }
 
     private boolean isVideo(ServerFile serverFile) {
@@ -205,14 +212,21 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     private void setUpRows() {
         ClassPresenterSelector ps = new ClassPresenterSelector();
+
         PlaybackControlsRowPresenter playbackControlsRowPresenter = new PlaybackControlsRowPresenter(new VideoDetailsDescriptionPresenter(getActivity()));
+
         ps.addClassPresenter(PlaybackControlsRow.class, playbackControlsRowPresenter);
         ps.addClassPresenter(ListRow.class, new ListRowPresenter());
+
         mRowsAdapter = new ArrayObjectAdapter(ps);
+
         addPlaybackControlsRow();
+
         playbackControlsRowPresenter.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.primary));
         playbackControlsRowPresenter.setProgressColor(Color.WHITE);
+
         mPlaybackControlsRow.setTotalTime(mDuration);
+
         playbackControlsRowPresenter.setOnActionClickedListener(new OnActionClickedListener() {
             @Override
             public void onActionClicked(Action action) {
@@ -237,16 +251,21 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     private void addOtherRows(){
         ArrayObjectAdapter adapter = new ArrayObjectAdapter(new MainTVPresenter(getActivity(), serverClient, getVideoShare()));
-        for(ServerFile serverFile:mVideoList){
-            adapter.add(serverFile);
-        }
+
+        for(ServerFile serverFile:mVideoList) adapter.add(serverFile);
+
+        mRowsAdapter.add(new ListRow(getHeader(),adapter));
+    }
+
+    private HeaderItem getHeader(){
         HeaderItem headerItem;
+
         if(getVideoFile().getParentFile()==null)
             headerItem = new HeaderItem("Video(s) in "+getVideoShare().getName());
         else
             headerItem = new HeaderItem("Video(s) in "+getVideoFile().getParentFile().getName());
 
-        mRowsAdapter.add(new ListRow(headerItem,adapter));
+        return headerItem;
     }
 
     private void togglePlayPause(boolean isPaused) {
@@ -259,15 +278,15 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
     }
 
     private void rewind() {
-        if (mediaPlayer.getTime() - (10 * 1000) > 0) {
-            mediaPlayer.setTime(mediaPlayer.getTime() - (10 * 1000));
+        if(mPlaybackControlsRow.getCurrentTime() - (10*1000)>0){
+            mediaPlayer.setTime(mPlaybackControlsRow.getCurrentTime() - (10 * 1000));
             mPlaybackControlsRow.setCurrentTime((int) mediaPlayer.getTime());
         }
     }
 
     private void fastForward() {
-        if (mediaPlayer.getTime() + (10 * 1000) < mDuration) {
-            mediaPlayer.setTime(mediaPlayer.getTime() + (10 * 1000));
+        if (mPlaybackControlsRow.getCurrentTime() + (10 * 1000) < mDuration) {
+            mediaPlayer.setTime(mPlaybackControlsRow.getCurrentTime() + (10 * 1000));
             mPlaybackControlsRow.setCurrentTime((int) mediaPlayer.getTime());
         }
     }

@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.tv.fragment;
 
-import android.app.Fragment;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -61,6 +60,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.tv.presenter.AudioDetailsDescriptionPresenter;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
+import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 
@@ -73,33 +73,45 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
 
     private static final int DEFAULT_UPDATE_PERIOD = 1000;
     private static final int UPDATE_PERIOD = 16;
-    @Inject
-    ServerClient serverClient;
+
     private ArrayObjectAdapter mRowsAdapter;
-    private PlaybackControlsRow mPlaybackControlsRow;
     private ArrayObjectAdapter mPrimaryActionsAdapter;
+
+    private PlaybackControlsRow mPlaybackControlsRow;
     private PlaybackControlsRow.PlayPauseAction mPlayPauseAction;
     private PlaybackControlsRow.SkipNextAction mSkipNextAction;
     private PlaybackControlsRow.SkipPreviousAction mSkipPreviousAction;
     private PlaybackControlsRow.FastForwardAction mFastForwardAction;
     private PlaybackControlsRow.RewindAction mRewindAction;
-    private int mCurrentPlaybackState;
 
+    private int mCurrentPlaybackState;
     private Handler mHandler;
     private Runnable mRunnable;
+
     private MediaPlayer mediaPlayer;
     private ArrayList<ServerFile> mAudioList;
+
+    @Inject
+    ServerClient serverClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setFadingEnabled(false);
+
         setBackgroundType(BG_DARK);
+
         setUpInjections();
+
         mHandler = new Handler(Looper.getMainLooper());
+
         setUpRows();
+
         getAllAudioFiles();
+
         AudioMetadataRetrievingTask.execute(getFileUri(), getAudioFile());
+
         mediaPlayer = new MediaPlayer();
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -111,17 +123,10 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
 
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-        try {
-            mediaPlayer.setDataSource(getActivity(), getFileUri());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        setDataSource();
 
-        try {
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        prepareAudio();
+
         mediaPlayer.start();
 
         setOnItemViewClickedListener(new OnItemViewClickedListener() {
@@ -135,22 +140,12 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         });
     }
 
-    private void replaceFragment(ServerFile serverFile) {
-        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, buildAudioFragment(serverFile)).commit();
-    }
-
-    private Fragment buildAudioFragment(ServerFile serverFile) {
-        Fragment fragment = new TvPlaybackAudioFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Intents.Extras.SERVER_SHARE, getAudioShare());
-        bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
-        bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, getAudioFiles());
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
     private void setUpInjections() {
         AmahiApplication.from(getActivity()).inject(this);
+    }
+
+    private void replaceFragment(ServerFile serverFile) {
+        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, Fragments.Builder.buildAudioFragment(serverFile,getAudioShare(),getAudioFiles())).commit();
     }
 
     private void setUpRows() {
@@ -185,6 +180,22 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         setAdapter(mRowsAdapter);
     }
 
+    private void setDataSource(){
+        try {
+            mediaPlayer.setDataSource(getActivity(), getFileUri());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void prepareAudio(){
+        try {
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void togglePlayPause(boolean isPaused) {
         if (isPaused) {

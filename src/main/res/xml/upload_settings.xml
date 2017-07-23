@@ -25,15 +25,18 @@
         android:key="@string/preference_key_upload_switch"/>
 
     <ListPreference
+        android:enabled="false"
         android:key="@string/preference_key_upload_hda"
         android:title="@string/preference_title_upload_hda"/>
 
     <ListPreference
+        android:enabled="false"
         android:key="@string/preference_key_upload_share"
         android:title="@string/preference_title_upload_share"/>
 
     <EditTextPreference
         android:defaultValue="/"
+        android:enabled="false"
         android:key="@string/preference_key_upload_path"
         android:title="@string/preference_title_upload_path"/>
 

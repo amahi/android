@@ -82,6 +82,10 @@ public class Server implements Parcelable
 		this.debug = true;
 	}
 
+	public Server(String session) {
+		this.session = session;
+	}
+
 	public Server(Parcel parcel) {
 		this.name = parcel.readString();
 		this.session = parcel.readString();

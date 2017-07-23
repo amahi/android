@@ -97,7 +97,11 @@ public class UploadService extends Service {
 
 	private void uploadFile(File uploadFile) {
 		showNotification(uploadFile.getName());
-		serverClient.uploadFile(uploadFile, "photos");
+		if (serverClient.isConnected()) {
+			serverClient.uploadFile(uploadFile, "photos");
+		} else {
+			//  TODO add method to connect to the default chosen server
+		}
 	}
 
 	private String queryImagePath(Uri imageUri) {

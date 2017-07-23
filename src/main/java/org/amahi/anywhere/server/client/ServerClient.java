@@ -29,6 +29,7 @@ import org.amahi.anywhere.bus.NetworkChangedEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerConnectionDetectedEvent;
+import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
@@ -54,12 +55,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 import static org.amahi.anywhere.util.Android.loadServersFromAsset;
 
@@ -251,8 +255,15 @@ public class ServerClient {
 	public void uploadFile(File file, String shareName) {
 		MultipartBody.Part filePart = createFilePart(file);
 		String path = "/";
-		serverApi.uploadFile(server.getSession(), shareName, path, filePart)
-				.enqueue(new ServerFileUploadResponse());
+		try {
+			Response<ResponseBody> response = serverApi
+					.uploadFile(server.getSession(), shareName, path, filePart)
+					.execute();
+			BusProvider.getBus()
+					.post(new ServerFileUploadCompleteEvent(response.isSuccessful()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void uploadFile(File file, ServerShare share, ServerFile directory) {

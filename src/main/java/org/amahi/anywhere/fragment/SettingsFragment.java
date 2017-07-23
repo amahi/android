@@ -26,7 +26,6 @@ import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -39,6 +38,8 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.activity.NavigationActivity;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
@@ -67,6 +68,10 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
+	}
+
+	private void setUpTitle() {
+		getActivity().setTitle(R.string.title_settings);
 	}
 
 	private void setUpSettings() {
@@ -112,7 +117,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	private boolean isUploadEnabled() {
 		PreferenceManager preferenceManager = getPreferenceManager();
 		return preferenceManager.getSharedPreferences()
-				.getBoolean(getString(R.string.preference_key_auto_upload), false);
+				.getBoolean(getString(R.string.preference_key_upload_switch), false);
 	}
 
 	private void setUpSettingsListeners() {
@@ -121,7 +126,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		Preference applicationFeedback = getPreference(R.string.preference_key_about_feedback);
 		Preference applicationRating = getPreference(R.string.preference_key_about_rating);
 		Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
-		Preference autoUpload = getPreference(R.string.preference_key_auto_upload);
+		Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
 		accountSignOut.setOnPreferenceClickListener(this);
 		applicationVersion.setOnPreferenceClickListener(this);
@@ -129,7 +134,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		applicationRating.setOnPreferenceClickListener(this);
 		shareApp.setOnPreferenceClickListener(this);
 		autoUpload.setOnPreferenceClickListener(this);
-
 	}
 
 	@Override
@@ -144,17 +148,14 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 			setUpApplicationRating();
 		} else if (preference.getKey().equals(getString(R.string.preference_key_tell_a_friend))) {
 			sharedIntent();
-		} else if (preference.getKey().equals(getString(R.string.preference_key_auto_upload))) {
-			toggleUploadSettings();
+		} else if (preference.getKey().equals(getString(R.string.preference_screen_key_upload))) {
+			openUploadSettingsFragment();
 		}
 		return true;
 	}
 
-	private void toggleUploadSettings() {
-		boolean isUploadEnabled = isUploadEnabled();
-		EditTextPreference autoUploadPath = (EditTextPreference)
-				getPreference(R.string.preference_key_auto_upload_path);
-		autoUploadPath.setEnabled(isUploadEnabled);
+	private void openUploadSettingsFragment() {
+		BusProvider.getBus().post(new UploadSettingsOpeningEvent());
 	}
 
 	private void tearDownAccount() {
@@ -275,6 +276,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		super.onResume();
 
 		setUpSettingsPreferenceListener();
+		setUpTitle();
 	}
 
 	private void setUpSettingsPreferenceListener() {

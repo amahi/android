@@ -38,6 +38,7 @@ import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.ServerSharesFragment;
 import org.amahi.anywhere.fragment.SettingsFragment;
+import org.amahi.anywhere.fragment.UploadSettingsFragment;
 import org.amahi.anywhere.server.ApiModule;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.service.UploadService;
@@ -79,6 +80,7 @@ import dagger.Provides;
                 ServerFileImageFragment.class,
                 ServerFileDownloadingFragment.class,
                 SettingsFragment.class,
+                UploadSettingsFragment.class,
                 AudioService.class,
                 VideoService.class,
                 MainTVFragment.class,

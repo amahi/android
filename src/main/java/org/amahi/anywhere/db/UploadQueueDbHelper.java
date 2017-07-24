@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 
+import static android.support.customtabs.CustomTabsIntent.KEY_ID;
+import static org.amahi.anywhere.db.UploadQueueDb.TABLE_NAME;
+
 /**
  * Performs CRUD operation on SQLite db provided by {@link UploadQueueDb} UploadQueueDb.
  */
@@ -27,17 +30,17 @@ public class UploadQueueDbHelper {
 		sqLiteDatabase = uploadQueueDb.getWritableDatabase();
 	}
 
-	public void addNewImagePath(String imagePath) {
+	public boolean addNewImagePath(String imagePath) {
 		ContentValues values = new ContentValues();
 
 		values.put(UploadQueueDb.KEY_FILE_PATH, imagePath);
-		sqLiteDatabase.insert(UploadQueueDb.TABLE_NAME, null, values);
+		return sqLiteDatabase.insert(TABLE_NAME, null, values) != -1;
 	}
 
-	private ArrayList<String> getAllImagePaths() {
+	public ArrayList<String> getAllImagePaths() {
 		ArrayList<String> imagePaths = new ArrayList<>();
 
-		Cursor cursor = sqLiteDatabase.rawQuery("select * from " + UploadQueueDb.TABLE_NAME, null);
+		Cursor cursor = sqLiteDatabase.query(TABLE_NAME, null, null, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (!cursor.isAfterLast()) {
 				String imagePath = cursor.getString(
@@ -53,8 +56,18 @@ public class UploadQueueDbHelper {
 		return imagePaths;
 	}
 
+	public void removeFirstImagePath() {
+		Cursor cursor = sqLiteDatabase.query(TABLE_NAME, null, null, null, null, null, null);
+		if(cursor.moveToFirst()) {
+			String rowId = cursor.getString(cursor.getColumnIndex(KEY_ID));
+
+			sqLiteDatabase.delete(TABLE_NAME, KEY_ID + "=?",  new String[]{rowId});
+		}
+		cursor.close();
+	}
+
 	public void clearDb() {
-		sqLiteDatabase.execSQL("DELETE FROM " + UploadQueueDb.TABLE_NAME);
+		sqLiteDatabase.execSQL("DELETE FROM " + TABLE_NAME);
 	}
 
 	public void closeDataBase() {

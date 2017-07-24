@@ -27,21 +27,22 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
 import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 
 import java.io.File;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -50,12 +51,11 @@ import javax.inject.Inject;
  */
 public class UploadService extends Service {
 
-	private final String TAG = "UPLOAD_SERVICE";
-
 	@Inject
 	ServerClient serverClient;
 
-	private final int notificationId = 158;
+	private Random random = new Random();
+	private int notificationId;
 	private NotificationCompat.Builder notificationBuilder;
 
 	@Nullable
@@ -66,33 +66,45 @@ public class UploadService extends Service {
 
 	@Override
 	public void onCreate() {
-		Log.e(TAG, "on_create");
 		super.onCreate();
 		setUpInjections();
+		setUpBus();
 	}
 
 	@Override
-	public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-		Log.e(TAG, "on_start_command");
-		assert intent != null;
-		String imagePath = queryImagePath(intent.getData());
-		Toast.makeText(getApplicationContext(), "New Photo: " + imagePath, Toast.LENGTH_SHORT)
-				.show();
-		if (imagePath != null) {
-			File file = new File(imagePath);
-			uploadFile(file);
+	public int onStartCommand(Intent intent, int flags, int startId) {
+
+		if (isUploadEnabled()) {
+			String imagePath = queryImagePath(intent.getData());
+			if (imagePath != null) {
+				File file = new File(imagePath);
+				uploadFile(file);
+			}
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
 
+	private boolean isUploadEnabled() {
+		return PreferenceManager.getDefaultSharedPreferences(this)
+				.getBoolean(getString(R.string.preference_key_upload_switch), false);
+	}
+
 	@Override
 	public void onDestroy() {
-		Log.e(TAG, "on_destroy");
 		super.onDestroy();
+		tearDownBus();
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(this).inject(this);
+	}
+
+	private void setUpBus() {
+		BusProvider.getBus().register(this);
+	}
+
+	private void tearDownBus() {
+		BusProvider.getBus().unregister(this);
 	}
 
 	private void uploadFile(File uploadFile) {
@@ -122,8 +134,7 @@ public class UploadService extends Service {
 	}
 
 	private void showNotification(String fileName) {
-		NotificationManager notificationManager = (NotificationManager) getApplicationContext()
-				.getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationId = random.nextInt(900) + 100;
 		notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
 		notificationBuilder
 				.setOngoing(true)
@@ -133,7 +144,7 @@ public class UploadService extends Service {
 				.setProgress(100, 0, false)
 				.build();
 		Notification notification = notificationBuilder.build();
-		notificationManager.notify(notificationId, notification);
+		startForeground(notificationId, notification);
 	}
 
 	private void updateNotificationProgress(int progress) {
@@ -166,6 +177,8 @@ public class UploadService extends Service {
 		}
 		Notification notification = notificationBuilder.build();
 		notificationManager.notify(notificationId, notification);
+		stopForeground(false);
 	}
+
 
 }

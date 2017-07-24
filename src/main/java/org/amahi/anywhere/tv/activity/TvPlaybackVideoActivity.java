@@ -24,6 +24,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.KeyEvent;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -43,12 +44,15 @@ public class TvPlaybackVideoActivity extends Activity {
     @Inject
     ServerClient serverClient;
 
+    private Fragment fragment;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tv_video_playback);
         setUpInjections();
-        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, buildAudioFragment()).commit();
+        fragment = buildAudioFragment();
+        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, fragment).commit();
     }
 
     private void setUpInjections() {
@@ -75,5 +79,26 @@ public class TvPlaybackVideoActivity extends Activity {
 
     private ArrayList<ServerFile> getFiles(){
         return getIntent().getParcelableArrayListExtra(Intents.Extras.SERVER_FILES);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode){
+            case KeyEvent.KEYCODE_MEDIA_REWIND:
+                ((TvPlaybackVideoFragment)fragment).rewind();
+                break;
+            case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                ((TvPlaybackVideoFragment)fragment).fastForward();
+                break;
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                ((TvPlaybackVideoFragment)fragment).skipNext();
+                break;
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                ((TvPlaybackVideoFragment)fragment).skipPrevious();
+                break;
+            default:
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

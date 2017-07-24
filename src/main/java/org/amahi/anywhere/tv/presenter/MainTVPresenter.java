@@ -50,6 +50,7 @@ import org.amahi.anywhere.util.Mimes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainTVPresenter extends Presenter {
 
@@ -152,7 +153,7 @@ public class MainTVPresenter extends Presenter {
 
     private void setDate(ServerFile serverFile, ViewHolder viewHolder) {
         Date d = serverFile.getModificationTime();
-        SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
+        SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.US);
         viewHolder.mCardView.setContentText(dt.format(d));
     }
 
@@ -185,7 +186,6 @@ public class MainTVPresenter extends Presenter {
     public void onFileMetadataRetrieved(FileMetadataRetrievedEvent event) {
         ServerFile serverFile = event.getFile();
         ViewHolder viewHolder = event.getViewHolder();
-        viewHolder.mCardView.setTitleText("");
         serverFile.setMetaDataFetched(true);
         if (event.getFileMetadata() == null) {
             populateData(serverFile, viewHolder);

@@ -111,7 +111,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
         playVideo();
 
-        setBackgroundType(BG_DARK);
+        setBackgroundType(BG_NONE);
 
         setFadingEnabled(false);
 
@@ -160,6 +160,10 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     private boolean isVideo(ServerFile serverFile) {
         return Mimes.match(serverFile.getMime()) == Mimes.Type.VIDEO;
+    }
+
+    private boolean isMetadataAvailable() {
+        return ServerShare.Tag.MOVIES.equals(getVideoShare().getTag());
     }
 
     private void setDuration() {
@@ -233,8 +237,10 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
                 if (action.getId() == mPlayPauseAction.getId()) {
                     togglePlayPause(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
                 } else if (action.getId() == mRewindAction.getId()) {
+                    setFadingEnabled(false);
                     rewind();
                 } else if (action.getId() == mFastForwardAction.getId()) {
+                    setFadingEnabled(false);
                     fastForward();
                 } else if (action.getId() == mSkipNextAction.getId()) {
                     skipNext();
@@ -268,7 +274,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         return headerItem;
     }
 
-    private void togglePlayPause(boolean isPaused) {
+    public void togglePlayPause(boolean isPaused) {
         if (isPaused) {
             mediaPlayer.pause();
         } else {
@@ -277,21 +283,23 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         playbackStateChanged();
     }
 
-    private void rewind() {
+    public void rewind() {
         if(mPlaybackControlsRow.getCurrentTime() - (10*1000)>0){
             mediaPlayer.setTime(mPlaybackControlsRow.getCurrentTime() - (10 * 1000));
             mPlaybackControlsRow.setCurrentTime((int) mediaPlayer.getTime());
         }
+        setFadingEnabled(true);
     }
 
-    private void fastForward() {
+    public void fastForward() {
         if (mPlaybackControlsRow.getCurrentTime() + (10 * 1000) < mDuration) {
             mediaPlayer.setTime(mPlaybackControlsRow.getCurrentTime() + (10 * 1000));
             mPlaybackControlsRow.setCurrentTime((int) mediaPlayer.getTime());
         }
+        setFadingEnabled(true);
     }
 
-    private void skipPrevious() {
+    public void skipPrevious() {
         int presentIndex = mVideoList.indexOf(getVideoFile());
         if (presentIndex < mVideoList.size() - 1)
             replaceFragment(mVideoList.get(presentIndex + 1));
@@ -299,7 +307,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
             replaceFragment(mVideoList.get(0));
     }
 
-    private void skipNext() {
+    public void skipNext() {
         int presentIndex = mVideoList.indexOf(getVideoFile());
         if (presentIndex > 0)
             replaceFragment(mVideoList.get(presentIndex - 1));
@@ -320,11 +328,13 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         mFastForwardAction = new PlaybackControlsRow.FastForwardAction(getActivity());
         mSkipNextAction = new PlaybackControlsRow.SkipNextAction(getActivity());
         mSkipPreviousAction = new PlaybackControlsRow.SkipPreviousAction(getActivity());
-        mPrimaryActionsAdapter.add(mSkipPreviousAction);
+        if(!isMetadataAvailable())
+            mPrimaryActionsAdapter.add(mSkipPreviousAction);
         mPrimaryActionsAdapter.add(mRewindAction);
         mPrimaryActionsAdapter.add(mPlayPauseAction);
         mPrimaryActionsAdapter.add(mFastForwardAction);
-        mPrimaryActionsAdapter.add(mSkipNextAction);
+        if(!isMetadataAvailable())
+            mPrimaryActionsAdapter.add(mSkipNextAction);
         playbackStateChanged();
     }
 

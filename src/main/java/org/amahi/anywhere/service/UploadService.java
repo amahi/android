@@ -24,6 +24,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
@@ -37,25 +38,28 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
-import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
+import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
+import org.amahi.anywhere.db.UploadQueueDbHelper;
+import org.amahi.anywhere.model.UploadFile;
 import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.util.UploadManager;
 
-import java.io.File;
-import java.util.Random;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 /**
  * File upload service
  */
-public class UploadService extends Service {
+public class UploadService extends Service implements UploadManager.UploadCallbacks {
 
 	@Inject
 	ServerClient serverClient;
 
-	private Random random = new Random();
-	private int notificationId;
+	private UploadManager uploadManager;
+	private UploadQueueDbHelper uploadQueueDbHelper;
 	private NotificationCompat.Builder notificationBuilder;
 
 	@Nullable
@@ -69,30 +73,9 @@ public class UploadService extends Service {
 		super.onCreate();
 		setUpInjections();
 		setUpBus();
-	}
-
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-
-		if (isUploadEnabled()) {
-			String imagePath = queryImagePath(intent.getData());
-			if (imagePath != null) {
-				File file = new File(imagePath);
-				uploadFile(file);
-			}
-		}
-		return super.onStartCommand(intent, flags, startId);
-	}
-
-	private boolean isUploadEnabled() {
-		return PreferenceManager.getDefaultSharedPreferences(this)
-				.getBoolean(getString(R.string.preference_key_upload_switch), false);
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		tearDownBus();
+		connectToServer();
+		setUpDbHelper();
+		setUpUploadManager();
 	}
 
 	private void setUpInjections() {
@@ -103,17 +86,101 @@ public class UploadService extends Service {
 		BusProvider.getBus().register(this);
 	}
 
-	private void tearDownBus() {
-		BusProvider.getBus().unregister(this);
+	@Override
+	public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+
+		if (intent != null && intent.getData() != null) {
+			if (isAutoUploadEnabled()) {
+				String imagePath = queryImagePath(intent.getData());
+				if (imagePath != null) {
+					UploadFile uploadFile = uploadQueueDbHelper.addNewImagePath(imagePath);
+					if (uploadFile != null)
+						uploadManager.add(uploadFile);
+				}
+			}
+		}
+
+		return super.onStartCommand(intent, flags, startId);
 	}
 
-	private void uploadFile(File uploadFile) {
-		showNotification(uploadFile.getName());
-		if (serverClient.isConnected()) {
-			serverClient.uploadFile(uploadFile, "photos");
+	private boolean isAutoUploadEnabled() {
+		return PreferenceManager.getDefaultSharedPreferences(this)
+				.getBoolean(getString(R.string.preference_key_upload_switch), false);
+	}
+
+	private void connectToServer() {
+		Server server = getUploadServer();
+		setUpServerConnection(server);
+	}
+
+	private void setUpServerConnection(Server server) {
+		if (serverClient.isConnected(server)) {
+			setUpServerConnection();
 		} else {
-			//  TODO add method to connect to the default chosen server
+			serverClient.connect(this, server);
 		}
+	}
+
+	@Subscribe
+	public void onServerConnected(ServerConnectedEvent event) {
+		setUpServerConnection();
+	}
+
+	private void setUpServerConnection() {
+		if (!isConnectionAvailable() || isConnectionAuto()) {
+			serverClient.connectAuto();
+			return;
+		}
+
+		if (isConnectionLocal()) {
+			serverClient.connectLocal();
+		} else {
+			serverClient.connectRemote();
+		}
+	}
+
+	private boolean isConnectionAvailable() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+		return preferences.contains(getString(R.string.preference_key_server_connection));
+	}
+
+	private boolean isConnectionAuto() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+
+		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_auto));
+	}
+
+	private boolean isConnectionLocal() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+
+		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+	}
+
+	@Subscribe
+	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+		uploadManager.startUploading();
+	}
+
+	private Server getUploadServer() {
+		String session = PreferenceManager.getDefaultSharedPreferences(this)
+				.getString(getString(R.string.preference_key_upload_hda), null);
+		if (session != null) {
+			return new Server(session);
+		} else {
+			return null;
+		}
+	}
+
+	private void setUpDbHelper() {
+		uploadQueueDbHelper = UploadQueueDbHelper.init(this);
+	}
+
+	private void setUpUploadManager() {
+		ArrayList<UploadFile> uploadFiles = uploadQueueDbHelper.getAllImagePaths();
+		uploadManager = new UploadManager(this, uploadFiles);
 	}
 
 	private String queryImagePath(Uri imageUri) {
@@ -133,8 +200,8 @@ public class UploadService extends Service {
 		return filePath;
 	}
 
-	private void showNotification(String fileName) {
-		notificationId = random.nextInt(900) + 100;
+	@Override
+	public void uploadStarted(int id, String fileName) {
 		notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
 		notificationBuilder
 				.setOngoing(true)
@@ -144,41 +211,61 @@ public class UploadService extends Service {
 				.setProgress(100, 0, false)
 				.build();
 		Notification notification = notificationBuilder.build();
-		startForeground(notificationId, notification);
+		startForeground(id, notification);
 	}
 
-	private void updateNotificationProgress(int progress) {
+	@Override
+	public void uploadProgress(int id, int progress) {
 		NotificationManager notificationManager = (NotificationManager) getApplicationContext()
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationBuilder
 				.setProgress(100, progress, false);
 		Notification notification = notificationBuilder.build();
-		notificationManager.notify(notificationId, notification);
+		notificationManager.notify(id, notification);
 	}
 
-	@Subscribe
-	public void onFileUploadProgressEvent(ServerFileUploadProgressEvent event) {
-		updateNotificationProgress(event.getProgress());
-	}
+	@Override
+	public void uploadComplete(int id) {
+		uploadQueueDbHelper.removeFirstImagePath();
 
-	@Subscribe
-	public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent event) {
 		NotificationManager notificationManager = (NotificationManager) getApplicationContext()
 				.getSystemService(Context.NOTIFICATION_SERVICE);
-		if (event.wasUploadSuccessful()) {
-			notificationBuilder
-					.setContentTitle("Upload Complete")
-					.setOngoing(false);
-
-		} else {
-			notificationBuilder
-					.setContentTitle("Upload failed")
-					.setOngoing(false);
-		}
+		notificationBuilder
+				.setContentTitle("Upload Complete")
+				.setOngoing(false);
 		Notification notification = notificationBuilder.build();
-		notificationManager.notify(notificationId, notification);
+		notificationManager.notify(id, notification);
 		stopForeground(false);
 	}
 
+	@Override
+	public void uploadError(int id) {
+		NotificationManager notificationManager = (NotificationManager) getApplicationContext()
+				.getSystemService(Context.NOTIFICATION_SERVICE);
 
+		notificationBuilder
+				.setContentTitle("Upload failed")
+				.setOngoing(false);
+
+		Notification notification = notificationBuilder.build();
+		notificationManager.notify(id, notification);
+		stopForeground(false);
+	}
+
+	@Override
+	public void uploadQueueFinished() {
+		stopSelf();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		uploadQueueDbHelper.closeDataBase();
+		uploadManager.tearDownBus();
+		tearDownBus();
+	}
+
+	public void tearDownBus() {
+		BusProvider.getBus().unregister(this);
+	}
 }

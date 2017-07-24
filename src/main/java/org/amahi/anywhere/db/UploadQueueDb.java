@@ -21,7 +21,7 @@ class UploadQueueDb extends SQLiteOpenHelper {
 	static final String TABLE_NAME = "UPLOAD_QUEUE_TABLE";
 
 	// column names
-	private static final String KEY_ID = "id";
+	static final String KEY_ID = "id";
 	static final String KEY_FILE_PATH = "file_path";
 
 	UploadQueueDb(Context context) {

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.amahi.anywhere.model.UploadFile;
+
 import java.util.ArrayList;
 
 import static android.support.customtabs.CustomTabsIntent.KEY_ID;
@@ -30,22 +32,31 @@ public class UploadQueueDbHelper {
 		sqLiteDatabase = uploadQueueDb.getWritableDatabase();
 	}
 
-	public boolean addNewImagePath(String imagePath) {
+	public UploadFile addNewImagePath(String imagePath) {
 		ContentValues values = new ContentValues();
 
 		values.put(UploadQueueDb.KEY_FILE_PATH, imagePath);
-		return sqLiteDatabase.insert(TABLE_NAME, null, values) != -1;
+		int id = (int) sqLiteDatabase.insert(TABLE_NAME, null, values);
+		if (id != -1) {
+			return new UploadFile(id, imagePath);
+		} else {
+			return null;
+		}
 	}
 
-	public ArrayList<String> getAllImagePaths() {
-		ArrayList<String> imagePaths = new ArrayList<>();
+	public ArrayList<UploadFile> getAllImagePaths() {
+		ArrayList<UploadFile> imagePaths = new ArrayList<>();
 
 		Cursor cursor = sqLiteDatabase.query(TABLE_NAME, null, null, null, null, null, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			while (!cursor.isAfterLast()) {
+				int id = cursor.getInt(
+						cursor.getColumnIndex(UploadQueueDb.KEY_ID));
 				String imagePath = cursor.getString(
 						cursor.getColumnIndex(UploadQueueDb.KEY_FILE_PATH));
-				imagePaths.add(imagePath);
+
+				UploadFile uploadFile = new UploadFile(id, imagePath);
+				imagePaths.add(uploadFile);
 				cursor.moveToNext();
 			}
 		}
@@ -58,10 +69,10 @@ public class UploadQueueDbHelper {
 
 	public void removeFirstImagePath() {
 		Cursor cursor = sqLiteDatabase.query(TABLE_NAME, null, null, null, null, null, null);
-		if(cursor.moveToFirst()) {
+		if (cursor.moveToFirst()) {
 			String rowId = cursor.getString(cursor.getColumnIndex(KEY_ID));
 
-			sqLiteDatabase.delete(TABLE_NAME, KEY_ID + "=?",  new String[]{rowId});
+			sqLiteDatabase.delete(TABLE_NAME, KEY_ID + "=?", new String[]{rowId});
 		}
 		cursor.close();
 	}

@@ -49,6 +49,7 @@ import org.amahi.anywhere.tv.fragment.MainTVFragment;
 import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
 import org.amahi.anywhere.tv.fragment.ServerSelectFragment;
 import org.amahi.anywhere.tv.fragment.TvPlaybackOverlayFragment;
+import org.amahi.anywhere.util.UploadManager;
 
 import javax.inject.Singleton;
 
@@ -88,7 +89,8 @@ import dagger.Provides;
                 ServerFileTvFragment.class,
                 TvPlaybackOverlayFragment.class,
                 TvPlaybackOverlayActivity.class,
-                UploadService.class
+                UploadService.class,
+                UploadManager.class
         }
 )
 class AmahiModule {

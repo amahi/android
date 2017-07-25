@@ -1,6 +1,7 @@
 package org.amahi.anywhere.util;
 
 import android.content.Context;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 
 import com.squareup.otto.Subscribe;
@@ -30,8 +31,6 @@ public class UploadManager {
 	private ArrayList<UploadFile> uploadFiles;
 	private UploadCallbacks uploadCallbacks;
 
-	private UploadFile currentFile;
-
 	public <T extends Context & UploadManager.UploadCallbacks>
 	UploadManager(T context, ArrayList<UploadFile> uploadFiles) {
 
@@ -59,16 +58,17 @@ public class UploadManager {
 		if (uploadFiles.isEmpty()) {
 			uploadCallbacks.uploadQueueFinished();
 		} else {
-			currentFile = uploadFiles.remove(0);
-			uploadImage(currentFile);
+			UploadFile currentFile = uploadFiles.remove(0);
+			upload(currentFile);
 		}
 	}
 
-	private void uploadImage(UploadFile uploadFile) {
+	private void upload(UploadFile uploadFile) {
 		File image = new File(uploadFile.getPath());
 		if (image.exists()) {
 			uploadCallbacks.uploadStarted(uploadFile.getId(), image.getName());
-			serverClient.uploadFile(image, getUploadShareName(), getUploadPath());
+			serverClient.uploadFile(uploadFile.getId(), image, getUploadShareName(),
+					getUploadPath());
 		}
 
 	}
@@ -90,18 +90,24 @@ public class UploadManager {
 
 	@Subscribe
 	public void onFileUploadProgressEvent(ServerFileUploadProgressEvent event) {
-		uploadCallbacks.uploadProgress(currentFile.getId(), event.getProgress());
+		uploadCallbacks.uploadProgress(event.getId(), event.getProgress());
 	}
 
 	@Subscribe
 	public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent event) {
 		if (event.wasUploadSuccessful()) {
-			uploadFiles.remove(currentFile);
-			uploadCallbacks.uploadComplete(currentFile.getId());
+			uploadCallbacks.uploadComplete(event.getId());
 		} else {
-			uploadCallbacks.uploadError(currentFile.getId());
+			uploadCallbacks.uploadError(event.getId());
 		}
-		currentFile = null;
+
+		final Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				startUploading();
+			}
+		}, 1000);
 		startUploading();
 	}
 

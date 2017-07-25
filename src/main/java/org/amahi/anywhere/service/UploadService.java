@@ -232,7 +232,8 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationBuilder
 				.setContentTitle("Upload Complete")
-				.setOngoing(false);
+				.setOngoing(false)
+				.setProgress(0, 0, false);
 		Notification notification = notificationBuilder.build();
 		notificationManager.notify(id, notification);
 		stopForeground(false);
@@ -245,7 +246,8 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
 		notificationBuilder
 				.setContentTitle("Upload failed")
-				.setOngoing(false);
+				.setOngoing(false)
+				.setProgress(0, 0, false);
 
 		Notification notification = notificationBuilder.build();
 		notificationManager.notify(id, notification);
@@ -254,7 +256,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
 	@Override
 	public void uploadQueueFinished() {
-		stopSelf();
+//		stopSelf();
 	}
 
 	@Override

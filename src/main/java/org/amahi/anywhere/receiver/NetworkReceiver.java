@@ -27,13 +27,13 @@ import android.net.NetworkInfo;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.NetworkChangedEvent;
+import org.amahi.anywhere.service.UploadService;
 
 /**
  * Network system events receiver. Proxies system network events such as changing network connection
  * to the local {@link com.squareup.otto.Bus} as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class NetworkReceiver extends BroadcastReceiver
-{
+public class NetworkReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
@@ -46,7 +46,13 @@ public class NetworkReceiver extends BroadcastReceiver
 
 		if (isNetworkConnected(network)) {
 			BusProvider.getBus().post(new NetworkChangedEvent(network.getType()));
+			startUploadService(context);
 		}
+	}
+
+	private void startUploadService(Context context) {
+		Intent uploadService = new Intent(context, UploadService.class);
+		context.startService(uploadService);
 	}
 
 	private NetworkInfo getNetwork(Context context) {

@@ -408,13 +408,15 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 						String filePath = querySelectedImagePath(selectedImageUri);
 						if (filePath != null) {
 							File file = new File(filePath);
-							ServerFilesFragment fragment = (ServerFilesFragment)
-									getSupportFragmentManager()
-											.findFragmentById(R.id.container_files);
-							if (fragment.checkForDuplicateFile(file.getName())) {
-								showDuplicateFileUploadDialog(file);
-							} else {
-								uploadFile(file);
+							if (file.exists()) {
+								ServerFilesFragment fragment = (ServerFilesFragment)
+										getSupportFragmentManager()
+												.findFragmentById(R.id.container_files);
+								if (fragment.checkForDuplicateFile(file.getName())) {
+									showDuplicateFileUploadDialog(file);
+								} else {
+									uploadFile(file);
+								}
 							}
 						}
 					}
@@ -461,7 +463,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 	}
 
 	private void uploadFile(File uploadFile) {
-		serverClient.uploadFile(uploadFile, getShare(), file);
+		serverClient.uploadFile(0, uploadFile, getShare(), file);
 		uploadProgressDialog.show();
 	}
 

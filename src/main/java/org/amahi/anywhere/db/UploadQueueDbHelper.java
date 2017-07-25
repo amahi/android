@@ -9,7 +9,7 @@ import org.amahi.anywhere.model.UploadFile;
 
 import java.util.ArrayList;
 
-import static android.support.customtabs.CustomTabsIntent.KEY_ID;
+import static org.amahi.anywhere.db.UploadQueueDb.KEY_ID;
 import static org.amahi.anywhere.db.UploadQueueDb.TABLE_NAME;
 
 /**
@@ -75,6 +75,10 @@ public class UploadQueueDbHelper {
 			sqLiteDatabase.delete(TABLE_NAME, KEY_ID + "=?", new String[]{rowId});
 		}
 		cursor.close();
+	}
+
+	public void removeImagePath(int id) {
+		sqLiteDatabase.delete(TABLE_NAME, KEY_ID + "=?", new String[]{String.valueOf(id)});
 	}
 
 	public void clearDb() {

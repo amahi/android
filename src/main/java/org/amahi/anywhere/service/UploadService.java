@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
@@ -73,9 +74,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 		super.onCreate();
 		setUpInjections();
 		setUpBus();
-		connectToServer();
 		setUpDbHelper();
-		setUpUploadManager();
 	}
 
 	private void setUpInjections() {
@@ -94,11 +93,13 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 				String imagePath = queryImagePath(intent.getData());
 				if (imagePath != null) {
 					UploadFile uploadFile = uploadQueueDbHelper.addNewImagePath(imagePath);
-					if (uploadFile != null)
+					if (uploadFile != null && uploadManager != null)
 						uploadManager.add(uploadFile);
 				}
 			}
 		}
+
+		connectToServer();
 
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -109,11 +110,15 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 	}
 
 	private void connectToServer() {
-		Server server = getUploadServer();
-		setUpServerConnection(server);
+		if (isAutoUploadEnabled()) {
+			Server server = getUploadServer();
+			if (server != null) {
+				setUpServerConnection(server);
+			}
+		}
 	}
 
-	private void setUpServerConnection(Server server) {
+	private void setUpServerConnection(@NonNull Server server) {
 		if (serverClient.isConnected(server)) {
 			setUpServerConnection();
 		} else {
@@ -161,6 +166,9 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
 	@Subscribe
 	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+		if (uploadManager == null) {
+			setUpUploadManager();
+		}
 		uploadManager.startUploading();
 	}
 
@@ -226,12 +234,10 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
 	@Override
 	public void uploadComplete(int id) {
-		uploadQueueDbHelper.removeFirstImagePath();
-
 		NotificationManager notificationManager = (NotificationManager) getApplicationContext()
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationBuilder
-				.setContentTitle("Upload Complete")
+				.setContentTitle(getString(R.string.message_upload_complete))
 				.setOngoing(false)
 				.setProgress(0, 0, false);
 		Notification notification = notificationBuilder.build();
@@ -245,7 +251,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		notificationBuilder
-				.setContentTitle("Upload failed")
+				.setContentTitle(getString(R.string.message_upload_error))
 				.setOngoing(false)
 				.setProgress(0, 0, false);
 
@@ -255,8 +261,13 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 	}
 
 	@Override
+	public void removeFileFromDb(int id) {
+		uploadQueueDbHelper.removeImagePath(id);
+	}
+
+	@Override
 	public void uploadQueueFinished() {
-//		stopSelf();
+		uploadManager = null;
 	}
 
 	@Override

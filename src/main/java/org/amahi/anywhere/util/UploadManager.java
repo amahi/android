@@ -23,6 +23,7 @@ import javax.inject.Inject;
  * An Upload Manager that manages all the uploads one by one present in the queue.
  */
 public class UploadManager {
+	private boolean isRunning = false;
 
 	@Inject
 	public ServerClient serverClient;
@@ -55,7 +56,15 @@ public class UploadManager {
 	}
 
 	public void startUploading() {
+		if (!isRunning) {
+			isRunning = true;
+			processNextFile();
+		}
+	}
+
+	private void processNextFile() {
 		if (uploadFiles.isEmpty()) {
+			isRunning = false;
 			uploadCallbacks.uploadQueueFinished();
 		} else {
 			UploadFile currentFile = uploadFiles.remove(0);
@@ -69,6 +78,9 @@ public class UploadManager {
 			uploadCallbacks.uploadStarted(uploadFile.getId(), image.getName());
 			serverClient.uploadFile(uploadFile.getId(), image, getUploadShareName(),
 					getUploadPath());
+		} else {
+			uploadCallbacks.removeFileFromDb(uploadFile.getId());
+			processNextFile();
 		}
 
 	}
@@ -96,6 +108,7 @@ public class UploadManager {
 	@Subscribe
 	public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent event) {
 		if (event.wasUploadSuccessful()) {
+			uploadCallbacks.removeFileFromDb(event.getId());
 			uploadCallbacks.uploadComplete(event.getId());
 		} else {
 			uploadCallbacks.uploadError(event.getId());
@@ -105,10 +118,9 @@ public class UploadManager {
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				startUploading();
+				processNextFile();
 			}
-		}, 1000);
-		startUploading();
+		}, 500);
 	}
 
 	public interface UploadCallbacks {
@@ -119,6 +131,8 @@ public class UploadManager {
 		void uploadComplete(int id);
 
 		void uploadError(int id);
+
+		void removeFileFromDb(int id);
 
 		void uploadQueueFinished();
 	}

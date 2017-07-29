@@ -79,7 +79,7 @@
     <string name="message_duplicate_file_upload_body">The file %1$s already exists.\nAre you sure you want to replace the existing file?</string>
     <string name="notification_upload_title">Uploading new image</string>
     <string name="notification_upload_message">File %1$s</string>
-    <string name="message_upload_complete">Upload Complete</string>
+    <string name="message_upload_success">Upload Complete</string>
     <string name="message_upload_error">Upload failed</string>
 
     <string name="share_subject">Check out my Amahi home server!</string>

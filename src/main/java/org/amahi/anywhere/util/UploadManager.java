@@ -109,7 +109,7 @@ public class UploadManager {
 	public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent event) {
 		if (event.wasUploadSuccessful()) {
 			uploadCallbacks.removeFileFromDb(event.getId());
-			uploadCallbacks.uploadComplete(event.getId());
+			uploadCallbacks.uploadSuccess(event.getId());
 		} else {
 			uploadCallbacks.uploadError(event.getId());
 		}
@@ -128,7 +128,7 @@ public class UploadManager {
 
 		void uploadProgress(int id, int progress);
 
-		void uploadComplete(int id);
+		void uploadSuccess(int id);
 
 		void uploadError(int id);
 

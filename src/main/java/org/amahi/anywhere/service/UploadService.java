@@ -233,25 +233,21 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 	}
 
 	@Override
-	public void uploadComplete(int id) {
-		NotificationManager notificationManager = (NotificationManager) getApplicationContext()
-				.getSystemService(Context.NOTIFICATION_SERVICE);
-		notificationBuilder
-				.setContentTitle(getString(R.string.message_upload_complete))
-				.setOngoing(false)
-				.setProgress(0, 0, false);
-		Notification notification = notificationBuilder.build();
-		notificationManager.notify(id, notification);
-		stopForeground(false);
+	public void uploadSuccess(int id) {
+		uploadComplete(id, getString(R.string.message_upload_success));
 	}
 
 	@Override
 	public void uploadError(int id) {
+		uploadComplete(id, getString(R.string.message_upload_error));
+	}
+
+	private void uploadComplete(int id, String title) {
 		NotificationManager notificationManager = (NotificationManager) getApplicationContext()
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		notificationBuilder
-				.setContentTitle(getString(R.string.message_upload_error))
+				.setContentTitle(title)
 				.setOngoing(false)
 				.setProgress(0, 0, false);
 

@@ -5,8 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * SQLite db for maintaining image uploads in a persistent database using queue.
- * Query methods managed by {@link UploadQueueDbHelper} UploadQueueDbHelper.
+ * SQLite db for maintaining image uploads in a persistent database.
+ * Query methods managed by {@link UploadQueueDbHelper UploadQueueDbHelper}.
  */
 
 class UploadQueueDb extends SQLiteOpenHelper {
@@ -15,7 +15,7 @@ class UploadQueueDb extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 
 	// Database Name
-	private static final String DATABASE_NAME = "UPLOAD_QUEUE_DATABASE";
+	private static final String DATABASE_NAME = "AMAHI_ANYWHERE_DATABASE";
 
 	// Table name
 	static final String TABLE_NAME = "UPLOAD_QUEUE_TABLE";

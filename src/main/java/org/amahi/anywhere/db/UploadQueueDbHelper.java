@@ -13,7 +13,7 @@ import static org.amahi.anywhere.db.UploadQueueDb.KEY_ID;
 import static org.amahi.anywhere.db.UploadQueueDb.TABLE_NAME;
 
 /**
- * Performs CRUD operation on SQLite db provided by {@link UploadQueueDb} UploadQueueDb.
+ * Performs CRUD operation on SQLite db provided by {@link UploadQueueDb UploadQueueDb}.
  */
 
 public class UploadQueueDbHelper {

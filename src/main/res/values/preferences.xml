@@ -35,7 +35,7 @@
     <string name="preference_title_upload_hda">HDA Server</string>
     <string name="preference_title_upload_share">Share</string>
     <string name="preference_title_upload_path">Path</string>
-    <string name="preference_title_upload_data">Cellular Data</string>
+    <string name="preference_title_upload_data">Allow on Cellular Data</string>
 
 
     <string name="preference_entry_server_connection_auto">Autodetect</string>

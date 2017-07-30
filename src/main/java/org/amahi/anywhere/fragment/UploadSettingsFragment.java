@@ -209,6 +209,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 			setUpServer(String.valueOf(newValue));
 		} else if (key.equals(getString(R.string.preference_key_upload_share))) {
 			getPathPreference().setEnabled(true);
+			getAllowOnDataPreference().setEnabled(true);
 		}
 		return true;
 	}
@@ -216,6 +217,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 	private void setUpServer(String session) {
 		getSharePreference().setEnabled(false);
 		getPathPreference().setEnabled(false);
+		getAllowOnDataPreference().setEnabled(false);
 
 		Server server = new Server(session);
 		setUpServerConnection(server);
@@ -276,6 +278,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 		String selectedShare = getSharePreference().getValue();
 		if (selectedShare != null) {
 			getPathPreference().setEnabled(true);
+			getAllowOnDataPreference().setEnabled(true);
 		}
 	}
 
@@ -306,6 +309,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 			getHdaPreference().setEnabled(false);
 			getSharePreference().setEnabled(false);
 			getPathPreference().setEnabled(false);
+			getAllowOnDataPreference().setEnabled(false);
 		}
 	}
 
@@ -327,6 +331,10 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
 	private EditTextPreference getPathPreference() {
 		return (EditTextPreference) getPreference(R.string.preference_key_upload_path);
+	}
+
+	private SwitchPreference getAllowOnDataPreference() {
+		return (SwitchPreference) getPreference(R.string.preference_key_upload_data);
 	}
 
 	private void tearDownActivity() {

@@ -45,6 +45,7 @@ import org.amahi.anywhere.db.UploadQueueDbHelper;
 import org.amahi.anywhere.model.UploadFile;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.util.NetworkUtils;
 import org.amahi.anywhere.util.UploadManager;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 	private UploadManager uploadManager;
 	private UploadQueueDbHelper uploadQueueDbHelper;
 	private NotificationCompat.Builder notificationBuilder;
+	private NetworkUtils networkUtils;
 
 	@Nullable
 	@Override
@@ -75,6 +77,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 		setUpInjections();
 		setUpBus();
 		setUpDbHelper();
+		setUpNetworkUtils();
 	}
 
 	private void setUpInjections() {
@@ -83,6 +86,14 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
 	private void setUpBus() {
 		BusProvider.getBus().register(this);
+	}
+
+	private void setUpDbHelper() {
+		uploadQueueDbHelper = UploadQueueDbHelper.init(this);
+	}
+
+	private void setUpNetworkUtils() {
+		networkUtils = new NetworkUtils(this);
 	}
 
 	@Override
@@ -99,7 +110,9 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 			}
 		}
 
-		connectToServer();
+		if (isUploadAllowed() && isAutoUploadEnabled()) {
+			connectToServer();
+		}
 
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -109,12 +122,14 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 				.getBoolean(getString(R.string.preference_key_upload_switch), false);
 	}
 
+	private boolean isUploadAllowed() {
+		return networkUtils.isUploadAllowed();
+	}
+
 	private void connectToServer() {
-		if (isAutoUploadEnabled()) {
-			Server server = getUploadServer();
-			if (server != null) {
-				setUpServerConnection(server);
-			}
+		Server server = getUploadServer();
+		if (server != null) {
+			setUpServerConnection(server);
 		}
 	}
 
@@ -128,7 +143,10 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
 	@Subscribe
 	public void onServerConnected(ServerConnectedEvent event) {
-		setUpServerConnection();
+		Server uploadServer = getUploadServer();
+		if (uploadServer != null && uploadServer == event.getServer()) {
+			setUpServerConnection();
+		}
 	}
 
 	private void setUpServerConnection() {
@@ -180,10 +198,6 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 		} else {
 			return null;
 		}
-	}
-
-	private void setUpDbHelper() {
-		uploadQueueDbHelper = UploadQueueDbHelper.init(this);
 	}
 
 	private void setUpUploadManager() {
@@ -263,15 +277,22 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
 	@Override
 	public void uploadQueueFinished() {
-		uploadManager = null;
+		tearDownUploadManager();
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		uploadQueueDbHelper.closeDataBase();
-		uploadManager.tearDownBus();
+		tearDownUploadManager();
 		tearDownBus();
+	}
+
+	private void tearDownUploadManager() {
+		if (uploadManager != null) {
+			uploadManager.tearDownBus();
+			uploadManager = null;
+		}
 	}
 
 	public void tearDownBus() {

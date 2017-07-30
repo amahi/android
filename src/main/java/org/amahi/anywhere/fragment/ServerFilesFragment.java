@@ -44,6 +44,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
@@ -694,7 +695,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		if (!isMetadataAvailable()) {
 			files = getFilesAdapter().getItems();
 		} else {
-			files = getFilesAdapter().getItems();
+			files = getFilesMetadataAdapter().getItems();
 		}
 		for (ServerFile serverFile : files) {
 			if (serverFile.getName().equals(fileName)) {

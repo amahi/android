@@ -28,8 +28,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -54,17 +52,6 @@ public class PhotosContentJob extends JobService {
 	static final List<String> EXTERNAL_PATH_SEGMENTS
 			= MediaStore.Images.Media.EXTERNAL_CONTENT_URI.getPathSegments();
 
-	// The columns we want to retrieve about a particular image.
-	static final String[] PROJECTION = new String[]{
-			MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATA
-	};
-	static final int PROJECTION_ID = 0;
-	static final int PROJECTION_DATA = 1;
-
-	// This is the external storage directory where cameras place pictures.
-	static final String DCIM_DIR = Environment.getExternalStoragePublicDirectory(
-			Environment.DIRECTORY_DCIM).getPath();
-
 	// A pre-built JobInfo we use for scheduling our job.
 	static final JobInfo JOB_INFO;
 
@@ -79,16 +66,6 @@ public class PhotosContentJob extends JobService {
 		builder.addTriggerContentUri(new JobInfo.TriggerContentUri(MEDIA_URI, 0));
 		JOB_INFO = builder.build();
 	}
-
-	// Fake job work.  A real implementation would do some work on a separate thread.
-	final Handler mHandler = new Handler();
-	final Runnable mWorker = new Runnable() {
-		@Override
-		public void run() {
-			scheduleJob(PhotosContentJob.this);
-			jobFinished(mRunningParams, false);
-		}
-	};
 
 	JobParameters mRunningParams;
 
@@ -121,8 +98,7 @@ public class PhotosContentJob extends JobService {
 		if (params.getTriggeredContentAuthorities() != null) {
 			if (params.getTriggeredContentUris() != null) {
 				// If we have details about which URIs changed, then iterate through them
-				// and collect either the ids that were impacted or note that a generic
-				// change has happened.
+				// and collect valid uris and send them to UploadService
 				ArrayList<Uri> uris = new ArrayList<>();
 				for (Uri uri : params.getTriggeredContentUris()) {
 					List<String> path = uri.getPathSegments();
@@ -141,13 +117,12 @@ public class PhotosContentJob extends JobService {
 			Log.i(TAG, "(No photos content)");
 		}
 
-		mHandler.post(mWorker);
-		return true;
+		scheduleJob(PhotosContentJob.this);
+		return false;
 	}
 
 	@Override
 	public boolean onStopJob(JobParameters params) {
-		mHandler.removeCallbacks(mWorker);
 		return false;
 	}
 }

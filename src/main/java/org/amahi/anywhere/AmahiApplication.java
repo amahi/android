@@ -21,9 +21,13 @@ package org.amahi.anywhere;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.os.StrictMode;
+import android.support.annotation.RequiresApi;
 
 import com.crashlytics.android.Crashlytics;
+
+import org.amahi.anywhere.job.PhotosContentJob;
 
 import dagger.ObjectGraph;
 import io.fabric.sdk.android.Fabric;
@@ -49,9 +53,13 @@ public class AmahiApplication extends Application {
         setUpDetecting();
 
         setUpInjections();
-    }
 
-    private void setUpLogging() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			setUpJobs();
+		}
+	}
+
+	private void setUpLogging() {
         if (isDebugging()) {
             Timber.plant(new Timber.DebugTree());
         }
@@ -84,4 +92,11 @@ public class AmahiApplication extends Application {
     public static class JobIds {
         public static final int PHOTOS_CONTENT_JOB = 125;
     }
+
+	@RequiresApi(api = Build.VERSION_CODES.N)
+	private void setUpJobs() {
+		if (!PhotosContentJob.isScheduled(this)) {
+			PhotosContentJob.scheduleJob(this);
+		}
+	}
 }

@@ -27,6 +27,7 @@ import android.support.annotation.RequiresApi;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.job.PhotosContentJob;
 
 import dagger.ObjectGraph;
@@ -91,12 +92,16 @@ public class AmahiApplication extends Application {
 
     public static class JobIds {
         public static final int PHOTOS_CONTENT_JOB = 125;
+		public static final int NET_CONNECTIVITY_JOB = 126;
     }
 
 	@RequiresApi(api = Build.VERSION_CODES.N)
 	private void setUpJobs() {
 		if (!PhotosContentJob.isScheduled(this)) {
 			PhotosContentJob.scheduleJob(this);
+		}
+		if (!NetConnectivityJob.isScheduled(this)) {
+			NetConnectivityJob.scheduleJob(this);
 		}
 	}
 }

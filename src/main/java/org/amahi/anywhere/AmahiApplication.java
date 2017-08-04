@@ -80,4 +80,8 @@ public class AmahiApplication extends Application {
     public void inject(Object injectionsConsumer) {
         injector.inject(injectionsConsumer);
     }
+
+    public static class JobIds {
+        public static final int PHOTOS_CONTENT_JOB = 125;
+    }
 }

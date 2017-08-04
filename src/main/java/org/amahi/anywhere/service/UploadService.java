@@ -45,6 +45,7 @@ import org.amahi.anywhere.db.UploadQueueDbHelper;
 import org.amahi.anywhere.model.UploadFile;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.NetworkUtils;
 import org.amahi.anywhere.util.UploadManager;
 
@@ -99,13 +100,16 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 	@Override
 	public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
 
-		if (intent != null && intent.getData() != null) {
+		if (intent != null && intent.hasExtra(Intents.Extras.IMAGE_URIS)) {
 			if (isAutoUploadEnabled()) {
-				String imagePath = queryImagePath(intent.getData());
-				if (imagePath != null) {
-					UploadFile uploadFile = uploadQueueDbHelper.addNewImagePath(imagePath);
-					if (uploadFile != null && uploadManager != null)
-						uploadManager.add(uploadFile);
+				ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intents.Extras.IMAGE_URIS);
+				for (Uri uri : uris) {
+					String imagePath = queryImagePath(uri);
+					if (imagePath != null) {
+						UploadFile uploadFile = uploadQueueDbHelper.addNewImagePath(imagePath);
+						if (uploadFile != null && uploadManager != null)
+							uploadManager.add(uploadFile);
+					}
 				}
 			}
 		}

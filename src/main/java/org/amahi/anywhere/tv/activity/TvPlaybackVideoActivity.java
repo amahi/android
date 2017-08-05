@@ -20,8 +20,10 @@
 package org.amahi.anywhere.tv.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.Intent;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
@@ -32,7 +34,6 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.tv.fragment.TvPlaybackAudioFragment;
 import org.amahi.anywhere.tv.fragment.TvPlaybackVideoFragment;
 import org.amahi.anywhere.util.Intents;
 
@@ -60,55 +61,87 @@ public class TvPlaybackVideoActivity extends Activity {
         AmahiApplication.from(this).inject(this);
     }
 
-    private Fragment buildAudioFragment(){
+    private Fragment buildAudioFragment() {
         Fragment fragment = new TvPlaybackVideoFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Intents.Extras.SERVER_SHARE,getShare());
-        bundle.putParcelable(Intents.Extras.SERVER_FILE,getFile());
-        bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES,getFiles());
+        bundle.putParcelable(Intents.Extras.SERVER_SHARE, getShare());
+        bundle.putParcelable(Intents.Extras.SERVER_FILE, getFile());
+        bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, getFiles());
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    private ServerShare getShare(){
+    private ServerShare getShare() {
         return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
     }
 
-    private ServerFile getFile(){
+    private ServerFile getFile() {
         return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
     }
 
-    private ArrayList<ServerFile> getFiles(){
+    private ArrayList<ServerFile> getFiles() {
         return getIntent().getParcelableArrayListExtra(Intents.Extras.SERVER_FILES);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode){
+        switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_LEFT:
-                Object savedState = ((TvPlaybackVideoFragment)fragment).getmSavedState();
-                if(savedState instanceof PlaybackControlsRow.RewindAction)
-                ((TvPlaybackVideoFragment)fragment).rewind();
+                Object savedState = ((TvPlaybackVideoFragment) fragment).getmSavedState();
+                if (savedState instanceof PlaybackControlsRow.RewindAction)
+                    ((TvPlaybackVideoFragment) fragment).rewind();
                 break;
 
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                savedState = ((TvPlaybackVideoFragment)fragment).getmSavedState();
-                if(savedState instanceof PlaybackControlsRow.FastForwardAction)
-                ((TvPlaybackVideoFragment)fragment).fastForward();
+                savedState = ((TvPlaybackVideoFragment) fragment).getmSavedState();
+                if (savedState instanceof PlaybackControlsRow.FastForwardAction)
+                    ((TvPlaybackVideoFragment) fragment).fastForward();
                 break;
 
             case KeyEvent.KEYCODE_MEDIA_REWIND:
-                ((TvPlaybackVideoFragment)fragment).rewind();
+                ((TvPlaybackVideoFragment) fragment).rewind();
                 break;
 
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                PlaybackControlsRow.PlayPauseAction pauseAction = ((TvPlaybackVideoFragment)fragment).getmPlayPauseAction();
-                ((TvPlaybackVideoFragment)fragment).togglePlayPause(pauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
+                playPause();
                 break;
 
             default:
                 break;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    private void playPause(){
+        PlaybackControlsRow.PlayPauseAction pauseAction = ((TvPlaybackVideoFragment) fragment).getmPlayPauseAction();
+        ((TvPlaybackVideoFragment) fragment).togglePlayPause(pauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(this);
+        }
+
+        if(((TvPlaybackVideoFragment) fragment).getmPlayPauseAction().getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE)
+            playPause();
+
+        builder.setTitle(getString(R.string.exit_title))
+                .setMessage(getString(R.string.exit_message))
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        TvPlaybackVideoActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
     }
 }

@@ -83,6 +83,10 @@
     <string name="intent_servers">INTENT_SERVERS</string>
     <string name="preference">PREFERENCE</string>
     <string name="is_first_run">isFirstRun</string>
+    <string name="exit_title">Exit</string>
+    <string name="exit_message">Are you sure you want to quit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string name="row_servers">Servers</string>
     <string name="row_shares">Shares</string>

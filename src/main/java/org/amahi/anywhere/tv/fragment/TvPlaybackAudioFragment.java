@@ -197,7 +197,7 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
     }
     
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void togglePlayPause(boolean isPaused) {
+    public void togglePlayPause(boolean isPaused) {
         if (isPaused) {
             mediaPlayer.pause();
         } else {
@@ -206,14 +206,14 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         playbackStateChanged();
     }
 
-    private void rewind() {
+    public void rewind() {
         if (mediaPlayer.getCurrentPosition() - (10 * 1000) > 0) {
             mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - (10 * 1000));
             mPlaybackControlsRow.setCurrentTime(mediaPlayer.getCurrentPosition());
         }
     }
 
-    private void fastForward() {
+    public void fastForward() {
         if (mediaPlayer.getCurrentPosition() + (10 * 1000) <= mediaPlayer.getDuration()) {
             mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + (10 * 1000));
             mPlaybackControlsRow.setCurrentTime(mediaPlayer.getCurrentPosition());
@@ -414,5 +414,9 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         super.onDestroy();
         mediaPlayer.release();
         mediaPlayer = null;
+    }
+
+    public PlaybackControlsRow.PlayPauseAction getmPlayPauseAction() {
+        return mPlayPauseAction;
     }
 }

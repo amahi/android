@@ -24,6 +24,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v17.leanback.widget.PlaybackControlsRow;
 import android.view.KeyEvent;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -84,18 +85,27 @@ public class TvPlaybackVideoActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode){
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                Object savedState = ((TvPlaybackVideoFragment)fragment).getmSavedState();
+                if(savedState instanceof PlaybackControlsRow.RewindAction)
+                ((TvPlaybackVideoFragment)fragment).rewind();
+                break;
+
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                savedState = ((TvPlaybackVideoFragment)fragment).getmSavedState();
+                if(savedState instanceof PlaybackControlsRow.FastForwardAction)
+                ((TvPlaybackVideoFragment)fragment).fastForward();
+                break;
+
             case KeyEvent.KEYCODE_MEDIA_REWIND:
                 ((TvPlaybackVideoFragment)fragment).rewind();
                 break;
-            case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                ((TvPlaybackVideoFragment)fragment).fastForward();
+
+            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                PlaybackControlsRow.PlayPauseAction pauseAction = ((TvPlaybackVideoFragment)fragment).getmPlayPauseAction();
+                ((TvPlaybackVideoFragment)fragment).togglePlayPause(pauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
                 break;
-            case KeyEvent.KEYCODE_MEDIA_NEXT:
-                ((TvPlaybackVideoFragment)fragment).skipNext();
-                break;
-            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                ((TvPlaybackVideoFragment)fragment).skipPrevious();
-                break;
+
             default:
                 break;
         }

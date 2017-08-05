@@ -37,6 +37,7 @@ import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
+import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
 import android.support.v17.leanback.widget.PlaybackControlsRowPresenter;
 import android.support.v17.leanback.widget.Presenter;
@@ -80,6 +81,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     private Handler mHandler;
     private Runnable mRunnable;
+    private Object mSavedState;
 
     private PlaybackControlsRow mPlaybackControlsRow;
 
@@ -137,6 +139,13 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
                     ServerFile serverFile = (ServerFile)item;
                     replaceFragment(serverFile);
                 }
+            }
+        });
+
+        setOnItemViewSelectedListener(new OnItemViewSelectedListener() {
+            @Override
+            public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
+                mSavedState = item;
             }
         });
     }
@@ -230,7 +239,6 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         playbackControlsRowPresenter.setProgressColor(Color.WHITE);
 
         mPlaybackControlsRow.setTotalTime(mDuration);
-
         playbackControlsRowPresenter.setOnActionClickedListener(new OnActionClickedListener() {
             @Override
             public void onActionClicked(Action action) {
@@ -436,5 +444,13 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         mediaPlayer.stop();
         mediaPlayer.release();
         mediaPlayer = null;
+    }
+
+    public PlaybackControlsRow.PlayPauseAction getmPlayPauseAction(){
+        return mPlayPauseAction;
+    }
+
+    public Object getmSavedState(){
+        return mSavedState;
     }
 }

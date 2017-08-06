@@ -81,7 +81,6 @@ public class NetConnectivityJob extends JobService {
 		Log.i(TAG, "JOB STARTED!");
 		Intent intent = new Intent(this, UploadService.class);
 		startService(intent);
-		scheduleJob(this);
 		return false;
 	}
 

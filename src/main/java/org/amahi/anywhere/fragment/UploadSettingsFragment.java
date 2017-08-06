@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
@@ -26,6 +27,7 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -33,13 +35,18 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
@@ -57,13 +64,18 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+
 /**
  * Upload Settings fragment. Shows upload settings.
  */
 public class UploadSettingsFragment extends PreferenceFragment implements
 		Preference.OnPreferenceChangeListener,
-		AccountManagerCallback<Bundle> {
+		AccountManagerCallback<Bundle>,
+		EasyPermissions.PermissionCallbacks {
 
+	private static final int READ_PERMISSIONS = 110;
 	@Inject
 	AmahiClient amahiClient;
 
@@ -203,6 +215,12 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 		String key = preference.getKey();
 		if (key.equals(getString(R.string.preference_key_upload_switch))) {
 			boolean isUploadEnabled = (boolean) newValue;
+			if (isUploadEnabled) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+					checkReadPermissions();
+					return false;
+				}
+			}
 			toggleUploadSettings(isUploadEnabled);
 			preference.setTitle(getAutoUploadTitle(isUploadEnabled));
 		} else if (key.equals(getString(R.string.preference_key_upload_hda))) {
@@ -354,5 +372,48 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 		super.onPause();
 
 		BusProvider.getBus().unregister(this);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		// Forward results to EasyPermissions
+		EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+	}
+
+	@Override
+	public void onPermissionsGranted(int requestCode, List<String> perms) {
+		if (requestCode == READ_PERMISSIONS) {
+			toggleUploadSettings(true);
+			getAutoUploadSwitchPreference().setTitle(getAutoUploadTitle(true));
+		}
+	}
+
+	@Override
+	public void onPermissionsDenied(int requestCode, List<String> perms) {
+		if (requestCode == READ_PERMISSIONS) {
+			showPermissionSnackBar(getString(R.string.file_upload_permission_denied));
+		}
+	}
+
+	private void showPermissionSnackBar(String message) {
+		Snackbar.make(getView(), message, Snackbar.LENGTH_LONG)
+				.setAction(R.string.menu_settings, new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						new AppSettingsDialog.Builder(UploadSettingsFragment.this).build().show();
+					}
+				})
+				.show();
+	}
+
+	@RequiresApi(api = Build.VERSION_CODES.M)
+	private void checkReadPermissions() {
+		String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+		if (!EasyPermissions.hasPermissions(getContext(), perms)) {
+			EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
+					READ_PERMISSIONS, perms);
+		}
 	}
 }

@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -42,6 +43,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.db.UploadQueueDbHelper;
+import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.model.UploadFile;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
@@ -114,8 +116,14 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 			}
 		}
 
-		if (isUploadAllowed() && isAutoUploadEnabled()) {
-			connectToServer();
+		if (isAutoUploadEnabled()) {
+			if (isUploadAllowed()) {
+				connectToServer();
+			} else {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+					NetConnectivityJob.scheduleJob(this);
+				}
+			}
 		}
 
 		return super.onStartCommand(intent, flags, startId);
@@ -261,6 +269,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 	}
 
 	private void uploadComplete(int id, String title) {
+		stopForeground(false);
 		NotificationManager notificationManager = (NotificationManager) getApplicationContext()
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -271,7 +280,6 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
 		Notification notification = notificationBuilder.build();
 		notificationManager.notify(id, notification);
-		stopForeground(false);
 	}
 
 	@Override

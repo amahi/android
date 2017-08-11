@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 
+import com.google.android.gms.cast.framework.CastContext;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -69,6 +70,8 @@ import javax.inject.Inject;
  */
 public class ServerFileAudioActivity extends AppCompatActivity implements ServiceConnection, MediaController.MediaPlayerControl
 {
+	private CastContext mCastContext;
+
 	private static final Set<String> SUPPORTED_FORMATS;
 
 	static {

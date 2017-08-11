@@ -20,6 +20,7 @@
 <resources>
 
     <string name="application_name" translatable="false">Amahi</string>
+    <string name="app_id">4F8B3483</string>
 
     <string name="title_apps">Apps</string>
     <string name="title_settings">Settings</string>
@@ -39,6 +40,8 @@
     <string name="menu_share">Share</string>
     <string name="menu_sort">Sort</string>
     <string name="menu_search">Search</string>
+
+    <string name="media_route_menu_item">cast</string>
 
     <string name="message_empty_apps">No Apps</string>
     <string name="message_empty_files">No Files</string>

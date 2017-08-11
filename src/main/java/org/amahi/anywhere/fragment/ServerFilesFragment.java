@@ -48,6 +48,8 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -91,6 +93,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
 	private LinearLayout mErrorLinearLayout;
+	private MenuItem mediaRouteMenuItem;
+	private CastContext mCastContext;
 
 	private static final class State
 	{
@@ -133,11 +137,17 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 		setUpInjections();
 
+		setUpCast();
+
 		setUpFiles(savedInstanceState);
 	}
 
 	private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
+	}
+
+	private void setUpCast() {
+		mCastContext = CastContext.getSharedInstance(getActivity());
 	}
 
 	private void setUpFiles(Bundle state) {
@@ -511,6 +521,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 		super.onCreateOptionsMenu(menu, menuInflater);
 
 		menuInflater.inflate(R.menu.action_bar_server_files, menu);
+
+		mediaRouteMenuItem = CastButtonFactory.setUpMediaRouteButton(getActivity().getApplicationContext(), menu, R.id.media_route_menu_item);
 	}
 
 	@Override

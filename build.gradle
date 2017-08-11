@@ -116,6 +116,8 @@ dependencies {
     compile "com.android.support:preference-v7:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:customtabs:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:leanback-v17:${SUPPORT_LIBRARY_VERSION}"
+    compile "com.android.support:mediarouter-v7:${SUPPORT_LIBRARY_VERSION}"
+    compile 'com.google.android.gms:play-services-cast-framework:11.0.2'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }

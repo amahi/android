@@ -178,6 +178,10 @@
 
         <activity android:name=".tv.activity.TvPlaybackAudioActivity"
             android:theme="@style/Theme.Leanback"/>
+
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="org.amahi.anywhere.util.CastOptionsProvider" />
     </application>
 
 </manifest>

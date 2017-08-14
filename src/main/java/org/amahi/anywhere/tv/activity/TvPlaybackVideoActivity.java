@@ -26,6 +26,7 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
 import android.view.KeyEvent;
 
@@ -41,6 +42,8 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import static org.amahi.anywhere.util.Fragments.Builder.buildVideoFragment;
+
 public class TvPlaybackVideoActivity extends Activity {
 
     @Inject
@@ -53,22 +56,16 @@ public class TvPlaybackVideoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tv_video_playback);
         setUpInjections();
-        fragment = buildAudioFragment();
-        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, fragment).commit();
+        fragment = buildVideoFragment(getFile(), getShare(), getFiles());
+        replaceFragment();
     }
 
     private void setUpInjections() {
         AmahiApplication.from(this).inject(this);
     }
 
-    private Fragment buildAudioFragment() {
-        Fragment fragment = new TvPlaybackVideoFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Intents.Extras.SERVER_SHARE, getShare());
-        bundle.putParcelable(Intents.Extras.SERVER_FILE, getFile());
-        bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, getFiles());
-        fragment.setArguments(bundle);
-        return fragment;
+    private void replaceFragment() {
+        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, fragment).commit();
     }
 
     private ServerShare getShare() {
@@ -112,21 +109,18 @@ public class TvPlaybackVideoActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    private void playPause(){
+    private void playPause() {
         PlaybackControlsRow.PlayPauseAction pauseAction = ((TvPlaybackVideoFragment) fragment).getmPlayPauseAction();
         ((TvPlaybackVideoFragment) fragment).togglePlayPause(pauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(this);
-        }
+        builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
 
-        if(((TvPlaybackVideoFragment) fragment).getmPlayPauseAction().getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE)
+        if (((TvPlaybackVideoFragment) fragment).getmPlayPauseAction().getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE)
             playPause();
 
         builder.setTitle(getString(R.string.exit_title))

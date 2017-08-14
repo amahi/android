@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.widget.Toast;
@@ -37,6 +38,8 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.activity.NavigationActivity;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
@@ -51,9 +54,8 @@ import javax.inject.Inject;
  * Settings fragment. Shows application's settings.
  */
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener,
-	SharedPreferences.OnSharedPreferenceChangeListener,
-	AccountManagerCallback<Boolean>
-{
+		SharedPreferences.OnSharedPreferenceChangeListener,
+		AccountManagerCallback<Boolean> {
 	@Inject
 	ServerClient serverClient;
 
@@ -66,6 +68,10 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 	private void setUpInjections() {
 		AmahiApplication.from(getActivity()).inject(this);
+	}
+
+	private void setUpTitle() {
+		getActivity().setTitle(R.string.title_settings);
 	}
 
 	private void setUpSettings() {
@@ -81,9 +87,11 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 	private void setUpSettingsSummary() {
 		ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
 		Preference applicationVersion = getPreference(R.string.preference_key_about_version);
+		Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
 		serverConnection.setSummary(getServerConnectionSummary());
 		applicationVersion.setSummary(getApplicationVersionSummary());
+		autoUpload.setSummary(getAutoUploadSummary());
 	}
 
 	private String getServerConnectionSummary() {
@@ -92,14 +100,24 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		return String.format("%s", serverConnection.getEntry());
 	}
 
-	private Preference getPreference(int id){
+	private Preference getPreference(int id) {
 		return findPreference(getString(id));
 	}
 
 	private String getApplicationVersionSummary() {
 		return String.format(
-			"Amahi for Android %s\nwww.amahi.org/android",
-			Android.getApplicationVersion());
+				"Amahi for Android %s\nwww.amahi.org/android",
+				Android.getApplicationVersion());
+	}
+
+	private String getAutoUploadSummary() {
+		return isUploadEnabled() ? "Enabled" : "Disabled";
+	}
+
+	private boolean isUploadEnabled() {
+		PreferenceManager preferenceManager = getPreferenceManager();
+		return preferenceManager.getSharedPreferences()
+				.getBoolean(getString(R.string.preference_key_upload_switch), false);
 	}
 
 	private void setUpSettingsListeners() {
@@ -108,37 +126,36 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		Preference applicationFeedback = getPreference(R.string.preference_key_about_feedback);
 		Preference applicationRating = getPreference(R.string.preference_key_about_rating);
 		Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
+		Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
 		accountSignOut.setOnPreferenceClickListener(this);
 		applicationVersion.setOnPreferenceClickListener(this);
 		applicationFeedback.setOnPreferenceClickListener(this);
 		applicationRating.setOnPreferenceClickListener(this);
 		shareApp.setOnPreferenceClickListener(this);
+		autoUpload.setOnPreferenceClickListener(this);
 	}
 
 	@Override
 	public boolean onPreferenceClick(Preference preference) {
 		if (preference.getKey().equals(getString(R.string.preference_key_account_sign_out))) {
 			tearDownAccount();
-		}
-
-		if (preference.getKey().equals(getString(R.string.preference_key_about_version))) {
+		} else if (preference.getKey().equals(getString(R.string.preference_key_about_version))) {
 			setUpApplicationVersion();
-		}
-
-		if (preference.getKey().equals(getString(R.string.preference_key_about_feedback))) {
+		} else if (preference.getKey().equals(getString(R.string.preference_key_about_feedback))) {
 			setUpApplicationFeedback();
-		}
-
-		if (preference.getKey().equals(getString(R.string.preference_key_about_rating))) {
+		} else if (preference.getKey().equals(getString(R.string.preference_key_about_rating))) {
 			setUpApplicationRating();
-		}
-
-		if (preference.getKey().equals(getString(R.string.preference_key_tell_a_friend))){
+		} else if (preference.getKey().equals(getString(R.string.preference_key_tell_a_friend))) {
 			sharedIntent();
+		} else if (preference.getKey().equals(getString(R.string.preference_screen_key_upload))) {
+			openUploadSettingsFragment();
 		}
-
 		return true;
+	}
+
+	private void openUploadSettingsFragment() {
+		BusProvider.getBus().post(new UploadSettingsOpeningEvent());
 	}
 
 	private void tearDownAccount() {
@@ -172,13 +189,13 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		getActivity().finish();
 	}
 
-	private void sharedIntent(){
+	private void sharedIntent() {
 		Intent sendIntent = new Intent();
 		sendIntent.setAction(Intent.ACTION_SEND);
-		sendIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.share_subject));
-		sendIntent.putExtra(Intent.EXTRA_TEXT,getString(R.string.share_message));
+		sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
+		sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message));
 		sendIntent.setType("text/plain");
-		startActivity(Intent.createChooser(sendIntent,getString(R.string.share_screen_title)));
+		startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
 	}
 
 	private void setUpApplicationVersion() {
@@ -190,9 +207,8 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		Intent intent = Intents.Builder.with(getActivity()).buildFeedbackIntent();
 		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
 			startActivity(intent);
-		}
-		else {
-			Snackbar.make(getView(),getString(R.string.application_not_found),Snackbar.LENGTH_SHORT).show();
+		} else {
+			Snackbar.make(getView(), getString(R.string.application_not_found), Snackbar.LENGTH_SHORT).show();
 		}
 	}
 
@@ -200,9 +216,8 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		Intent intent = Intents.Builder.with(getActivity()).buildGooglePlayIntent();
 		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
 			startActivity(intent);
-		}
-		else {
-			Snackbar.make(getView(),getString(R.string.application_not_found),Snackbar.LENGTH_SHORT).show();
+		} else {
+			Snackbar.make(getView(), getString(R.string.application_not_found), Snackbar.LENGTH_SHORT).show();
 		}
 	}
 
@@ -261,6 +276,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 		super.onResume();
 
 		setUpSettingsPreferenceListener();
+		setUpTitle();
 	}
 
 	private void setUpSettingsPreferenceListener() {

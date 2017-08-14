@@ -147,6 +147,7 @@
             </intent-filter>
         </service>
         <service android:name=".service.VideoService"/>
+        <service android:name=".service.UploadService"/>
 
         <receiver android:name=".receiver.AudioReceiver">
             <intent-filter>
@@ -165,6 +166,24 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".receiver.CameraReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <!--<action android:name="com.android.camera.NEW_PICTURE" />-->
+                <action android:name="android.hardware.action.NEW_PICTURE" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".job.PhotosContentJob"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".job.NetConnectivityJob"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <meta-data
             android:name="com.crashlytics.ApiKey"

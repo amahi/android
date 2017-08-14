@@ -29,6 +29,7 @@ import org.amahi.anywhere.bus.NetworkChangedEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerConnectionDetectedEvent;
+import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
@@ -54,12 +55,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 import static org.amahi.anywhere.util.Android.loadServersFromAsset;
 
@@ -242,20 +246,45 @@ public class ServerClient {
 				.enqueue(new ServerFileDeleteResponse());
 	}
 
-	public void uploadFile(File file, ServerShare share) {
-		this.uploadFile(file, share, null);
+	private MultipartBody.Part createFilePart(int id, File file) {
+		return MultipartBody.Part.createFormData("file",
+				file.getName(),
+				new ProgressRequestBody(id, file));
 	}
 
-	public void uploadFile(File file, ServerShare share, ServerFile directory) {
-		MultipartBody.Part filePart = MultipartBody.Part.createFormData("file",
-				file.getName(),
-				new ProgressRequestBody(file));
+	public void uploadFile(int id, File file, String shareName, String path) {
+		MultipartBody.Part filePart = createFilePart(id, file);
+		uploadFileAsync(id, filePart, shareName, path);
+	}
+
+	public void uploadFile(int id, File file, ServerShare share, ServerFile directory) {
+		MultipartBody.Part filePart = createFilePart(id, file);
 		String path = "/";
 		if (directory != null)
 			path = directory.getPath();
+		uploadFileAsync(id, filePart, share.getName(), path);
+	}
 
-		serverApi.uploadFile(server.getSession(), share.getName(), path, filePart)
-				.enqueue(new ServerFileUploadResponse());
+	private void uploadFileAsync(int id, MultipartBody.Part filePart, String shareName, String path) {
+		serverApi.uploadFile(server.getSession(), shareName, path, filePart)
+				.enqueue(new ServerFileUploadResponse(id));
+	}
+
+	private void uploadFileSync(int id, MultipartBody.Part filePart, String shareName, String path) {
+		try {
+			Response<ResponseBody> response = serverApi
+					.uploadFile(server.getSession(), shareName, path, filePart)
+					.execute();
+			if (response.isSuccessful()) {
+				BusProvider.getBus().post(
+						new ServerFileUploadCompleteEvent(id, true));
+			} else {
+				BusProvider.getBus().post(
+						new ServerFileUploadCompleteEvent(id, false));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {

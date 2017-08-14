@@ -23,7 +23,7 @@
 
         <Preference
             android:key="@string/preference_key_account_sign_out"
-            android:title="@string/preference_title_account_sign_out" />
+            android:title="@string/preference_title_account_sign_out"/>
 
     </PreferenceCategory>
 
@@ -34,7 +34,11 @@
             android:entries="@array/preference_entries_server_connection"
             android:entryValues="@array/preference_entries_keys_server_connection"
             android:key="@string/preference_key_server_connection"
-            android:title="@string/preference_title_server_connection" />
+            android:title="@string/preference_title_server_connection"/>
+
+        <Preference
+            android:key="@string/preference_screen_key_upload"
+            android:title="@string/preference_title_upload_settings"/>
 
     </PreferenceCategory>
 
@@ -42,19 +46,19 @@
 
         <Preference
             android:key="@string/preference_key_about_version"
-            android:title="@string/preference_title_about_version" />
+            android:title="@string/preference_title_about_version"/>
 
         <Preference
             android:key="@string/preference_key_about_feedback"
-            android:title="@string/preference_title_about_feedback" />
+            android:title="@string/preference_title_about_feedback"/>
 
         <Preference
             android:key="@string/preference_key_about_rating"
-            android:title="@string/preference_title_about_rating" />
+            android:title="@string/preference_title_about_rating"/>
 
         <Preference
             android:key="@string/preference_key_tell_a_friend"
-            android:title="@string/preference_title_tell_a_friend" />
+            android:title="@string/preference_title_tell_a_friend"/>
 
     </PreferenceCategory>
 

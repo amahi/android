@@ -42,6 +42,7 @@ import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
 import org.amahi.anywhere.tv.activity.TvPlaybackOverlayActivity;
@@ -61,6 +62,7 @@ public final class Intents {
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_FILES = "server_files";
         public static final String SERVER_SHARE = "server_share";
+        public static final String IMAGE_URIS = "image_uris";
         private Extras() {
         }
     }
@@ -228,5 +230,17 @@ public final class Intents {
         public Intent buildCameraIntent() {
 			return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		}
+
+        public Intent buildUploadServiceIntent(Uri uri) {
+            ArrayList<Uri> uris = new ArrayList<>();
+            uris.add(uri);
+            return buildUploadServiceIntent(uris);
+        }
+
+		public Intent buildUploadServiceIntent(ArrayList<Uri> uris) {
+            Intent uploadService = new Intent(context, UploadService.class);
+            uploadService.putParcelableArrayListExtra(Extras.IMAGE_URIS, uris);
+            return uploadService;
+        }
     }
 }

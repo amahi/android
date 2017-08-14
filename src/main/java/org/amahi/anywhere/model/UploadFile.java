@@ -17,22 +17,22 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.bus;
+package org.amahi.anywhere.model;
 
-public class ServerFileUploadCompleteEvent implements BusEvent {
+public class UploadFile {
 	private int id;
-	private boolean wasUploadSuccessful;
+	private String path;
 
-	public ServerFileUploadCompleteEvent(int id, boolean wasUploadSuccessful) {
+	public UploadFile(int id, String path) {
 		this.id = id;
-		this.wasUploadSuccessful = wasUploadSuccessful;
+		this.path = path;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public boolean wasUploadSuccessful() {
-		return wasUploadSuccessful;
+	public String getPath() {
+		return path;
 	}
 }

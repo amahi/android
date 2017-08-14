@@ -21,11 +21,15 @@ package org.amahi.anywhere.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import org.amahi.anywhere.R;
@@ -46,7 +50,19 @@ public class UploadBottomSheet extends BottomSheetDialogFragment implements Adap
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
 							 @Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.upload_bottom_sheet, container);
+		View rootView = inflater.inflate(R.layout.upload_bottom_sheet, container);
+		rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				BottomSheetDialog bottomSheetDialog = (BottomSheetDialog)getDialog();
+				FrameLayout bottomSheet = (FrameLayout)bottomSheetDialog.findViewById(android.support.design.R.id.design_bottom_sheet);
+				assert bottomSheet != null;
+				BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+				behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+				behavior.setPeekHeight(0);
+			}
+		});
+		return rootView;
 	}
 
 	@Override

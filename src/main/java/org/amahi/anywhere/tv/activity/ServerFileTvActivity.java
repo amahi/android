@@ -33,6 +33,7 @@ import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
+import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 
 import java.util.List;
@@ -47,16 +48,7 @@ public class ServerFileTvActivity extends Activity {
     }
 
     private void setFirstFragment() {
-        getFragmentManager().beginTransaction().add(R.id.server_file_tv_container, buildFirstTvFragment()).commit();
-    }
-
-    private Fragment buildFirstTvFragment() {
-        Fragment fragment = new ServerFileTvFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Intents.Extras.SERVER_FILE, getServerFile());
-        bundle.putParcelable(Intents.Extras.SERVER_SHARE, getServerShare());
-        fragment.setArguments(bundle);
-        return fragment;
+        getFragmentManager().beginTransaction().add(R.id.server_file_tv_container, Fragments.Builder.buildFirstTvFragment(getServerFile(), getServerShare())).commit();
     }
 
     private ServerFile getServerFile() {

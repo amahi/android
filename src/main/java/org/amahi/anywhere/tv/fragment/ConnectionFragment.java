@@ -40,10 +40,10 @@ import java.util.List;
 public class ConnectionFragment extends GuidedStepFragment {
 
     private static final int OPTION_CHECK_SET_ID = 10;
-    private static final int ACTION_BACK = 1;
     private ArrayList<String> OPTION_NAMES = new ArrayList<>();
     private ArrayList<String> OPTION_DESCRIPTIONS = new ArrayList<>();
     private ArrayList<Boolean> OPTION_CHECKED = new ArrayList<>();
+
     private Context mContext;
     private SharedPreferences preference;
     private String initialSelected;
@@ -70,7 +70,6 @@ public class ConnectionFragment extends GuidedStepFragment {
                 ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo_shadowless));
     }
 
-
     @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         setTitle(actions);
@@ -86,7 +85,6 @@ public class ConnectionFragment extends GuidedStepFragment {
         markSelected(selected);
 
         setCheckedActionButtons(actions);
-
     }
 
     private void setTitle(List<GuidedAction> actions) {

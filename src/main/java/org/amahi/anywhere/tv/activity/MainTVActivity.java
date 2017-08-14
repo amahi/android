@@ -27,7 +27,6 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.fragment.MainTVFragment;
-import org.amahi.anywhere.util.Preferences;
 
 import java.util.ArrayList;
 
@@ -37,19 +36,36 @@ public class MainTVActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tv);
-        if(getServers()!=null)
-            getFragmentManager().beginTransaction().add(R.id.main_tv_fragment_container, new MainTVFragment()).commit();
-        else
-            startActivity(new Intent(this, NavigationActivity.class));
+        checkAndLaunch();
+    }
+
+    private void checkAndLaunch() {
+        if (getServers() != null) {
+            replaceFragment();
+        } else {
+            launchNav();
+        }
     }
 
     private ArrayList<Server> getServers() {
         return getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
     }
 
+    private void replaceFragment() {
+        getFragmentManager().beginTransaction().add(R.id.main_tv_fragment_container, new MainTVFragment()).commit();
+    }
+
+    private void launchNav() {
+        startActivity(new Intent(this, NavigationActivity.class));
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        startHomeIntent();
+    }
+
+    private void startHomeIntent() {
         Intent homeIntent = new Intent(Intent.ACTION_MAIN);
         homeIntent.addCategory(Intent.CATEGORY_HOME);
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

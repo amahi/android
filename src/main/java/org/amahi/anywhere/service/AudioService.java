@@ -227,13 +227,15 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-		this.audioMetadataFormatter = new AudioMetadataFormatter(
-			event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
-		this.audioAlbumArt = event.getAudioAlbumArt();
+		if (audioFile != null) {
+			this.audioMetadataFormatter = new AudioMetadataFormatter(
+					event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+			this.audioAlbumArt = event.getAudioAlbumArt();
 
-		setUpAudioPlayerRemote(audioMetadataFormatter, audioAlbumArt);
+			setUpAudioPlayerRemote(audioMetadataFormatter, audioAlbumArt);
 
-		mMediaNotificationManager.startNotification();
+			mMediaNotificationManager.startNotification();
+		}
 	}
 
 	private void setUpAudioPlayerRemote(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {

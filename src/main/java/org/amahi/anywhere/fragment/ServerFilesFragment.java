@@ -93,7 +93,6 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 	private SearchView searchView;
 	private MenuItem searchMenuItem;
 	private LinearLayout mErrorLinearLayout;
-	private MenuItem mediaRouteMenuItem;
 	private CastContext mCastContext;
 
 	private static final class State
@@ -137,7 +136,7 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 		setUpInjections();
 
-		setUpCast();
+		setUpCast(); //TODO Move to ServerFileActivity
 
 		setUpFiles(savedInstanceState);
 	}
@@ -522,7 +521,8 @@ public class ServerFilesFragment extends Fragment implements SwipeRefreshLayout.
 
 		menuInflater.inflate(R.menu.action_bar_server_files, menu);
 
-		mediaRouteMenuItem = CastButtonFactory.setUpMediaRouteButton(getActivity().getApplicationContext(), menu, R.id.media_route_menu_item);
+		CastButtonFactory.setUpMediaRouteButton(getActivity().getApplicationContext(),
+				menu, R.id.media_route_menu_item);
 	}
 
 	@Override

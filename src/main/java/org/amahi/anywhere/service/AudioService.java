@@ -409,6 +409,10 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	private void handleAudioFocusGain() {
 		if (isAudioPlaying()) {
 			setUpAudioVolume();
+		} else {
+			if (audioFocus == AudioFocus.LOSS) {
+				playAudio();
+			}
 		}
 
 		this.audioFocus = AudioFocus.GAIN;
@@ -429,9 +433,8 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	private void handleAudioFocusLoss() {
 		if (isAudioPlaying()) {
 			pauseAudio();
+			this.audioFocus = AudioFocus.LOSS;
 		}
-
-		this.audioFocus = AudioFocus.LOSS;
 	}
 
 	private void handleAudioFocusDuck() {

@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.activity;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -60,7 +61,9 @@ import javax.inject.Inject;
  */
 public class NativeVideoActivity extends AppCompatActivity implements
         MediaPlayer.OnPreparedListener,
-        MediaPlayer.OnCompletionListener {
+        MediaPlayer.OnCompletionListener,
+		SessionManagerListener<CastSession>
+{
 
     private static final Set<String> SUPPORTED_FORMATS;
     private static final String VIDEO_POSITION = "video_position";
@@ -88,9 +91,8 @@ public class NativeVideoActivity extends AppCompatActivity implements
     private CastContext mCastContext;
 	private CastSession mCastSession;
 	private PlaybackLocation mLocation;
-	private SessionManagerListener<CastSession> mSessionManagerListener;
 
-	public enum PlaybackLocation {
+	private enum PlaybackLocation {
 		LOCAL,
 		REMOTE
 	}
@@ -125,11 +127,23 @@ public class NativeVideoActivity extends AppCompatActivity implements
 
     private void setUpCast() {
         mCastContext = CastContext.getSharedInstance(this);
+		mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
+
+		if (mCastSession != null && mCastSession.isConnected()) {
+			updatePlaybackLocation(PlaybackLocation.REMOTE);
+		} else {
+			updatePlaybackLocation(PlaybackLocation.LOCAL);
+		}
     }
 
     private void setUpVideo() {
-        setUpVideoTitle();
-        setUpVideoView();
+		if (mLocation == PlaybackLocation.REMOTE) {
+			loadRemoteMedia(0, true);
+		} else {
+			setUpVideoTitle();
+			setUpVideoView();
+			startVideo();
+		}
     }
 
     private ServerShare getVideoShare() {
@@ -152,23 +166,30 @@ public class NativeVideoActivity extends AppCompatActivity implements
         return findViewById(R.id.container_controls);
     }
 
-    private FrameLayout getVideoSurfaceFrame() {
-        return (FrameLayout) findViewById(R.id.video_surface_frame);
-    }
-
     private ProgressBar getProgressBar() {
         return (ProgressBar) findViewById(android.R.id.progress);
     }
 
-    private void setUpVideoView() {
-        setUpVideoControls();
-        videoView = (VideoView) findViewById(R.id.video_view);
-        videoView.setOnPreparedListener(this);
-        videoView.setOnCompletionListener(this);
-        videoView.setVideoURI(getVideoUri());
-        videoView.setMediaController(videoControls);
-        videoView.start();
-    }
+	private void setUpVideoView() {
+		videoView = (VideoView) findViewById(R.id.video_view);
+		setUpVideoControls();
+		videoView.setOnPreparedListener(this);
+		videoView.setOnCompletionListener(this);
+		videoView.setVideoURI(getVideoUri());
+		videoView.setMediaController(videoControls);
+	}
+
+	private void startVideo() {
+		Bundle bundle = getIntent().getExtras();
+		boolean shouldStartPlayback = bundle.getBoolean("shouldStart");
+		int startPosition = bundle.getInt("startPosition", 0);
+		if (startPosition > 0) {
+			videoView.seekTo(startPosition);
+		}
+		if (shouldStartPlayback) {
+			videoView.start();
+		}
+	}
 
     private boolean areVideoControlsAvailable() {
         return videoControls != null;
@@ -210,25 +231,38 @@ public class NativeVideoActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+	@Override
+	protected void onResume() {
+		mCastContext.getSessionManager().addSessionManagerListener(
+				this, CastSession.class);
+		if (mCastSession != null && mCastSession.isConnected()) {
+			updatePlaybackLocation(PlaybackLocation.REMOTE);
+		} else {
+			updatePlaybackLocation(PlaybackLocation.LOCAL);
+		}
+		super.onResume();
+	}
 
-    }
-
-    @Override
+	@Override
     public void onPause() {
         super.onPause();
 
-        videoControls.hide();
+		mCastContext.getSessionManager().removeSessionManagerListener(
+				this, CastSession.class);
 
-        if (!isChangingConfigurations()) {
-            videoView.pause();
-        }
+		if (videoControls != null && videoControls.isShowing()) {
+			videoControls.hide();
+		}
 
-        if (isFinishing()) {
-            videoView.stopPlayback();
-        }
+		if (videoView != null) {
+			if (!isChangingConfigurations()) {
+				videoView.pause();
+			}
+
+			if (isFinishing()) {
+				videoView.stopPlayback();
+			}
+		}
     }
 
     @Override
@@ -240,14 +274,16 @@ public class NativeVideoActivity extends AppCompatActivity implements
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(VIDEO_POSITION, videoView.getCurrentPosition());
+		if (videoView != null) {
+			outState.putInt(VIDEO_POSITION, videoView.getCurrentPosition());
+		}
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         int videoPosition = savedInstanceState.getInt(VIDEO_POSITION, 0);
-        if (videoPosition > 0) {
+        if (videoPosition > 0 && videoView != null) {
             videoView.seekTo(videoPosition);
         }
         super.onRestoreInstanceState(savedInstanceState);
@@ -258,67 +294,60 @@ public class NativeVideoActivity extends AppCompatActivity implements
         finish();
     }
 
-	private void setupCastListener() {
-		mSessionManagerListener = new SessionManagerListener<CastSession>() {
+	@Override
+	public void onSessionEnded(CastSession session, int error) {
+		onApplicationDisconnected();
+	}
 
-			@Override
-			public void onSessionEnded(CastSession session, int error) {
-				onApplicationDisconnected();
-			}
+	@Override
+	public void onSessionResumed(CastSession session, boolean wasSuspended) {
+		onApplicationConnected(session);
+	}
 
-			@Override
-			public void onSessionResumed(CastSession session, boolean wasSuspended) {
-				onApplicationConnected(session);
-			}
+	@Override
+	public void onSessionResumeFailed(CastSession session, int error) {
+		onApplicationDisconnected();
+	}
 
-			@Override
-			public void onSessionResumeFailed(CastSession session, int error) {
-				onApplicationDisconnected();
-			}
+	@Override
+	public void onSessionStarted(CastSession session, String sessionId) {
+		onApplicationConnected(session);
+	}
 
-			@Override
-			public void onSessionStarted(CastSession session, String sessionId) {
-				onApplicationConnected(session);
-			}
+	@Override
+	public void onSessionStartFailed(CastSession session, int error) {
+		onApplicationDisconnected();
+	}
 
-			@Override
-			public void onSessionStartFailed(CastSession session, int error) {
-				onApplicationDisconnected();
-			}
+	@Override
+	public void onSessionStarting(CastSession session) {}
 
-			@Override
-			public void onSessionStarting(CastSession session) {}
+	@Override
+	public void onSessionEnding(CastSession session) {}
 
-			@Override
-			public void onSessionEnding(CastSession session) {}
+	@Override
+	public void onSessionResuming(CastSession session, String sessionId) {}
 
-			@Override
-			public void onSessionResuming(CastSession session, String sessionId) {}
+	@Override
+	public void onSessionSuspended(CastSession session, int reason) {}
 
-			@Override
-			public void onSessionSuspended(CastSession session, int reason) {}
+	private void onApplicationConnected(CastSession castSession) {
+		mCastSession = castSession;
+		if (videoView.isPlaying()) {
+			videoView.pause();
+			loadRemoteMedia(videoView.getCurrentPosition(), true);
+			finish();
+			return;
+		} else {
+			updatePlaybackLocation(PlaybackLocation.REMOTE);
+		}
+		supportInvalidateOptionsMenu();
+	}
 
-			private void onApplicationConnected(CastSession castSession) {
-				mCastSession = castSession;
-				if (videoView.isPlaying()) {
-					videoView.pause();
-					loadRemoteMedia(videoView.getCurrentPosition(), true);
-					finish();
-					return;
-				} else {
-					updatePlaybackLocation(PlaybackLocation.REMOTE);
-				}
-//				updatePlayButton(mPlaybackState);
-				supportInvalidateOptionsMenu();
-			}
-
-			private void onApplicationDisconnected() {
-				updatePlaybackLocation(PlaybackLocation.LOCAL);
-				mLocation = PlaybackLocation.LOCAL;
-//				updatePlayButton(mPlaybackState);
-				supportInvalidateOptionsMenu();
-			}
-		};
+	private void onApplicationDisconnected() {
+		updatePlaybackLocation(PlaybackLocation.LOCAL);
+		mLocation = PlaybackLocation.LOCAL;
+		supportInvalidateOptionsMenu();
 	}
 
 	private void updatePlaybackLocation(PlaybackLocation location) {
@@ -336,8 +365,8 @@ public class NativeVideoActivity extends AppCompatActivity implements
 		remoteMediaClient.addListener(new RemoteMediaClient.Listener() {
 			@Override
 			public void onStatusUpdated() {
-//				Intent intent = new Intent(NativeVideoActivity.this, ExpandedControlsActivity.class);
-//				startActivity(intent);
+				Intent intent = new Intent(NativeVideoActivity.this, ExpandedControlsActivity.class);
+				startActivity(intent);
 				remoteMediaClient.removeListener(this);
 			}
 
@@ -368,16 +397,18 @@ public class NativeVideoActivity extends AppCompatActivity implements
 	private MediaInfo buildMediaInfo() {
 		MediaMetadata movieMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
 
-//		movieMetadata.putString(MediaMetadata.KEY_SUBTITLE, getVideoFile().getSize());
 		movieMetadata.putString(MediaMetadata.KEY_TITLE, getVideoFile().getName());
+//		movieMetadata.putString(MediaMetadata.KEY_SUBTITLE, );
 //		movieMetadata.addImage(new WebImage(Uri.parse(mSelectedMedia.getImage(0))));
 //		movieMetadata.addImage(new WebImage(Uri.parse(mSelectedMedia.getImage(1))));
 
-		return new MediaInfo.Builder(getVideoUri().toString())
+		MediaInfo.Builder builder = new MediaInfo.Builder(getVideoUri().toString())
 				.setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
 				.setContentType(getVideoFile().getMime())
-				.setMetadata(movieMetadata)
-				.setStreamDuration(videoView.getDuration())
-				.build();
+				.setMetadata(movieMetadata);
+		if (videoView != null) {
+			builder.setStreamDuration(videoView.getDuration());
+		}
+		return builder.build();
 	}
 }

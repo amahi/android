@@ -1,0 +1,21 @@
+.background {
+  background-image: linear-gradient(#cbcbcb, #0c0c0c);
+}
+
+.logo {
+  background-image: url(amahi_cast_logo.png);
+  background-size: auto 30%;
+}
+
+.progressBar {
+  background-color: #FF9800;
+}
+
+.splash {
+  background-image: url(amahi_cast_splash.png);
+}
+
+.watermark {
+  background-image: url(amahi_cast_watermark.png);
+  background-size: auto 57px;
+}

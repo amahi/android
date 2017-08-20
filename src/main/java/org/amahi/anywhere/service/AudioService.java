@@ -75,7 +75,8 @@ import javax.inject.Inject;
  * Places information at {@link android.app.Notification} and {@link MediaSessionCompat},
  * handles audio focus changes as well.
  */
-public class AudioService extends MediaBrowserServiceCompat implements AudioManager.OnAudioFocusChangeListener,
+public class AudioService extends MediaBrowserServiceCompat implements
+	AudioManager.OnAudioFocusChangeListener,
 	MediaPlayer.OnPreparedListener,
 	MediaPlayer.OnCompletionListener,
 	MediaPlayer.OnErrorListener
@@ -211,7 +212,7 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 		}
 	}
 
-	private Uri getAudioUri() {
+	public Uri getAudioUri() {
 		return serverClient.getFileUri(audioShare, audioFile);
 	}
 

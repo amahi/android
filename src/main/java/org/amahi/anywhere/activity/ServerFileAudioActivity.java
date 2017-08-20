@@ -25,17 +25,23 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.SessionManagerListener;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -68,18 +74,22 @@ import javax.inject.Inject;
  * The playback itself is done via {@link org.amahi.anywhere.service.AudioService}.
  * Backed up by {@link android.media.MediaPlayer}.
  */
-public class ServerFileAudioActivity extends AppCompatActivity implements ServiceConnection, MediaController.MediaPlayerControl
+public class ServerFileAudioActivity extends AppCompatActivity implements
+		ServiceConnection,
+		MediaController.MediaPlayerControl,
+		SessionManagerListener<CastSession>
 {
 	private CastContext mCastContext;
+	private CastSession mCastSession;
 
 	private static final Set<String> SUPPORTED_FORMATS;
 
 	static {
-		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
-			"audio/flac",
-			"audio/mp4",
-			"audio/mpeg",
-			"audio/ogg"
+		SUPPORTED_FORMATS = new HashSet<>(Arrays.asList(
+				"audio/flac",
+				"audio/mp4",
+				"audio/mpeg",
+				"audio/ogg"
 		));
 	}
 
@@ -104,6 +114,8 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 
 		setUpHomeNavigation();
 
+		setUpCast();
+
 		setUpAudio();
 	}
 
@@ -114,6 +126,15 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 	private void setUpHomeNavigation() {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setIcon(R.drawable.ic_launcher);
+	}
+
+	private void setUpCast() {
+		mCastContext = CastContext.getSharedInstance(this);
+		mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
+		if (mCastSession != null && mCastSession.isConnected()) {
+			loadRemoteMedia(0, true);
+			finish();
+		}
 	}
 
 	private void setUpAudio() {
@@ -374,6 +395,15 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		getMenuInflater().inflate(R.menu.action_bar_cast_button, menu);
+		CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+				R.id.media_route_menu_item);
+		return true;
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
 			case android.R.id.home:
@@ -388,6 +418,8 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		mCastContext.getSessionManager().addSessionManagerListener(this, CastSession.class);
 
 		showAudioControlsForced();
 
@@ -429,6 +461,8 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 	@Override
 	protected void onPause() {
 		super.onPause();
+
+		mCastContext.getSessionManager().removeSessionManagerListener(this, CastSession.class);
 
 		hideAudioControlsForced();
 
@@ -488,5 +522,112 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 		public void onClick(View view) {
 			BusProvider.getBus().post(new AudioControlPreviousEvent());
 		}
+	}
+
+	@Override
+	public void onSessionEnded(CastSession session, int error) {}
+
+	@Override
+	public void onSessionResumed(CastSession session, boolean wasSuspended) {
+		onApplicationConnected(session);
+	}
+
+	@Override
+	public void onSessionResumeFailed(CastSession session, int error) {}
+
+	@Override
+	public void onSessionStarted(CastSession session, String sessionId) {
+		onApplicationConnected(session);
+	}
+
+	@Override
+	public void onSessionStartFailed(CastSession session, int error) {}
+
+	@Override
+	public void onSessionStarting(CastSession session) {}
+
+	@Override
+	public void onSessionEnding(CastSession session) {}
+
+	@Override
+	public void onSessionResuming(CastSession session, String sessionId) {}
+
+	@Override
+	public void onSessionSuspended(CastSession session, int reason) {}
+
+	private void onApplicationConnected(CastSession castSession) {
+		mCastSession = castSession;
+		boolean isPlaying = false;
+		int position = 0;
+		if (audioService != null) {
+			isPlaying = audioService.isAudioStarted();
+			if (isPlaying) {
+				audioService.pauseAudio();
+				position = audioService.getAudioPlayer().getCurrentPosition();
+			}
+		}
+		loadRemoteMedia(position, isPlaying);
+		finish();
+	}
+
+	private void loadRemoteMedia(int position, boolean autoPlay) {
+		if (mCastSession == null) {
+			return;
+		}
+		final RemoteMediaClient remoteMediaClient = mCastSession.getRemoteMediaClient();
+		if (remoteMediaClient == null) {
+			return;
+		}
+		remoteMediaClient.addListener(new RemoteMediaClient.Listener() {
+			@Override
+			public void onStatusUpdated() {
+				Intent intent = new Intent(ServerFileAudioActivity.this, ExpandedControlsActivity.class);
+				startActivity(intent);
+				remoteMediaClient.removeListener(this);
+			}
+
+			@Override
+			public void onMetadataUpdated() {
+			}
+
+			@Override
+			public void onQueueStatusUpdated() {
+			}
+
+			@Override
+			public void onPreloadStatusUpdated() {
+			}
+
+			@Override
+			public void onSendingRemoteMediaRequest() {
+			}
+
+			@Override
+			public void onAdBreakStatusUpdated() {
+			}
+		});
+		remoteMediaClient.load(buildMediaInfo(), autoPlay, position);
+	}
+
+	private MediaInfo buildMediaInfo() {
+		MediaMetadata audioMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MUSIC_TRACK);
+
+		if (audioService != null && audioService.getAudioMetadataFormatter() != null) {
+			AudioMetadataFormatter metadataFormatter = audioService.getAudioMetadataFormatter();
+			audioMetadata.putString(MediaMetadata.KEY_TITLE, metadataFormatter.getAudioTitle(getFile()));
+			audioMetadata.putString(MediaMetadata.KEY_SUBTITLE, metadataFormatter.getAudioSubtitle(getShare()));
+		} else {
+			audioMetadata.putString(MediaMetadata.KEY_TITLE, getFile().getNameOnly());
+		}
+
+		String audioSource = serverClient.getFileUri(getShare(), getFile()).toString();
+		MediaInfo.Builder builder = new MediaInfo.Builder(audioSource)
+				.setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+				.setContentType(getFile().getMime())
+				.setMetadata(audioMetadata);
+		if (audioService != null) {
+			builder.setStreamDuration(audioService.getAudioPlayer().getDuration());
+		}
+		return builder.build();
 	}
 }

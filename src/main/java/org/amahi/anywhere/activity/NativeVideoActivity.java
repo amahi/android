@@ -28,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
@@ -203,7 +202,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		getMenuInflater().inflate(R.menu.action_bar_native_player, menu);
+		getMenuInflater().inflate(R.menu.action_bar_cast_button, menu);
 		CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
 				R.id.media_route_menu_item);
 		return true;
@@ -223,8 +222,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
 
 	@Override
 	protected void onResume() {
-		mCastContext.getSessionManager().addSessionManagerListener(
-				this, CastSession.class);
+		mCastContext.getSessionManager().addSessionManagerListener(this, CastSession.class);
 		super.onResume();
 	}
 
@@ -232,8 +230,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
     public void onPause() {
         super.onPause();
 
-		mCastContext.getSessionManager().removeSessionManagerListener(
-				this, CastSession.class);
+		mCastContext.getSessionManager().removeSessionManagerListener(this, CastSession.class);
 
 		if (videoControls != null && videoControls.isShowing()) {
 			videoControls.hide();
@@ -362,10 +359,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
 	private MediaInfo buildMediaInfo() {
 		MediaMetadata movieMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
 
-		movieMetadata.putString(MediaMetadata.KEY_TITLE, getVideoFile().getName());
-//		movieMetadata.putString(MediaMetadata.KEY_SUBTITLE, );
-//		movieMetadata.addImage(new WebImage(Uri.parse(mSelectedMedia.getImage(0))));
-//		movieMetadata.addImage(new WebImage(Uri.parse(mSelectedMedia.getImage(1))));
+		movieMetadata.putString(MediaMetadata.KEY_TITLE, getVideoFile().getNameOnly());
 
 		MediaInfo.Builder builder = new MediaInfo.Builder(getVideoUri().toString())
 				.setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)

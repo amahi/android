@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
@@ -90,12 +91,6 @@ public class NativeVideoActivity extends AppCompatActivity implements
 
     private CastContext mCastContext;
 	private CastSession mCastSession;
-	private PlaybackLocation mLocation;
-
-	private enum PlaybackLocation {
-		LOCAL,
-		REMOTE
-	}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,17 +123,12 @@ public class NativeVideoActivity extends AppCompatActivity implements
     private void setUpCast() {
         mCastContext = CastContext.getSharedInstance(this);
 		mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
-
-		if (mCastSession != null && mCastSession.isConnected()) {
-			updatePlaybackLocation(PlaybackLocation.REMOTE);
-		} else {
-			updatePlaybackLocation(PlaybackLocation.LOCAL);
-		}
     }
 
     private void setUpVideo() {
-		if (mLocation == PlaybackLocation.REMOTE) {
+		if (mCastSession != null && mCastSession.isConnected()) {
 			loadRemoteMedia(0, true);
+			finish();
 		} else {
 			setUpVideoTitle();
 			setUpVideoView();
@@ -181,7 +171,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
 
 	private void startVideo() {
 		Bundle bundle = getIntent().getExtras();
-		boolean shouldStartPlayback = bundle.getBoolean("shouldStart");
+		boolean shouldStartPlayback = bundle.getBoolean("shouldStart", true);
 		int startPosition = bundle.getInt("startPosition", 0);
 		if (startPosition > 0) {
 			videoView.seekTo(startPosition);
@@ -235,11 +225,6 @@ public class NativeVideoActivity extends AppCompatActivity implements
 	protected void onResume() {
 		mCastContext.getSessionManager().addSessionManagerListener(
 				this, CastSession.class);
-		if (mCastSession != null && mCastSession.isConnected()) {
-			updatePlaybackLocation(PlaybackLocation.REMOTE);
-		} else {
-			updatePlaybackLocation(PlaybackLocation.LOCAL);
-		}
 		super.onResume();
 	}
 
@@ -295,9 +280,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
     }
 
 	@Override
-	public void onSessionEnded(CastSession session, int error) {
-		onApplicationDisconnected();
-	}
+	public void onSessionEnded(CastSession session, int error) {}
 
 	@Override
 	public void onSessionResumed(CastSession session, boolean wasSuspended) {
@@ -305,9 +288,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
 	}
 
 	@Override
-	public void onSessionResumeFailed(CastSession session, int error) {
-		onApplicationDisconnected();
-	}
+	public void onSessionResumeFailed(CastSession session, int error) {}
 
 	@Override
 	public void onSessionStarted(CastSession session, String sessionId) {
@@ -315,9 +296,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
 	}
 
 	@Override
-	public void onSessionStartFailed(CastSession session, int error) {
-		onApplicationDisconnected();
-	}
+	public void onSessionStartFailed(CastSession session, int error) {}
 
 	@Override
 	public void onSessionStarting(CastSession session) {}
@@ -333,25 +312,11 @@ public class NativeVideoActivity extends AppCompatActivity implements
 
 	private void onApplicationConnected(CastSession castSession) {
 		mCastSession = castSession;
-		if (videoView.isPlaying()) {
+		boolean isVideoPlaying = videoView.isPlaying();
+		if (isVideoPlaying)
 			videoView.pause();
-			loadRemoteMedia(videoView.getCurrentPosition(), true);
-			finish();
-			return;
-		} else {
-			updatePlaybackLocation(PlaybackLocation.REMOTE);
-		}
-		supportInvalidateOptionsMenu();
-	}
-
-	private void onApplicationDisconnected() {
-		updatePlaybackLocation(PlaybackLocation.LOCAL);
-		mLocation = PlaybackLocation.LOCAL;
-		supportInvalidateOptionsMenu();
-	}
-
-	private void updatePlaybackLocation(PlaybackLocation location) {
-		mLocation = location;
+		loadRemoteMedia(videoView.getCurrentPosition(), isVideoPlaying);
+		finish();
 	}
 
 	private void loadRemoteMedia(int position, boolean autoPlay) {

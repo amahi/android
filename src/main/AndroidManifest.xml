@@ -104,15 +104,11 @@
             android:name=".activity.ExpandedControlsActivity"
             android:theme="@style/Theme.CastVideosDark"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.NativeVideoActivity"
-                android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"/>
-        </activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.NativeVideoActivity"
-            android:theme="@style/Theme.Amahi.Fullscreen"/>
+            android:theme="@style/Theme.Amahi.Fullscreen"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"/>
         <activity android:name=".activity.ServerFileWebActivity"/>
         <activity
             android:name=".activity.SettingsActivity"

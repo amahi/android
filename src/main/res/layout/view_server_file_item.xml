@@ -30,6 +30,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginRight="8dp"
+        android:src="@drawable/ic_file_audio"
         android:scaleType="centerCrop" />
 
     <LinearLayout

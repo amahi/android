@@ -21,10 +21,14 @@ package org.amahi.anywhere.util;
 
 import android.content.Context;
 
-import com.google.android.gms.cast.CastMediaControlIntent;
 import com.google.android.gms.cast.framework.CastOptions;
 import com.google.android.gms.cast.framework.OptionsProvider;
 import com.google.android.gms.cast.framework.SessionProvider;
+import com.google.android.gms.cast.framework.media.CastMediaOptions;
+import com.google.android.gms.cast.framework.media.NotificationOptions;
+import com.google.android.gms.cast.framework.media.widget.ExpandedControllerActivity;
+
+import org.amahi.anywhere.R;
 
 import java.util.List;
 
@@ -33,17 +37,25 @@ import java.util.List;
  */
 class CastOptionsProvider implements OptionsProvider {
 
-    @Override
-    public CastOptions getCastOptions(Context appContext) {
-        CastOptions castOptions = new CastOptions.Builder()
-                .setReceiverApplicationId(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
-                .build();
-        return castOptions;
-    }
+	@Override
+	public CastOptions getCastOptions(Context appContext) {
+		NotificationOptions notificationOptions = new NotificationOptions.Builder()
+				.setTargetActivityClassName(ExpandedControllerActivity.class.getName())
+				.build();
+		CastMediaOptions mediaOptions = new CastMediaOptions.Builder()
+				.setNotificationOptions(notificationOptions)
+				.setExpandedControllerActivityClassName(ExpandedControllerActivity.class.getName())
+				.build();
 
-    @Override
-    public List<SessionProvider> getAdditionalSessionProviders(Context context) {
-        return null;
-    }
+		return new CastOptions.Builder()
+				.setReceiverApplicationId(appContext.getString(R.string.app_id))
+				.setCastMediaOptions(mediaOptions)
+				.build();
+	}
+
+	@Override
+	public List<SessionProvider> getAdditionalSessionProviders(Context context) {
+		return null;
+	}
 
 }

@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
@@ -56,6 +57,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
+import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.ViewDirector;
@@ -77,10 +79,10 @@ import javax.inject.Inject;
 public class ServerFileAudioActivity extends AppCompatActivity implements
 		ServiceConnection,
 		MediaController.MediaPlayerControl,
-		SessionManagerListener<CastSession>
-{
+		SessionManagerListener<CastSession> {
 	private CastContext mCastContext;
 	private CastSession mCastSession;
+	private AudioMetadataFormatter metadataFormatter;
 
 	private static final Set<String> SUPPORTED_FORMATS;
 
@@ -91,6 +93,13 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 				"audio/mpeg",
 				"audio/ogg"
 		));
+	}
+
+	private PlaybackLocation mLocation = PlaybackLocation.LOCAL;
+
+	public enum PlaybackLocation {
+		LOCAL,
+		REMOTE
 	}
 
 	public static boolean supports(String mime_type) {
@@ -132,8 +141,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 		mCastContext = CastContext.getSharedInstance(this);
 		mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
 		if (mCastSession != null && mCastSession.isConnected()) {
-			loadRemoteMedia(0, true);
-			finish();
+			mLocation = PlaybackLocation.REMOTE;
 		}
 	}
 
@@ -172,10 +180,15 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
 	@Subscribe
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-		AudioMetadataFormatter audioMetadataFormatter = new AudioMetadataFormatter(
-			event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
-
-		setUpAudioMetadata(audioMetadataFormatter, event.getAudioAlbumArt());
+		metadataFormatter = new AudioMetadataFormatter(
+				event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+		metadataFormatter.setDuration(event.getDuration());
+		if (mLocation == PlaybackLocation.LOCAL) {
+			setUpAudioMetadata(metadataFormatter, event.getAudioAlbumArt());
+		} else if (mLocation == PlaybackLocation.REMOTE) {
+			loadRemoteMedia(0, true);
+			finish();
+		}
 	}
 
 	private void setUpAudioMetadata(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
@@ -194,12 +207,20 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
 	}
 
+	private Uri getAudioUri() {
+		return serverClient.getFileUri(getShare(), getFile());
+	}
+
 	@Override
 	protected void onStart() {
 		super.onStart();
 
-		setUpAudioService();
-		setUpAudioServiceBind();
+		if (mLocation == PlaybackLocation.LOCAL) {
+			setUpAudioService();
+			setUpAudioServiceBind();
+		} else if (mLocation == PlaybackLocation.REMOTE) {
+			AudioMetadataRetrievingTask.execute(getAudioUri(), audioFile);
+		}
 	}
 
 	private void setUpAudioService() {
@@ -445,6 +466,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 			return;
 		}
 
+		metadataFormatter = audioService.getAudioMetadataFormatter();
 		this.audioFile = audioService.getAudioFile();
 
 		tearDownAudioTitle();
@@ -468,7 +490,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
 		BusProvider.getBus().unregister(this);
 
-		if (isFinishing()) {
+		if (isAudioServiceAvailable() && isFinishing()) {
 			tearDownAudioPlayback();
 		}
 	}
@@ -487,7 +509,9 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 	protected void onStop() {
 		super.onStop();
 
-		tearDownAudioServiceBind();
+		if (isAudioServiceAvailable()) {
+			tearDownAudioServiceBind();
+		}
 	}
 
 	private void tearDownAudioServiceBind() {
@@ -498,7 +522,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 	protected void onDestroy() {
 		super.onDestroy();
 
-		if (isFinishing()) {
+		if (isAudioServiceAvailable() && isFinishing()) {
 			tearDownAudioService();
 		}
 	}
@@ -508,16 +532,14 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 		stopService(intent);
 	}
 
-	private static final class AudioControlsNextListener implements View.OnClickListener
-	{
+	private static final class AudioControlsNextListener implements View.OnClickListener {
 		@Override
 		public void onClick(View view) {
 			BusProvider.getBus().post(new AudioControlNextEvent());
 		}
 	}
 
-	private static final class AudioControlsPreviousListener implements View.OnClickListener
-	{
+	private static final class AudioControlsPreviousListener implements View.OnClickListener {
 		@Override
 		public void onClick(View view) {
 			BusProvider.getBus().post(new AudioControlPreviousEvent());
@@ -525,7 +547,9 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 	}
 
 	@Override
-	public void onSessionEnded(CastSession session, int error) {}
+	public void onSessionEnded(CastSession session, int error) {
+		onApplicationDisconnected();
+	}
 
 	@Override
 	public void onSessionResumed(CastSession session, boolean wasSuspended) {
@@ -533,7 +557,9 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 	}
 
 	@Override
-	public void onSessionResumeFailed(CastSession session, int error) {}
+	public void onSessionResumeFailed(CastSession session, int error) {
+		onApplicationDisconnected();
+	}
 
 	@Override
 	public void onSessionStarted(CastSession session, String sessionId) {
@@ -541,19 +567,25 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 	}
 
 	@Override
-	public void onSessionStartFailed(CastSession session, int error) {}
+	public void onSessionStartFailed(CastSession session, int error) {
+		onApplicationDisconnected();
+	}
 
 	@Override
-	public void onSessionStarting(CastSession session) {}
+	public void onSessionStarting(CastSession session) {
+	}
 
 	@Override
-	public void onSessionEnding(CastSession session) {}
+	public void onSessionEnding(CastSession session) {
+	}
 
 	@Override
-	public void onSessionResuming(CastSession session, String sessionId) {}
+	public void onSessionResuming(CastSession session, String sessionId) {
+	}
 
 	@Override
-	public void onSessionSuspended(CastSession session, int reason) {}
+	public void onSessionSuspended(CastSession session, int reason) {
+	}
 
 	private void onApplicationConnected(CastSession castSession) {
 		mCastSession = castSession;
@@ -568,6 +600,16 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 		}
 		loadRemoteMedia(position, isPlaying);
 		finish();
+	}
+
+	private void onApplicationDisconnected() {
+		mCastSession = null;
+		mLocation = PlaybackLocation.LOCAL;
+		invalidateOptionsMenu();
+		if (!isAudioServiceAvailable()) {
+			setUpAudioService();
+			setUpAudioServiceBind();
+		}
 	}
 
 	private void loadRemoteMedia(int position, boolean autoPlay) {
@@ -612,10 +654,10 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 	private MediaInfo buildMediaInfo() {
 		MediaMetadata audioMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MUSIC_TRACK);
 
-		if (audioService != null && audioService.getAudioMetadataFormatter() != null) {
-			AudioMetadataFormatter metadataFormatter = audioService.getAudioMetadataFormatter();
+		if (metadataFormatter != null) {
 			audioMetadata.putString(MediaMetadata.KEY_TITLE, metadataFormatter.getAudioTitle(getFile()));
-			audioMetadata.putString(MediaMetadata.KEY_SUBTITLE, metadataFormatter.getAudioSubtitle(getShare()));
+			audioMetadata.putString(MediaMetadata.KEY_ARTIST, metadataFormatter.getAudioArtist());
+			audioMetadata.putString(MediaMetadata.KEY_ALBUM_TITLE, metadataFormatter.getAudioAlbum());
 		} else {
 			audioMetadata.putString(MediaMetadata.KEY_TITLE, getFile().getNameOnly());
 		}
@@ -625,8 +667,8 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 				.setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
 				.setContentType(getFile().getMime())
 				.setMetadata(audioMetadata);
-		if (audioService != null) {
-			builder.setStreamDuration(audioService.getAudioPlayer().getDuration());
+		if (metadataFormatter != null) {
+			builder.setStreamDuration(metadataFormatter.getDuration());
 		}
 		return builder.build();
 	}

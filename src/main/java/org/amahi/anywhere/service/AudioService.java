@@ -212,7 +212,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 		}
 	}
 
-	public Uri getAudioUri() {
+	private Uri getAudioUri() {
 		return serverClient.getFileUri(audioShare, audioFile);
 	}
 
@@ -230,6 +230,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 	public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
 		this.audioMetadataFormatter = new AudioMetadataFormatter(
 			event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+		this.audioMetadataFormatter.setDuration(event.getDuration());
 		this.audioAlbumArt = event.getAudioAlbumArt();
 
 		setUpAudioPlayerRemote(audioMetadataFormatter, audioAlbumArt);

@@ -101,8 +101,18 @@
             android:name=".activity.ServerFileVideoActivity"
             android:theme="@style/Theme.Amahi.Fullscreen"/>
         <activity
+            android:name=".activity.ExpandedControlsActivity"
+            android:theme="@style/Theme.CastVideosDark"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".activity.NativeVideoActivity"
-            android:theme="@style/Theme.Amahi.Fullscreen"/>
+            android:theme="@style/Theme.Amahi.Fullscreen"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"/>
         <activity android:name=".activity.ServerFileWebActivity"/>
         <activity
             android:name=".activity.SettingsActivity"
@@ -178,6 +188,10 @@
 
         <activity android:name=".tv.activity.TvPlaybackAudioActivity"
             android:theme="@style/Theme.Leanback"/>
+
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="org.amahi.anywhere.util.CastOptionsProvider" />
     </application>
 
 </manifest>

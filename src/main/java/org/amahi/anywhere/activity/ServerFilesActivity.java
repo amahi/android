@@ -20,10 +20,10 @@
 package org.amahi.anywhere.activity;
 
 import android.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -35,8 +35,8 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
-import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
+import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -64,7 +64,7 @@ public class ServerFilesActivity extends AppCompatActivity
 		public static final String FILE_ACTION = "file_action";
 	}
 
-	private static enum FileAction
+	private enum FileAction
 	{
 		OPEN, SHARE
 	}

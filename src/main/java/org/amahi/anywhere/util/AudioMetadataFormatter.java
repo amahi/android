@@ -32,11 +32,20 @@ public final class AudioMetadataFormatter {
     private final String audioTitle;
     private final String audioArtist;
     private final String audioAlbum;
+    private long duration;
 
     public AudioMetadataFormatter(String audioTitle, String audioArtist, String audioAlbum) {
         this.audioTitle = audioTitle;
         this.audioArtist = audioArtist;
         this.audioAlbum = audioAlbum;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public long getDuration() {
+        return duration;
     }
 
     public String getAudioTitle(ServerFile audioFile) {
@@ -69,5 +78,13 @@ public final class AudioMetadataFormatter {
         }
 
         return String.format("%s - %s", audioArtist, audioAlbum);
+    }
+
+    public String getAudioArtist() {
+        return audioArtist;
+    }
+
+    public String getAudioAlbum() {
+        return audioAlbum;
     }
 }

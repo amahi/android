@@ -64,6 +64,7 @@ android {
         buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
         buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
         buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
+        buildConfigField "String", "CHROMECAST_APP_ID", formatStringField(apiProperties["chromecast.app.id"])
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

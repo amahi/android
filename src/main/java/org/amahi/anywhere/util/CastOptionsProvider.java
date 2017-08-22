@@ -27,7 +27,7 @@ import com.google.android.gms.cast.framework.SessionProvider;
 import com.google.android.gms.cast.framework.media.CastMediaOptions;
 import com.google.android.gms.cast.framework.media.NotificationOptions;
 
-import org.amahi.anywhere.R;
+import org.amahi.anywhere.BuildConfig;
 import org.amahi.anywhere.activity.ExpandedControlsActivity;
 
 import java.util.List;
@@ -48,7 +48,7 @@ class CastOptionsProvider implements OptionsProvider {
 				.build();
 
 		return new CastOptions.Builder()
-				.setReceiverApplicationId(appContext.getString(R.string.app_id))
+				.setReceiverApplicationId(BuildConfig.CHROMECAST_APP_ID)
 				.setCastMediaOptions(mediaOptions)
 				.build();
 	}

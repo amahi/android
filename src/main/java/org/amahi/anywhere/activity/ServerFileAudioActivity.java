@@ -43,6 +43,7 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.images.WebImage;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -661,6 +662,8 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 		} else {
 			audioMetadata.putString(MediaMetadata.KEY_TITLE, getFile().getNameOnly());
 		}
+
+		audioMetadata.addImage(new WebImage(Uri.parse("http://alpha.amahi.org/cast/audio-play.jpg")));
 
 		String audioSource = serverClient.getFileUri(getShare(), getFile()).toString();
 		MediaInfo.Builder builder = new MediaInfo.Builder(audioSource)

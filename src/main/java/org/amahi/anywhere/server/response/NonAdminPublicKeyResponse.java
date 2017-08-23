@@ -41,5 +41,7 @@ public class NonAdminPublicKeyResponse implements Callback<NonAdminPublicKey> {
 
     @Override
     public void onFailure(Call<NonAdminPublicKey> call, Throwable t) {
+        //Note -@octacode: For debugging assumed a success even on a fail and used mock data in the latter activities.
+        //BusProvider.getBus().post(new NonAdminPublicKeySucceedEvent(new NonAdminPublicKey()));
     }
 }

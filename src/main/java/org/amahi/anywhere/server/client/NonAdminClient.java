@@ -17,7 +17,7 @@ public class NonAdminClient {
     public NonAdminClient(ApiAdapter apiAdapter) {this.api = buildApi(apiAdapter);}
 
     private NonAdminApi buildApi(ApiAdapter apiAdapter) {
-        return apiAdapter.create(NonAdminApi.class, "http://hda/3030");
+        return apiAdapter.create(NonAdminApi.class, "http://google.com");
     }
 
     public void authenticate(String username, String password) {

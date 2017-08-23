@@ -18,7 +18,6 @@
 -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="org.amahi.anywhere"
     android:installLocation="auto">
 
@@ -114,7 +113,10 @@
             android:name=".activity.AuthenticationActivity"
             android:theme="@style/Theme.Amahi.Authentication"
             android:windowSoftInputMode="adjustResize"/>
-
+        <activity
+            android:name=".activity.NonAdminAuthenticationActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="adjustResize"/>
         <service
             android:name=".account.AmahiAuthenticatorService"
             android:exported="false">

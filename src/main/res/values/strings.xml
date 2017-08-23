@@ -27,6 +27,7 @@
 
     <string name="button_search_application">Search Google Play</string>
     <string name="button_sign_in">Sign in</string>
+    <string name="login_as_non_admin">Login as a non admin user?</string>
 
     <string name="hint_password">Password</string>
     <string name="hint_username">Username</string>

@@ -59,7 +59,8 @@ public final class Intents {
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_FILES = "server_files";
         public static final String SERVER_SHARE = "server_share";
-
+        public static final String PUBLIC_KEY = "public_key";
+        public static final String SERVER_NAME = "server_name";
         private Extras() {
         }
     }

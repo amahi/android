@@ -251,31 +251,6 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		showAuthenticationFailureMessage();
 	}
 
-	@Subscribe
-	public void onNonAdminPublicKeySucceed (final NonAdminPublicKeySucceedEvent event) {
-		//Note -@octacode: Hide and show the "login as non admin user" button when the localHDA is active.
-		//Toast.makeText(this, "Local HDA is active", Toast.LENGTH_SHORT).show();
-		getLoginAsNonAdminButton().setVisibility(View.VISIBLE);
-		getLoginAsNonAdminButton().setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				//pass the server_key as extra.
-				//Here's a dummy public key.
-				String serverKey = "aifjd2309fnsjfqa"; //event.getNonAdminPublicKey().getPublicKey();
-				String serverName = "octacode"; //event.getNonAdminPublicKey().getServerName();
-				startActivity(
-						new Intent(AuthenticationActivity.this, NonAdminAuthenticationActivity.class)
-						.putExtra(Intents.Extras.PUBLIC_KEY, serverKey)
-						.putExtra(Intents.Extras.SERVER_NAME, serverName)
-				);
-			}
-		});
-	}
-
-	private TextView getLoginAsNonAdminButton() {
-		return (TextView)findViewById(R.id.login_as_admin_button);
-	}
-
 	private void finishAuthentication() {
 		showAuthenticationText();
 
@@ -331,6 +306,31 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		setResult(Activity.RESULT_OK);
 
 		finish();
+	}
+
+	@Subscribe
+	public void onNonAdminPublicKeySucceed (final NonAdminPublicKeySucceedEvent event) {
+		//Note -@octacode: Hide and show the "login as non admin user" button when the localHDA is active.
+		//Toast.makeText(this, "Local HDA is active", Toast.LENGTH_SHORT).show();
+		getLoginAsNonAdminButton().setVisibility(View.VISIBLE);
+		getLoginAsNonAdminButton().setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//pass the server_key as extra.
+				//Here's a dummy public key.
+				String serverKey = "aifjd2309fnsjfqa"; //event.getNonAdminPublicKey().getPublicKey();
+				String serverName = "octacode"; //event.getNonAdminPublicKey().getServerName();
+				startActivity(
+						new Intent(AuthenticationActivity.this, NonAdminAuthenticationActivity.class)
+								.putExtra(Intents.Extras.PUBLIC_KEY, serverKey)
+								.putExtra(Intents.Extras.SERVER_NAME, serverName)
+				);
+			}
+		});
+	}
+
+	private TextView getLoginAsNonAdminButton() {
+		return (TextView)findViewById(R.id.login_as_admin_button);
 	}
 
 	@Override

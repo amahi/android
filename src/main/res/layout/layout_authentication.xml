@@ -129,6 +129,13 @@
             android:gravity="center_horizontal"
             android:text="@string/message_error_authentication_field_empty" />
 
+        <TextView
+            android:id="@+id/text_message_server_not_authorised"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/message_error_authentication_server_not_authorised" />
+
     </ViewAnimator>
 
 </LinearLayout>

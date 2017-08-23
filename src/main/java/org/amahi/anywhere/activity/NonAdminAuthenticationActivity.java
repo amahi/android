@@ -1,6 +1,8 @@
 package org.amahi.anywhere.activity;
 
-import android.content.Intent;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.app.Activity;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,8 +16,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.dd.processbutton.iml.ActionProcessButton;
+import com.squareup.otto.Subscribe;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.NonAdminAuthConnectionFailedEvent;
+import org.amahi.anywhere.bus.NonAdminAuthSucceedEvent;
+import org.amahi.anywhere.bus.NonAdminAuthenticationFailedEvent;
 import org.amahi.anywhere.server.client.NonAdminClient;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.ViewDirector;
@@ -31,13 +40,23 @@ public class NonAdminAuthenticationActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
+        setUpInjections();
         getAuthenticationButton().setText(R.string.login_as_non_admin);
-        Toast.makeText(this, getIntent().getStringExtra(Intents.Extras.SERVER_NAME)+"   "+getIntent().getStringExtra(Intents.Extras.PUBLIC_KEY), Toast.LENGTH_SHORT).show();
-        setListener();
+        Toast.makeText(this, "   "+getIntent().getStringExtra(Intents.Extras.PUBLIC_KEY), Toast.LENGTH_SHORT).show();
+        setAuthenticationListener();
+        setFieldsListener();
     }
 
-    private void setListener() {
-        setAuthenticationListener();
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
+
+    private void setAuthenticationListener() {
+        getUsernameEdit().addTextChangedListener(this);
+        getPasswordEdit().addTextChangedListener(this);
+    }
+
+    private void setFieldsListener() {
         getAuthenticationButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,15 +107,66 @@ public class NonAdminAuthenticationActivity extends AppCompatActivity implements
 
                         }
                     });
+                }
+                else {
+                    startAuthentication();
 
+                    authenticate();
                 }
             }
         });
     }
 
-    private void setAuthenticationListener() {
-        getUsernameEdit().addTextChangedListener(this);
-        getPasswordEdit().addTextChangedListener(this);
+    private void startAuthentication() {
+        hideAuthenticationText();
+
+        showProgress();
+
+        hideAuthenticationFailureMessage();
+    }
+
+    private void hideAuthenticationText() {
+        getUsernameEdit().setEnabled(false);
+        getPasswordEdit().setEnabled(false);
+    }
+
+    private void showProgress() {
+        ActionProcessButton authenticationButton = getAuthenticationButton();
+        authenticationButton.setMode(ActionProcessButton.Mode.ENDLESS);
+        authenticationButton.setProgress(1);
+    }
+
+    private void authenticate() {
+        nonAdminClient.authenticate(getUsername(), getPassword());
+    }
+
+    @Subscribe
+    public void onNonAdminAuthSucceed(NonAdminAuthSucceedEvent event) {
+        if(getRunningServerName().equals(event.getNonAdminAuthentication().getServerName())){
+            //store servername, address and session token in a sharedPref variable.
+            finishAuthentication();
+        }
+        else {
+            ViewDirector.of(NonAdminAuthenticationActivity.this, R.id.animator_message).show(R.id.text_message_server_not_authorised);
+        }
+    }
+
+    @Subscribe
+    public void onNonAdminAuthConnectionFailed(NonAdminAuthConnectionFailedEvent event) {
+        ViewDirector.of(NonAdminAuthenticationActivity.this, R.id.animator_message).show(R.id.text_message_authentication_connection);
+    }
+
+    @Subscribe
+    public void onNonAdminAuthenticationFailed(NonAdminAuthenticationFailedEvent event) {
+        ViewDirector.of(NonAdminAuthenticationActivity.this, R.id.animator_message).show(R.id.text_message_authentication);
+    }
+
+    private String getRunningServerName() {
+        return getIntent().getStringExtra(Intents.Extras.SERVER_NAME);
+    }
+
+    private void finishAuthentication() {
+
     }
 
     @Override
@@ -137,5 +207,19 @@ public class NonAdminAuthenticationActivity extends AppCompatActivity implements
     private EditText getPasswordEdit() {
         TextInputLayout password_layout = (TextInputLayout) findViewById(R.id.password_layout);
         return password_layout.getEditText();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        BusProvider.getBus().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        BusProvider.getBus().unregister(this);
     }
 }

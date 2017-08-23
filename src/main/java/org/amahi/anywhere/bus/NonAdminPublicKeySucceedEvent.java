@@ -16,29 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
-package org.amahi.anywhere.server.model;
 
-import com.google.gson.annotations.SerializedName;
+package org.amahi.anywhere.bus;
 
-public class NonAdminAuthentication {
-    @SerializedName("session_token")
-    private String sessionToken;
+import org.amahi.anywhere.server.model.NonAdminPublicKey;
 
-    @SerializedName("server_name")
-    private String serverName;
+public class NonAdminPublicKeySucceedEvent implements BusEvent{
+    private final NonAdminPublicKey nonAdminPublicKey;
 
-    @SerializedName("server_address")
-    private String serverAddress;
-
-    public String getServerName() {
-        return serverName;
+    public NonAdminPublicKeySucceedEvent(NonAdminPublicKey nonAdminPublicKey){
+        this.nonAdminPublicKey = nonAdminPublicKey;
     }
 
-    public String getServerAddress() {
-        return serverAddress;
-    }
-
-    public String getSessionToken() {
-        return sessionToken;
+    public NonAdminPublicKey getNonAdminPublicKey() {
+        return nonAdminPublicKey;
     }
 }

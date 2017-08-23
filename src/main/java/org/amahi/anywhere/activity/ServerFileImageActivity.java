@@ -28,6 +28,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.SessionManagerListener;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -55,7 +62,9 @@ import javax.inject.Inject;
  * Image activity. Shows images as a slide show.
  * Backed up by {@link org.amahi.anywhere.view.TouchImageView}.
  */
-public class ServerFileImageActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener
+public class ServerFileImageActivity extends AppCompatActivity implements
+		ViewPager.OnPageChangeListener,
+		SessionManagerListener<CastSession>
 {
 	private static final Set<String> SUPPORTED_FORMATS;
 
@@ -71,6 +80,9 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 
 	@Inject
 	ServerClient serverClient;
+	private CastSession mCastSession;
+	private CastContext mCastContext;
+	private int imagePosition;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +94,8 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 		setUpHomeNavigation();
 
 		setUpImage();
+
+		setUpCast();
 
 		setUpFullScreen();
 	}
@@ -114,6 +128,18 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 		setUpImageListener();
 	}
 
+	private boolean isCastConnected() {
+		return mCastSession != null && mCastSession.isConnected();
+	}
+
+	private void setUpCast() {
+		mCastContext = CastContext.getSharedInstance(this);
+		mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
+		if (isCastConnected()) {
+			loadRemoteMedia();
+		}
+	}
+
 	private void setUpImageTitle() {
 		setUpImageTitle(getFile());
 	}
@@ -139,7 +165,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 	}
 
 	private List<ServerFile> getImageFiles() {
-		List<ServerFile> imageFiles = new ArrayList<ServerFile>();
+		List<ServerFile> imageFiles = new ArrayList<>();
 
 		for (ServerFile file : getFiles()) {
 			if (SUPPORTED_FORMATS.contains(file.getMime())) {
@@ -155,7 +181,8 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 	}
 
 	private void setUpImagePosition() {
-		getImagePager().setCurrentItem(getImageFiles().indexOf(getFile()));
+		imagePosition = getImageFiles().indexOf(getFile());
+		getImagePager().setCurrentItem(imagePosition);
 	}
 
 	private void setUpImageListener() {
@@ -172,13 +199,18 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 
 	@Override
 	public void onPageSelected(int position) {
+		this.imagePosition = position;
 		setUpImageTitle(getImageFiles().get(position));
+		if (isCastConnected()) {
+			loadRemoteMedia();
+		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.action_bar_server_file_image, menu);
-
+		CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+				R.id.media_route_menu_item);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -233,6 +265,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 	protected void onResume() {
 		super.onResume();
 
+		mCastContext.getSessionManager().addSessionManagerListener(this, CastSession.class);
 		BusProvider.getBus().register(this);
 	}
 
@@ -240,10 +273,78 @@ public class ServerFileImageActivity extends AppCompatActivity implements ViewPa
 	protected void onPause() {
 		super.onPause();
 
+		mCastContext.getSessionManager().removeSessionManagerListener(this, CastSession.class);
 		BusProvider.getBus().unregister(this);
 	}
 
 	public static boolean supports(String mime_type) {
 		return SUPPORTED_FORMATS.contains(mime_type);
+	}
+
+	@Override
+	public void onSessionEnded(CastSession session, int error) {
+		onApplicationDisconnected();
+	}
+
+	@Override
+	public void onSessionResumed(CastSession session, boolean wasSuspended) {
+		onApplicationConnected(session);
+	}
+
+	@Override
+	public void onSessionResumeFailed(CastSession session, int error) {
+		onApplicationDisconnected();
+	}
+
+	@Override
+	public void onSessionStarted(CastSession session, String sessionId) {
+		onApplicationConnected(session);
+	}
+
+	@Override
+	public void onSessionStartFailed(CastSession session, int error) {
+		onApplicationDisconnected();
+	}
+
+	@Override
+	public void onSessionStarting(CastSession session) {}
+
+	@Override
+	public void onSessionEnding(CastSession session) {}
+
+	@Override
+	public void onSessionResuming(CastSession session, String sessionId) {}
+
+	@Override
+	public void onSessionSuspended(CastSession session, int reason) {}
+
+	private void onApplicationConnected(CastSession castSession) {
+		mCastSession = castSession;
+		invalidateOptionsMenu();
+		loadRemoteMedia();
+	}
+
+	private void onApplicationDisconnected() {
+		mCastSession = null;
+		invalidateOptionsMenu();
+	}
+
+	private void loadRemoteMedia() {
+		final RemoteMediaClient remoteMediaClient = mCastSession.getRemoteMediaClient();
+		if (remoteMediaClient != null) {
+			remoteMediaClient.load(buildMediaInfo());
+		}
+	}
+
+	private MediaInfo buildMediaInfo() {
+		ServerFile file = getImageFiles().get(imagePosition);
+		MediaMetadata imageMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_PHOTO);
+		imageMetadata.putString(MediaMetadata.KEY_TITLE, file.getNameOnly());
+		String imageUrl = serverClient.getFileUri(getShare(), file).toString();
+		return new MediaInfo.Builder(imageUrl)
+				.setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+				.setContentType(file.getMime())
+				.setMetadata(imageMetadata)
+				.build();
 	}
 }

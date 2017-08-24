@@ -663,8 +663,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 			audioMetadata.putString(MediaMetadata.KEY_TITLE, getFile().getNameOnly());
 		}
 
-		audioMetadata.addImage(new WebImage(Uri.parse("http://alpha.amahi.org/cast/audio-play.jpg")));
-
 		String audioSource = serverClient.getFileUri(getShare(), getFile()).toString();
 		MediaInfo.Builder builder = new MediaInfo.Builder(audioSource)
 				.setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)

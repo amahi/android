@@ -43,7 +43,6 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
-import com.google.android.gms.common.images.WebImage;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -98,7 +97,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
 	private PlaybackLocation mLocation = PlaybackLocation.LOCAL;
 
-	public enum PlaybackLocation {
+	private enum PlaybackLocation {
 		LOCAL,
 		REMOTE
 	}

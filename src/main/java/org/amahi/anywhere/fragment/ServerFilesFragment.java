@@ -343,7 +343,7 @@ public class ServerFilesFragment extends Fragment implements
 
 	private void setUpFilesAdapter() {
 		if (!isMetadataAvailable()) {
-			setListAdapter(new ServerFilesAdapter(getActivity(), serverClient));
+			setListAdapter(new ServerFilesAdapter(getActivity(), getActivity().getApplicationContext(), serverClient));
 		} else {
 			setListAdapter(new ServerFilesMetadataAdapter(getActivity(), serverClient));
 		}

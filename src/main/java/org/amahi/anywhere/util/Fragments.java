@@ -32,6 +32,10 @@ import org.amahi.anywhere.fragment.ServerSharesFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
+import org.amahi.anywhere.tv.fragment.TvPlaybackAudioFragment;
+import org.amahi.anywhere.tv.fragment.TvPlaybackVideoFragment;
+
+import java.util.ArrayList;
 
 /**
  * Fragments accessor. Provides a factory for building fragments and an operator for placing them.
@@ -85,6 +89,39 @@ public final class Fragments {
             fileFragment.setArguments(arguments);
 
             return fileFragment;
+        }
+
+        public static android.app.Fragment buildFirstTvFragment(ServerFile serverFile, ServerShare serverShare) {
+            android.app.Fragment fragment = new ServerFileTvFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
+            bundle.putParcelable(Intents.Extras.SERVER_SHARE, serverShare);
+            fragment.setArguments(bundle);
+            return fragment;
+        }
+
+        public static android.app.Fragment buildVideoFragment(ServerFile serverFile, ServerShare serverShare, ArrayList<ServerFile> serverFiles) {
+            android.app.Fragment fragment = new TvPlaybackVideoFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Intents.Extras.SERVER_SHARE, serverShare);
+            bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
+            bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, serverFiles);
+
+            fragment.setArguments(bundle);
+            return fragment;
+        }
+
+        public static android.app.Fragment buildAudioFragment(ServerFile serverFile, ServerShare serverShare, ArrayList<ServerFile> serverFiles) {
+            android.app.Fragment fragment = new TvPlaybackAudioFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Intents.Extras.SERVER_SHARE, serverShare);
+            bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
+            bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, serverFiles);
+
+            fragment.setArguments(bundle);
+            return fragment;
         }
 
     }

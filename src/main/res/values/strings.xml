@@ -112,6 +112,10 @@
     <string name="intent_servers">INTENT_SERVERS</string>
     <string name="preference">PREFERENCE</string>
     <string name="is_first_run">isFirstRun</string>
+    <string name="exit_title">Exit</string>
+    <string name="exit_message">Are you sure you want to quit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <string name="row_servers">Servers</string>
     <string name="row_shares">Shares</string>
@@ -119,26 +123,24 @@
     <string name="row_preferences">Preferences</string>
 
     <!--Introduction TV activity strings-->
-    <string name="intro_desc_1">Welcome to Amahi TV</string>
-    <string name="intro_phone_1">Welcome to Amahi</string>
-    <string name="intro_desc_phone_1">An android app that lets you access your files present in your HDA.</string>
+    <string name="intro_tv_1">Welcome to Amahi for Android TV</string>
+    <string name="intro_phone_1">Welcome to Amahi for Android.</string>
+    <string name="intro_desc_phone_1">An Android app that lets you access the files in your Amahi Home Server.</string>
 
     <string name="intro_title_2">Access your HDA</string>
-    <string name="intro_desc_2">Amahi TV lets you access your HDA. Play your Videos, Listen to your music and yes! View your photos</string>
-    <string name="intro_desc_phone_2">Amahi lets you access your HDA. Play your Videos, Listen to your music and yes! View your photos</string>
+    <string name="intro_desc_2">Amahi lets you play your videos, view your photos, listen to your music and more!</string>
 
+    <string name="intro_title_3">Browse Your Photos</string>
+    <string name="intro_desc_tv_3">Browse your photo library in your TV, fast and at amazing resolution.</string>
+    <string name="intro_desc_phone_3">Browse your photo library easily, upload photos directly from your phone.</string>
 
-    <string name="intro_title_3">Watch your photos</string>
-    <string name="intro_desc_3">View all your photos backed in your HDA directly in your Android TV.</string>
-    <string name="intro_desc_phone_3">View all your photos backed in your HDA directly in your Android phone.</string>
+    <string name="intro_title_4">Play Your Music</string>
+    <string name="intro_desc_tv_4">Listen to your music library in your TV, perfect for parties, or for relaxing with your favorite tunes.</string>
+    <string name="intro_desc_phone_4">Listen to your music library, at home or on the road.</string>
 
-    <string name="intro_title_4">Listen to your music</string>
-    <string name="intro_desc_4">Listen to all of your songs backed in your HDA directly in your Android TV.</string>
-    <string name="intro_desc_phone_4">Listen to all of your songs backed in your HDA directly in your Android phone.</string>
-
-    <string name="intro_title_5">Play your videos</string>
-    <string name="intro_desc_5">Play Videos directly on your Android TV</string>
-    <string name="intro_desc_phone_5">Play Videos directly on your Android phone</string>
+    <string name="intro_title_5">Play your Movies and Video Library</string>
+    <string name="intro_desc_tv_5">Watch your video and movie library on your big screen in amazing full resolution.</string>
+    <string name="intro_desc_phone_5">Watch your video and movie library on your phone any time anywhere.</string>
 
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>

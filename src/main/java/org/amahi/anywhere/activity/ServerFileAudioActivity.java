@@ -84,16 +84,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 		return SUPPORTED_FORMATS.contains(mime_type);
 	}
 
-	private static final class State
-	{
-		private State() {
-		}
-
-		public static final String AUDIO_TITLE = "audio_title";
-		public static final String AUDIO_SUBTITLE = "audio_subtitle";
-		public static final String AUDIO_ALBUM_ART = "audio_album_art";
-	}
-
 	@Inject
 	ServerClient serverClient;
 
@@ -111,7 +101,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 
 		setUpHomeNavigation();
 
-		setUpAudio(savedInstanceState);
+		setUpAudio();
 	}
 
 	private void setUpInjections() {
@@ -123,10 +113,9 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 		getSupportActionBar().setIcon(R.drawable.ic_launcher);
 	}
 
-	private void setUpAudio(Bundle state) {
+	private void setUpAudio() {
 		setUpAudioFile();
 		setUpAudioTitle();
-		setUpAudioMetadata(state);
 	}
 
 	private void setUpAudioFile() {
@@ -139,24 +128,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 
 	private void setUpAudioTitle() {
 		getSupportActionBar().setTitle(audioFile.getName());
-	}
-
-	private void setUpAudioMetadata(Bundle state) {
-		if (isAudioMetadataStateValid(state)) {
-			setUpAudioMetadataState(state);
-
-			showAudioMetadata();
-		}
-	}
-
-	private boolean isAudioMetadataStateValid(Bundle state) {
-		return (state != null) && state.containsKey(State.AUDIO_TITLE);
-	}
-
-	private void setUpAudioMetadataState(Bundle state) {
-		getAudioTitleView().setText(state.getString(State.AUDIO_TITLE));
-		getAudioSubtitleView().setText(state.getString(State.AUDIO_SUBTITLE));
-		getAudioAlbumArtView().setImageBitmap((Bitmap) state.getParcelable(State.AUDIO_ALBUM_ART));
 	}
 
 	private TextView getAudioTitleView() {
@@ -251,6 +222,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 	private void setUpAudioPlayback() {
 		if (audioService.isAudioStarted()) {
 			showAudio();
+			setUpAudioMetadata();
 		} else {
 			audioService.startAudio(getShare(), getAudioFiles(), getFile());
 		}
@@ -418,7 +390,9 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 
 		BusProvider.getBus().register(this);
 
-		setUpAudioMetadata();
+		if (hasAudioFileChanged()) {
+			setUpAudioMetadata();
+		}
 	}
 
 	private void showAudioControlsForced() {
@@ -427,20 +401,22 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 		}
 	}
 
+	private boolean hasAudioFileChanged() {
+		return isAudioServiceAvailable() && !this.audioFile.equals(audioService.getAudioFile());
+	}
+
 	private void setUpAudioMetadata() {
 		if (!isAudioServiceAvailable()) {
 			return;
 		}
 
-		if (!this.audioFile.equals(audioService.getAudioFile())) {
-			this.audioFile = audioService.getAudioFile();
+		this.audioFile = audioService.getAudioFile();
 
-			tearDownAudioTitle();
-			tearDownAudioMetadata();
+		tearDownAudioTitle();
+		tearDownAudioMetadata();
 
-			setUpAudioTitle();
-			setUpAudioMetadata(audioService.getAudioMetadataFormatter(), audioService.getAudioAlbumArt());
-		}
+		setUpAudioTitle();
+		setUpAudioMetadata(audioService.getAudioMetadataFormatter(), audioService.getAudioAlbumArt());
 	}
 
 	private boolean isAudioServiceAvailable() {
@@ -479,33 +455,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements Servic
 
 	private void tearDownAudioServiceBind() {
 		unbindService(this);
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle state) {
-		super.onSaveInstanceState(state);
-
-		if (isAudioMetadataLoaded()) {
-			tearDownAudioMetadataState(state);
-		}
-	}
-
-	private boolean isAudioMetadataLoaded() {
-		String audioTitle = getAudioTitleView().getText().toString();
-		String audioSubtitle = getAudioSubtitleView().getText().toString();
-		BitmapDrawable audioAlbumArt = (BitmapDrawable) getAudioAlbumArtView().getDrawable();
-
-		return !audioTitle.isEmpty() && !audioSubtitle.isEmpty() && (audioAlbumArt != null);
-	}
-
-	private void tearDownAudioMetadataState(Bundle state) {
-		String audioTitle = getAudioTitleView().getText().toString();
-		String audioSubtitle = getAudioSubtitleView().getText().toString();
-		BitmapDrawable audioAlbumArt = (BitmapDrawable) getAudioAlbumArtView().getDrawable();
-
-		state.putString(State.AUDIO_TITLE, audioTitle);
-		state.putString(State.AUDIO_SUBTITLE, audioSubtitle);
-		state.putParcelable(State.AUDIO_ALBUM_ART, audioAlbumArt.getBitmap());
 	}
 
 	@Override

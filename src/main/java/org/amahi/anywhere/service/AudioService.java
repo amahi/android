@@ -222,7 +222,7 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	}
 
 	private void setUpAudioMetadata() {
-		AudioMetadataRetrievingTask.execute(getAudioUri());
+		AudioMetadataRetrievingTask.execute(getAudioUri(), audioFile);
 	}
 
 	@Subscribe
@@ -433,9 +433,8 @@ public class AudioService extends MediaBrowserServiceCompat implements AudioMana
 	private void handleAudioFocusLoss() {
 		if (isAudioPlaying()) {
 			pauseAudio();
+			this.audioFocus = AudioFocus.LOSS;
 		}
-
-		this.audioFocus = AudioFocus.LOSS;
 	}
 
 	private void handleAudioFocusDuck() {

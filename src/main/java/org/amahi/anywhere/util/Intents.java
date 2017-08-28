@@ -45,7 +45,8 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
-import org.amahi.anywhere.tv.activity.TvPlaybackOverlayActivity;
+import org.amahi.anywhere.tv.activity.TvPlaybackAudioActivity;
+import org.amahi.anywhere.tv.activity.TvPlaybackVideoActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +101,7 @@ public final class Intents {
             return intent;
         }
 
-        public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file){
+        public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file) {
             Intent intent = new Intent(context, ServerFileTvActivity.class);
             intent.putExtra(Extras.SERVER_FILE, file);
             intent.putExtra(Extras.SERVER_SHARE, share);
@@ -116,6 +117,8 @@ public final class Intents {
             String fileFormat = file.getMime();
 
             if (ServerFileAudioActivity.supports(fileFormat)) {
+                if (CheckTV.isATV(context))
+                    return TvPlaybackAudioActivity.class;
                 return ServerFileAudioActivity.class;
             }
 
@@ -124,17 +127,17 @@ public final class Intents {
             }
 
             if (ServerFileVideoActivity.supports(fileFormat)) {
+                if (CheckTV.isATV(context)) {
+                    return TvPlaybackVideoActivity.class;
+                }
                 if (NativeVideoActivity.supports(fileFormat)) {
-                    if(CheckTV.isATV(context))
-                        return TvPlaybackOverlayActivity.class;
-                    else
-                        return NativeVideoActivity.class;
+                    return NativeVideoActivity.class;
                 }
                 return ServerFileVideoActivity.class;
             }
 
             if (ServerFileWebActivity.supports(fileFormat)) {
-                if(!CheckTV.isATV(context))
+                if (!CheckTV.isATV(context))
                     return ServerFileWebActivity.class;
                 else
                     return TVWebViewActivity.class;

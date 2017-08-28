@@ -37,7 +37,7 @@ public class IntroductionActivity extends AppIntro {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addSlide(SampleSlide.newInstance(R.layout.intro_first_layout));
-        addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_2), getString(R.string.intro_desc_phone_2), R.drawable.network, ContextCompat.getColor(this, R.color.intro_2)));
+        addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_2), getString(R.string.intro_desc_2), R.drawable.network, ContextCompat.getColor(this, R.color.intro_2)));
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_3), getString(R.string.intro_desc_phone_3), R.drawable.photos, Color.DKGRAY));
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_4), getString(R.string.intro_desc_phone_4), R.drawable.music, ContextCompat.getColor(this, R.color.intro_4)));
         addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_5), getString(R.string.intro_desc_phone_5), R.drawable.movies, ContextCompat.getColor(this, R.color.intro_5)));

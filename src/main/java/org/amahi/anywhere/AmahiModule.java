@@ -44,12 +44,13 @@ import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
-import org.amahi.anywhere.tv.activity.TvPlaybackOverlayActivity;
+import org.amahi.anywhere.tv.activity.TvPlaybackAudioActivity;
+import org.amahi.anywhere.tv.activity.TvPlaybackVideoActivity;
 import org.amahi.anywhere.tv.fragment.MainTVFragment;
 import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
-import org.amahi.anywhere.tv.fragment.ServerSelectFragment;
-import org.amahi.anywhere.tv.fragment.TvPlaybackOverlayFragment;
 import org.amahi.anywhere.util.UploadManager;
+import org.amahi.anywhere.tv.fragment.TvPlaybackAudioFragment;
+import org.amahi.anywhere.tv.fragment.TvPlaybackVideoFragment;
 
 import javax.inject.Singleton;
 
@@ -87,10 +88,12 @@ import dagger.Provides;
                 MainTVFragment.class,
                 TVWebViewActivity.class,
                 ServerFileTvFragment.class,
-                TvPlaybackOverlayFragment.class,
-                TvPlaybackOverlayActivity.class,
                 UploadService.class,
-                UploadManager.class
+                UploadManager.class,
+                TvPlaybackVideoFragment.class,
+                TvPlaybackVideoActivity.class,
+                TvPlaybackAudioActivity.class,
+                TvPlaybackAudioFragment.class
         }
 )
 class AmahiModule {

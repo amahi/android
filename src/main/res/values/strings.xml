@@ -46,6 +46,8 @@
     <string name="menu_search">Search</string>
     <string name="menu_file_upload">Upload File</string>
 
+    <string name="media_route_menu_item">cast</string>
+
     <string name="message_empty_apps">No Apps</string>
     <string name="message_empty_files">No Files</string>
     <string name="message_empty_shares">No Shares</string>
@@ -101,6 +103,7 @@
     <string name="label_next">Next</string>
     <string name="label_play">Play</string>
     <string name="label_pause">Pause</string>
+    <string name="media_route_menu_title">Play on&#8230;</string>
 
     <string name="upload_camera">Use Camera</string>
     <string name="upload_photo">Upload Photos / Videos</string>

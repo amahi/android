@@ -17,34 +17,19 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.model;
+package org.amahi.anywhere.bus;
 
-import com.google.gson.annotations.SerializedName;
+import org.amahi.anywhere.model.UploadOption;
 
-/**
- * Server route API resource.
- */
-public class ServerRoute
-{
-	@SerializedName("local_addr")
-	private String localAddress;
+public class UploadClickEvent implements BusEvent {
+	private int uploadOption;
 
-	@SerializedName("relay_addr")
-	private String remoteAddress;
-
-	public String getLocalAddress() {
-		return localAddress;
+	public UploadClickEvent(@UploadOption.Types int uploadOption) {
+		this.uploadOption = uploadOption;
 	}
 
-	public String getRemoteAddress() {
-		return remoteAddress;
-	}
-
-	public void setLocalAddress(String localAddress) {
-		this.localAddress = localAddress;
-	}
-
-	public void setRemoteAddress(String remoteAddress) {
-		this.remoteAddress = remoteAddress;
+	@UploadOption.Types
+	public int getUploadOption() {
+		return uploadOption;
 	}
 }

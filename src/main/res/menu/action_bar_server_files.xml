@@ -17,9 +17,8 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_search"
@@ -27,19 +26,19 @@
         android:orderInCategory="100"
         android:title="@string/menu_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="collapseActionView|always" />
-
-    <item
-        android:id="@+id/media_route_menu_item"
-        android:orderInCategory="101"
-        android:title="@string/media_route_menu_item"
-        app:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
-        app:showAsAction="always"/>
+        app:showAsAction="collapseActionView|always"/>
 
     <item
         android:id="@+id/menu_sort"
-        android:orderInCategory="102"
+        android:orderInCategory="101"
         android:title="@string/menu_sort"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/media_route_menu_item"
+        android:orderInCategory="102"
+        android:title="@string/media_route_menu_item"
+        app:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
+        app:showAsAction="always"/>
 
 </menu>

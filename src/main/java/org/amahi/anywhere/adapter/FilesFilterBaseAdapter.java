@@ -20,12 +20,10 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.annotation.DrawableRes;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,8 +35,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -117,6 +113,11 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
         this.filteredFiles = files;
         this.serverShare = serverShare;
 
+        notifyDataSetChanged();
+    }
+
+    public void removeFile(int position) {
+        this.files.remove(position);
         notifyDataSetChanged();
     }
 

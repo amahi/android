@@ -100,6 +100,7 @@ def formatStringField(field) {
 
 dependencies {
     repositories {
+        jcenter()
         mavenCentral()
         mavenLocal()
         maven { url 'https://maven.fabric.io/public' }
@@ -133,6 +134,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
     compile 'org.videolan:libvlc:2.1.1'
+    compile 'pub.devrel:easypermissions:0.4.2'
     testCompile 'org.robolectric:robolectric:3.1.2'
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:shadows-multidex:3.0'

@@ -17,34 +17,22 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.model;
+package org.amahi.anywhere.bus;
 
-import com.google.gson.annotations.SerializedName;
+public class ServerFileUploadProgressEvent implements BusEvent {
+	private int id;
+	private int progress;
 
-/**
- * Server route API resource.
- */
-public class ServerRoute
-{
-	@SerializedName("local_addr")
-	private String localAddress;
-
-	@SerializedName("relay_addr")
-	private String remoteAddress;
-
-	public String getLocalAddress() {
-		return localAddress;
+	public ServerFileUploadProgressEvent(int id, int progress) {
+		this.id = id;
+		this.progress = progress;
 	}
 
-	public String getRemoteAddress() {
-		return remoteAddress;
+	public int getId() {
+		return this.id;
 	}
 
-	public void setLocalAddress(String localAddress) {
-		this.localAddress = localAddress;
-	}
-
-	public void setRemoteAddress(String remoteAddress) {
-		this.remoteAddress = remoteAddress;
+	public int getProgress() {
+		return this.progress;
 	}
 }

@@ -18,16 +18,10 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
-
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <FrameLayout
-        android:id="@+id/container_files"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
     <fragment
         android:id="@+id/castMiniController"
@@ -36,4 +30,26 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:visibility="gone"/>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinator_files"
+        android:layout_above="@id/castMiniController"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/container_files"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="25dp"
+            android:layout_marginEnd="25dp"
+            android:src="@drawable/ic_add"/>
+
+    </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>

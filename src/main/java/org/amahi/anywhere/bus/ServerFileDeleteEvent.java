@@ -17,34 +17,16 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.model;
+package org.amahi.anywhere.bus;
 
-import com.google.gson.annotations.SerializedName;
+public class ServerFileDeleteEvent implements BusEvent {
+    private boolean isDeleted;
 
-/**
- * Server route API resource.
- */
-public class ServerRoute
-{
-	@SerializedName("local_addr")
-	private String localAddress;
+    public ServerFileDeleteEvent(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 
-	@SerializedName("relay_addr")
-	private String remoteAddress;
-
-	public String getLocalAddress() {
-		return localAddress;
-	}
-
-	public String getRemoteAddress() {
-		return remoteAddress;
-	}
-
-	public void setLocalAddress(String localAddress) {
-		this.localAddress = localAddress;
-	}
-
-	public void setRemoteAddress(String remoteAddress) {
-		this.remoteAddress = remoteAddress;
-	}
+    public boolean isDeleted() {
+        return isDeleted;
+    }
 }

@@ -318,7 +318,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void setUpServersContent(String authenticationToken) {
-		amahiClient.getServers(authenticationToken);
+		amahiClient.getServers(getContext(), authenticationToken);
 	}
 
 	@Subscribe
@@ -414,7 +414,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 			setUpServerConnection();
 			setUpServerNavigation();
 		} else {
-			serverClient.connect(server);
+			serverClient.connect(getContext(), server);
 		}
 	}
 

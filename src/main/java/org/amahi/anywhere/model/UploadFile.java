@@ -17,34 +17,22 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.model;
+package org.amahi.anywhere.model;
 
-import com.google.gson.annotations.SerializedName;
+public class UploadFile {
+	private int id;
+	private String path;
 
-/**
- * Server route API resource.
- */
-public class ServerRoute
-{
-	@SerializedName("local_addr")
-	private String localAddress;
-
-	@SerializedName("relay_addr")
-	private String remoteAddress;
-
-	public String getLocalAddress() {
-		return localAddress;
+	public UploadFile(int id, String path) {
+		this.id = id;
+		this.path = path;
 	}
 
-	public String getRemoteAddress() {
-		return remoteAddress;
+	public int getId() {
+		return id;
 	}
 
-	public void setLocalAddress(String localAddress) {
-		this.localAddress = localAddress;
-	}
-
-	public void setRemoteAddress(String remoteAddress) {
-		this.remoteAddress = remoteAddress;
+	public String getPath() {
+		return path;
 	}
 }

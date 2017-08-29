@@ -17,34 +17,27 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.model;
+package org.amahi.anywhere.receiver;
 
-import com.google.gson.annotations.SerializedName;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
+
+import org.amahi.anywhere.service.UploadService;
+import org.amahi.anywhere.util.Intents;
+
+import java.util.ArrayList;
 
 /**
- * Server route API resource.
+ * Camera new picture event receiver.
  */
-public class ServerRoute
-{
-	@SerializedName("local_addr")
-	private String localAddress;
-
-	@SerializedName("relay_addr")
-	private String remoteAddress;
-
-	public String getLocalAddress() {
-		return localAddress;
-	}
-
-	public String getRemoteAddress() {
-		return remoteAddress;
-	}
-
-	public void setLocalAddress(String localAddress) {
-		this.localAddress = localAddress;
-	}
-
-	public void setRemoteAddress(String remoteAddress) {
-		this.remoteAddress = remoteAddress;
+public class CameraReceiver extends BroadcastReceiver {
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		Log.e("NEW_IMAGE", "onReceive");
+		Intent uploadService = Intents.Builder.with(context).buildUploadServiceIntent(intent.getData());
+		context.startService(uploadService);
 	}
 }

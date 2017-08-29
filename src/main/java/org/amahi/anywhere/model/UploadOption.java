@@ -17,34 +17,44 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.model;
+package org.amahi.anywhere.model;
 
-import com.google.gson.annotations.SerializedName;
+import android.support.annotation.IntDef;
+
+import org.amahi.anywhere.fragment.UploadBottomSheet;
 
 /**
- * Server route API resource.
+ * Upload option model for display in {@link UploadBottomSheet}
  */
-public class ServerRoute
-{
-	@SerializedName("local_addr")
-	private String localAddress;
+public class UploadOption {
+	public static final int CAMERA = 1;
+	public static final int FILE = 2;
 
-	@SerializedName("relay_addr")
-	private String remoteAddress;
-
-	public String getLocalAddress() {
-		return localAddress;
+	@IntDef({CAMERA, FILE})
+	public @interface Types {
 	}
 
-	public String getRemoteAddress() {
-		return remoteAddress;
+	@Types
+	private int type;
+	private String name;
+	private int icon;
+
+	public UploadOption(@Types int type, String name, int icon) {
+		this.name = name;
+		this.icon = icon;
+		this.type = type;
 	}
 
-	public void setLocalAddress(String localAddress) {
-		this.localAddress = localAddress;
+	@Types
+	public int getType() {
+		return type;
 	}
 
-	public void setRemoteAddress(String remoteAddress) {
-		this.remoteAddress = remoteAddress;
+	public String getName() {
+		return name;
+	}
+
+	public int getIcon() {
+		return icon;
 	}
 }

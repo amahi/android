@@ -24,6 +24,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.NonAdminAuthSucceedEvent;
+import org.amahi.anywhere.server.model.Server;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -84,6 +86,13 @@ public final class Preferences {
 
     public static void setFirstRun(Context context) {
         context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putBoolean(context.getString(R.string.is_first_run), false).apply();
+    }
+
+    //Note-@octacode: Preference variables for Non-admin users
+    public static void setNonAdminUserCredentials(NonAdminAuthSucceedEvent event, Context context) {
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString("session_token", event.getNonAdminAuthentication().getSessionToken()).apply();
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString("server_name", event.getNonAdminAuthentication().getServerName()).apply();
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString("server_address", event.getNonAdminAuthentication().getServerAddress()).apply();
     }
 
     public static Preferences ofCookie(Context context) {

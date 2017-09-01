@@ -26,7 +26,11 @@ import org.amahi.anywhere.bus.NonAdminAuthConnectionFailedEvent;
 import org.amahi.anywhere.bus.NonAdminAuthSucceedEvent;
 import org.amahi.anywhere.bus.NonAdminAuthenticationFailedEvent;
 import org.amahi.anywhere.server.client.NonAdminClient;
+import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.NonAdminAuthentication;
+import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.ViewDirector;
 
 import javax.inject.Inject;
@@ -35,6 +39,9 @@ public class NonAdminAuthenticationActivity extends AppCompatActivity implements
 
     @Inject
     NonAdminClient nonAdminClient;
+
+    @Inject
+    ServerClient serverClient;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -143,8 +150,8 @@ public class NonAdminAuthenticationActivity extends AppCompatActivity implements
     @Subscribe
     public void onNonAdminAuthSucceed(NonAdminAuthSucceedEvent event) {
         if(getRunningServerName().equals(event.getNonAdminAuthentication().getServerName())){
-            //store servername, address and session token in a sharedPref variable.
-            finishAuthentication();
+            Preferences.setNonAdminUserCredentials(event, this);
+            finishAuthentication(event);
         }
         else {
             ViewDirector.of(NonAdminAuthenticationActivity.this, R.id.animator_message).show(R.id.text_message_server_not_authorised);
@@ -165,8 +172,14 @@ public class NonAdminAuthenticationActivity extends AppCompatActivity implements
         return getIntent().getStringExtra(Intents.Extras.SERVER_NAME);
     }
 
-    private void finishAuthentication() {
-
+    private void finishAuthentication(NonAdminAuthSucceedEvent event) {
+        NonAdminAuthentication nonAdminAuthentication = event.getNonAdminAuthentication();
+        Server server = new Server(
+                nonAdminAuthentication.getServerName(),
+                nonAdminAuthentication.getSessionToken(),
+                nonAdminAuthentication.getServerAddress(),
+                true);
+        serverClient.connecttoNonadmin(server);
     }
 
     @Override

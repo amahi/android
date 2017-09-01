@@ -154,6 +154,11 @@ public class ServerClient
 		startServerConnection();
 	}
 
+	public void connecttoNonadmin(Server server) {
+		this.server = server;
+		serverAddress = server.getServerAddress();
+	}
+
 	private void startServerConnection() {
 		proxyApi.getServerRoute(server.getSession()).enqueue(new ServerRouteResponse());
 	}

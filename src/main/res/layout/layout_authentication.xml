@@ -88,6 +88,14 @@
         android:layout_width="match_parent"
         android:layout_height="16dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/login_as_admin_button"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/login_as_non_admin"/>
+
     <ViewAnimator
         android:id="@+id/animator_message"
         android:layout_width="match_parent"
@@ -120,6 +128,13 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/message_error_authentication_field_empty" />
+
+        <TextView
+            android:id="@+id/text_message_server_not_authorised"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/message_error_authentication_server_not_authorised" />
 
     </ViewAnimator>
 

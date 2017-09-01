@@ -38,6 +38,16 @@ public class Server implements Parcelable
 	@SerializedName("active")
 	private boolean active;
 
+	@SerializedName("server_address")
+	private String serverAddress;
+
+	public Server(String name, String session, String serverAddress, boolean active) {
+		this.name = name;
+		this.session = session;
+		this.serverAddress = serverAddress;
+		this.active = active;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -48,6 +58,10 @@ public class Server implements Parcelable
 
 	public boolean isActive() {
 		return active;
+	}
+
+	public String getServerAddress() {
+		return serverAddress;
 	}
 
 	public static final Creator<Server> CREATOR = new Creator<Server>()
@@ -67,6 +81,7 @@ public class Server implements Parcelable
 		this.name = parcel.readString();
 		this.session = parcel.readString();
 		this.active = Boolean.valueOf(parcel.readString());
+		this.serverAddress = parcel.readString();
 	}
 
 	@Override
@@ -74,6 +89,7 @@ public class Server implements Parcelable
 		parcel.writeString(name);
 		parcel.writeString(session);
 		parcel.writeString(String.valueOf(active));
+		parcel.writeString(serverAddress);
 	}
 
 	@Override

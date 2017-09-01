@@ -28,6 +28,8 @@ import android.os.AsyncTask;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 
 import java.util.HashMap;
 
@@ -37,13 +39,27 @@ import java.util.HashMap;
  */
 public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent> {
     private final Uri audioUri;
+    private final MainTVPresenter.ViewHolder viewHolder;
+    private final ServerFile serverFile;
 
-    private AudioMetadataRetrievingTask(Uri audioUri) {
+    private AudioMetadataRetrievingTask(Uri audioUri, ServerFile serverFile) {
         this.audioUri = audioUri;
+        this.viewHolder = null;
+        this.serverFile = serverFile;
     }
 
-    public static void execute(Uri audioUri) {
-        new AudioMetadataRetrievingTask(audioUri).execute();
+    private AudioMetadataRetrievingTask(Uri audioUri, ServerFile serverFile, MainTVPresenter.ViewHolder viewHolder) {
+        this.audioUri = audioUri;
+        this.viewHolder = viewHolder;
+        this.serverFile = serverFile;
+    }
+
+    public static void execute(Uri audioUri, ServerFile serverFile) {
+        new AudioMetadataRetrievingTask(audioUri, serverFile).execute();
+    }
+
+    public static void execute(Uri audioUri, ServerFile serverFile, MainTVPresenter.ViewHolder viewHolder) {
+        new AudioMetadataRetrievingTask(audioUri, serverFile, viewHolder).execute();
     }
 
     @Override
@@ -58,9 +74,9 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
             String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
             Bitmap audioAlbumArt = extractAlbumArt(audioMetadataRetriever);
 
-            return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt);
+            return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt, viewHolder, serverFile);
         } catch (RuntimeException e) {
-            return new AudioMetadataRetrievedEvent(null, null, null, null);
+            return new AudioMetadataRetrievedEvent(null, null, null, null, viewHolder, serverFile);
         } finally {
             audioMetadataRetriever.release();
         }

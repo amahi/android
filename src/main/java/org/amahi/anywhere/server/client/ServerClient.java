@@ -154,6 +154,13 @@ public class ServerClient
 		startServerConnection();
 	}
 
+	public void connecttoNonadmin(Server server) {
+		this.server = server;
+		serverAddress = server.getServerAddress();
+
+        finishServerConnection();
+	}
+
 	private void startServerConnection() {
 		proxyApi.getServerRoute(server.getSession()).enqueue(new ServerRouteResponse());
 	}
@@ -166,7 +173,7 @@ public class ServerClient
 	}
 
 	private void finishServerConnection() {
-		BusProvider.getBus().post(new ServerConnectedEvent());
+		BusProvider.getBus().post(new ServerConnectedEvent(server));
 	}
 
 	public void connectAuto() {
@@ -199,6 +206,14 @@ public class ServerClient
 		return serverAddress;
 	}
 
+	public String getServerName() {
+		return server.getName();
+	}
+
+	public String getSessionToken() {
+		return server.getSession();
+	}
+
 	public void getShares() {
 		serverApi.getShares(server.getSession()).enqueue(new ServerSharesResponse());
 	}
@@ -208,11 +223,11 @@ public class ServerClient
 			return;
 		}
 
-		serverApi.getFiles(server.getSession(), share.getName(), null).enqueue(new ServerFilesResponse(null));
+		serverApi.getFiles(server.getSession(), share.getName(), null).enqueue(new ServerFilesResponse(share));
 	}
 
 	public void getFiles(ServerShare share, ServerFile directory) {
-		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory));
+		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
 	}
 
 	public Uri getFileUri(ServerShare share, ServerFile file) {

@@ -23,6 +23,8 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -35,6 +37,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.squareup.otto.Subscribe;
@@ -46,7 +49,10 @@ import org.amahi.anywhere.bus.AuthenticationConnectionFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationSucceedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.NonAdminPublicKeySucceedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
+import org.amahi.anywhere.server.client.NonAdminClient;
+import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.ViewDirector;
 
 import javax.inject.Inject;
@@ -60,6 +66,9 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 	@Inject
 	AmahiClient amahiClient;
 
+	@Inject
+	NonAdminClient nonAdminClient;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -68,6 +77,8 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		setUpInjections();
 
 		setUpAuthentication();
+
+		nonAdminClient.getPublicKey();
 	}
 
 	private void setUpInjections() {
@@ -295,6 +306,31 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 		setResult(Activity.RESULT_OK);
 
 		finish();
+	}
+
+	@Subscribe
+	public void onNonAdminPublicKeySucceed (final NonAdminPublicKeySucceedEvent event) {
+		//Note -@octacode: Hide and show the "login as non admin user" button when the localHDA is active.
+		//Toast.makeText(this, "Local HDA is active", Toast.LENGTH_SHORT).show();
+		getLoginAsNonAdminButton().setVisibility(View.VISIBLE);
+		getLoginAsNonAdminButton().setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//pass the server_key as extra.
+				//Here's a dummy public key.
+				String serverKey = "aifjd2309fnsjfqa"; //event.getNonAdminPublicKey().getPublicKey();
+				String serverName = "octacode"; //event.getNonAdminPublicKey().getServerName();
+				startActivity(
+						new Intent(AuthenticationActivity.this, NonAdminAuthenticationActivity.class)
+								.putExtra(Intents.Extras.PUBLIC_KEY, serverKey)
+								.putExtra(Intents.Extras.SERVER_NAME, serverName)
+				);
+			}
+		});
+	}
+
+	private TextView getLoginAsNonAdminButton() {
+		return (TextView)findViewById(R.id.login_as_admin_button);
 	}
 
 	@Override

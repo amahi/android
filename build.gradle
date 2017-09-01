@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.1'
+        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath 'io.fabric.tools:gradle:1.22.1'
     }
 }
@@ -39,24 +39,27 @@ android {
 
     defaultConfig {
         def versionMajor = 2
-        def versionMinor = 4
+        def versionMinor = 9
         def versionPatch = 0
 
         versionName buildVersionName(versionMajor, versionMinor, versionPatch)
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
 
-        minSdkVersion 15
+        minSdkVersion 17
         targetSdkVersion 25
 
         def apiFile = file("api.properties")
-        def fakeApiFile = file("fakeApi.properties")
         def apiProperties = new Properties()
+
+        // NOTE-cpg: this fake api is here for the tests to pass
+        def fakeApiFile = file("fakeApi.properties")
 
         if (apiFile.exists()) {
             apiProperties.load(apiFile.newInputStream())
         } else {
             apiProperties.load(fakeApiFile.newInputStream())
         }
+
         buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
         buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
         buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
@@ -100,6 +103,7 @@ dependencies {
         mavenLocal()
         maven { url 'https://maven.fabric.io/public' }
         maven { url 'http://dl.bintray.com/megabitdragon/maven' }
+        maven { url 'https://jitpack.io' }
     }
 
     def SUPPORT_LIBRARY_VERSION = "25.3.1"
@@ -111,26 +115,30 @@ dependencies {
     compile "com.android.support:design:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:preference-v7:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:customtabs:${SUPPORT_LIBRARY_VERSION}"
-    compile "com.github.dmytrodanylyk.android-process-button:library:1.0.4"
-    compile "com.jakewharton.timber:timber:4.5.1"
-    compile "com.squareup.dagger:dagger:1.2.5"
-    compile "com.squareup:otto:1.3.8"
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile "com.squareup.retrofit2:retrofit:2.2.0"
-    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-    compile "org.videolan:libvlc:2.1.1"
+    compile "com.android.support:leanback-v17:${SUPPORT_LIBRARY_VERSION}"
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }
-    provided "com.squareup.dagger:dagger-compiler:1.2.5"
 
+    compile 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
+    compile 'com.jakewharton.timber:timber:4.5.1'
+    compile 'com.squareup.dagger:dagger:1.2.5'
+    compile 'com.squareup:otto:1.3.8'
+    compile 'com.github.apl-devs:appintro:v4.2.0'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+    compile 'org.videolan:libvlc:2.1.1'
     testCompile 'org.robolectric:robolectric:3.1.2'
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:shadows-multidex:3.0'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support:support-annotations:25.3.1'
+    provided 'com.squareup.dagger:dagger-compiler:1.2.5'
+    compile 'com.android.support:cardview-v7:25.3.1'
+    compile 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
 }
 
 task generateWrapper(type: Wrapper) {

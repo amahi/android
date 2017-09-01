@@ -23,6 +23,7 @@ import android.app.Application;
 import android.content.Context;
 
 import org.amahi.anywhere.activity.AuthenticationActivity;
+import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
@@ -31,6 +32,7 @@ import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.NonAdminNavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
@@ -40,6 +42,13 @@ import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.server.ApiModule;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.service.VideoService;
+import org.amahi.anywhere.tv.activity.TVWebViewActivity;
+import org.amahi.anywhere.tv.activity.TvPlaybackAudioActivity;
+import org.amahi.anywhere.tv.activity.TvPlaybackVideoActivity;
+import org.amahi.anywhere.tv.fragment.MainTVFragment;
+import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
+import org.amahi.anywhere.tv.fragment.TvPlaybackAudioFragment;
+import org.amahi.anywhere.tv.fragment.TvPlaybackVideoFragment;
 
 import javax.inject.Singleton;
 
@@ -62,6 +71,7 @@ import dagger.Provides;
                 ServerFileAudioActivity.class,
                 ServerFileImageActivity.class,
                 ServerFileVideoActivity.class,
+                NativeVideoActivity.class,
                 ServerFileWebActivity.class,
                 NavigationFragment.class,
                 ServerSharesFragment.class,
@@ -71,7 +81,15 @@ import dagger.Provides;
                 ServerFileDownloadingFragment.class,
                 SettingsFragment.class,
                 AudioService.class,
-                VideoService.class
+                VideoService.class,
+                MainTVFragment.class,
+                TVWebViewActivity.class,
+                ServerFileTvFragment.class,
+                TvPlaybackVideoFragment.class,
+                TvPlaybackVideoActivity.class,
+                TvPlaybackAudioActivity.class,
+                TvPlaybackAudioFragment.class,
+                NonAdminNavigationFragment.class
         }
 )
 class AmahiModule {

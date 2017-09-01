@@ -33,6 +33,7 @@ import java.util.Date;
 public class ServerFile implements Parcelable
 {
 	private ServerFile parentFile;
+	private ServerShare parentShare;
 
 	@SerializedName("name")
 	private String name;
@@ -58,12 +59,22 @@ public class ServerFile implements Parcelable
 		this.parentFile = parentFile;
 	}
 
+	public void setParentShare(ServerShare parentShare){
+		this.parentShare = parentShare;
+	}
+
+	public ServerShare getParentShare(){return parentShare;}
+
 	public ServerFile getParentFile() {
 		return parentFile;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public String getNameOnly() {
+		return name.replace("." + getExtension(), "");
 	}
 
 	public String getMime() {
@@ -100,6 +111,15 @@ public class ServerFile implements Parcelable
 		uri.appendPath(name);
 
 		return uri.build().getPath();
+	}
+
+	public String getExtension() {
+		String[] splitString = name.split("\\.");
+		if(splitString.length > 1) {
+			return splitString[splitString.length-1];
+		} else {
+			return "";
+		}
 	}
 
 	public static final Creator<ServerFile> CREATOR = new Creator<ServerFile>()

@@ -21,6 +21,13 @@ package org.amahi.anywhere.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.NonAdminAuthSucceedEvent;
+import org.amahi.anywhere.server.model.Server;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Application {@link android.content.SharedPreferences} accessor.
@@ -29,7 +36,63 @@ public final class Preferences {
     private final SharedPreferences preferences;
 
     private Preferences(Context context, String location) {
-        this.preferences = context.getSharedPreferences(location, Context.MODE_PRIVATE);
+        this.preferences = context.getSharedPreferences(location, MODE_PRIVATE);
+    }
+
+    public static SharedPreferences getTVPreference(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    public static String getServerConnection(SharedPreferences preferences, Context context) {
+        return preferences.getString(context.getString(R.string.preference_key_server_connection), context.getString(R.string.preference_entry_server_connection_auto));
+    }
+
+
+    public static void setPrefAuto(SharedPreferences preference, Context context) {
+        preference.edit().putString(context.getString(R.string.preference_key_server_connection), context.getString(R.string.preference_entry_server_connection_auto)).apply();
+    }
+
+    public static void setPrefRemote(SharedPreferences preference, Context context) {
+        preference.edit().putString(context.getString(R.string.preference_key_server_connection), context.getString(R.string.preference_entry_server_connection_remote)).apply();
+    }
+
+    public static void setPrefLocal(SharedPreferences preference, Context context) {
+        preference.edit().putString(context.getString(R.string.preference_key_server_connection), context.getString(R.string.preference_entry_server_connection_local)).apply();
+    }
+
+    public static SharedPreferences getPreference(Context context) {
+        return context.getSharedPreferences(context.getString(R.string.preference), Context.MODE_PRIVATE);
+    }
+
+    public static void setLight(Context context, SharedPreferences preferences) {
+        preferences.edit().putString(context.getString(R.string.pref_key_theme), context.getString(R.string.pref_theme_light)).apply();
+    }
+
+    public static void setDark(Context context, SharedPreferences preferences) {
+        preferences.edit().putString(context.getString(R.string.pref_key_theme), context.getString(R.string.pref_theme_dark)).apply();
+    }
+
+    public static void setServertoPref(String server, Context context, SharedPreferences sharedPref) {
+        sharedPref.edit().putString(context.getString(R.string.pref_server_select_key), server).apply();
+    }
+
+    public static String getServerFromPref(Context context, SharedPreferences sharedPreferences) {
+        return sharedPreferences.getString(context.getString(R.string.pref_server_select_key), null);
+    }
+
+    public static boolean getFirstRun(Context context) {
+        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getBoolean(context.getString(R.string.is_first_run), true);
+    }
+
+    public static void setFirstRun(Context context) {
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putBoolean(context.getString(R.string.is_first_run), false).apply();
+    }
+
+    //Note-@octacode: Preference variables for Non-admin users
+    public static void setNonAdminUserCredentials(NonAdminAuthSucceedEvent event, Context context) {
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString("session_token", event.getNonAdminAuthentication().getSessionToken()).apply();
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString("server_name", event.getNonAdminAuthentication().getServerName()).apply();
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString("server_address", event.getNonAdminAuthentication().getServerAddress()).apply();
     }
 
     public static Preferences ofCookie(Context context) {

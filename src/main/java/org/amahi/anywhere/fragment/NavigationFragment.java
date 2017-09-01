@@ -26,14 +26,16 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
-import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,6 +50,7 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
@@ -61,6 +64,9 @@ import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.tv.activity.MainTVActivity;
+import org.amahi.anywhere.util.CheckTV;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.RecyclerItemClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
@@ -70,6 +76,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Navigation fragments. Shows main application sections and servers list as well.
@@ -93,6 +101,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	@Inject
 	ServerClient serverClient;
 
+	private Intent tvIntent;
+
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
 		return layoutInflater.inflate(R.layout.fragment_navigation, container, false);
@@ -101,6 +111,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+
+		launchIntro();
 
 		setUpInjections();
 
@@ -111,6 +123,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpContentRefreshing();
 
 		setUpServers(savedInstanceState);
+	}
+
+	private void launchIntro(){
+		if(Preferences.getFirstRun(getContext()) && !CheckTV.isATV(getContext())){
+			Preferences.setFirstRun(getContext());
+			startActivity(new Intent(getContext(), IntroductionActivity.class));
+		}
 	}
 
 	private void setUpInjections() {
@@ -233,7 +252,37 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	}
 
 	private void setUpServersContent(List<Server> servers) {
-		getServersAdapter().replaceWith(filterActiveServers(servers));
+		if (!CheckTV.isATV(getContext()))
+			getServersAdapter().replaceWith(filterActiveServers(servers));
+		else {
+			List<Server> serverList = filterActiveServers(servers);
+			String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), servers.get(0).getName());
+
+            if (serverList.get(0).getName().matches(serverName))
+				getServersAdapter().replaceWith(serverList);
+
+            else {
+				int index = findTheServer(serverList);
+				getServersAdapter().replaceWith(swappedServers(index,serverList));
+			}
+		}
+	}
+
+	private int findTheServer(List<Server> serverList) {
+		String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), serverList.get(0).getName());
+		int i;
+		for (i = 0; i < serverList.size(); i++) {
+			if (serverName.matches(serverList.get(i).getName()))
+				return i;
+		}
+		return 0;
+	}
+
+	private List<Server> swappedServers(int index, List<Server> serverList){
+		Server firstServer = serverList.get(0);
+		serverList.set(0, serverList.get(index));
+		serverList.set(index, firstServer);
+		return serverList;
 	}
 
 	private ServersAdapter getServersAdapter() {
@@ -282,6 +331,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpNavigation();
 
 		showContent();
+
+		tvIntent = new Intent(getContext(), MainTVActivity.class);
+
+		tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers), new ArrayList<>(filterActiveServers(event.getServers())));
 	}
 
 	private SwipeRefreshLayout getRefreshLayout() {
@@ -372,6 +425,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 	public void onServerConnected(ServerConnectedEvent event) {
 		setUpServerConnection();
 		setUpServerNavigation();
+		if (CheckTV.isATV(getContext())) launchTV();
+		//Note: @octacode - Done temporarily for debugging purposes.
+//		Log.d(getClass().getSimpleName()+" Address: ",serverClient.getServerAddress());
+//		Log.d(getClass().getSimpleName()+" Server name: ",serverClient.getServerName());
+//		Log.d(getClass().getSimpleName()+" Session token: ",serverClient.getSessionToken());
+//		getContext().getSharedPreferences(getContext().getString(R.string.preference), MODE_PRIVATE).edit().putString("session_token", "5d08161f61f50f2fdb6802c74d0b2c75dba3cace").apply();
+//		getContext().getSharedPreferences(getContext().getString(R.string.preference), MODE_PRIVATE).edit().putString("server_name", "octacode-3").apply();
+//		getContext().getSharedPreferences(getContext().getString(R.string.preference), MODE_PRIVATE).edit().putString("server_address", "http://192.168.225.68:4563").apply();
 	}
 
 	private void setUpServerConnection() {
@@ -386,6 +447,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 			serverClient.connectRemote();
 		}
 	}
+
+	private void launchTV(){startActivity(tvIntent);}
 
 	private boolean isConnectionAvailable() {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());

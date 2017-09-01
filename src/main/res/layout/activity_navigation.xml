@@ -28,6 +28,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ViewStub
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/tv_loading"
+        android:id="@+id/view_stub_tv_loading"/>
+
     <FrameLayout
         android:id="@+id/container_navigation"
         android:layout_width="240dp"

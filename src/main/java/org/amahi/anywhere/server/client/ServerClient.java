@@ -157,6 +157,8 @@ public class ServerClient
 	public void connecttoNonadmin(Server server) {
 		this.server = server;
 		serverAddress = server.getServerAddress();
+
+        finishServerConnection();
 	}
 
 	private void startServerConnection() {
@@ -202,6 +204,14 @@ public class ServerClient
 
 	public String getServerAddress() {
 		return serverAddress;
+	}
+
+	public String getServerName() {
+		return server.getName();
+	}
+
+	public String getSessionToken() {
+		return server.getSession();
 	}
 
 	public void getShares() {

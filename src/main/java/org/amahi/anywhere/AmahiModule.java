@@ -32,6 +32,7 @@ import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.NonAdminNavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
@@ -87,7 +88,8 @@ import dagger.Provides;
                 TvPlaybackVideoFragment.class,
                 TvPlaybackVideoActivity.class,
                 TvPlaybackAudioActivity.class,
-                TvPlaybackAudioFragment.class
+                TvPlaybackAudioFragment.class,
+                NonAdminNavigationFragment.class
         }
 )
 class AmahiModule {

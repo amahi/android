@@ -43,6 +43,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.bus.SharesSelectedEvent;
+import org.amahi.anywhere.fragment.NonAdminNavigationFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -266,7 +267,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
             setUpTitle();
         }
 
-        setUpShares();
+        //setUpShares();
+        Fragments.Operator.at(this).replace(new NonAdminNavigationFragment(), R.id.container_content);
 
         if (isNavigationDrawerAvailable()) {
             hideNavigationDrawer();

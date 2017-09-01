@@ -35,6 +35,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -75,6 +76,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Navigation fragments. Shows main application sections and servers list as well.
@@ -423,6 +426,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 		setUpServerConnection();
 		setUpServerNavigation();
 		if (CheckTV.isATV(getContext())) launchTV();
+		//Note: @octacode - Done temporarily for debugging purposes.
+//		Log.d(getClass().getSimpleName()+" Address: ",serverClient.getServerAddress());
+//		Log.d(getClass().getSimpleName()+" Server name: ",serverClient.getServerName());
+//		Log.d(getClass().getSimpleName()+" Session token: ",serverClient.getSessionToken());
+//		getContext().getSharedPreferences(getContext().getString(R.string.preference), MODE_PRIVATE).edit().putString("session_token", "5d08161f61f50f2fdb6802c74d0b2c75dba3cace").apply();
+//		getContext().getSharedPreferences(getContext().getString(R.string.preference), MODE_PRIVATE).edit().putString("server_name", "octacode-3").apply();
+//		getContext().getSharedPreferences(getContext().getString(R.string.preference), MODE_PRIVATE).edit().putString("server_address", "http://192.168.225.68:4563").apply();
 	}
 
 	private void setUpServerConnection() {

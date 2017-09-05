@@ -21,6 +21,10 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -32,6 +36,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -40,67 +50,75 @@ import org.amahi.anywhere.util.Mimes;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Files adapter. Visualizes files
  * for the {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
-public class ServerFilesAdapter extends FilesFilterBaseAdapter
-{
-	private Context context;
+public class ServerFilesAdapter extends FilesFilterBaseAdapter {
+    private Context context;
+    private Context applicationContext;
 
-	public ServerFilesAdapter(Context context, ServerClient serverClient) {
-		this.serverClient = serverClient;
-		this.layoutInflater = LayoutInflater.from(context);
-		this.context=context;
-		this.files = Collections.emptyList();
-		this.filteredFiles = Collections.emptyList();
-	}
+    public ServerFilesAdapter(Context context, Context applicationContext, ServerClient serverClient) {
+        this.serverClient = serverClient;
+        this.layoutInflater = LayoutInflater.from(context);
+        this.context = context;
+        this.applicationContext = applicationContext;
+        this.files = Collections.emptyList();
+        this.filteredFiles = Collections.emptyList();
+    }
 
-	protected View newView(ViewGroup container) {
-		return layoutInflater.inflate(R.layout.view_server_file_item, container, false);
-	}
+    protected View newView(ViewGroup container) {
+        return layoutInflater.inflate(R.layout.view_server_file_item, container, false);
+    }
 
-	protected void bindView(ServerFile file, View view) {
-		ImageView fileIconView = (ImageView) view.findViewById(R.id.icon);
-		TextView fileTextView = (TextView) view.findViewById(R.id.text);
-		TextView fileSize = (TextView) view.findViewById(R.id.file_size);
-		TextView fileLastModified = (TextView) view.findViewById(R.id.last_modified);
-		LinearLayout moreInfo = (LinearLayout) view.findViewById(R.id.more_info);
+    protected void bindView(ServerFile file, View view) {
+        ImageView fileIconView = (ImageView) view.findViewById(R.id.icon);
+        TextView fileTextView = (TextView) view.findViewById(R.id.text);
+        TextView fileSize = (TextView) view.findViewById(R.id.file_size);
+        TextView fileLastModified = (TextView) view.findViewById(R.id.last_modified);
+        LinearLayout moreInfo = (LinearLayout) view.findViewById(R.id.more_info);
 
-		if(Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY){
-			moreInfo.setVisibility(View.GONE);
+        if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
+            moreInfo.setVisibility(View.GONE);
 
-		} else {
-			moreInfo.setVisibility(View.VISIBLE);
+        } else {
+            moreInfo.setVisibility(View.VISIBLE);
 
-			fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
+            fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
 
-			Date d = getLastModified(file);
-			SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
-			fileLastModified.setText(dt.format(d));
-		}
+            Date d = getLastModified(file);
+            SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
+            fileLastModified.setText(dt.format(d));
+        }
 
-		SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
-		if(queryString != null && !TextUtils.isEmpty(queryString)) {
-			int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
-			if (searchMatchPosition != -1)
-				sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-		}
-		fileTextView.setText(sb);
+        SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
+        if (queryString != null && !TextUtils.isEmpty(queryString)) {
+            int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
+            if (searchMatchPosition != -1)
+                sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+        fileTextView.setText(sb);
 
-		if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
-			setUpImageIcon(file, fileIconView);
-		} else {
-			fileIconView.setImageResource(Mimes.getFileIcon(file));
-		}
-	}
+        if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
+            setUpImageIcon(file, fileIconView);
+        } else if (Mimes.match(file.getMime()) == Mimes.Type.AUDIO) {
+            setUpAudioArt(file, fileIconView);
+        } else {
+            fileIconView.setImageResource(Mimes.getFileIcon(file));
+        }
+    }
 
-	private long getFileSize(ServerFile file) {
-		return file.getSize();
-	}
+    private long getFileSize(ServerFile file) {
+        return file.getSize();
+    }
 
-	private Date getLastModified(ServerFile file) {
-		return file.getModificationTime();
-	}
+    private Date getLastModified(ServerFile file) {
+        return file.getModificationTime();
+    }
+
+    private void setUpAudioArt(ServerFile serverFile, ImageView fileIconView) {
+        new AlbumArtFetcher(fileIconView, serverClient.getFileUri(serverShare, serverFile), applicationContext).execute();
+    }
 }

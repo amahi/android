@@ -38,14 +38,17 @@ import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.ServerSharesFragment;
 import org.amahi.anywhere.fragment.SettingsFragment;
+import org.amahi.anywhere.fragment.UploadSettingsFragment;
 import org.amahi.anywhere.server.ApiModule;
 import org.amahi.anywhere.service.AudioService;
+import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
 import org.amahi.anywhere.tv.activity.TvPlaybackAudioActivity;
 import org.amahi.anywhere.tv.activity.TvPlaybackVideoActivity;
 import org.amahi.anywhere.tv.fragment.MainTVFragment;
 import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
+import org.amahi.anywhere.util.UploadManager;
 import org.amahi.anywhere.tv.fragment.TvPlaybackAudioFragment;
 import org.amahi.anywhere.tv.fragment.TvPlaybackVideoFragment;
 
@@ -79,11 +82,14 @@ import dagger.Provides;
                 ServerFileImageFragment.class,
                 ServerFileDownloadingFragment.class,
                 SettingsFragment.class,
+                UploadSettingsFragment.class,
                 AudioService.class,
                 VideoService.class,
                 MainTVFragment.class,
                 TVWebViewActivity.class,
                 ServerFileTvFragment.class,
+                UploadService.class,
+                UploadManager.class,
                 TvPlaybackVideoFragment.class,
                 TvPlaybackVideoActivity.class,
                 TvPlaybackAudioActivity.class,

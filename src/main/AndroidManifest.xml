@@ -18,7 +18,6 @@
 -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="org.amahi.anywhere"
     android:installLocation="auto">
 
@@ -48,6 +47,10 @@
     <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
     <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false"/>
+
+    <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
     <uses-feature
@@ -62,6 +65,16 @@
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi"
         android:banner="@drawable/tv_banner">
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="org.amahi.anywhere.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
 
         <activity
             android:name=".tv.activity.MainTVActivity"
@@ -101,8 +114,18 @@
             android:name=".activity.ServerFileVideoActivity"
             android:theme="@style/Theme.Amahi.Fullscreen"/>
         <activity
+            android:name=".activity.ExpandedControlsActivity"
+            android:theme="@style/Theme.CastVideosDark"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".activity.NativeVideoActivity"
-            android:theme="@style/Theme.Amahi.Fullscreen"/>
+            android:theme="@style/Theme.Amahi.Fullscreen"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"/>
         <activity android:name=".activity.ServerFileWebActivity"/>
         <activity
             android:name=".activity.SettingsActivity"
@@ -134,6 +157,7 @@
             </intent-filter>
         </service>
         <service android:name=".service.VideoService"/>
+        <service android:name=".service.UploadService"/>
 
         <receiver android:name=".receiver.AudioReceiver">
             <intent-filter>
@@ -152,6 +176,24 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".receiver.CameraReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <!--<action android:name="com.android.camera.NEW_PICTURE" />-->
+                <action android:name="android.hardware.action.NEW_PICTURE" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".job.PhotosContentJob"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".job.NetConnectivityJob"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <meta-data
             android:name="com.crashlytics.ApiKey"
@@ -178,6 +220,10 @@
 
         <activity android:name=".tv.activity.TvPlaybackAudioActivity"
             android:theme="@style/Theme.Leanback"/>
+
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="org.amahi.anywhere.util.CastOptionsProvider" />
     </application>
 
 </manifest>

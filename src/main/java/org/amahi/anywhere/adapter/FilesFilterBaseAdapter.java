@@ -19,9 +19,11 @@
 
 package org.amahi.anywhere.adapter;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.support.annotation.DrawableRes;
+import android.os.AsyncTask;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +43,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -113,6 +116,11 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
         notifyDataSetChanged();
     }
 
+    public void removeFile(int position) {
+        this.files.remove(position);
+        notifyDataSetChanged();
+    }
+
     @Override
     public Filter getFilter() {
         if (filesFilter == null) {
@@ -170,4 +178,37 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
         return serverClient.getFileUri(serverShare, file);
     }
 
+    class AlbumArtFetcher extends AsyncTask<Void, Void, byte[]> {
+        private final ImageView imageView;
+        private final Uri audioUri;
+        private final Context applicationContext;
+
+        AlbumArtFetcher(ImageView imageView, Uri audioUri, Context applicationContext) {
+            this.imageView = imageView;
+            this.audioUri = audioUri;
+            this.applicationContext = applicationContext;
+        }
+
+        @Override
+        protected byte[] doInBackground(Void... params) {
+            MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
+            audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
+            return extractAlbumArt(audioMetadataRetriever);
+        }
+
+        private byte[] extractAlbumArt(MediaMetadataRetriever audioMetadataRetriever) {
+            return audioMetadataRetriever.getEmbeddedPicture();
+        }
+
+        @Override
+        protected void onPostExecute(byte[] bitmap) {
+            Glide.with(applicationContext)
+                    .load(bitmap)
+                    .asBitmap()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_file_audio)
+                    .into(imageView);
+        }
+    }
 }

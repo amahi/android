@@ -70,9 +70,8 @@ public class Downloader extends BroadcastReceiver {
         
         //code to delete the file if it already exists
         File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)+"/"+downloadName);
-        
         if(file.exists())
-            file.delete();
+                file.delete();
         
         DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri)
                 .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName)

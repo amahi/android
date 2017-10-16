@@ -30,7 +30,6 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -132,9 +131,11 @@ public final class Intents {
                 if (CheckTV.isATV(context)) {
                     return TvPlaybackVideoActivity.class;
                 }
-                if (NativeVideoActivity.supports(fileFormat)) {
-                    return NativeVideoActivity.class;
-                }
+                /*  // Disabled Native Video Player
+                    if (NativeVideoActivity.supports(fileFormat)) {
+                        return NativeVideoActivity.class;
+                    }
+                */
                 return ServerFileVideoActivity.class;
             }
 

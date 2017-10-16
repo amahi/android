@@ -27,6 +27,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import java.io.File;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
@@ -66,6 +67,12 @@ public class Downloader extends BroadcastReceiver {
     }
 
     private void startDownloading(Uri downloadUri, String downloadName) {
+        
+        //code to delete the file if it already exists
+        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)+"/"+downloadName);
+        if(file.exists())
+                file.delete();
+        
         DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri)
                 .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName)
                 .setVisibleInDownloadsUi(false)

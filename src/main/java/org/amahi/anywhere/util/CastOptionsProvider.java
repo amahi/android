@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Cast options provider helper class
  */
-class CastOptionsProvider implements OptionsProvider {
+public class CastOptionsProvider implements OptionsProvider {
 
 	@Override
 	public CastOptions getCastOptions(Context appContext) {

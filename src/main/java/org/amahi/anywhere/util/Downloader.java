@@ -27,6 +27,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
@@ -114,7 +115,13 @@ public class Downloader extends BroadcastReceiver {
             String downloadUri = downloadInformation.getString(
                 downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 
-            BusProvider.getBus().post(new FileDownloadedEvent(Uri.parse(downloadUri)));
+            if (downloadUri.substring(0, 7).matches("file://")) {
+                downloadUri = downloadUri.substring(7);
+            }
+            File file = new File(downloadUri);
+            Uri contentUri = FileProvider.getUriForFile(context, "org.amahi.anywhere.fileprovider", file);
+
+            BusProvider.getBus().post(new FileDownloadedEvent(contentUri));
         } else {
             BusProvider.getBus().post(new FileDownloadFailedEvent());
         }

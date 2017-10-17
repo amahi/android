@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="gone">
@@ -19,7 +18,7 @@
         android:layout_marginTop="30dp"
         android:background="#50000000"
         android:padding="8dp"
-        android:progressDrawable="@drawable/percentage_bar"/>
+        android:progressDrawable="@drawable/percentage_bar" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -30,7 +29,7 @@
         <ImageView
             android:id="@+id/type_icon"
             android:layout_width="30dp"
-            android:layout_height="30dp"/>
+            android:layout_height="30dp" />
 
         <TextView
             android:id="@+id/value_percent"
@@ -41,7 +40,7 @@
             android:layout_toEndOf="@id/type_icon"
             android:layout_toRightOf="@id/type_icon"
             android:textColor="@android:color/white"
-            android:textSize="25sp"/>
+            android:textSize="25sp" />
     </RelativeLayout>
 
 </RelativeLayout>

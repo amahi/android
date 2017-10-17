@@ -54,243 +54,243 @@ import javax.inject.Inject;
  * Settings fragment. Shows application's settings.
  */
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener,
-		SharedPreferences.OnSharedPreferenceChangeListener,
-		AccountManagerCallback<Boolean> {
-	@Inject
-	ServerClient serverClient;
+    SharedPreferences.OnSharedPreferenceChangeListener,
+    AccountManagerCallback<Boolean> {
+    @Inject
+    ServerClient serverClient;
 
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setUpInjections();
-		setUpSettings();
-	}
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setUpInjections();
+        setUpSettings();
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
-	}
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
+    }
 
-	private void setUpTitle() {
-		getActivity().setTitle(R.string.title_settings);
-	}
+    private void setUpTitle() {
+        getActivity().setTitle(R.string.title_settings);
+    }
 
-	private void setUpSettings() {
-		setUpSettingsContent();
-		setUpSettingsSummary();
-		setUpSettingsListeners();
-	}
+    private void setUpSettings() {
+        setUpSettingsContent();
+        setUpSettingsSummary();
+        setUpSettingsListeners();
+    }
 
-	private void setUpSettingsContent() {
-		addPreferencesFromResource(R.xml.settings);
-	}
+    private void setUpSettingsContent() {
+        addPreferencesFromResource(R.xml.settings);
+    }
 
-	private void setUpSettingsSummary() {
-		ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
-		Preference applicationVersion = getPreference(R.string.preference_key_about_version);
-		Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
+    private void setUpSettingsSummary() {
+        ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
+        Preference applicationVersion = getPreference(R.string.preference_key_about_version);
+        Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
-		serverConnection.setSummary(getServerConnectionSummary());
-		applicationVersion.setSummary(getApplicationVersionSummary());
-		autoUpload.setSummary(getAutoUploadSummary());
-	}
+        serverConnection.setSummary(getServerConnectionSummary());
+        applicationVersion.setSummary(getApplicationVersionSummary());
+        autoUpload.setSummary(getAutoUploadSummary());
+    }
 
-	private String getServerConnectionSummary() {
-		ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
+    private String getServerConnectionSummary() {
+        ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
 
-		return String.format("%s", serverConnection.getEntry());
-	}
+        return String.format("%s", serverConnection.getEntry());
+    }
 
-	private Preference getPreference(int id) {
-		return findPreference(getString(id));
-	}
+    private Preference getPreference(int id) {
+        return findPreference(getString(id));
+    }
 
-	private String getApplicationVersionSummary() {
-		return String.format(
-				"Amahi for Android %s\nwww.amahi.org/android",
-				Android.getApplicationVersion());
-	}
+    private String getApplicationVersionSummary() {
+        return String.format(
+            "Amahi for Android %s\nwww.amahi.org/android",
+            Android.getApplicationVersion());
+    }
 
-	private String getAutoUploadSummary() {
-		return isUploadEnabled() ? "Enabled" : "Disabled";
-	}
+    private String getAutoUploadSummary() {
+        return isUploadEnabled() ? "Enabled" : "Disabled";
+    }
 
-	private boolean isUploadEnabled() {
-		PreferenceManager preferenceManager = getPreferenceManager();
-		return preferenceManager.getSharedPreferences()
-				.getBoolean(getString(R.string.preference_key_upload_switch), false);
-	}
+    private boolean isUploadEnabled() {
+        PreferenceManager preferenceManager = getPreferenceManager();
+        return preferenceManager.getSharedPreferences()
+            .getBoolean(getString(R.string.preference_key_upload_switch), false);
+    }
 
-	private void setUpSettingsListeners() {
-		Preference accountSignOut = getPreference(R.string.preference_key_account_sign_out);
-		Preference applicationVersion = getPreference(R.string.preference_key_about_version);
-		Preference applicationFeedback = getPreference(R.string.preference_key_about_feedback);
-		Preference applicationRating = getPreference(R.string.preference_key_about_rating);
-		Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
-		Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
+    private void setUpSettingsListeners() {
+        Preference accountSignOut = getPreference(R.string.preference_key_account_sign_out);
+        Preference applicationVersion = getPreference(R.string.preference_key_about_version);
+        Preference applicationFeedback = getPreference(R.string.preference_key_about_feedback);
+        Preference applicationRating = getPreference(R.string.preference_key_about_rating);
+        Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
+        Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
-		accountSignOut.setOnPreferenceClickListener(this);
-		applicationVersion.setOnPreferenceClickListener(this);
-		applicationFeedback.setOnPreferenceClickListener(this);
-		applicationRating.setOnPreferenceClickListener(this);
-		shareApp.setOnPreferenceClickListener(this);
-		autoUpload.setOnPreferenceClickListener(this);
-	}
+        accountSignOut.setOnPreferenceClickListener(this);
+        applicationVersion.setOnPreferenceClickListener(this);
+        applicationFeedback.setOnPreferenceClickListener(this);
+        applicationRating.setOnPreferenceClickListener(this);
+        shareApp.setOnPreferenceClickListener(this);
+        autoUpload.setOnPreferenceClickListener(this);
+    }
 
-	@Override
-	public boolean onPreferenceClick(Preference preference) {
-		if (preference.getKey().equals(getString(R.string.preference_key_account_sign_out))) {
-			tearDownAccount();
-		} else if (preference.getKey().equals(getString(R.string.preference_key_about_version))) {
-			setUpApplicationVersion();
-		} else if (preference.getKey().equals(getString(R.string.preference_key_about_feedback))) {
-			setUpApplicationFeedback();
-		} else if (preference.getKey().equals(getString(R.string.preference_key_about_rating))) {
-			setUpApplicationRating();
-		} else if (preference.getKey().equals(getString(R.string.preference_key_tell_a_friend))) {
-			sharedIntent();
-		} else if (preference.getKey().equals(getString(R.string.preference_screen_key_upload))) {
-			openUploadSettingsFragment();
-		}
-		return true;
-	}
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        if (preference.getKey().equals(getString(R.string.preference_key_account_sign_out))) {
+            tearDownAccount();
+        } else if (preference.getKey().equals(getString(R.string.preference_key_about_version))) {
+            setUpApplicationVersion();
+        } else if (preference.getKey().equals(getString(R.string.preference_key_about_feedback))) {
+            setUpApplicationFeedback();
+        } else if (preference.getKey().equals(getString(R.string.preference_key_about_rating))) {
+            setUpApplicationRating();
+        } else if (preference.getKey().equals(getString(R.string.preference_key_tell_a_friend))) {
+            sharedIntent();
+        } else if (preference.getKey().equals(getString(R.string.preference_screen_key_upload))) {
+            openUploadSettingsFragment();
+        }
+        return true;
+    }
 
-	private void openUploadSettingsFragment() {
-		BusProvider.getBus().post(new UploadSettingsOpeningEvent());
-	}
+    private void openUploadSettingsFragment() {
+        BusProvider.getBus().post(new UploadSettingsOpeningEvent());
+    }
 
-	private void tearDownAccount() {
-		if (!getAccounts().isEmpty()) {
-			Account account = getAccounts().get(0);
+    private void tearDownAccount() {
+        if (!getAccounts().isEmpty()) {
+            Account account = getAccounts().get(0);
 
-			getAccountManager().removeAccount(account, this, null);
-		} else {
-			tearDownActivity();
-		}
-	}
+            getAccountManager().removeAccount(account, this, null);
+        } else {
+            tearDownActivity();
+        }
+    }
 
-	private List<Account> getAccounts() {
-		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
-	}
+    private List<Account> getAccounts() {
+        return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
+    }
 
-	private AccountManager getAccountManager() {
-		return AccountManager.get(getActivity());
-	}
+    private AccountManager getAccountManager() {
+        return AccountManager.get(getActivity());
+    }
 
-	@Override
-	public void run(AccountManagerFuture<Boolean> accountManagerFuture) {
-		tearDownActivity();
-	}
+    @Override
+    public void run(AccountManagerFuture<Boolean> accountManagerFuture) {
+        tearDownActivity();
+    }
 
-	private void tearDownActivity() {
-		Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
-		Intent myIntent = new Intent(getActivity().getApplicationContext(), NavigationActivity.class);
-		myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		startActivity(myIntent);
-		getActivity().finish();
-	}
+    private void tearDownActivity() {
+        Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
+        Intent myIntent = new Intent(getActivity().getApplicationContext(), NavigationActivity.class);
+        myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(myIntent);
+        getActivity().finish();
+    }
 
-	private void sharedIntent() {
-		Intent sendIntent = new Intent();
-		sendIntent.setAction(Intent.ACTION_SEND);
-		sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
-		sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message));
-		sendIntent.setType("text/plain");
-		startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
-	}
+    private void sharedIntent() {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
+        sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message));
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
+    }
 
-	private void setUpApplicationVersion() {
-		Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent(getActivity());
-		startActivity(intent);
-	}
+    private void setUpApplicationVersion() {
+        Intent intent = Intents.Builder.with(getActivity()).buildVersionIntent(getActivity());
+        startActivity(intent);
+    }
 
-	private void setUpApplicationFeedback() {
-		Intent intent = Intents.Builder.with(getActivity()).buildFeedbackIntent();
-		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-			startActivity(intent);
-		} else {
-			Snackbar.make(getView(), getString(R.string.application_not_found), Snackbar.LENGTH_SHORT).show();
-		}
-	}
+    private void setUpApplicationFeedback() {
+        Intent intent = Intents.Builder.with(getActivity()).buildFeedbackIntent();
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Snackbar.make(getView(), getString(R.string.application_not_found), Snackbar.LENGTH_SHORT).show();
+        }
+    }
 
-	private void setUpApplicationRating() {
-		Intent intent = Intents.Builder.with(getActivity()).buildGooglePlayIntent();
-		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-			startActivity(intent);
-		} else {
-			Snackbar.make(getView(), getString(R.string.application_not_found), Snackbar.LENGTH_SHORT).show();
-		}
-	}
+    private void setUpApplicationRating() {
+        Intent intent = Intents.Builder.with(getActivity()).buildGooglePlayIntent();
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Snackbar.make(getView(), getString(R.string.application_not_found), Snackbar.LENGTH_SHORT).show();
+        }
+    }
 
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(getString(R.string.preference_key_server_connection))) {
-			setUpSettingsSummary();
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.preference_key_server_connection))) {
+            setUpSettingsSummary();
 
-			setUpServerConnection();
-		}
-	}
+            setUpServerConnection();
+        }
+    }
 
-	private void setUpServerConnection() {
-		if (!serverClient.isConnected()) {
-			return;
-		}
+    private void setUpServerConnection() {
+        if (!serverClient.isConnected()) {
+            return;
+        }
 
-		switch (getServerConnection()) {
-			case AUTO:
-				serverClient.connectAuto();
-				break;
+        switch (getServerConnection()) {
+            case AUTO:
+                serverClient.connectAuto();
+                break;
 
-			case LOCAL:
-				serverClient.connectLocal();
-				break;
+            case LOCAL:
+                serverClient.connectLocal();
+                break;
 
-			case REMOTE:
-				serverClient.connectRemote();
-				break;
+            case REMOTE:
+                serverClient.connectRemote();
+                break;
 
-			default:
-				break;
-		}
-	}
+            default:
+                break;
+        }
+    }
 
-	private ApiConnection getServerConnection() {
-		ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
+    private ApiConnection getServerConnection() {
+        ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
 
-		if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_auto))) {
-			return ApiConnection.AUTO;
-		}
+        if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_auto))) {
+            return ApiConnection.AUTO;
+        }
 
-		if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_local))) {
-			return ApiConnection.LOCAL;
-		}
+        if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_local))) {
+            return ApiConnection.LOCAL;
+        }
 
-		if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_remote))) {
-			return ApiConnection.REMOTE;
-		}
+        if (serverConnection.getValue().equals(getString(R.string.preference_key_server_connection_remote))) {
+            return ApiConnection.REMOTE;
+        }
 
-		return ApiConnection.AUTO;
-	}
+        return ApiConnection.AUTO;
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		setUpSettingsPreferenceListener();
-		setUpTitle();
-	}
+        setUpSettingsPreferenceListener();
+        setUpTitle();
+    }
 
-	private void setUpSettingsPreferenceListener() {
-		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-	}
+    private void setUpSettingsPreferenceListener() {
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
+    @Override
+    public void onPause() {
+        super.onPause();
 
-		tearDownSettingsPreferenceListener();
-	}
+        tearDownSettingsPreferenceListener();
+    }
 
-	private void tearDownSettingsPreferenceListener() {
-		getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	}
+    private void tearDownSettingsPreferenceListener() {
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
 }

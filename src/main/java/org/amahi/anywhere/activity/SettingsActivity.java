@@ -38,60 +38,60 @@ import org.amahi.anywhere.fragment.UploadSettingsFragment;
  * Settings itself are provided via {@link org.amahi.anywhere.fragment.SettingsFragment}.
  */
 public class SettingsActivity extends AppCompatActivity {
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		setUpHomeNavigation();
+        setUpHomeNavigation();
 
-		setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_settings);
 
-		setUpSettingsFragment();
-	}
+        setUpSettingsFragment();
+    }
 
-	private void setUpHomeNavigation() {
-		getSupportActionBar().setHomeButtonEnabled(true);
-		getSupportActionBar().setIcon(R.drawable.ic_launcher);
-	}
+    private void setUpHomeNavigation() {
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+    }
 
-	private void setUpSettingsFragment() {
-		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-				.replace(R.id.settings_container, new SettingsFragment()).commit();
-	}
+    private void setUpSettingsFragment() {
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            .replace(R.id.settings_container, new SettingsFragment()).commit();
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		switch (menuItem.getItemId()) {
-			case android.R.id.home:
-				onBackPressed();
-				return true;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
 
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
-	}
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
 
-	@Subscribe
-	public void onUploadSettingsOpenEvent(UploadSettingsOpeningEvent event) {
-		getFragmentManager().beginTransaction()
-				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-				.replace(R.id.settings_container, new UploadSettingsFragment())
-				.addToBackStack(null)
-				.commit();
-	}
+    @Subscribe
+    public void onUploadSettingsOpenEvent(UploadSettingsOpeningEvent event) {
+        getFragmentManager().beginTransaction()
+            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            .replace(R.id.settings_container, new UploadSettingsFragment())
+            .addToBackStack(null)
+            .commit();
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		BusProvider.getBus().register(this);
-	}
+        BusProvider.getBus().register(this);
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+    @Override
+    protected void onPause() {
+        super.onPause();
 
-		BusProvider.getBus().unregister(this);
-	}
+        BusProvider.getBus().unregister(this);
+    }
 }

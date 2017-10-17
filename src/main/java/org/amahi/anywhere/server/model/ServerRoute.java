@@ -24,27 +24,26 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Server route API resource.
  */
-public class ServerRoute
-{
-	@SerializedName("local_addr")
-	private String localAddress;
+public class ServerRoute {
+    @SerializedName("local_addr")
+    private String localAddress;
 
-	@SerializedName("relay_addr")
-	private String remoteAddress;
+    @SerializedName("relay_addr")
+    private String remoteAddress;
 
-	public String getLocalAddress() {
-		return localAddress;
-	}
+    public String getLocalAddress() {
+        return localAddress;
+    }
 
-	public String getRemoteAddress() {
-		return remoteAddress;
-	}
+    public void setLocalAddress(String localAddress) {
+        this.localAddress = localAddress;
+    }
 
-	public void setLocalAddress(String localAddress) {
-		this.localAddress = localAddress;
-	}
+    public String getRemoteAddress() {
+        return remoteAddress;
+    }
 
-	public void setRemoteAddress(String remoteAddress) {
-		this.remoteAddress = remoteAddress;
-	}
+    public void setRemoteAddress(String remoteAddress) {
+        this.remoteAddress = remoteAddress;
+    }
 }

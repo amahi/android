@@ -44,45 +44,44 @@ import static org.amahi.anywhere.util.Android.loadServersFromAsset;
  * Servers response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
  * as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class ServersResponse implements Callback<List<Server>>
-{
-	private Context context;
+public class ServersResponse implements Callback<List<Server>> {
+    private Context context;
 
-	public ServersResponse(Context context) {
-		this.context = context;
-	}
+    public ServersResponse(Context context) {
+        this.context = context;
+    }
 
-	private List<Server> getLocalServers() {
-		List<Server> servers = new ArrayList<>();
-		try {
-			JSONArray jsonArray = new JSONArray(loadServersFromAsset(context));
-			for (int i = 0; i < jsonArray.length(); i++) {
-				JSONObject jsonObject = jsonArray.getJSONObject(i);
-				Server server = new Server(i, jsonObject.getString("name"),
-						jsonObject.getString("session_token"));
-				servers.add(server);
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return servers;
-	}
+    private List<Server> getLocalServers() {
+        List<Server> servers = new ArrayList<>();
+        try {
+            JSONArray jsonArray = new JSONArray(loadServersFromAsset(context));
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Server server = new Server(i, jsonObject.getString("name"),
+                    jsonObject.getString("session_token"));
+                servers.add(server);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return servers;
+    }
 
 
-	@Override
-	public void onResponse(Call<List<Server>> call, Response<List<Server>> response) {
-		if (response.isSuccessful()) {
-			List<Server> servers = response.body();
-			if (BuildConfig.DEBUG) {
-				servers.addAll(getLocalServers());
-			}
-			BusProvider.getBus().post(new ServersLoadedEvent(servers));
-		} else
-			this.onFailure(call, new HttpException(response));
-	}
+    @Override
+    public void onResponse(Call<List<Server>> call, Response<List<Server>> response) {
+        if (response.isSuccessful()) {
+            List<Server> servers = response.body();
+            if (BuildConfig.DEBUG) {
+                servers.addAll(getLocalServers());
+            }
+            BusProvider.getBus().post(new ServersLoadedEvent(servers));
+        } else
+            this.onFailure(call, new HttpException(response));
+    }
 
-	@Override
-	public void onFailure(Call<List<Server>> call, Throwable t) {
-		BusProvider.getBus().post(new ServersLoadFailedEvent());
-	}
+    @Override
+    public void onFailure(Call<List<Server>> call, Throwable t) {
+        BusProvider.getBus().post(new ServersLoadFailedEvent());
+    }
 }

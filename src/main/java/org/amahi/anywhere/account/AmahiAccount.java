@@ -24,13 +24,12 @@ import android.accounts.Account;
 /**
  * Amahi account declaration.
  */
-public class AmahiAccount extends Account
-{
-	public static final String TYPE = "org.amahi";
+public class AmahiAccount extends Account {
+    public static final String TYPE = "org.amahi";
 
-	public static final String TYPE_TOKEN = String.format("%s.FULL", TYPE);
+    public static final String TYPE_TOKEN = String.format("%s.FULL", TYPE);
 
-	public AmahiAccount(String name) {
-		super(name, TYPE);
-	}
+    public AmahiAccount(String name) {
+        super(name, TYPE);
+    }
 }

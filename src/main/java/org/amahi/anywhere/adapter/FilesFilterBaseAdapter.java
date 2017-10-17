@@ -54,27 +54,19 @@ import java.util.List;
 public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filterable {
 
 
+    static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
+    static String queryString;
     LayoutInflater layoutInflater;
     ServerClient serverClient;
-
     ServerShare serverShare;
-
     List<ServerFile> files;
     List<ServerFile> filteredFiles;
-
-    static String queryString;
-    static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
-
     private FilesFilter filesFilter;
     private onFilterListChange onFilterListChange;
 
     abstract void bindView(ServerFile file, View view);
 
     abstract View newView(ViewGroup container);
-
-    public interface onFilterListChange {
-        void isListEmpty(boolean empty);
-    }
 
     public <T extends onFilterListChange> void setFilterListChangeListener(T t) {
         this.onFilterListChange = t;
@@ -133,6 +125,23 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
         return files;
     }
 
+    void setUpImageIcon(ServerFile file, ImageView fileIconView) {
+        Glide.with(fileIconView.getContext())
+            .load(getImageUri(file))
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+            .placeholder(Mimes.getFileIcon(file))
+            .into(fileIconView);
+    }
+
+    private Uri getImageUri(ServerFile file) {
+        return serverClient.getFileUri(serverShare, file);
+    }
+
+    public interface onFilterListChange {
+        void isListEmpty(boolean empty);
+    }
+
     private class FilesFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
@@ -165,19 +174,6 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
         }
     }
 
-    void setUpImageIcon(ServerFile file, ImageView fileIconView) {
-        Glide.with(fileIconView.getContext())
-                .load(getImageUri(file))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
-                .placeholder(Mimes.getFileIcon(file))
-                .into(fileIconView);
-    }
-
-    private Uri getImageUri(ServerFile file) {
-        return serverClient.getFileUri(serverShare, file);
-    }
-
     class AlbumArtFetcher extends AsyncTask<Void, Void, byte[]> {
         private final ImageView imageView;
         private final Uri audioUri;
@@ -203,12 +199,12 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
         @Override
         protected void onPostExecute(byte[] bitmap) {
             Glide.with(applicationContext)
-                    .load(bitmap)
-                    .asBitmap()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_file_audio)
-                    .into(imageView);
+                .load(bitmap)
+                .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
+                .placeholder(R.drawable.ic_file_audio)
+                .into(imageView);
         }
     }
 }

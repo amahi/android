@@ -70,7 +70,7 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
         return serverFile;
     }
 
-	public long getDuration() {
-		return duration;
-	}
+    public long getDuration() {
+        return duration;
+    }
 }

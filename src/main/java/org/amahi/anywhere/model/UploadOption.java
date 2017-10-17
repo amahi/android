@@ -27,34 +27,32 @@ import org.amahi.anywhere.fragment.UploadBottomSheet;
  * Upload option model for display in {@link UploadBottomSheet}
  */
 public class UploadOption {
-	public static final int CAMERA = 1;
-	public static final int FILE = 2;
+    public static final int CAMERA = 1;
+    public static final int FILE = 2;
+    @Types
+    private int type;
+    private String name;
+    private int icon;
+    public UploadOption(@Types int type, String name, int icon) {
+        this.name = name;
+        this.icon = icon;
+        this.type = type;
+    }
 
-	@IntDef({CAMERA, FILE})
-	public @interface Types {
-	}
+    @Types
+    public int getType() {
+        return type;
+    }
 
-	@Types
-	private int type;
-	private String name;
-	private int icon;
+    public String getName() {
+        return name;
+    }
 
-	public UploadOption(@Types int type, String name, int icon) {
-		this.name = name;
-		this.icon = icon;
-		this.type = type;
-	}
+    public int getIcon() {
+        return icon;
+    }
 
-	@Types
-	public int getType() {
-		return type;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public int getIcon() {
-		return icon;
-	}
+    @IntDef({CAMERA, FILE})
+    public @interface Types {
+    }
 }

@@ -58,9 +58,9 @@ public class ThemeFragment extends GuidedStepFragment {
     @Override
     public GuidanceStylist.Guidance onCreateGuidance(Bundle savedInstanceState) {
         return new GuidanceStylist.Guidance(getString(R.string.pref_title_select_theme),
-                getString(R.string.pref_theme_desc),
-                "",
-                ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo_shadowless));
+            getString(R.string.pref_theme_desc),
+            "",
+            ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo_shadowless));
     }
 
     @Override
@@ -89,12 +89,12 @@ public class ThemeFragment extends GuidedStepFragment {
         String desc = getString(R.string.pref_theme_detail_desc);
 
         actions.add(new GuidedAction.Builder(mContext)
-                .title(title)
-                .description(desc)
-                .multilineDescription(true)
-                .infoOnly(true)
-                .enabled(false)
-                .build());
+            .title(title)
+            .description(desc)
+            .multilineDescription(true)
+            .infoOnly(true)
+            .enabled(false)
+            .build());
 
     }
 
@@ -128,15 +128,15 @@ public class ThemeFragment extends GuidedStepFragment {
         for (int i = 0; i < OPTION_NAMES.size(); i++) {
             addCheckedAction(actions,
 
-                    R.drawable.ic_app_logo,
+                R.drawable.ic_app_logo,
 
-                    getActivity(),
+                getActivity(),
 
-                    OPTION_NAMES.get(i),
+                OPTION_NAMES.get(i),
 
-                    OPTION_DESCRIPTIONS.get(i),
+                OPTION_DESCRIPTIONS.get(i),
 
-                    OPTION_CHECKED.get(i));
+                OPTION_CHECKED.get(i));
         }
     }
 
@@ -144,11 +144,11 @@ public class ThemeFragment extends GuidedStepFragment {
                                   String title, String desc, boolean checked) {
 
         GuidedAction guidedAction = new GuidedAction.Builder(context)
-                .title(title)
-                .description(desc)
-                .checkSetId(OPTION_CHECK_SET_ID)
-                .icon(iconResId)
-                .build();
+            .title(title)
+            .description(desc)
+            .checkSetId(OPTION_CHECK_SET_ID)
+            .icon(iconResId)
+            .build();
 
         guidedAction.setChecked(checked);
 
@@ -161,10 +161,10 @@ public class ThemeFragment extends GuidedStepFragment {
 
     private void addAction(List<GuidedAction> actions, long id, String title, String desc) {
         actions.add(new GuidedAction.Builder(mContext)
-                .id(id)
-                .title(title)
-                .description(desc)
-                .build());
+            .id(id)
+            .title(title)
+            .description(desc)
+            .build());
     }
 
     @Override

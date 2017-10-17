@@ -43,35 +43,35 @@ import retrofit2.http.Query;
 public interface ServerApi {
     @GET("/shares")
     Call<List<ServerShare>> getShares(
-            @Header("Session") String session);
+        @Header("Session") String session);
 
     @GET("/files")
     Call<List<ServerFile>> getFiles(
-            @Header("Session") String session,
-            @Query("s") String share,
-            @Query("p") String path);
+        @Header("Session") String session,
+        @Query("s") String share,
+        @Query("p") String path);
 
     @DELETE("/files")
     Call<Void> deleteFile(
-            @Header("Session") String session,
-            @Query("s") String share,
-            @Query("p") String path);
+        @Header("Session") String session,
+        @Query("s") String share,
+        @Query("p") String path);
 
     @Multipart
     @POST("/files")
     Call<ResponseBody> uploadFile(
-            @Header("Session") String session,
-            @Query("s") String share,
-            @Query("p") String path,
-            @Part MultipartBody.Part file);
+        @Header("Session") String session,
+        @Query("s") String share,
+        @Query("p") String path,
+        @Part MultipartBody.Part file);
 
     @GET("/md")
     Call<ServerFileMetadata> getFileMetadata(
-            @Header("Session") String session,
-            @Query("f") String fileName,
-            @Query("h") String hint);
+        @Header("Session") String session,
+        @Query("f") String fileName,
+        @Query("h") String hint);
 
     @GET("/apps")
     Call<List<ServerApp>> getApps(
-            @Header("Session") String session);
+        @Header("Session") String session);
 }

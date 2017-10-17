@@ -80,453 +80,451 @@ import javax.inject.Inject;
  * Navigation fragments. Shows main application sections and servers list as well.
  */
 public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
-	OnAccountsUpdateListener,
-	AdapterView.OnItemSelectedListener,
-	SwipeRefreshLayout.OnRefreshListener
-{
-	private static final class State
-	{
-		private State() {
-		}
+    OnAccountsUpdateListener,
+    AdapterView.OnItemSelectedListener,
+    SwipeRefreshLayout.OnRefreshListener {
+    @Inject
+    AmahiClient amahiClient;
+    @Inject
+    ServerClient serverClient;
+    private Intent tvIntent;
 
-		public static final String SERVERS = "servers";
-	}
+    @Override
+    public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
+        return layoutInflater.inflate(R.layout.fragment_navigation, container, false);
+    }
 
-	@Inject
-	AmahiClient amahiClient;
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-	@Inject
-	ServerClient serverClient;
+        launchIntro();
 
-	private Intent tvIntent;
+        setUpInjections();
 
-	@Override
-	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-		return layoutInflater.inflate(R.layout.fragment_navigation, container, false);
-	}
+        setUpSettingsMenu();
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+        setUpAuthenticationListener();
 
-		launchIntro();
+        setUpContentRefreshing();
 
-		setUpInjections();
+        setUpServers(savedInstanceState);
+    }
 
-		setUpSettingsMenu();
+    private void launchIntro() {
+        if (Preferences.getFirstRun(getContext()) && !CheckTV.isATV(getContext())) {
+            Preferences.setFirstRun(getContext());
+            startActivity(new Intent(getContext(), IntroductionActivity.class));
+        }
+    }
 
-		setUpAuthenticationListener();
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
+    }
 
-		setUpContentRefreshing();
+    private void setUpSettingsMenu() {
+        setHasOptionsMenu(true);
+    }
 
-		setUpServers(savedInstanceState);
-	}
+    private void setUpAuthenticationListener() {
+        getAccountManager().addOnAccountsUpdatedListener(this, null, false);
+    }
 
-	private void launchIntro(){
-		if(Preferences.getFirstRun(getContext()) && !CheckTV.isATV(getContext())){
-			Preferences.setFirstRun(getContext());
-			startActivity(new Intent(getContext(), IntroductionActivity.class));
-		}
-	}
+    private AccountManager getAccountManager() {
+        return AccountManager.get(getActivity());
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
-	}
+    @Override
+    public void onAccountsUpdated(Account[] accounts) {
+        if (isVisible()) {
+            return;
+        }
 
-	private void setUpSettingsMenu() {
-		setHasOptionsMenu(true);
-	}
+        if (getAccounts().isEmpty()) {
+            setUpAccount();
+        }
+    }
 
-	private void setUpAuthenticationListener() {
-		getAccountManager().addOnAccountsUpdatedListener(this, null, false);
-	}
+    private void setUpContentRefreshing() {
+        SwipeRefreshLayout refreshLayout = getRefreshLayout();
 
-	private AccountManager getAccountManager() {
-		return AccountManager.get(getActivity());
-	}
+        refreshLayout.setColorSchemeResources(
+            android.R.color.holo_blue_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_green_light,
+            android.R.color.holo_red_light);
 
-	@Override
-	public void onAccountsUpdated(Account[] accounts) {
-		if (isVisible()) {
-			return;
-		}
+        refreshLayout.setOnRefreshListener(this);
+    }
 
-		if (getAccounts().isEmpty()) {
-			setUpAccount();
-		}
-	}
+    @Override
+    public void onRefresh() {
+        ViewDirector.of(this, R.id.animator_content).show(R.id.empty_view);
+        setUpServers(new Bundle());
+    }
 
-	private void setUpContentRefreshing() {
-		SwipeRefreshLayout refreshLayout = getRefreshLayout();
+    private List<Account> getAccounts() {
+        return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
+    }
 
-		refreshLayout.setColorSchemeResources(
-				android.R.color.holo_blue_light,
-				android.R.color.holo_orange_light,
-				android.R.color.holo_green_light,
-				android.R.color.holo_red_light);
+    private void setUpAccount() {
+        getAccountManager().addAccount(AmahiAccount.TYPE, AmahiAccount.TYPE_TOKEN, null, null, getActivity(), this, null);
+    }
 
-		refreshLayout.setOnRefreshListener(this);
-	}
+    private void setUpAuthenticationToken() {
+        Account account = getAccounts().get(0);
 
-	@Override
-	public void onRefresh() {
-		ViewDirector.of(this, R.id.animator_content).show(R.id.empty_view);
-		setUpServers(new Bundle());
-	}
+        getAccountManager().getAuthToken(account, AmahiAccount.TYPE, null, getActivity(), this, null);
+    }
 
-	private List<Account> getAccounts() {
-		return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
-	}
+    @Override
+    public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
+        try {
+            Bundle accountManagerResult = accountManagerFuture.getResult();
 
-	private void setUpAccount() {
-		getAccountManager().addAccount(AmahiAccount.TYPE, AmahiAccount.TYPE_TOKEN, null, null, getActivity(), this, null);
-	}
+            String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
 
-	private void setUpAuthenticationToken() {
-		Account account = getAccounts().get(0);
+            if (authenticationToken != null) {
+                setUpServers(authenticationToken);
+            } else {
+                setUpAuthenticationToken();
+            }
+        } catch (OperationCanceledException e) {
+            tearDownActivity();
+        } catch (IOException | AuthenticatorException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-		getAccountManager().getAuthToken(account, AmahiAccount.TYPE, null, getActivity(), this, null);
-	}
+    private void tearDownActivity() {
+        getActivity().finish();
+    }
 
-	@Override
-	public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
-		try {
-			Bundle accountManagerResult = accountManagerFuture.getResult();
+    private void setUpServers(Bundle state) {
+        getRefreshLayout().setRefreshing(true);
+        setUpServersAdapter();
+        setUpServersContent(state);
+        setUpServersListener();
+    }
 
-			String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
+    private void setUpServersAdapter() {
+        if (!areServersLoaded())
+            getServersSpinner().setAdapter(new ServersAdapter(getActivity()));
+    }
 
-			if (authenticationToken != null) {
-				setUpServers(authenticationToken);
-			} else {
-				setUpAuthenticationToken();
-			}
-		} catch (OperationCanceledException e) {
-			tearDownActivity();
-		} catch (IOException | AuthenticatorException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private Spinner getServersSpinner() {
+        return (Spinner) getView().findViewById(R.id.spinner_servers);
+    }
 
-	private void tearDownActivity() {
-		getActivity().finish();
-	}
+    private void setUpServersContent(Bundle state) {
+        if (isServersStateValid(state)) {
+            setUpServersState(state);
+            setUpNavigation();
+        } else {
+            setUpAuthentication();
+        }
+    }
 
-	private void setUpServers(Bundle state) {
-		getRefreshLayout().setRefreshing(true);
-		setUpServersAdapter();
-		setUpServersContent(state);
-		setUpServersListener();
-	}
+    private boolean isServersStateValid(Bundle state) {
+        return (state != null) && state.containsKey(State.SERVERS);
+    }
 
-	private void setUpServersAdapter() {
-		if (!areServersLoaded())
-			getServersSpinner().setAdapter(new ServersAdapter(getActivity()));
-	}
+    private void setUpServersState(Bundle state) {
+        List<Server> servers = state.getParcelableArrayList(State.SERVERS);
 
-	private Spinner getServersSpinner() {
-		return (Spinner) getView().findViewById(R.id.spinner_servers);
-	}
+        setUpServersContent(servers);
 
-	private void setUpServersContent(Bundle state) {
-		if (isServersStateValid(state)) {
-			setUpServersState(state);
-			setUpNavigation();
-		} else {
-			setUpAuthentication();
-		}
-	}
+        showContent();
+    }
 
-	private boolean isServersStateValid(Bundle state) {
-		return (state != null) && state.containsKey(State.SERVERS);
-	}
-
-	private void setUpServersState(Bundle state) {
-		List<Server> servers = state.getParcelableArrayList(State.SERVERS);
-
-		setUpServersContent(servers);
-
-		showContent();
-	}
-
-	private void setUpServersContent(List<Server> servers) {
-		if (!CheckTV.isATV(getContext()))
-			getServersAdapter().replaceWith(filterActiveServers(servers));
-		else {
-			List<Server> serverList = filterActiveServers(servers);
-			String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), servers.get(0).getName());
+    private void setUpServersContent(List<Server> servers) {
+        if (!CheckTV.isATV(getContext()))
+            getServersAdapter().replaceWith(filterActiveServers(servers));
+        else {
+            List<Server> serverList = filterActiveServers(servers);
+            String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), servers.get(0).getName());
 
             if (serverList.get(0).getName().matches(serverName))
-				getServersAdapter().replaceWith(serverList);
+                getServersAdapter().replaceWith(serverList);
 
             else {
-				int index = findTheServer(serverList);
-				getServersAdapter().replaceWith(swappedServers(index,serverList));
-			}
-		}
-	}
+                int index = findTheServer(serverList);
+                getServersAdapter().replaceWith(swappedServers(index, serverList));
+            }
+        }
+    }
 
-	private int findTheServer(List<Server> serverList) {
-		String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), serverList.get(0).getName());
-		int i;
-		for (i = 0; i < serverList.size(); i++) {
-			if (serverName.matches(serverList.get(i).getName()))
-				return i;
-		}
-		return 0;
-	}
+    private int findTheServer(List<Server> serverList) {
+        String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), serverList.get(0).getName());
+        int i;
+        for (i = 0; i < serverList.size(); i++) {
+            if (serverName.matches(serverList.get(i).getName()))
+                return i;
+        }
+        return 0;
+    }
 
-	private List<Server> swappedServers(int index, List<Server> serverList){
-		Server firstServer = serverList.get(0);
-		serverList.set(0, serverList.get(index));
-		serverList.set(index, firstServer);
-		return serverList;
-	}
+    private List<Server> swappedServers(int index, List<Server> serverList) {
+        Server firstServer = serverList.get(0);
+        serverList.set(0, serverList.get(index));
+        serverList.set(index, firstServer);
+        return serverList;
+    }
 
-	private ServersAdapter getServersAdapter() {
-		return (ServersAdapter) getServersSpinner().getAdapter();
-	}
+    private ServersAdapter getServersAdapter() {
+        return (ServersAdapter) getServersSpinner().getAdapter();
+    }
 
-	private List<Server> filterActiveServers(List<Server> servers) {
-		List<Server> activeServers = new ArrayList<Server>();
+    private List<Server> filterActiveServers(List<Server> servers) {
+        List<Server> activeServers = new ArrayList<Server>();
 
-		for (Server server : servers) {
-			if (server.isActive()) {
-				activeServers.add(server);
-			}
-		}
+        for (Server server : servers) {
+            if (server.isActive()) {
+                activeServers.add(server);
+            }
+        }
 
-		return activeServers;
-	}
+        return activeServers;
+    }
 
-	private void showContent() {
-		getRefreshLayout().setRefreshing(false);
-		ViewDirector.of(this, R.id.animator_content).show(R.id.layout_content);
-	}
+    private void showContent() {
+        getRefreshLayout().setRefreshing(false);
+        ViewDirector.of(this, R.id.animator_content).show(R.id.layout_content);
+    }
 
-	private void setUpAuthentication() {
-		if (getAccounts().isEmpty()) {
-			setUpAccount();
-		} else {
-			setUpAuthenticationToken();
-		}
-	}
+    private void setUpAuthentication() {
+        if (getAccounts().isEmpty()) {
+            setUpAccount();
+        } else {
+            setUpAuthenticationToken();
+        }
+    }
 
-	private void setUpServers(String authenticationToken) {
-		setUpServersAdapter();
-		setUpServersContent(authenticationToken);
-		setUpServersListener();
-	}
+    private void setUpServers(String authenticationToken) {
+        setUpServersAdapter();
+        setUpServersContent(authenticationToken);
+        setUpServersListener();
+    }
 
-	private void setUpServersContent(String authenticationToken) {
-		amahiClient.getServers(getContext(), authenticationToken);
-	}
+    private void setUpServersContent(String authenticationToken) {
+        amahiClient.getServers(getContext(), authenticationToken);
+    }
 
-	@Subscribe
-	public void onServersLoaded(ServersLoadedEvent event) {
-		setUpServersContent(event.getServers());
+    @Subscribe
+    public void onServersLoaded(ServersLoadedEvent event) {
+        setUpServersContent(event.getServers());
 
-		setUpNavigation();
+        setUpNavigation();
 
-		showContent();
+        showContent();
 
-		tvIntent = new Intent(getContext(), MainTVActivity.class);
+        tvIntent = new Intent(getContext(), MainTVActivity.class);
 
-		tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers), new ArrayList<>(filterActiveServers(event.getServers())));
-	}
+        tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers), new ArrayList<>(filterActiveServers(event.getServers())));
+    }
 
-	private SwipeRefreshLayout getRefreshLayout() {
-		return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
-	}
+    private SwipeRefreshLayout getRefreshLayout() {
+        return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
+    }
 
-	private void setUpNavigation() {
-		setUpNavigationAdapter();
-		setUpNavigationListener();
-	}
+    private void setUpNavigation() {
+        setUpNavigationAdapter();
+        setUpNavigationListener();
+    }
 
-	private void setUpNavigationAdapter() {
-		//Setting the layout of a vertical list dynamically.
-		getNavigationListView().setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+    private void setUpNavigationAdapter() {
+        //Setting the layout of a vertical list dynamically.
+        getNavigationListView().setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
-		if (!serverClient.isConnected()) {
-			getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(getActivity()));
-			return;
-		}
+        if (!serverClient.isConnected()) {
+            getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(getActivity()));
+            return;
+        }
 
-		if (serverClient.isConnectedLocal()) {
-			getNavigationListView().setAdapter(NavigationDrawerAdapter.newLocalAdapter(getActivity()));
-		} else {
-			getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(getActivity()));
-		}
-	}
+        if (serverClient.isConnectedLocal()) {
+            getNavigationListView().setAdapter(NavigationDrawerAdapter.newLocalAdapter(getActivity()));
+        } else {
+            getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(getActivity()));
+        }
+    }
 
-	private RecyclerView getNavigationListView() {
-		return (RecyclerView) getView().findViewById(R.id.list_navigation);
-	}
+    private RecyclerView getNavigationListView() {
+        return (RecyclerView) getView().findViewById(R.id.list_navigation);
+    }
 
-	private void setUpNavigationListener() {
-		getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
-			@Override
-			public void onItemClick(View view, int position) {
-				view.setActivated(true);
-				switch (position) {
-					case NavigationDrawerAdapter.NavigationItems.SHARES:
-						BusProvider.getBus().post(new SharesSelectedEvent());
-						break;
+    private void setUpNavigationListener() {
+        getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                view.setActivated(true);
+                switch (position) {
+                    case NavigationDrawerAdapter.NavigationItems.SHARES:
+                        BusProvider.getBus().post(new SharesSelectedEvent());
+                        break;
 
-					case NavigationDrawerAdapter.NavigationItems.APPS:
-						BusProvider.getBus().post(new AppsSelectedEvent());
-						break;
+                    case NavigationDrawerAdapter.NavigationItems.APPS:
+                        BusProvider.getBus().post(new AppsSelectedEvent());
+                        break;
 
-					default:
-						break;
-				}
-			}
-		}));
-	}
+                    default:
+                        break;
+                }
+            }
+        }));
+    }
 
-	@Subscribe
-	public void onServersLoadFailed(ServersLoadFailedEvent event) {
-		showError();
-	}
+    @Subscribe
+    public void onServersLoadFailed(ServersLoadFailedEvent event) {
+        showError();
+    }
 
-	private void showError() {
-		getRefreshLayout().setRefreshing(false);
-		ViewDirector.of(this, R.id.animator_content).show(R.id.layout_error);
-	}
+    private void showError() {
+        getRefreshLayout().setRefreshing(false);
+        ViewDirector.of(this, R.id.animator_content).show(R.id.layout_error);
+    }
 
-	private void setUpServersListener() {
-		getServersSpinner().setOnItemSelectedListener(this);
-	}
+    private void setUpServersListener() {
+        getServersSpinner().setOnItemSelectedListener(this);
+    }
 
-	@Override
-	public void onNothingSelected(AdapterView<?> spinnerView) {
-	}
+    @Override
+    public void onNothingSelected(AdapterView<?> spinnerView) {
+    }
 
-	@Override
-	public void onItemSelected(AdapterView<?> spinnerView, View view, int position, long id) {
-		Server server = getServersAdapter().getItem(position);
+    @Override
+    public void onItemSelected(AdapterView<?> spinnerView, View view, int position, long id) {
+        Server server = getServersAdapter().getItem(position);
 
-		setUpServerConnection(server);
-	}
+        setUpServerConnection(server);
+    }
 
-	private void setUpServerConnection(Server server) {
-		if (serverClient.isConnected(server)) {
-			setUpServerConnection();
-			setUpServerNavigation();
-		} else {
-			serverClient.connect(getContext(), server);
-		}
-	}
+    private void setUpServerConnection(Server server) {
+        if (serverClient.isConnected(server)) {
+            setUpServerConnection();
+            setUpServerNavigation();
+        } else {
+            serverClient.connect(getContext(), server);
+        }
+    }
 
-	@Subscribe
-	public void onServerConnected(ServerConnectedEvent event) {
-		setUpServerConnection();
-		setUpServerNavigation();
-		if (CheckTV.isATV(getContext())) launchTV();
-	}
+    @Subscribe
+    public void onServerConnected(ServerConnectedEvent event) {
+        setUpServerConnection();
+        setUpServerNavigation();
+        if (CheckTV.isATV(getContext())) launchTV();
+    }
 
-	private void setUpServerConnection() {
-		if (!isConnectionAvailable() || isConnectionAuto()) {
-			serverClient.connectAuto();
-			return;
-		}
+    private void setUpServerConnection() {
+        if (!isConnectionAvailable() || isConnectionAuto()) {
+            serverClient.connectAuto();
+            return;
+        }
 
-		if (isConnectionLocal()) {
-			serverClient.connectLocal();
-		} else {
-			serverClient.connectRemote();
-		}
-	}
+        if (isConnectionLocal()) {
+            serverClient.connectLocal();
+        } else {
+            serverClient.connectRemote();
+        }
+    }
 
-	private void launchTV(){startActivity(tvIntent);}
+    private void launchTV() {
+        startActivity(tvIntent);
+    }
 
-	private boolean isConnectionAvailable() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+    private boolean isConnectionAvailable() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		return preferences.contains(getString(R.string.preference_key_server_connection));
-	}
+        return preferences.contains(getString(R.string.preference_key_server_connection));
+    }
 
-	private boolean isConnectionAuto() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+    private boolean isConnectionAuto() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
-		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_auto));
-	}
+        return preferenceConnection.equals(getString(R.string.preference_key_server_connection_auto));
+    }
 
-	private boolean isConnectionLocal() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+    private boolean isConnectionLocal() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
-		return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
-	}
+        return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+    }
 
-	private void setUpServerNavigation() {
-		setUpNavigationAdapter();
-	}
+    private void setUpServerNavigation() {
+        setUpNavigationAdapter();
+    }
 
-	@Subscribe
-	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
-		setUpServerNavigation();
-	}
+    @Subscribe
+    public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        setUpServerNavigation();
+    }
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-		super.onCreateOptionsMenu(menu, menuInflater);
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater);
 
-		menuInflater.inflate(R.menu.action_bar_navigation, menu);
-	}
+        menuInflater.inflate(R.menu.action_bar_navigation, menu);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		switch (menuItem.getItemId()) {
-			case R.id.menu_settings:
-				BusProvider.getBus().post(new SettingsSelectedEvent());
-				return true;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.menu_settings:
+                BusProvider.getBus().post(new SettingsSelectedEvent());
+                return true;
 
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
-	}
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		BusProvider.getBus().register(this);
-	}
+        BusProvider.getBus().register(this);
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
+    @Override
+    public void onPause() {
+        super.onPause();
 
-		BusProvider.getBus().unregister(this);
-	}
+        BusProvider.getBus().unregister(this);
+    }
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-		tearDownServersState(outState);
-	}
+        tearDownServersState(outState);
+    }
 
-	private void tearDownServersState(Bundle state) {
-		if (areServersLoaded()) {
-			state.putParcelableArrayList(State.SERVERS, new ArrayList<Parcelable>(getServersAdapter().getItems()));
-		}
-	}
+    private void tearDownServersState(Bundle state) {
+        if (areServersLoaded()) {
+            state.putParcelableArrayList(State.SERVERS, new ArrayList<Parcelable>(getServersAdapter().getItems()));
+        }
+    }
 
-	private boolean areServersLoaded() {
-		return getServersAdapter() != null;
-	}
+    private boolean areServersLoaded() {
+        return getServersAdapter() != null;
+    }
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-		tearDownAuthenticationListener();
-	}
+        tearDownAuthenticationListener();
+    }
 
-	private void tearDownAuthenticationListener() {
-		getAccountManager().removeOnAccountsUpdatedListener(this);
-	}
+    private void tearDownAuthenticationListener() {
+        getAccountManager().removeOnAccountsUpdatedListener(this);
+    }
+
+    private static final class State {
+        public static final String SERVERS = "servers";
+
+        private State() {
+        }
+    }
 }

@@ -37,25 +37,25 @@ import java.util.List;
  */
 public class CastOptionsProvider implements OptionsProvider {
 
-	@Override
-	public CastOptions getCastOptions(Context appContext) {
-		NotificationOptions notificationOptions = new NotificationOptions.Builder()
-				.setTargetActivityClassName(ExpandedControlsActivity.class.getName())
-				.build();
-		CastMediaOptions mediaOptions = new CastMediaOptions.Builder()
-				.setNotificationOptions(notificationOptions)
-				.setExpandedControllerActivityClassName(ExpandedControlsActivity.class.getName())
-				.build();
+    @Override
+    public CastOptions getCastOptions(Context appContext) {
+        NotificationOptions notificationOptions = new NotificationOptions.Builder()
+            .setTargetActivityClassName(ExpandedControlsActivity.class.getName())
+            .build();
+        CastMediaOptions mediaOptions = new CastMediaOptions.Builder()
+            .setNotificationOptions(notificationOptions)
+            .setExpandedControllerActivityClassName(ExpandedControlsActivity.class.getName())
+            .build();
 
-		return new CastOptions.Builder()
-				.setReceiverApplicationId(BuildConfig.CHROMECAST_APP_ID)
-				.setCastMediaOptions(mediaOptions)
-				.build();
-	}
+        return new CastOptions.Builder()
+            .setReceiverApplicationId(BuildConfig.CHROMECAST_APP_ID)
+            .setCastMediaOptions(mediaOptions)
+            .build();
+    }
 
-	@Override
-	public List<SessionProvider> getAdditionalSessionProviders(Context context) {
-		return null;
-	}
+    @Override
+    public List<SessionProvider> getAdditionalSessionProviders(Context context) {
+        return null;
+    }
 
 }

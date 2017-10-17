@@ -20,7 +20,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 public class AuthenticationActivityTest {
     @Rule
     public ActivityTestRule<AuthenticationActivity> authenticationActivityTestRule =
-            new ActivityTestRule(AuthenticationActivity.class);
+        new ActivityTestRule(AuthenticationActivity.class);
 
     @Test
     public void testIsErrorMessageDisplayed_UsernameOrPasswordIsEmpty() {
@@ -28,10 +28,10 @@ public class AuthenticationActivityTest {
         onView(withId(R.id.password_layout)).check(matches(isDisplayed()));
 
         onView(withId(R.id.button_authentication))
-                .check(matches(isDisplayed()))
-                .perform(click());
+            .check(matches(isDisplayed()))
+            .perform(click());
 
         onView(withId(R.id.text_message_authentication_empty))
-                .check(matches(isDisplayed()));
+            .check(matches(isDisplayed()));
     }
 }

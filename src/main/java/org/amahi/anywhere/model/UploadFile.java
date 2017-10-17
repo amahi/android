@@ -20,19 +20,19 @@
 package org.amahi.anywhere.model;
 
 public class UploadFile {
-	private int id;
-	private String path;
+    private int id;
+    private String path;
 
-	public UploadFile(int id, String path) {
-		this.id = id;
-		this.path = path;
-	}
+    public UploadFile(int id, String path) {
+        this.id = id;
+        this.path = path;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public String getPath() {
+        return path;
+    }
 }

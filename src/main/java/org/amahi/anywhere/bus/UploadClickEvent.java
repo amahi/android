@@ -22,14 +22,14 @@ package org.amahi.anywhere.bus;
 import org.amahi.anywhere.model.UploadOption;
 
 public class UploadClickEvent implements BusEvent {
-	private int uploadOption;
+    private int uploadOption;
 
-	public UploadClickEvent(@UploadOption.Types int uploadOption) {
-		this.uploadOption = uploadOption;
-	}
+    public UploadClickEvent(@UploadOption.Types int uploadOption) {
+        this.uploadOption = uploadOption;
+    }
 
-	@UploadOption.Types
-	public int getUploadOption() {
-		return uploadOption;
-	}
+    @UploadOption.Types
+    public int getUploadOption() {
+        return uploadOption;
+    }
 }

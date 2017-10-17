@@ -20,7 +20,6 @@
 package org.amahi.anywhere.tv.activity;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -32,7 +31,6 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 

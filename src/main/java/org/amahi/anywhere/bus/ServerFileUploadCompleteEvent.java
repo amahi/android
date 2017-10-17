@@ -20,19 +20,19 @@
 package org.amahi.anywhere.bus;
 
 public class ServerFileUploadCompleteEvent implements BusEvent {
-	private int id;
-	private boolean wasUploadSuccessful;
+    private int id;
+    private boolean wasUploadSuccessful;
 
-	public ServerFileUploadCompleteEvent(int id, boolean wasUploadSuccessful) {
-		this.id = id;
-		this.wasUploadSuccessful = wasUploadSuccessful;
-	}
+    public ServerFileUploadCompleteEvent(int id, boolean wasUploadSuccessful) {
+        this.id = id;
+        this.wasUploadSuccessful = wasUploadSuccessful;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public boolean wasUploadSuccessful() {
-		return wasUploadSuccessful;
-	}
+    public boolean wasUploadSuccessful() {
+        return wasUploadSuccessful;
+    }
 }

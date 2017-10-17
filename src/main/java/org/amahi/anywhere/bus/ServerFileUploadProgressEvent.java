@@ -20,19 +20,19 @@
 package org.amahi.anywhere.bus;
 
 public class ServerFileUploadProgressEvent implements BusEvent {
-	private int id;
-	private int progress;
+    private int id;
+    private int progress;
 
-	public ServerFileUploadProgressEvent(int id, int progress) {
-		this.id = id;
-		this.progress = progress;
-	}
+    public ServerFileUploadProgressEvent(int id, int progress) {
+        this.id = id;
+        this.progress = progress;
+    }
 
-	public int getId() {
-		return this.id;
-	}
+    public int getId() {
+        return this.id;
+    }
 
-	public int getProgress() {
-		return this.progress;
-	}
+    public int getProgress() {
+        return this.progress;
+    }
 }

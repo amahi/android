@@ -22,22 +22,18 @@ package org.amahi.anywhere.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
 
-import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.util.Intents;
-
-import java.util.ArrayList;
 
 /**
  * Camera new picture event receiver.
  */
 public class CameraReceiver extends BroadcastReceiver {
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		Log.e("NEW_IMAGE", "onReceive");
-		Intent uploadService = Intents.Builder.with(context).buildUploadServiceIntent(intent.getData());
-		context.startService(uploadService);
-	}
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.e("NEW_IMAGE", "onReceive");
+        Intent uploadService = Intents.Builder.with(context).buildUploadServiceIntent(intent.getData());
+        context.startService(uploadService);
+    }
 }

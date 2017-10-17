@@ -43,86 +43,83 @@ import java.util.List;
  */
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class PhotosContentJob extends JobService {
-	private final String TAG = this.getClass().getName();
+    // The root URI of the media provider, to monitor for generic changes to its content.
+    static final Uri MEDIA_URI = Uri.parse("content://" + MediaStore.AUTHORITY + "/");
+    // Path segments for image-specific URIs in the provider.
+    static final List<String> EXTERNAL_PATH_SEGMENTS
+        = MediaStore.Images.Media.EXTERNAL_CONTENT_URI.getPathSegments();
+    // A pre-built JobInfo we use for scheduling our job.
+    static final JobInfo JOB_INFO;
 
-	// The root URI of the media provider, to monitor for generic changes to its content.
-	static final Uri MEDIA_URI = Uri.parse("content://" + MediaStore.AUTHORITY + "/");
+    static {
+        JobInfo.Builder builder = new JobInfo.Builder(JobIds.PHOTOS_CONTENT_JOB,
+            new ComponentName("org.amahi.anywhere", PhotosContentJob.class.getName()));
+        // Look for specific changes to images in the provider.
+        builder.addTriggerContentUri(new JobInfo.TriggerContentUri(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS));
+        // Also look for general reports of changes in the overall provider.
+        builder.addTriggerContentUri(new JobInfo.TriggerContentUri(MEDIA_URI, 0));
+        JOB_INFO = builder.build();
+    }
 
-	// Path segments for image-specific URIs in the provider.
-	static final List<String> EXTERNAL_PATH_SEGMENTS
-			= MediaStore.Images.Media.EXTERNAL_CONTENT_URI.getPathSegments();
+    private final String TAG = this.getClass().getName();
+    JobParameters mRunningParams;
 
-	// A pre-built JobInfo we use for scheduling our job.
-	static final JobInfo JOB_INFO;
+    // Schedule this job, replace any existing one.
+    public static void scheduleJob(Context context) {
+        JobScheduler js = context.getSystemService(JobScheduler.class);
+        js.schedule(JOB_INFO);
+        Log.i("PhotosContentJob", "JOB SCHEDULED!");
+    }
 
-	static {
-		JobInfo.Builder builder = new JobInfo.Builder(JobIds.PHOTOS_CONTENT_JOB,
-				new ComponentName("org.amahi.anywhere", PhotosContentJob.class.getName()));
-		// Look for specific changes to images in the provider.
-		builder.addTriggerContentUri(new JobInfo.TriggerContentUri(
-				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-				JobInfo.TriggerContentUri.FLAG_NOTIFY_FOR_DESCENDANTS));
-		// Also look for general reports of changes in the overall provider.
-		builder.addTriggerContentUri(new JobInfo.TriggerContentUri(MEDIA_URI, 0));
-		JOB_INFO = builder.build();
-	}
+    // Check whether this job is currently scheduled.
+    public static boolean isScheduled(Context context) {
+        JobScheduler js = context.getSystemService(JobScheduler.class);
+        JobInfo job = js.getPendingJob(JobIds.PHOTOS_CONTENT_JOB);
+        return job != null;
+    }
 
-	JobParameters mRunningParams;
+    // Cancel this job, if currently scheduled.
+    public static void cancelJob(Context context) {
+        JobScheduler js = context.getSystemService(JobScheduler.class);
+        js.cancel(JobIds.PHOTOS_CONTENT_JOB);
+    }
 
-	// Schedule this job, replace any existing one.
-	public static void scheduleJob(Context context) {
-		JobScheduler js = context.getSystemService(JobScheduler.class);
-		js.schedule(JOB_INFO);
-		Log.i("PhotosContentJob", "JOB SCHEDULED!");
-	}
+    @Override
+    public boolean onStartJob(JobParameters params) {
+        Log.i("PhotosContentJob", "JOB STARTED!");
+        mRunningParams = params;
 
-	// Check whether this job is currently scheduled.
-	public static boolean isScheduled(Context context) {
-		JobScheduler js = context.getSystemService(JobScheduler.class);
-		JobInfo job = js.getPendingJob(JobIds.PHOTOS_CONTENT_JOB);
-		return job != null;
-	}
+        // Did we trigger due to a content change?
+        if (params.getTriggeredContentAuthorities() != null) {
+            if (params.getTriggeredContentUris() != null) {
+                // If we have details about which URIs changed, then iterate through them
+                // and collect valid uris and send them to UploadService
+                ArrayList<Uri> uris = new ArrayList<>();
+                for (Uri uri : params.getTriggeredContentUris()) {
+                    List<String> path = uri.getPathSegments();
+                    if (path != null && path.size() == EXTERNAL_PATH_SEGMENTS.size() + 1) {
+                        // This is a specific file.
+                        uris.add(uri);
+                    }
+                }
+                Intent intent = Intents.Builder.with(this).buildUploadServiceIntent(uris);
+                startService(intent);
+            } else {
+                // We don't have any details about URIs (because too many changed at once)
+                Log.i(TAG, "Photos rescan needed!");
+            }
+        } else {
+            Log.i(TAG, "(No photos content)");
+        }
 
-	// Cancel this job, if currently scheduled.
-	public static void cancelJob(Context context) {
-		JobScheduler js = context.getSystemService(JobScheduler.class);
-		js.cancel(JobIds.PHOTOS_CONTENT_JOB);
-	}
+        scheduleJob(PhotosContentJob.this);
+        return false;
+    }
 
-	@Override
-	public boolean onStartJob(JobParameters params) {
-		Log.i("PhotosContentJob", "JOB STARTED!");
-		mRunningParams = params;
-
-		// Did we trigger due to a content change?
-		if (params.getTriggeredContentAuthorities() != null) {
-			if (params.getTriggeredContentUris() != null) {
-				// If we have details about which URIs changed, then iterate through them
-				// and collect valid uris and send them to UploadService
-				ArrayList<Uri> uris = new ArrayList<>();
-				for (Uri uri : params.getTriggeredContentUris()) {
-					List<String> path = uri.getPathSegments();
-					if (path != null && path.size() == EXTERNAL_PATH_SEGMENTS.size() + 1) {
-						// This is a specific file.
-						uris.add(uri);
-					}
-				}
-				Intent intent = Intents.Builder.with(this).buildUploadServiceIntent(uris);
-				startService(intent);
-			} else {
-				// We don't have any details about URIs (because too many changed at once)
-				Log.i(TAG, "Photos rescan needed!");
-			}
-		} else {
-			Log.i(TAG, "(No photos content)");
-		}
-
-		scheduleJob(PhotosContentJob.this);
-		return false;
-	}
-
-	@Override
-	public boolean onStopJob(JobParameters params) {
-		return false;
-	}
+    @Override
+    public boolean onStopJob(JobParameters params) {
+        return false;
+    }
 }

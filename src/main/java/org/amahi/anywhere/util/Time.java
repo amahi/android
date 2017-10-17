@@ -35,16 +35,16 @@ public class Time {
         return String.valueOf(date.getTime());
     }
 
+    public static long getDuration(String videoUrl) {
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(videoUrl, new HashMap<String, String>());
+        return Long.parseLong(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+    }
+
     public static final class Format {
         public static final String RFC_1123 = "EEE, dd MMM yyyy HH:mm:ss zzz";
 
         private Format() {
         }
-    }
-
-    public static long getDuration(String videoUrl) {
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(videoUrl, new HashMap<String, String>());
-        return Long.parseLong(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
     }
 }

@@ -33,25 +33,24 @@ import java.util.List;
  * Image files adapter. Maps {@link org.amahi.anywhere.fragment.ServerFileImageFragment}
  * for the {@link org.amahi.anywhere.activity.ServerFileImageActivity}.
  */
-public class ServerFilesImagePagerAdapter extends FragmentStatePagerAdapter
-{
-	private final ServerShare share;
-	private final List<ServerFile> files;
+public class ServerFilesImagePagerAdapter extends FragmentStatePagerAdapter {
+    private final ServerShare share;
+    private final List<ServerFile> files;
 
-	public ServerFilesImagePagerAdapter(FragmentManager fragmentManager, ServerShare share, List<ServerFile> files) {
-		super(fragmentManager);
+    public ServerFilesImagePagerAdapter(FragmentManager fragmentManager, ServerShare share, List<ServerFile> files) {
+        super(fragmentManager);
 
-		this.share = share;
-		this.files = files;
-	}
+        this.share = share;
+        this.files = files;
+    }
 
-	@Override
-	public int getCount() {
-		return files.size();
-	}
+    @Override
+    public int getCount() {
+        return files.size();
+    }
 
-	@Override
-	public Fragment getItem(int position) {
-		return Fragments.Builder.buildServerFileImageFragment(share, files.get(position));
-	}
+    @Override
+    public Fragment getItem(int position) {
+        return Fragments.Builder.buildServerFileImageFragment(share, files.get(position));
+    }
 }

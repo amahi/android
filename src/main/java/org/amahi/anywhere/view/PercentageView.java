@@ -40,14 +40,8 @@ import java.util.Locale;
 public class PercentageView {
     public static final int VOLUME = 1;
     public static final int BRIGHTNESS = 2;
-
-    @IntDef({VOLUME, BRIGHTNESS})
-    @interface TYPE {
-    }
-
     private ViewHolder viewHolder;
     private View view;
-
     public PercentageView(FrameLayout parentView) {
         LayoutInflater inflater = (LayoutInflater) parentView.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(R.layout.percentage_view, parentView, false);
@@ -59,29 +53,17 @@ public class PercentageView {
         return view;
     }
 
-    private class ViewHolder {
-        private ProgressBar progressBar;
-        private TextView valuePercent;
-        private ImageView icon;
-
-        ViewHolder(View itemView) {
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
-            icon = (ImageView) itemView.findViewById(R.id.type_icon);
-            valuePercent = (TextView) itemView.findViewById(R.id.value_percent);
-        }
-    }
-
     public void setType(@TYPE int type) {
         switch (type) {
             case VOLUME:
                 viewHolder.icon.setImageResource(R.drawable.ic_volume_up);
                 viewHolder.progressBar.getProgressDrawable().setColorFilter(
-                        Color.BLUE, android.graphics.PorterDuff.Mode.SRC_IN);
+                    Color.BLUE, android.graphics.PorterDuff.Mode.SRC_IN);
                 break;
             case BRIGHTNESS:
                 viewHolder.icon.setImageResource(R.drawable.ic_brightness);
                 viewHolder.progressBar.getProgressDrawable().setColorFilter(
-                        Color.YELLOW, android.graphics.PorterDuff.Mode.SRC_IN);
+                    Color.YELLOW, android.graphics.PorterDuff.Mode.SRC_IN);
                 break;
         }
     }
@@ -101,6 +83,22 @@ public class PercentageView {
 
     public boolean isShowing() {
         return view.getVisibility() == View.VISIBLE;
+    }
+
+    @IntDef({VOLUME, BRIGHTNESS})
+    @interface TYPE {
+    }
+
+    private class ViewHolder {
+        private ProgressBar progressBar;
+        private TextView valuePercent;
+        private ImageView icon;
+
+        ViewHolder(View itemView) {
+            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
+            icon = (ImageView) itemView.findViewById(R.id.type_icon);
+            valuePercent = (TextView) itemView.findViewById(R.id.value_percent);
+        }
     }
 }
 

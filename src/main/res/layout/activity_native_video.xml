@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2014 Amahi
   ~
   ~ This file is part of Amahi.
@@ -17,8 +16,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -42,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:fitsSystemWindows="false"/>
+                android:fitsSystemWindows="false" />
 
         </FrameLayout>
 
@@ -54,7 +52,7 @@
             <View
                 android:id="@+id/container_controls"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
         </FrameLayout>
     </FrameLayout>
@@ -63,5 +61,5 @@
         android:id="@android:id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center" />
 </FrameLayout>

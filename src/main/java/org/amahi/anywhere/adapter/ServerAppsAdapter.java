@@ -43,75 +43,75 @@ import java.util.List;
  * Apps adapter. Visualizes web apps
  * for the {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
-public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.ServerAppsViewHolder>
-{
-	private List<ServerApp> apps;
-	private Context mContext;
+public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.ServerAppsViewHolder> {
+    private List<ServerApp> apps;
+    private Context mContext;
 
-	public ServerAppsAdapter(Context context) {
-		mContext = context;
-		this.apps = Collections.emptyList();
-	}
+    public ServerAppsAdapter(Context context) {
+        mContext = context;
+        this.apps = Collections.emptyList();
+    }
 
-	class ServerAppsViewHolder extends RecyclerView.ViewHolder{
-		TextView text;
-		ImageView logo;
-		ServerAppsViewHolder(View itemView) {
-			super(itemView);
-			text = (TextView)itemView.findViewById(R.id.text);
-			logo = (ImageView)itemView.findViewById(R.id.logo);
-		}
-	}
+    @Override
+    public ServerAppsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ServerAppsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_app_item, parent, false));
+    }
 
-	@Override
-	public ServerAppsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		return new ServerAppsViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_app_item, parent, false));
-	}
+    @Override
+    public void onBindViewHolder(final ServerAppsViewHolder holder, int position) {
+        holder.text.setText(apps.get(position).getName());
+        if (TextUtils.isEmpty(apps.get(position).getLogoUrl()))
+            holder.logo.setImageResource(R.drawable.ic_app_logo);
+        else {
+            Glide
+                .with(mContext)
+                .load(apps.get(position).getLogoUrl())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .fitCenter()
+                .placeholder(R.drawable.ic_app_logo)
+                .error(R.drawable.ic_app_logo)
+                .into(holder.logo);
+        }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BusProvider.getBus().post(new AppSelectedEvent(apps.get(holder.getAdapterPosition())));
+            }
+        });
+    }
 
-	@Override
-	public void onBindViewHolder(final ServerAppsViewHolder holder, int position) {
-		holder.text.setText(apps.get(position).getName());
-		if(TextUtils.isEmpty(apps.get(position).getLogoUrl()))
-			holder.logo.setImageResource(R.drawable.ic_app_logo);
-		else {
-			Glide
-					.with(mContext)
-					.load(apps.get(position).getLogoUrl())
-					.diskCacheStrategy(DiskCacheStrategy.ALL)
-					.fitCenter()
-					.placeholder(R.drawable.ic_app_logo)
-					.error(R.drawable.ic_app_logo)
-					.into(holder.logo);
-		}
-		holder.itemView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				BusProvider.getBus().post(new AppSelectedEvent(apps.get(holder.getAdapterPosition())));
-			}
-		});
-	}
+    @Override
+    public int getItemCount() {
+        return apps.size();
+    }
 
-	@Override
-	public int getItemCount() {
-		return apps.size();
-	}
+    public void replaceWith(List<ServerApp> apps) {
+        this.apps = apps;
 
-	public void replaceWith(List<ServerApp> apps) {
-		this.apps = apps;
+        notifyDataSetChanged();
+    }
 
-		notifyDataSetChanged();
-	}
+    public List<ServerApp> getItems() {
+        return apps;
+    }
 
-	public List<ServerApp> getItems() {
-		return apps;
-	}
+    public ServerApp getItem(int position) {
+        return apps.get(position);
+    }
 
-	public ServerApp getItem(int position) {
-		return apps.get(position);
-	}
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+    class ServerAppsViewHolder extends RecyclerView.ViewHolder {
+        TextView text;
+        ImageView logo;
+
+        ServerAppsViewHolder(View itemView) {
+            super(itemView);
+            text = (TextView) itemView.findViewById(R.id.text);
+            logo = (ImageView) itemView.findViewById(R.id.logo);
+        }
+    }
 }

@@ -76,7 +76,7 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
             Bitmap audioAlbumArt = extractAlbumArt(audioMetadataRetriever);
 
             return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum,
-                    duration, audioAlbumArt, viewHolder, serverFile);
+                duration, audioAlbumArt, viewHolder, serverFile);
         } catch (RuntimeException e) {
             return new AudioMetadataRetrievedEvent(null, null, null, null, null, viewHolder, serverFile);
         } finally {

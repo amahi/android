@@ -56,50 +56,47 @@ import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
-import java.util.Locale;
-
 /**
  * Video activity. Shows videos, supports basic operations such as pausing, resuming, scrolling.
  * The playback itself is done via {@link org.amahi.anywhere.service.VideoService}.
  * Backed up by {@link android.view.SurfaceView} and {@link org.videolan.libvlc.LibVLC}.
  */
 public class ServerFileVideoActivity extends AppCompatActivity implements
-        ServiceConnection,
-        MediaController.MediaPlayerControl,
-        IVLCVout.OnNewVideoLayoutListener,
-        MediaPlayer.EventListener,
-        View.OnLayoutChangeListener,
-        VideoSwipeGestures.SeekControl {
+    ServiceConnection,
+    MediaController.MediaPlayerControl,
+    IVLCVout.OnNewVideoLayoutListener,
+    MediaPlayer.EventListener,
+    View.OnLayoutChangeListener,
+    VideoSwipeGestures.SeekControl {
 
     private static final boolean ENABLE_SUBTITLES = false;
-
+    private static SurfaceSizes CURRENT_SIZE = SurfaceSizes.SURFACE_BEST_FIT;
     private VideoService videoService;
     private MediaControls videoControls;
     private FullScreenHelper fullScreen;
     private Handler layoutChangeHandler;
-
     private int mVideoHeight = 0;
     private int mVideoWidth = 0;
     private int mVideoVisibleHeight = 0;
     private int mVideoVisibleWidth = 0;
     private int mVideoSarNum = 0;
     private int mVideoSarDen = 0;
-
     private SurfaceView mSubtitlesSurface = null;
+    private final Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            updateVideoSurfaces();
+        }
+    };
     private float bufferPercent = 0.0f;
 
-    private enum SurfaceSizes {
-        SURFACE_BEST_FIT,
-        SURFACE_FIT_SCREEN,
-        SURFACE_FILL,
-        SURFACE_16_9,
-        SURFACE_4_3,
-        SURFACE_ORIGINAL;
-    }
-
-    private static SurfaceSizes CURRENT_SIZE = SurfaceSizes.SURFACE_BEST_FIT;
-
     //TODO Add feature for changing the screen size
+
+    public static boolean supports(String mime_type) {
+        String type = mime_type.split("/")[0];
+
+        return "video".equals(type);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -302,13 +299,6 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         }
     }
 
-    private final Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            updateVideoSurfaces();
-        }
-    };
-
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onNewVideoLayout(IVLCVout vout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
@@ -441,7 +431,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
                 if (vtrack == null)
                     return;
                 final boolean videoSwapped = vtrack.orientation == Media.VideoTrack.Orientation.LeftBottom
-                        || vtrack.orientation == Media.VideoTrack.Orientation.RightTop;
+                    || vtrack.orientation == Media.VideoTrack.Orientation.RightTop;
                 if (CURRENT_SIZE == SurfaceSizes.SURFACE_FIT_SCREEN) {
                     int videoW = vtrack.width;
                     int videoH = vtrack.height;
@@ -464,7 +454,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
                 } else {
                     getMediaPlayer().setScale(0);
                     getMediaPlayer().setAspectRatio(!videoSwapped ? "" + displayW + ":" + displayH
-                            : "" + displayH + ":" + displayW);
+                        : "" + displayH + ":" + displayW);
                 }
                 break;
             }
@@ -621,9 +611,12 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         stopService(intent);
     }
 
-    public static boolean supports(String mime_type) {
-        String type = mime_type.split("/")[0];
-
-        return "video".equals(type);
+    private enum SurfaceSizes {
+        SURFACE_BEST_FIT,
+        SURFACE_FIT_SCREEN,
+        SURFACE_FILL,
+        SURFACE_16_9,
+        SURFACE_4_3,
+        SURFACE_ORIGINAL;
     }
 }

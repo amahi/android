@@ -13,23 +13,22 @@ import java.util.Date;
 public class AudioDetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
     private Context mContext;
 
-    public AudioDetailsDescriptionPresenter(Context context){
+    public AudioDetailsDescriptionPresenter(Context context) {
         this.mContext = context;
     }
 
     @Override
     protected void onBindDescription(ViewHolder viewHolder, Object item) {
-        AudioMetadataRetrievedEvent event = (AudioMetadataRetrievedEvent)item;
+        AudioMetadataRetrievedEvent event = (AudioMetadataRetrievedEvent) item;
 
-        if(event.getAudioTitle()!=null)
+        if (event.getAudioTitle() != null)
             viewHolder.getTitle().setText(event.getAudioTitle());
         else
             viewHolder.getTitle().setText(event.getServerFile().getName());
 
-        if(event.getAudioAlbum()!=null && event.getAudioArtist()!=null){
-            viewHolder.getSubtitle().setText(event.getAudioAlbum()+" - "+event.getAudioArtist());
-        }
-        else
+        if (event.getAudioAlbum() != null && event.getAudioArtist() != null) {
+            viewHolder.getSubtitle().setText(event.getAudioAlbum() + " - " + event.getAudioArtist());
+        } else
             viewHolder.getSubtitle().setText(getDate(event.getServerFile()));
 
         viewHolder.getBody().setText(getSize(event.getServerFile()));

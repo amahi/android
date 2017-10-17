@@ -27,57 +27,52 @@ import com.google.gson.annotations.SerializedName;
 /**
  * App API resource.
  */
-public class ServerApp implements Parcelable
-{
-	@SerializedName("name")
-	private String name;
+public class ServerApp implements Parcelable {
+    public static final Creator<ServerApp> CREATOR = new Creator<ServerApp>() {
+        @Override
+        public ServerApp createFromParcel(Parcel parcel) {
+            return new ServerApp(parcel);
+        }
 
-	@SerializedName("logo")
-	private String logoUrl;
+        @Override
+        public ServerApp[] newArray(int size) {
+            return new ServerApp[size];
+        }
+    };
+    @SerializedName("name")
+    private String name;
+    @SerializedName("logo")
+    private String logoUrl;
+    @SerializedName("vhost")
+    private String host;
 
-	@SerializedName("vhost")
-	private String host;
+    private ServerApp(Parcel parcel) {
+        this.name = parcel.readString();
+        this.logoUrl = parcel.readString();
+        this.host = parcel.readString();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getLogoUrl() {
-		return logoUrl;
-	}
+    public String getLogoUrl() {
+        return logoUrl;
+    }
 
-	public String getHost() {
-		return host;
-	}
+    public String getHost() {
+        return host;
+    }
 
-	public static final Creator<ServerApp> CREATOR = new Creator<ServerApp>()
-	{
-		@Override
-		public ServerApp createFromParcel(Parcel parcel) {
-			return new ServerApp(parcel);
-		}
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(name);
+        parcel.writeString(logoUrl);
+        parcel.writeString(host);
+    }
 
-		@Override
-		public ServerApp[] newArray(int size) {
-			return new ServerApp[size];
-		}
-	};
-
-	private ServerApp(Parcel parcel) {
-		this.name = parcel.readString();
-		this.logoUrl = parcel.readString();
-		this.host = parcel.readString();
-	}
-
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeString(name);
-		parcel.writeString(logoUrl);
-		parcel.writeString(host);
-	}
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }

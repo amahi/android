@@ -35,18 +35,17 @@ import retrofit2.Response;
  * Shares response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
  * as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class ServerSharesResponse implements Callback<List<ServerShare>>
-{
-	@Override
-	public void onResponse(Call<List<ServerShare>> call, Response<List<ServerShare>> response) {
-		if (response.isSuccessful())
-			BusProvider.getBus().post(new ServerSharesLoadedEvent(response.body()));
-		else
-			this.onFailure(call, new HttpException(response));
-	}
+public class ServerSharesResponse implements Callback<List<ServerShare>> {
+    @Override
+    public void onResponse(Call<List<ServerShare>> call, Response<List<ServerShare>> response) {
+        if (response.isSuccessful())
+            BusProvider.getBus().post(new ServerSharesLoadedEvent(response.body()));
+        else
+            this.onFailure(call, new HttpException(response));
+    }
 
-	@Override
-	public void onFailure(Call<List<ServerShare>> call, Throwable t) {
-		BusProvider.getBus().post(new ServerSharesLoadFailedEvent());
-	}
+    @Override
+    public void onFailure(Call<List<ServerShare>> call, Throwable t) {
+        BusProvider.getBus().post(new ServerSharesLoadFailedEvent());
+    }
 }

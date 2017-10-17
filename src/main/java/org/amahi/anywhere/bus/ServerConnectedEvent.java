@@ -24,7 +24,7 @@ import org.amahi.anywhere.server.model.Server;
 public class ServerConnectedEvent implements BusEvent {
     public Server server;
 
-    public ServerConnectedEvent(Server server){
+    public ServerConnectedEvent(Server server) {
         this.server = server;
     }
 

@@ -48,9 +48,9 @@ import org.amahi.anywhere.tv.activity.TvPlaybackAudioActivity;
 import org.amahi.anywhere.tv.activity.TvPlaybackVideoActivity;
 import org.amahi.anywhere.tv.fragment.MainTVFragment;
 import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
-import org.amahi.anywhere.util.UploadManager;
 import org.amahi.anywhere.tv.fragment.TvPlaybackAudioFragment;
 import org.amahi.anywhere.tv.fragment.TvPlaybackVideoFragment;
+import org.amahi.anywhere.util.UploadManager;
 
 import javax.inject.Singleton;
 
@@ -62,39 +62,39 @@ import dagger.Provides;
  * provides application's {@link android.content.Context} for possible consumers.
  */
 @Module(
-        includes = {
-                ApiModule.class
-        },
-        injects = {
-                AuthenticationActivity.class,
-                NavigationActivity.class,
-                ServerAppActivity.class,
-                ServerFilesActivity.class,
-                ServerFileAudioActivity.class,
-                ServerFileImageActivity.class,
-                ServerFileVideoActivity.class,
-                NativeVideoActivity.class,
-                ServerFileWebActivity.class,
-                NavigationFragment.class,
-                ServerSharesFragment.class,
-                ServerAppsFragment.class,
-                ServerFilesFragment.class,
-                ServerFileImageFragment.class,
-                ServerFileDownloadingFragment.class,
-                SettingsFragment.class,
-                UploadSettingsFragment.class,
-                AudioService.class,
-                VideoService.class,
-                MainTVFragment.class,
-                TVWebViewActivity.class,
-                ServerFileTvFragment.class,
-                UploadService.class,
-                UploadManager.class,
-                TvPlaybackVideoFragment.class,
-                TvPlaybackVideoActivity.class,
-                TvPlaybackAudioActivity.class,
-                TvPlaybackAudioFragment.class
-        }
+    includes = {
+        ApiModule.class
+    },
+    injects = {
+        AuthenticationActivity.class,
+        NavigationActivity.class,
+        ServerAppActivity.class,
+        ServerFilesActivity.class,
+        ServerFileAudioActivity.class,
+        ServerFileImageActivity.class,
+        ServerFileVideoActivity.class,
+        NativeVideoActivity.class,
+        ServerFileWebActivity.class,
+        NavigationFragment.class,
+        ServerSharesFragment.class,
+        ServerAppsFragment.class,
+        ServerFilesFragment.class,
+        ServerFileImageFragment.class,
+        ServerFileDownloadingFragment.class,
+        SettingsFragment.class,
+        UploadSettingsFragment.class,
+        AudioService.class,
+        VideoService.class,
+        MainTVFragment.class,
+        TVWebViewActivity.class,
+        ServerFileTvFragment.class,
+        UploadService.class,
+        UploadManager.class,
+        TvPlaybackVideoFragment.class,
+        TvPlaybackVideoActivity.class,
+        TvPlaybackAudioActivity.class,
+        TvPlaybackAudioFragment.class
+    }
 )
 class AmahiModule {
     private final Application application;

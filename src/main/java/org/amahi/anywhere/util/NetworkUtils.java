@@ -32,33 +32,33 @@ import org.amahi.anywhere.R;
  */
 public class NetworkUtils {
 
-	private Context context;
+    private Context context;
 
-	public NetworkUtils(Context context) {
-		this.context = context;
-	}
+    public NetworkUtils(Context context) {
+        this.context = context;
+    }
 
-	public NetworkInfo getNetwork() {
-		return getNetworkManager().getActiveNetworkInfo();
-	}
+    public NetworkInfo getNetwork() {
+        return getNetworkManager().getActiveNetworkInfo();
+    }
 
-	private ConnectivityManager getNetworkManager() {
-		return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-	}
+    private ConnectivityManager getNetworkManager() {
+        return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
 
-	public boolean isNetworkConnected(NetworkInfo network) {
-		return (network != null) && network.isConnected();
-	}
+    public boolean isNetworkConnected(NetworkInfo network) {
+        return (network != null) && network.isConnected();
+    }
 
-	public boolean isUploadAllowed() {
-		NetworkInfo network = getNetwork();
-		return isNetworkConnected(network) &&
-				(network.getType() != ConnectivityManager.TYPE_MOBILE ||
-						isUploadAllowedOnMobileData());
-	}
+    public boolean isUploadAllowed() {
+        NetworkInfo network = getNetwork();
+        return isNetworkConnected(network) &&
+            (network.getType() != ConnectivityManager.TYPE_MOBILE ||
+                isUploadAllowedOnMobileData());
+    }
 
-	private boolean isUploadAllowedOnMobileData() {
-		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getBoolean(context.getString(R.string.preference_key_upload_data), false);
-	}
+    private boolean isUploadAllowedOnMobileData() {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+            .getBoolean(context.getString(R.string.preference_key_upload_data), false);
+    }
 }

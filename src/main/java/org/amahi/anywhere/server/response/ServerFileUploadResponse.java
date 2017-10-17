@@ -34,22 +34,22 @@ import retrofit2.Response;
  * as {@link org.amahi.anywhere.bus.BusEvent}.
  */
 public class ServerFileUploadResponse implements Callback<ResponseBody> {
-	private int id;
+    private int id;
 
-	public ServerFileUploadResponse(int id) {
-		this.id = id;
-	}
+    public ServerFileUploadResponse(int id) {
+        this.id = id;
+    }
 
-	@Override
-	public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-		if (response.isSuccessful()) {
-			BusProvider.getBus().post(new ServerFileUploadCompleteEvent(id, true));
-		} else
-			this.onFailure(call, new HttpException(response));
-	}
+    @Override
+    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        if (response.isSuccessful()) {
+            BusProvider.getBus().post(new ServerFileUploadCompleteEvent(id, true));
+        } else
+            this.onFailure(call, new HttpException(response));
+    }
 
-	@Override
-	public void onFailure(Call<ResponseBody> call, Throwable t) {
-		BusProvider.getBus().post(new ServerFileUploadCompleteEvent(id, false));
-	}
+    @Override
+    public void onFailure(Call<ResponseBody> call, Throwable t) {
+        BusProvider.getBus().post(new ServerFileUploadCompleteEvent(id, false));
+    }
 }

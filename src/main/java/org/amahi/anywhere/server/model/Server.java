@@ -27,80 +27,74 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Server API resource.
  */
-public class Server implements Parcelable
-{
-	@SerializedName("name")
-	private String name;
+public class Server implements Parcelable {
+    public static final Creator<Server> CREATOR = new Creator<Server>() {
+        @Override
+        public Server createFromParcel(Parcel parcel) {
+            return new Server(parcel);
+        }
 
-	@SerializedName("session_token")
-	private String session;
+        @Override
+        public Server[] newArray(int size) {
+            return new Server[size];
+        }
+    };
+    @SerializedName("name")
+    private String name;
+    @SerializedName("session_token")
+    private String session;
+    @SerializedName("active")
+    private boolean active;
+    private boolean debug = false;
+    private int index;
 
-	@SerializedName("active")
-	private boolean active;
+    public Server(int index, String name, String session) {
+        this.index = index;
+        this.name = name;
+        this.session = session;
+        this.active = true;
+        this.debug = true;
+    }
 
-	private boolean debug = false;
+    public Server(String session) {
+        this.session = session;
+    }
 
-	private int index;
+    public Server(Parcel parcel) {
+        this.name = parcel.readString();
+        this.session = parcel.readString();
+        this.active = Boolean.valueOf(parcel.readString());
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getSession() {
-		return session;
-	}
+    public String getSession() {
+        return session;
+    }
 
-	public int getIndex() {
-		return index;
-	}
+    public int getIndex() {
+        return index;
+    }
 
-	public boolean isActive() {
-		return active;
-	}
+    public boolean isActive() {
+        return active;
+    }
 
-	public boolean isDebug() {
-		return debug;
-	}
+    public boolean isDebug() {
+        return debug;
+    }
 
-	public static final Creator<Server> CREATOR = new Creator<Server>() {
-		@Override
-		public Server createFromParcel(Parcel parcel) {
-			return new Server(parcel);
-		}
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(name);
+        parcel.writeString(session);
+        parcel.writeString(String.valueOf(active));
+    }
 
-		@Override
-		public Server[] newArray(int size) {
-			return new Server[size];
-		}
-	};
-
-	public Server(int index, String name, String session) {
-		this.index = index;
-		this.name = name;
-		this.session = session;
-		this.active = true;
-		this.debug = true;
-	}
-
-	public Server(String session) {
-		this.session = session;
-	}
-
-	public Server(Parcel parcel) {
-		this.name = parcel.readString();
-		this.session = parcel.readString();
-		this.active = Boolean.valueOf(parcel.readString());
-	}
-
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeString(name);
-		parcel.writeString(session);
-		parcel.writeString(String.valueOf(active));
-	}
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }

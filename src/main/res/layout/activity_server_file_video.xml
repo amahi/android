@@ -17,8 +17,7 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -42,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:fitsSystemWindows="false"/>
+                android:fitsSystemWindows="false" />
 
         </FrameLayout>
 
@@ -55,12 +54,12 @@
                 android:id="@+id/subtitles_stub"
                 android:layout_width="1dp"
                 android:layout_height="1dp"
-                android:layout="@layout/subtitles_surface"/>
+                android:layout="@layout/subtitles_surface" />
 
             <View
                 android:id="@+id/container_controls"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
         </FrameLayout>
 
@@ -69,7 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:fitsSystemWindows="false"/>
+            android:fitsSystemWindows="false" />
 
     </FrameLayout>
 
@@ -77,5 +76,5 @@
         android:id="@android:id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center" />
 </FrameLayout>

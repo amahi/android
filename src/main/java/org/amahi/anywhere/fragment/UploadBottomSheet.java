@@ -46,57 +46,57 @@ import java.util.ArrayList;
  */
 public class UploadBottomSheet extends BottomSheetDialogFragment implements AdapterView.OnItemClickListener {
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-							 @Nullable Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.upload_bottom_sheet, container);
-		rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-			@Override
-			public void onGlobalLayout() {
-				BottomSheetDialog bottomSheetDialog = (BottomSheetDialog)getDialog();
-				FrameLayout bottomSheet = (FrameLayout)bottomSheetDialog.findViewById(android.support.design.R.id.design_bottom_sheet);
-				assert bottomSheet != null;
-				BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
-				behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-				behavior.setPeekHeight(0);
-			}
-		});
-		return rootView;
-	}
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.upload_bottom_sheet, container);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) getDialog();
+                FrameLayout bottomSheet = (FrameLayout) bottomSheetDialog.findViewById(android.support.design.R.id.design_bottom_sheet);
+                assert bottomSheet != null;
+                BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                behavior.setPeekHeight(0);
+            }
+        });
+        return rootView;
+    }
 
-	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		setUpListView(view);
-	}
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setUpListView(view);
+    }
 
-	private ArrayList<UploadOption> getListItems() {
-		ArrayList<UploadOption> uploadOptions = new ArrayList<>();
+    private ArrayList<UploadOption> getListItems() {
+        ArrayList<UploadOption> uploadOptions = new ArrayList<>();
 
-		uploadOptions.add(new UploadOption(UploadOption.CAMERA,
-				getString(R.string.upload_camera),
-				R.drawable.ic_camera));
+        uploadOptions.add(new UploadOption(UploadOption.CAMERA,
+            getString(R.string.upload_camera),
+            R.drawable.ic_camera));
 
-		uploadOptions.add(new UploadOption(UploadOption.FILE,
-				getString(R.string.upload_photo),
-				R.drawable.ic_cloud_upload));
+        uploadOptions.add(new UploadOption(UploadOption.FILE,
+            getString(R.string.upload_photo),
+            R.drawable.ic_cloud_upload));
 
-		return uploadOptions;
-	}
+        return uploadOptions;
+    }
 
-	private void setUpListView(View view) {
-		UploadOptionsAdapter adapter = new UploadOptionsAdapter(getContext(), getListItems());
-		ListView listView = (ListView) view.findViewById(R.id.upload_options_list);
-		assert listView != null;
-		listView.setAdapter(adapter);
-		listView.setOnItemClickListener(this);
-	}
+    private void setUpListView(View view) {
+        UploadOptionsAdapter adapter = new UploadOptionsAdapter(getContext(), getListItems());
+        ListView listView = (ListView) view.findViewById(R.id.upload_options_list);
+        assert listView != null;
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
+    }
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		UploadOption uploadOption = getListItems().get(position);
-		BusProvider.getBus().post(new UploadClickEvent(uploadOption.getType()));
-		dismiss();
-	}
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        UploadOption uploadOption = getListItems().get(position);
+        BusProvider.getBus().post(new UploadClickEvent(uploadOption.getType()));
+        dismiss();
+    }
 }

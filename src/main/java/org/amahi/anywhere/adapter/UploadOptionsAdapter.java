@@ -38,53 +38,53 @@ import java.util.ArrayList;
  * for the {@link UploadBottomSheet}.
  */
 public class UploadOptionsAdapter extends BaseAdapter {
-	private ArrayList<UploadOption> uploadOptions;
-	private LayoutInflater inflater;
+    private ArrayList<UploadOption> uploadOptions;
+    private LayoutInflater inflater;
 
-	static class ViewHolder {
-		ImageView image;
-		TextView text;
-	}
+    public UploadOptionsAdapter(Context context, ArrayList<UploadOption> uploadOptions) {
+        this.uploadOptions = uploadOptions;
+        this.inflater = LayoutInflater.from(context);
+    }
 
-	public UploadOptionsAdapter(Context context, ArrayList<UploadOption> uploadOptions) {
-		this.uploadOptions = uploadOptions;
-		this.inflater = LayoutInflater.from(context);
-	}
+    @Override
+    public int getCount() {
+        return uploadOptions.size();
+    }
 
-	@Override
-	public int getCount() {
-		return uploadOptions.size();
-	}
+    @Override
+    public Object getItem(int position) {
+        return uploadOptions.get(position);
+    }
 
-	@Override
-	public Object getItem(int position) {
-		return uploadOptions.get(position);
-	}
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        UploadOption uploadOption = uploadOptions.get(position);
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		ViewHolder holder;
-		UploadOption uploadOption = uploadOptions.get(position);
+        if (convertView == null) {
+            holder = new ViewHolder();
+            convertView = inflater.inflate(R.layout.upload_list_item, parent, false);
+            convertView.setTag(holder);
 
-		if (convertView == null) {
-			holder = new ViewHolder();
-			convertView = inflater.inflate(R.layout.upload_list_item, parent, false);
-			convertView.setTag(holder);
+            holder.image = (ImageView) convertView.findViewById(R.id.option_icon);
+            holder.text = (TextView) convertView.findViewById(R.id.option_text);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
 
-			holder.image = (ImageView) convertView.findViewById(R.id.option_icon);
-			holder.text = (TextView) convertView.findViewById(R.id.option_text);
-		} else {
-			holder = (ViewHolder) convertView.getTag();
-		}
+        holder.image.setImageResource(uploadOption.getIcon());
+        holder.text.setText(uploadOption.getName());
 
-		holder.image.setImageResource(uploadOption.getIcon());
-		holder.text.setText(uploadOption.getName());
+        return convertView;
+    }
 
-		return convertView;
-	}
+    static class ViewHolder {
+        ImageView image;
+        TextView text;
+    }
 }

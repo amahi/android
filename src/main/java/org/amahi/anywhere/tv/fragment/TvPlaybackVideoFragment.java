@@ -74,33 +74,25 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     private static final int DEFAULT_UPDATE_PERIOD = 1000;
     private static final int UPDATE_PERIOD = 16;
-
+    @Inject
+    ServerClient serverClient;
     private SurfaceHolder mSurfaceHolder;
     private MediaPlayer mediaPlayer;
     private LibVLC mLibVlc;
-
     private Handler mHandler;
     private Runnable mRunnable;
     private Object mSavedState;
-
     private PlaybackControlsRow mPlaybackControlsRow;
-
     private int mCurrentPlaybackState;
     private int mDuration;
-
     private ArrayList<ServerFile> mVideoList;
-
     private ArrayObjectAdapter mRowsAdapter;
     private ArrayObjectAdapter mPrimaryActionsAdapter;
-
     private PlaybackControlsRow.SkipPreviousAction mSkipPreviousAction;
     private PlaybackControlsRow.PlayPauseAction mPlayPauseAction;
     private PlaybackControlsRow.FastForwardAction mFastForwardAction;
     private PlaybackControlsRow.RewindAction mRewindAction;
     private PlaybackControlsRow.SkipNextAction mSkipNextAction;
-
-    @Inject
-    ServerClient serverClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -135,8 +127,8 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         setOnItemViewClickedListener(new OnItemViewClickedListener() {
             @Override
             public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-                if(item instanceof ServerFile){
-                    ServerFile serverFile = (ServerFile)item;
+                if (item instanceof ServerFile) {
+                    ServerFile serverFile = (ServerFile) item;
                     replaceFragment(serverFile);
                 }
             }
@@ -164,7 +156,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
     }
 
     private void replaceFragment(ServerFile serverFile) {
-        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, Fragments.Builder.buildVideoFragment(serverFile,getVideoShare(),getVideoFiles())).commit();
+        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, Fragments.Builder.buildVideoFragment(serverFile, getVideoShare(), getVideoFiles())).commit();
     }
 
     private boolean isVideo(ServerFile serverFile) {
@@ -263,21 +255,21 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         setAdapter(mRowsAdapter);
     }
 
-    private void addOtherRows(){
+    private void addOtherRows() {
         ArrayObjectAdapter adapter = new ArrayObjectAdapter(new MainTVPresenter(getActivity(), serverClient, getVideoShare()));
 
-        for(ServerFile serverFile:mVideoList) adapter.add(serverFile);
+        for (ServerFile serverFile : mVideoList) adapter.add(serverFile);
 
-        mRowsAdapter.add(new ListRow(getHeader(),adapter));
+        mRowsAdapter.add(new ListRow(getHeader(), adapter));
     }
 
-    private HeaderItem getHeader(){
+    private HeaderItem getHeader() {
         HeaderItem headerItem;
 
-        if(getVideoFile().getParentFile()==null)
-            headerItem = new HeaderItem("Video(s) in "+getVideoShare().getName());
+        if (getVideoFile().getParentFile() == null)
+            headerItem = new HeaderItem("Video(s) in " + getVideoShare().getName());
         else
-            headerItem = new HeaderItem("Video(s) in "+getVideoFile().getParentFile().getName());
+            headerItem = new HeaderItem("Video(s) in " + getVideoFile().getParentFile().getName());
 
         return headerItem;
     }
@@ -292,7 +284,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
     }
 
     public void rewind() {
-        if(mPlaybackControlsRow.getCurrentTime() - (10*1000)>0){
+        if (mPlaybackControlsRow.getCurrentTime() - (10 * 1000) > 0) {
             mediaPlayer.setTime(mPlaybackControlsRow.getCurrentTime() - (10 * 1000));
             mPlaybackControlsRow.setCurrentTime((int) mediaPlayer.getTime());
         }
@@ -336,12 +328,12 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         mFastForwardAction = new PlaybackControlsRow.FastForwardAction(getActivity());
         mSkipNextAction = new PlaybackControlsRow.SkipNextAction(getActivity());
         mSkipPreviousAction = new PlaybackControlsRow.SkipPreviousAction(getActivity());
-        if(!isMetadataAvailable())
+        if (!isMetadataAvailable())
             mPrimaryActionsAdapter.add(mSkipPreviousAction);
         mPrimaryActionsAdapter.add(mRewindAction);
         mPrimaryActionsAdapter.add(mPlayPauseAction);
         mPrimaryActionsAdapter.add(mFastForwardAction);
-        if(!isMetadataAvailable())
+        if (!isMetadataAvailable())
             mPrimaryActionsAdapter.add(mSkipNextAction);
         playbackStateChanged();
     }
@@ -446,11 +438,11 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         mediaPlayer = null;
     }
 
-    public PlaybackControlsRow.PlayPauseAction getmPlayPauseAction(){
+    public PlaybackControlsRow.PlayPauseAction getmPlayPauseAction() {
         return mPlayPauseAction;
     }
 
-    public Object getmSavedState(){
+    public Object getmSavedState() {
         return mSavedState;
     }
 }

@@ -3,7 +3,7 @@
 
     <item android:id="@android:id/background">
         <shape>
-            <solid android:color="@android:color/transparent"/>
+            <solid android:color="@android:color/transparent" />
         </shape>
     </item>
 
@@ -12,7 +12,7 @@
             android:clipOrientation="vertical"
             android:gravity="bottom">
             <shape>
-                <solid android:color="@android:color/white"/>
+                <solid android:color="@android:color/white" />
             </shape>
         </clip>
     </item>

@@ -55,12 +55,12 @@ public class AmahiApplication extends Application {
 
         setUpInjections();
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			setUpJobs();
-		}
-	}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            setUpJobs();
+        }
+    }
 
-	private void setUpLogging() {
+    private void setUpLogging() {
         if (isDebugging()) {
             Timber.plant(new Timber.DebugTree());
         }
@@ -90,18 +90,18 @@ public class AmahiApplication extends Application {
         injector.inject(injectionsConsumer);
     }
 
-    public static class JobIds {
-        public static final int PHOTOS_CONTENT_JOB = 125;
-		public static final int NET_CONNECTIVITY_JOB = 126;
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void setUpJobs() {
+        if (!PhotosContentJob.isScheduled(this)) {
+            PhotosContentJob.scheduleJob(this);
+        }
+        if (!NetConnectivityJob.isScheduled(this)) {
+            NetConnectivityJob.scheduleJob(this);
+        }
     }
 
-	@RequiresApi(api = Build.VERSION_CODES.N)
-	private void setUpJobs() {
-		if (!PhotosContentJob.isScheduled(this)) {
-			PhotosContentJob.scheduleJob(this);
-		}
-		if (!NetConnectivityJob.isScheduled(this)) {
-			NetConnectivityJob.scheduleJob(this);
-		}
-	}
+    public static class JobIds {
+        public static final int PHOTOS_CONTENT_JOB = 125;
+        public static final int NET_CONNECTIVITY_JOB = 126;
+    }
 }

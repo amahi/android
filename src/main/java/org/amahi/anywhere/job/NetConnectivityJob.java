@@ -26,66 +26,60 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import org.amahi.anywhere.AmahiApplication.JobIds;
 import org.amahi.anywhere.service.UploadService;
-import org.amahi.anywhere.util.Intents;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Job to monitor when there is a change to photos in the media provider.
  */
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class NetConnectivityJob extends JobService {
-	private final String TAG = this.getClass().getName();
+    // A pre-built JobInfo we use for scheduling our job.
+    static final JobInfo JOB_INFO;
 
-	// A pre-built JobInfo we use for scheduling our job.
-	static final JobInfo JOB_INFO;
+    static {
+        JobInfo.Builder builder = new JobInfo.Builder(JobIds.NET_CONNECTIVITY_JOB,
+            new ComponentName("org.amahi.anywhere", NetConnectivityJob.class.getName()));
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        JOB_INFO = builder.build();
+    }
 
-	static {
-		JobInfo.Builder builder = new JobInfo.Builder(JobIds.NET_CONNECTIVITY_JOB,
-				new ComponentName("org.amahi.anywhere", NetConnectivityJob.class.getName()));
-		builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-		JOB_INFO = builder.build();
-	}
+    private final String TAG = this.getClass().getName();
 
-	// Schedule this job, replace any existing one.
-	public static void scheduleJob(Context context) {
-		JobScheduler js = context.getSystemService(JobScheduler.class);
-		js.schedule(JOB_INFO);
-		Log.i("NetworkConnectivityJob", "JOB SCHEDULED!");
-	}
+    // Schedule this job, replace any existing one.
+    public static void scheduleJob(Context context) {
+        JobScheduler js = context.getSystemService(JobScheduler.class);
+        js.schedule(JOB_INFO);
+        Log.i("NetworkConnectivityJob", "JOB SCHEDULED!");
+    }
 
-	// Check whether this job is currently scheduled.
-	public static boolean isScheduled(Context context) {
-		JobScheduler js = context.getSystemService(JobScheduler.class);
-		JobInfo job = js.getPendingJob(JobIds.NET_CONNECTIVITY_JOB);
-		return job != null;
-	}
+    // Check whether this job is currently scheduled.
+    public static boolean isScheduled(Context context) {
+        JobScheduler js = context.getSystemService(JobScheduler.class);
+        JobInfo job = js.getPendingJob(JobIds.NET_CONNECTIVITY_JOB);
+        return job != null;
+    }
 
-	// Cancel this job, if currently scheduled.
-	public static void cancelJob(Context context) {
-		JobScheduler js = context.getSystemService(JobScheduler.class);
-		js.cancel(JobIds.NET_CONNECTIVITY_JOB);
-	}
+    // Cancel this job, if currently scheduled.
+    public static void cancelJob(Context context) {
+        JobScheduler js = context.getSystemService(JobScheduler.class);
+        js.cancel(JobIds.NET_CONNECTIVITY_JOB);
+    }
 
-	@Override
-	public boolean onStartJob(JobParameters params) {
-		Log.i(TAG, "JOB STARTED!");
-		Intent intent = new Intent(this, UploadService.class);
-		startService(intent);
-		return false;
-	}
+    @Override
+    public boolean onStartJob(JobParameters params) {
+        Log.i(TAG, "JOB STARTED!");
+        Intent intent = new Intent(this, UploadService.class);
+        startService(intent);
+        return false;
+    }
 
-	@Override
-	public boolean onStopJob(JobParameters params) {
-		return false;
-	}
+    @Override
+    public boolean onStopJob(JobParameters params) {
+        return false;
+    }
 }

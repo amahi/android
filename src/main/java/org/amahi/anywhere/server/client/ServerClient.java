@@ -74,238 +74,238 @@ import static org.amahi.anywhere.util.Android.loadServersFromAsset;
  */
 @Singleton
 public class ServerClient {
-	private final ApiAdapter apiAdapter;
-	private final ProxyApi proxyApi;
-	private ServerApi serverApi;
+    private final ApiAdapter apiAdapter;
+    private final ProxyApi proxyApi;
+    private ServerApi serverApi;
 
-	private Server server;
-	private ServerRoute serverRoute;
-	private String serverAddress;
-	private ApiConnection serverConnection;
+    private Server server;
+    private ServerRoute serverRoute;
+    private String serverAddress;
+    private ApiConnection serverConnection;
 
-	private int network;
+    private int network;
 
-	@Inject
-	public ServerClient(ApiAdapter apiAdapter) {
-		this.apiAdapter = apiAdapter;
-		this.proxyApi = buildProxyApi();
+    @Inject
+    public ServerClient(ApiAdapter apiAdapter) {
+        this.apiAdapter = apiAdapter;
+        this.proxyApi = buildProxyApi();
 
-		this.serverConnection = ApiConnection.AUTO;
+        this.serverConnection = ApiConnection.AUTO;
 
-		this.network = Integer.MIN_VALUE;
+        this.network = Integer.MIN_VALUE;
 
-		setUpBus();
-	}
+        setUpBus();
+    }
 
-	private ProxyApi buildProxyApi() {
-		return apiAdapter.create(ProxyApi.class, Api.getProxyUrl());
-	}
+    private ProxyApi buildProxyApi() {
+        return apiAdapter.create(ProxyApi.class, Api.getProxyUrl());
+    }
 
-	private void setUpBus() {
-		BusProvider.getBus().register(this);
-	}
+    private void setUpBus() {
+        BusProvider.getBus().register(this);
+    }
 
-	@Subscribe
-	public void onNetworkChanged(NetworkChangedEvent event) {
-		if (this.serverConnection != ApiConnection.AUTO) {
-			return;
-		}
+    @Subscribe
+    public void onNetworkChanged(NetworkChangedEvent event) {
+        if (this.serverConnection != ApiConnection.AUTO) {
+            return;
+        }
 
-		if (!isServerRouteLoaded()) {
-			return;
-		}
+        if (!isServerRouteLoaded()) {
+            return;
+        }
 
-		if (this.network != event.getNetwork()) {
-			this.network = event.getNetwork();
+        if (this.network != event.getNetwork()) {
+            this.network = event.getNetwork();
 
-			startServerConnectionDetection();
-		}
-	}
+            startServerConnectionDetection();
+        }
+    }
 
-	private boolean isServerRouteLoaded() {
-		return serverRoute != null;
-	}
+    private boolean isServerRouteLoaded() {
+        return serverRoute != null;
+    }
 
-	private void startServerConnectionDetection() {
-		this.serverAddress = serverRoute.getLocalAddress();
-		this.serverApi = buildServerApi();
+    private void startServerConnectionDetection() {
+        this.serverAddress = serverRoute.getLocalAddress();
+        this.serverApi = buildServerApi();
 
-		ServerConnectionDetectingTask.execute(serverRoute);
-	}
+        ServerConnectionDetectingTask.execute(serverRoute);
+    }
 
-	private ServerApi buildServerApi() {
-		return apiAdapter.create(ServerApi.class, serverAddress);
-	}
+    private ServerApi buildServerApi() {
+        return apiAdapter.create(ServerApi.class, serverAddress);
+    }
 
-	@Subscribe
-	public void onServerConnectionDetected(ServerConnectionDetectedEvent event) {
-		this.serverAddress = event.getServerAddress();
-		this.serverApi = buildServerApi();
+    @Subscribe
+    public void onServerConnectionDetected(ServerConnectionDetectedEvent event) {
+        this.serverAddress = event.getServerAddress();
+        this.serverApi = buildServerApi();
 
-		finishServerConnectionDetection();
-	}
+        finishServerConnectionDetection();
+    }
 
-	private void finishServerConnectionDetection() {
-		BusProvider.getBus().post(new ServerConnectionChangedEvent());
-	}
+    private void finishServerConnectionDetection() {
+        BusProvider.getBus().post(new ServerConnectionChangedEvent());
+    }
 
-	public boolean isConnected() {
-		return (server != null) && (serverRoute != null) && (serverAddress != null);
-	}
+    public boolean isConnected() {
+        return (server != null) && (serverRoute != null) && (serverAddress != null);
+    }
 
-	public boolean isConnected(Server server) {
-		return (this.server != null) && (this.server.getSession().equals(server.getSession()));
-	}
+    public boolean isConnected(Server server) {
+        return (this.server != null) && (this.server.getSession().equals(server.getSession()));
+    }
 
-	public boolean isConnectedLocal() {
-		return serverAddress.equals(serverRoute.getLocalAddress());
-	}
+    public boolean isConnectedLocal() {
+        return serverAddress.equals(serverRoute.getLocalAddress());
+    }
 
-	public void connect(Context context, Server server) {
-		this.server = server;
+    public void connect(Context context, Server server) {
+        this.server = server;
 
-		if (server.isDebug()) {
-			try {
-				ServerRoute serverRoute = new ServerRoute();
-				JSONArray jsonArray = new JSONArray(loadServersFromAsset(context));
-				JSONObject jsonObject = jsonArray.getJSONObject(server.getIndex());
-				serverRoute.setLocalAddress(jsonObject.getString("local_address"));
-				serverRoute.setRemoteAddress(jsonObject.getString("remote_address"));
-				BusProvider.getBus().post(new ServerRouteLoadedEvent(serverRoute));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-		} else {
-			startServerConnection();
-		}
-	}
+        if (server.isDebug()) {
+            try {
+                ServerRoute serverRoute = new ServerRoute();
+                JSONArray jsonArray = new JSONArray(loadServersFromAsset(context));
+                JSONObject jsonObject = jsonArray.getJSONObject(server.getIndex());
+                serverRoute.setLocalAddress(jsonObject.getString("local_address"));
+                serverRoute.setRemoteAddress(jsonObject.getString("remote_address"));
+                BusProvider.getBus().post(new ServerRouteLoadedEvent(serverRoute));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            startServerConnection();
+        }
+    }
 
-	private void startServerConnection() {
-		proxyApi.getServerRoute(server.getSession()).enqueue(new ServerRouteResponse());
-	}
+    private void startServerConnection() {
+        proxyApi.getServerRoute(server.getSession()).enqueue(new ServerRouteResponse());
+    }
 
-	@Subscribe
-	public void onServerRouteLoaded(ServerRouteLoadedEvent event) {
-		this.serverRoute = event.getServerRoute();
+    @Subscribe
+    public void onServerRouteLoaded(ServerRouteLoadedEvent event) {
+        this.serverRoute = event.getServerRoute();
 
-		finishServerConnection();
-	}
+        finishServerConnection();
+    }
 
-	private void finishServerConnection() {
-		BusProvider.getBus().post(new ServerConnectedEvent(server));
-	}
+    private void finishServerConnection() {
+        BusProvider.getBus().post(new ServerConnectedEvent(server));
+    }
 
-	public void connectAuto() {
-		this.serverConnection = ApiConnection.AUTO;
-		if (!isServerRouteLoaded()) {
-			return;
-		}
-		startServerConnectionDetection();
-	}
+    public void connectAuto() {
+        this.serverConnection = ApiConnection.AUTO;
+        if (!isServerRouteLoaded()) {
+            return;
+        }
+        startServerConnectionDetection();
+    }
 
-	public void connectLocal() {
-		this.serverConnection = ApiConnection.LOCAL;
-		if (!isServerRouteLoaded()) {
-			return;
-		}
-		this.serverAddress = serverRoute.getLocalAddress();
-		this.serverApi = buildServerApi();
-	}
+    public void connectLocal() {
+        this.serverConnection = ApiConnection.LOCAL;
+        if (!isServerRouteLoaded()) {
+            return;
+        }
+        this.serverAddress = serverRoute.getLocalAddress();
+        this.serverApi = buildServerApi();
+    }
 
-	public void connectRemote() {
-		this.serverConnection = ApiConnection.REMOTE;
-		if (!isServerRouteLoaded()) {
-			return;
-		}
-		this.serverAddress = serverRoute.getRemoteAddress();
-		this.serverApi = buildServerApi();
-	}
+    public void connectRemote() {
+        this.serverConnection = ApiConnection.REMOTE;
+        if (!isServerRouteLoaded()) {
+            return;
+        }
+        this.serverAddress = serverRoute.getRemoteAddress();
+        this.serverApi = buildServerApi();
+    }
 
-	public String getServerAddress() {
-		return serverAddress;
-	}
+    public String getServerAddress() {
+        return serverAddress;
+    }
 
-	public void getShares() {
-		serverApi.getShares(server.getSession()).enqueue(new ServerSharesResponse());
-	}
+    public void getShares() {
+        serverApi.getShares(server.getSession()).enqueue(new ServerSharesResponse());
+    }
 
-	public void getFiles(ServerShare share) {
-		if (share == null) {
-			return;
-		}
+    public void getFiles(ServerShare share) {
+        if (share == null) {
+            return;
+        }
 
-		serverApi.getFiles(server.getSession(), share.getName(), null).enqueue(new ServerFilesResponse(share));
-	}
+        serverApi.getFiles(server.getSession(), share.getName(), null).enqueue(new ServerFilesResponse(share));
+    }
 
-	public void getFiles(ServerShare share, ServerFile directory) {
-		serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
-	}
+    public void getFiles(ServerShare share, ServerFile directory) {
+        serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
+    }
 
-	public void deleteFile(ServerShare share, ServerFile serverFile) {
-		serverApi.deleteFile(server.getSession(), share.getName(), serverFile.getPath())
-				.enqueue(new ServerFileDeleteResponse());
-	}
+    public void deleteFile(ServerShare share, ServerFile serverFile) {
+        serverApi.deleteFile(server.getSession(), share.getName(), serverFile.getPath())
+            .enqueue(new ServerFileDeleteResponse());
+    }
 
-	private MultipartBody.Part createFilePart(int id, File file) {
-		return MultipartBody.Part.createFormData("file",
-				file.getName(),
-				new ProgressRequestBody(id, file));
-	}
+    private MultipartBody.Part createFilePart(int id, File file) {
+        return MultipartBody.Part.createFormData("file",
+            file.getName(),
+            new ProgressRequestBody(id, file));
+    }
 
-	public void uploadFile(int id, File file, String shareName, String path) {
-		MultipartBody.Part filePart = createFilePart(id, file);
-		uploadFileAsync(id, filePart, shareName, path);
-	}
+    public void uploadFile(int id, File file, String shareName, String path) {
+        MultipartBody.Part filePart = createFilePart(id, file);
+        uploadFileAsync(id, filePart, shareName, path);
+    }
 
-	public void uploadFile(int id, File file, ServerShare share, ServerFile directory) {
-		MultipartBody.Part filePart = createFilePart(id, file);
-		String path = "/";
-		if (directory != null)
-			path = directory.getPath();
-		uploadFileAsync(id, filePart, share.getName(), path);
-	}
+    public void uploadFile(int id, File file, ServerShare share, ServerFile directory) {
+        MultipartBody.Part filePart = createFilePart(id, file);
+        String path = "/";
+        if (directory != null)
+            path = directory.getPath();
+        uploadFileAsync(id, filePart, share.getName(), path);
+    }
 
-	private void uploadFileAsync(int id, MultipartBody.Part filePart, String shareName, String path) {
-		serverApi.uploadFile(server.getSession(), shareName, path, filePart)
-				.enqueue(new ServerFileUploadResponse(id));
-	}
+    private void uploadFileAsync(int id, MultipartBody.Part filePart, String shareName, String path) {
+        serverApi.uploadFile(server.getSession(), shareName, path, filePart)
+            .enqueue(new ServerFileUploadResponse(id));
+    }
 
-	private void uploadFileSync(int id, MultipartBody.Part filePart, String shareName, String path) {
-		try {
-			Response<ResponseBody> response = serverApi
-					.uploadFile(server.getSession(), shareName, path, filePart)
-					.execute();
-			if (response.isSuccessful()) {
-				BusProvider.getBus().post(
-						new ServerFileUploadCompleteEvent(id, true));
-			} else {
-				BusProvider.getBus().post(
-						new ServerFileUploadCompleteEvent(id, false));
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    private void uploadFileSync(int id, MultipartBody.Part filePart, String shareName, String path) {
+        try {
+            Response<ResponseBody> response = serverApi
+                .uploadFile(server.getSession(), shareName, path, filePart)
+                .execute();
+            if (response.isSuccessful()) {
+                BusProvider.getBus().post(
+                    new ServerFileUploadCompleteEvent(id, true));
+            } else {
+                BusProvider.getBus().post(
+                    new ServerFileUploadCompleteEvent(id, false));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public Uri getFileUri(ServerShare share, ServerFile file) {
-		return Uri.parse(serverAddress)
-				.buildUpon()
-				.path("files")
-				.appendQueryParameter("s", share.getName())
-				.appendQueryParameter("p", file.getPath())
-				.appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
-				.appendQueryParameter("session", server.getSession())
-				.build();
-	}
+    public Uri getFileUri(ServerShare share, ServerFile file) {
+        return Uri.parse(serverAddress)
+            .buildUpon()
+            .path("files")
+            .appendQueryParameter("s", share.getName())
+            .appendQueryParameter("p", file.getPath())
+            .appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
+            .appendQueryParameter("session", server.getSession())
+            .build();
+    }
 
-	public void getFileMetadata(ServerShare share, ServerFile file, Callback<ServerFileMetadata> callback) {
-		if ((server == null) || (share == null) || (file == null)) {
-			return;
-		}
-		serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag()).enqueue(callback);
-	}
+    public void getFileMetadata(ServerShare share, ServerFile file, Callback<ServerFileMetadata> callback) {
+        if ((server == null) || (share == null) || (file == null)) {
+            return;
+        }
+        serverApi.getFileMetadata(server.getSession(), file.getName(), share.getTag()).enqueue(callback);
+    }
 
-	public void getApps() {
-		serverApi.getApps(server.getSession()).enqueue(new ServerAppsResponse());
-	}
+    public void getApps() {
+        serverApi.getApps(server.getSession()).enqueue(new ServerAppsResponse());
+    }
 }

@@ -36,22 +36,21 @@ import retrofit2.Response;
  * Authentication response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
  * as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class AuthenticationResponse implements Callback<Authentication>
-{
-	@Override
-	public void onResponse(Call<Authentication> call, Response<Authentication> response) {
-		if (response.isSuccessful())
-			BusProvider.getBus().post(new AuthenticationSucceedEvent(response.body()));
-		else
-			this.onFailure(call, new HttpException(response));
-	}
+public class AuthenticationResponse implements Callback<Authentication> {
+    @Override
+    public void onResponse(Call<Authentication> call, Response<Authentication> response) {
+        if (response.isSuccessful())
+            BusProvider.getBus().post(new AuthenticationSucceedEvent(response.body()));
+        else
+            this.onFailure(call, new HttpException(response));
+    }
 
-	@Override
-	public void onFailure(Call<Authentication> call, Throwable t) {
-		if (t instanceof IOException) { //implies no network connection
-			BusProvider.getBus().post(new AuthenticationConnectionFailedEvent());
-		} else {
-			BusProvider.getBus().post(new AuthenticationFailedEvent());
-		}
-	}
+    @Override
+    public void onFailure(Call<Authentication> call, Throwable t) {
+        if (t instanceof IOException) { //implies no network connection
+            BusProvider.getBus().post(new AuthenticationConnectionFailedEvent());
+        } else {
+            BusProvider.getBus().post(new AuthenticationFailedEvent());
+        }
+    }
 }

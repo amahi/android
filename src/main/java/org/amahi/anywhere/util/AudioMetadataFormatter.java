@@ -40,12 +40,12 @@ public final class AudioMetadataFormatter {
         this.audioAlbum = audioAlbum;
     }
 
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
     public long getDuration() {
         return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 
     public String getAudioTitle(ServerFile audioFile) {

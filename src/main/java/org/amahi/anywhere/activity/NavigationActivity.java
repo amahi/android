@@ -47,7 +47,6 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.activity.IntroActivity;
-import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.CheckTV;
 import org.amahi.anywhere.util.Fragments;
@@ -64,17 +63,8 @@ import javax.inject.Inject;
  * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
 public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
-    private static final class State {
-        private State() {
-        }
-
-        public static final String NAVIGATION_TITLE = "navigation_title";
-        public static final String NAVIGATION_DRAWER_VISIBLE = "navigation_drawer_visible";
-    }
-
     @Inject
     ServerClient serverClient;
-
     private ActionBarDrawerToggle navigationDrawerToggle;
     private String navigationTitle;
 
@@ -117,8 +107,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         setUpShares();
     }
 
-    private void inflateStubs(){
-        ViewStub tvLoadingStub = (ViewStub)findViewById(R.id.view_stub_tv_loading);
+    private void inflateStubs() {
+        ViewStub tvLoadingStub = (ViewStub) findViewById(R.id.view_stub_tv_loading);
         tvLoadingStub.inflate();
     }
 
@@ -397,5 +387,12 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         super.onPause();
 
         BusProvider.getBus().unregister(this);
+    }
+
+    private static final class State {
+        public static final String NAVIGATION_TITLE = "navigation_title";
+        public static final String NAVIGATION_DRAWER_VISIBLE = "navigation_drawer_visible";
+        private State() {
+        }
     }
 }

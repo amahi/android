@@ -64,6 +64,7 @@ public final class Intents {
         public static final String SERVER_FILES = "server_files";
         public static final String SERVER_SHARE = "server_share";
         public static final String IMAGE_URIS = "image_uris";
+
         private Extras() {
         }
     }
@@ -72,6 +73,7 @@ public final class Intents {
         static final String EMAIL = "mailto:%s?subject=%s";
         static final String GOOGLE_PLAY = "market://details?id=%s";
         static final String GOOGLE_PLAY_SEARCH = "market://search?q=%s";
+
         private Uris() {
         }
     }
@@ -159,8 +161,8 @@ public final class Intents {
             PackageManager packageManager = context.getPackageManager();
 
             List<ResolveInfo> applications = packageManager.queryIntentActivities(
-                    buildServerFileOpeningIntent(file),
-                    PackageManager.MATCH_DEFAULT_ONLY);
+                buildServerFileOpeningIntent(file),
+                PackageManager.MATCH_DEFAULT_ONLY);
 
             return !applications.isEmpty();
         }
@@ -219,20 +221,20 @@ public final class Intents {
             return intent;
         }
 
-        public Intent buildMediaPickerIntent () {
+        public Intent buildMediaPickerIntent() {
             Intent intent = new Intent(Intent.ACTION_PICK,
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             intent.setType("image/* video/*");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"image/*", "video/*"});
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "video/*"});
             }
             intent = Intent.createChooser(intent, context.getString(R.string.message_media_upload));
             return intent;
         }
 
         public Intent buildCameraIntent() {
-			return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		}
+            return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        }
 
         public Intent buildUploadServiceIntent(Uri uri) {
             ArrayList<Uri> uris = new ArrayList<>();
@@ -240,7 +242,7 @@ public final class Intents {
             return buildUploadServiceIntent(uris);
         }
 
-		public Intent buildUploadServiceIntent(ArrayList<Uri> uris) {
+        public Intent buildUploadServiceIntent(ArrayList<Uri> uris) {
             Intent uploadService = new Intent(context, UploadService.class);
             uploadService.putParcelableArrayListExtra(Extras.IMAGE_URIS, uris);
             return uploadService;

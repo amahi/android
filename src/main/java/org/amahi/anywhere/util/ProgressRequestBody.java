@@ -38,68 +38,67 @@ import okio.BufferedSink;
  * for file upload.
  */
 public class ProgressRequestBody extends RequestBody {
-	private int mId;
-	private File mFile;
-	private int lastProgress = 0;
+    private static final int DEFAULT_BUFFER_SIZE = 2048;
+    private int mId;
+    private File mFile;
+    private int lastProgress = 0;
 
-	private static final int DEFAULT_BUFFER_SIZE = 2048;
+    public ProgressRequestBody(int id, File file) {
+        mId = id;
+        mFile = new File(file.getPath());
+    }
 
-	public ProgressRequestBody(int id, File file) {
-		mId = id;
-		mFile = new File(file.getPath());
-	}
+    @Override
+    public MediaType contentType() {
+        // Only for uploading images
+        return MediaType.parse("image/*");
+    }
 
-	@Override
-	public MediaType contentType() {
-		// Only for uploading images
-		return MediaType.parse("image/*");
-	}
+    @Override
+    public long contentLength() throws IOException {
+        return mFile.length();
+    }
 
-	@Override
-	public long contentLength() throws IOException {
-		return mFile.length();
-	}
+    @Override
+    public void writeTo(BufferedSink sink) throws IOException {
+        long fileLength = mFile.length();
+        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+        FileInputStream in = new FileInputStream(mFile);
+        long uploaded = 0;
 
-	@Override
-	public void writeTo(BufferedSink sink) throws IOException {
-		long fileLength = mFile.length();
-		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-		FileInputStream in = new FileInputStream(mFile);
-		long uploaded = 0;
+        //noinspection TryFinallyCanBeTryWithResources
+        try {
+            int read;
+            Handler handler = new Handler(Looper.getMainLooper());
+            while ((read = in.read(buffer)) != -1) {
 
-		//noinspection TryFinallyCanBeTryWithResources
-		try {
-			int read;
-			Handler handler = new Handler(Looper.getMainLooper());
-			while ((read = in.read(buffer)) != -1) {
+                uploaded += read;
+                sink.write(buffer, 0, read);
 
-				uploaded += read;
-				sink.write(buffer, 0, read);
+                // update progress on UI thread
+                handler.post(new ProgressUpdater(uploaded, fileLength));
+            }
+        } finally {
+            in.close();
+        }
+    }
 
-				// update progress on UI thread
-				handler.post(new ProgressUpdater(uploaded, fileLength));
-			}
-		} finally {
-			in.close();
-		}
-	}
+    private class ProgressUpdater implements Runnable {
+        private long mUploaded;
+        private long mTotal;
 
-	private class ProgressUpdater implements Runnable {
-		private long mUploaded;
-		private long mTotal;
+        ProgressUpdater(long uploaded, long total) {
+            mUploaded = uploaded;
+            mTotal = total;
+        }
 
-		ProgressUpdater(long uploaded, long total) {
-			mUploaded = uploaded;
-			mTotal = total;
-		}
-
-		@Override
-		public void run() {
-			int progress = (int) (100 * mUploaded / mTotal);
-			if (lastProgress != progress) {
-				lastProgress = progress;
-				BusProvider.getBus().post(new ServerFileUploadProgressEvent(mId, progress));
-			}
-		}
-	}
+        @Override
+        public void run() {
+            int progress = (int) (100 * mUploaded / mTotal);
+            if (lastProgress != progress) {
+                lastProgress = progress;
+                BusProvider.getBus().post(new ServerFileUploadProgressEvent(mId, progress));
+            }
+        }
+    }
 }

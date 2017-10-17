@@ -19,13 +19,13 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -35,60 +35,58 @@ import org.amahi.anywhere.util.Intents;
 /**
  * Application search dialog.
  */
-public class GooglePlaySearchFragment extends DialogFragment implements DialogInterface.OnClickListener
-{
-	public static final String TAG = "google_play_search";
+public class GooglePlaySearchFragment extends DialogFragment implements DialogInterface.OnClickListener {
+    public static final String TAG = "google_play_search";
 
-	public static GooglePlaySearchFragment newInstance(ServerFile file) {
-		GooglePlaySearchFragment fragment = new GooglePlaySearchFragment();
+    public static GooglePlaySearchFragment newInstance(ServerFile file) {
+        GooglePlaySearchFragment fragment = new GooglePlaySearchFragment();
 
-		fragment.setArguments(buildArguments(file));
+        fragment.setArguments(buildArguments(file));
 
-		return fragment;
-	}
+        return fragment;
+    }
 
-	private static Bundle buildArguments(ServerFile file) {
-		Bundle arguments = new Bundle();
+    private static Bundle buildArguments(ServerFile file) {
+        Bundle arguments = new Bundle();
 
-		arguments.putParcelable(Fragments.Arguments.SERVER_FILE, file);
+        arguments.putParcelable(Fragments.Arguments.SERVER_FILE, file);
 
-		return arguments;
-	}
+        return arguments;
+    }
 
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		return buildDialog();
-	}
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return buildDialog();
+    }
 
-	private Dialog buildDialog() {
-		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+    private Dialog buildDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
-		dialogBuilder.setMessage(getString(R.string.message_error_search_application));
-		dialogBuilder.setPositiveButton(getString(R.string.button_search_application), this);
+        dialogBuilder.setMessage(getString(R.string.message_error_search_application));
+        dialogBuilder.setPositiveButton(getString(R.string.button_search_application), this);
 
-		return dialogBuilder.create();
-	}
+        return dialogBuilder.create();
+    }
 
-	@Override
-	public void onClick(DialogInterface dialog, int id) {
-		this.dismiss();
+    @Override
+    public void onClick(DialogInterface dialog, int id) {
+        this.dismiss();
 
-		startGooglePlaySearch();
-	}
+        startGooglePlaySearch();
+    }
 
-	private void startGooglePlaySearch() {
-		String search = getFile().getMime();
+    private void startGooglePlaySearch() {
+        String search = getFile().getMime();
 
-		Intent intent = Intents.Builder.with(getActivity()).buildGooglePlaySearchIntent(search);
-		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-			startActivity(intent);
-		}
-		else {
-			Snackbar.make(getView(),getString(R.string.application_not_found),Snackbar.LENGTH_SHORT).show();
-		}
-	}
+        Intent intent = Intents.Builder.with(getActivity()).buildGooglePlaySearchIntent(search);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Snackbar.make(getView(), getString(R.string.application_not_found), Snackbar.LENGTH_SHORT).show();
+        }
+    }
 
-	private ServerFile getFile() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
-	}
+    private ServerFile getFile() {
+        return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+    }
 }

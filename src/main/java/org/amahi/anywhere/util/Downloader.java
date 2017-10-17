@@ -27,11 +27,13 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import java.io.File;
+import android.support.v4.content.FileProvider;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
+
+import java.io.File;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -67,12 +69,12 @@ public class Downloader extends BroadcastReceiver {
     }
 
     private void startDownloading(Uri downloadUri, String downloadName) {
-        
+
         //code to delete the file if it already exists
-        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)+"/"+downloadName);
-        if(file.exists())
-                file.delete();
-        
+        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName);
+        if (file.exists())
+            file.delete();
+
         DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri)
                 .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName)
                 .setVisibleInDownloadsUi(false)
@@ -113,7 +115,13 @@ public class Downloader extends BroadcastReceiver {
             String downloadUri = downloadInformation.getString(
                     downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 
-            BusProvider.getBus().post(new FileDownloadedEvent(Uri.parse(downloadUri)));
+            if (downloadUri.substring(0, 7).matches("file://")) {
+                downloadUri = downloadUri.substring(7);
+            }
+            File file = new File(downloadUri);
+            Uri contentUri = FileProvider.getUriForFile(context, "org.amahi.anywhere.fileprovider", file);
+
+            BusProvider.getBus().post(new FileDownloadedEvent(contentUri));
         } else {
             BusProvider.getBus().post(new FileDownloadFailedEvent());
         }

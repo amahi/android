@@ -99,15 +99,15 @@ public class TouchImageView extends AppCompatImageView {
                             float deltaY = curr.y - last.y;
                             if (deltaX != 0f || deltaY != 0f) {
                                 float fixTransX = getFixDragTrans(deltaX, viewWidth,
-                                        origWidth * saveScale);
+                                    origWidth * saveScale);
                                 float fixTransY = getFixDragTrans(deltaY, viewHeight,
-                                        origHeight * saveScale);
+                                    origHeight * saveScale);
                                 if (saveScale > 1f) {
                                     matrix.getValues(m);
                                     float absTransX = Math.abs(m[Matrix.MTRANS_X]);
                                     float transXMax = (origWidth * (saveScale - 1f));
                                     if ((transXMax - absTransX < 0.5f && fixTransX < 0f)
-                                            || (absTransX < 0.5f && fixTransX > 0f))
+                                        || (absTransX < 0.5f && fixTransX > 0f))
                                         getParent().requestDisallowInterceptTouchEvent(false);
                                     else
                                         getParent().requestDisallowInterceptTouchEvent(true);
@@ -216,7 +216,7 @@ public class TouchImageView extends AppCompatImageView {
         // Rescales image on rotation
         //
         if (oldMeasuredHeight == viewWidth && oldMeasuredHeight == viewHeight
-                || viewWidth == 0 || viewHeight == 0)
+            || viewWidth == 0 || viewHeight == 0)
             return;
         oldMeasuredHeight = viewHeight;
         oldMeasuredWidth = viewWidth;
@@ -227,7 +227,7 @@ public class TouchImageView extends AppCompatImageView {
 
             Drawable drawable = getDrawable();
             if (drawable == null || drawable.getIntrinsicWidth() == 0
-                    || drawable.getIntrinsicHeight() == 0)
+                || drawable.getIntrinsicHeight() == 0)
                 return;
             int bmWidth = drawable.getIntrinsicWidth();
             int bmHeight = drawable.getIntrinsicHeight();
@@ -241,9 +241,9 @@ public class TouchImageView extends AppCompatImageView {
 
             // Center the image
             float redundantYSpace = (float) viewHeight
-                    - (scale * (float) bmHeight);
+                - (scale * (float) bmHeight);
             float redundantXSpace = (float) viewWidth
-                    - (scale * (float) bmWidth);
+                - (scale * (float) bmWidth);
             redundantYSpace /= (float) 2;
             redundantXSpace /= (float) 2;
 
@@ -263,7 +263,7 @@ public class TouchImageView extends AppCompatImageView {
     }
 
     private class ScaleListener extends
-            ScaleGestureDetector.SimpleOnScaleGestureListener {
+        ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScaleBegin(ScaleGestureDetector detector) {
             mode = State.ZOOM;
@@ -284,12 +284,12 @@ public class TouchImageView extends AppCompatImageView {
             }
 
             if (origWidth * saveScale <= viewWidth
-                    || origHeight * saveScale <= viewHeight)
+                || origHeight * saveScale <= viewHeight)
                 matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2,
-                        viewHeight / 2);
+                    viewHeight / 2);
             else
                 matrix.postScale(mScaleFactor, mScaleFactor,
-                        detector.getFocusX(), detector.getFocusY());
+                    detector.getFocusX(), detector.getFocusY());
 
             fixTrans();
             return true;

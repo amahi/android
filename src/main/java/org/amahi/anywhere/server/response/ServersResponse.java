@@ -19,11 +19,18 @@
 
 package org.amahi.anywhere.server.response;
 
+import android.content.Context;
+
+import org.amahi.anywhere.BuildConfig;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.server.model.Server;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -31,22 +38,50 @@ import retrofit2.Callback;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
+import static org.amahi.anywhere.util.Android.loadServersFromAsset;
+
 /**
  * Servers response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
  * as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class ServersResponse implements Callback<List<Server>>
-{
-	@Override
-	public void onResponse(Call<List<Server>> call, Response<List<Server>> response) {
-		if (response.isSuccessful())
-			BusProvider.getBus().post(new ServersLoadedEvent(response.body()));
-		else
-			this.onFailure(call, new HttpException(response));
-	}
+public class ServersResponse implements Callback<List<Server>> {
+    private Context context;
 
-	@Override
-	public void onFailure(Call<List<Server>> call, Throwable t) {
-		BusProvider.getBus().post(new ServersLoadFailedEvent());
-	}
+    public ServersResponse(Context context) {
+        this.context = context;
+    }
+
+    private List<Server> getLocalServers() {
+        List<Server> servers = new ArrayList<>();
+        try {
+            JSONArray jsonArray = new JSONArray(loadServersFromAsset(context));
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Server server = new Server(i, jsonObject.getString("name"),
+                    jsonObject.getString("session_token"));
+                servers.add(server);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return servers;
+    }
+
+
+    @Override
+    public void onResponse(Call<List<Server>> call, Response<List<Server>> response) {
+        if (response.isSuccessful()) {
+            List<Server> servers = response.body();
+            if (BuildConfig.DEBUG) {
+                servers.addAll(getLocalServers());
+            }
+            BusProvider.getBus().post(new ServersLoadedEvent(servers));
+        } else
+            this.onFailure(call, new HttpException(response));
+    }
+
+    @Override
+    public void onFailure(Call<List<Server>> call, Throwable t) {
+        BusProvider.getBus().post(new ServersLoadFailedEvent());
+    }
 }

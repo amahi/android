@@ -55,8 +55,8 @@ public class TVWebViewActivity extends Activity {
         AmahiApplication.from(this).inject(this);
     }
 
-    private void setWebPage(){
-        WebView webView = (WebView)findViewById(R.id.tv_web_view);
+    private void setWebPage() {
+        WebView webView = (WebView) findViewById(R.id.tv_web_view);
         webView.loadUrl(String.valueOf(getWebResourceUri()));
     }
 

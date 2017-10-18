@@ -26,4 +26,10 @@
         android:title="@string/menu_share"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/menu_delete"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/menu_delete"
+        app:showAsAction="always" />
+
 </menu>

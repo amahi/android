@@ -30,7 +30,6 @@ import android.support.v17.leanback.app.GuidedStepFragment;
 import android.support.v17.leanback.widget.GuidanceStylist;
 import android.support.v17.leanback.widget.GuidedAction;
 import android.support.v4.content.ContextCompat;
-import android.widget.Toast;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NavigationActivity;
@@ -68,9 +67,9 @@ public class ServerSelectFragment extends GuidedStepFragment {
     @Override
     public GuidanceStylist.Guidance onCreateGuidance(Bundle savedInstanceState) {
         return new GuidanceStylist.Guidance(getString(R.string.pref_title_server_select),
-                getString(R.string.pref_title_server_select_desc),
-                "",
-                ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo_shadowless));
+            getString(R.string.pref_title_server_select_desc),
+            "",
+            ContextCompat.getDrawable(getActivity(), R.drawable.ic_app_logo_shadowless));
     }
 
     @Override
@@ -104,12 +103,12 @@ public class ServerSelectFragment extends GuidedStepFragment {
         String desc = getString(R.string.pref_server_active_list_desc);
 
         actions.add(new GuidedAction.Builder(mContext)
-                .title(title)
-                .description(desc)
-                .multilineDescription(true)
-                .infoOnly(true)
-                .enabled(false)
-                .build());
+            .title(title)
+            .description(desc)
+            .multilineDescription(true)
+            .infoOnly(true)
+            .enabled(false)
+            .build());
     }
 
     private void populateData() {
@@ -151,15 +150,15 @@ public class ServerSelectFragment extends GuidedStepFragment {
         for (int i = 0; i < OPTION_NAMES.size(); i++) {
             addCheckedAction(actions,
 
-                    R.drawable.ic_app_logo,
+                R.drawable.ic_app_logo,
 
-                    getActivity(),
+                getActivity(),
 
-                    OPTION_NAMES.get(i),
+                OPTION_NAMES.get(i),
 
-                    OPTION_DESCRIPTIONS.get(i),
+                OPTION_DESCRIPTIONS.get(i),
 
-                    OPTION_CHECKED.get(i));
+                OPTION_CHECKED.get(i));
         }
     }
 
@@ -167,11 +166,11 @@ public class ServerSelectFragment extends GuidedStepFragment {
                                   String title, String desc, boolean checked) {
 
         GuidedAction guidedAction = new GuidedAction.Builder(context)
-                .title(title)
-                .description(desc)
-                .checkSetId(OPTION_CHECK_SET_ID)
-                .icon(iconResId)
-                .build();
+            .title(title)
+            .description(desc)
+            .checkSetId(OPTION_CHECK_SET_ID)
+            .icon(iconResId)
+            .build();
 
         guidedAction.setChecked(checked);
 

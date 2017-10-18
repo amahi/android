@@ -44,12 +44,12 @@ import java.util.ArrayList;
 public class IntroFragment extends OnboardingFragment {
 
     private static final int[] CONTENT_IMAGES = {
-            R.drawable.ic_app_logo,
-            R.drawable.network,
-            R.drawable.photos,
-            R.drawable.music,
-            R.drawable.movies,
-            R.drawable.tick,
+        R.drawable.ic_app_logo,
+        R.drawable.network,
+        R.drawable.photos,
+        R.drawable.music,
+        R.drawable.movies,
+        R.drawable.tick,
     };
     private ArrayList<String> mTitles, mDescriptions;
     private ArrayList<Integer> mColors;
@@ -123,7 +123,7 @@ public class IntroFragment extends OnboardingFragment {
     @Override
     protected View onCreateContentView(LayoutInflater inflater, ViewGroup container) {
         mContentView = (ImageView) inflater.inflate(R.layout.onboarding_image, container,
-                false);
+            false);
 
         ViewGroup.MarginLayoutParams layoutParams = ((ViewGroup.MarginLayoutParams) mContentView.getLayoutParams());
 

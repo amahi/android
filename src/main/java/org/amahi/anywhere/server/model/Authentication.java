@@ -24,12 +24,11 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Authentication API resource.
  */
-public class Authentication
-{
-	@SerializedName("access_token")
-	private String token;
+public class Authentication {
+    @SerializedName("access_token")
+    private String token;
 
-	public String getToken() {
-		return token;
-	}
+    public String getToken() {
+        return token;
+    }
 }

@@ -19,17 +19,12 @@ import java.util.List;
 
 public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDrawerAdapter.NavigationDrawerViewHolder> {
 
-    public static final class NavigationItems
-    {
-        private NavigationItems() {
-        }
-
-        public static final int SHARES = 0;
-        public static final int APPS = 1;
-    }
-
     private final List<Integer> navigationItems;
     private Context mContext;
+    public NavigationDrawerAdapter(Context context, List<Integer> navigationItems) {
+        this.navigationItems = navigationItems;
+        mContext = context;
+    }
 
     public static NavigationDrawerAdapter newLocalAdapter(Context context) {
         return new NavigationDrawerAdapter(context, Arrays.asList(NavigationDrawerAdapter.NavigationItems.SHARES, NavigationDrawerAdapter.NavigationItems.APPS));
@@ -39,27 +34,14 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
         return new NavigationDrawerAdapter(context, Arrays.asList(NavigationDrawerAdapter.NavigationItems.SHARES));
     }
 
-    public NavigationDrawerAdapter(Context context, List<Integer> navigationItems){
-        this.navigationItems = navigationItems;
-        mContext = context;
-    }
-
-    class NavigationDrawerViewHolder extends RecyclerView.ViewHolder{
-        TextView titleShare;
-        NavigationDrawerViewHolder(View itemView) {
-            super(itemView);
-            titleShare = (TextView)itemView.findViewById(R.id.text_share_title);
-        }
-    }
-
     @Override
     public NavigationDrawerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new NavigationDrawerViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_navigation_item,parent,false));
+        return new NavigationDrawerViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_navigation_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(NavigationDrawerViewHolder holder, int position) {
-        holder.titleShare.setText(getNavigationName(mContext,position));
+        holder.titleShare.setText(getNavigationName(mContext, position));
     }
 
     @Override
@@ -77,6 +59,22 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
             default:
                 return null;
+        }
+    }
+
+    public static final class NavigationItems {
+        public static final int SHARES = 0;
+        public static final int APPS = 1;
+        private NavigationItems() {
+        }
+    }
+
+    class NavigationDrawerViewHolder extends RecyclerView.ViewHolder {
+        TextView titleShare;
+
+        NavigationDrawerViewHolder(View itemView) {
+            super(itemView);
+            titleShare = (TextView) itemView.findViewById(R.id.text_share_title);
         }
     }
 

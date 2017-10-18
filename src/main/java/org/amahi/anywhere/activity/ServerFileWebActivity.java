@@ -20,8 +20,6 @@
 package org.amahi.anywhere.activity;
 
 import android.content.ComponentName;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsClient;
@@ -29,9 +27,6 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.customtabs.CustomTabsSession;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -39,7 +34,6 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.util.ViewDirector;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -51,97 +45,96 @@ import javax.inject.Inject;
  * Web activity. Shows web resources such as SVG and HTML files.
  * Backed up by {@link android.webkit.WebView}.
  */
-public class ServerFileWebActivity extends AppCompatActivity
-{
-	private static final Set<String> SUPPORTED_FORMATS;
-	CustomTabsClient mCustomTabsClient;
-	CustomTabsSession mCustomTabsSession;
-	CustomTabsServiceConnection mCustomTabsServiceConnection;
-	CustomTabsIntent mCustomTabsIntent;
+public class ServerFileWebActivity extends AppCompatActivity {
+    private static final Set<String> SUPPORTED_FORMATS;
 
-	static {
-		SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
-			"image/svg+xml",
-			"text/html",
-			"text/plain"
-		));
-	}
+    static {
+        SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
+            "image/svg+xml",
+            "text/html",
+            "text/plain"
+        ));
+    }
 
-	@Inject
-	ServerClient serverClient;
+    CustomTabsClient mCustomTabsClient;
+    CustomTabsSession mCustomTabsSession;
+    CustomTabsServiceConnection mCustomTabsServiceConnection;
+    CustomTabsIntent mCustomTabsIntent;
+    @Inject
+    ServerClient serverClient;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_server_file_web);
+    public static boolean supports(String mime_type) {
+        return SUPPORTED_FORMATS.contains(mime_type);
+    }
 
-		setUpInjections();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_server_file_web);
 
-		setUpWebResource(savedInstanceState);
-	}
+        setUpInjections();
 
-	private void setUpInjections() {
-		AmahiApplication.from(this).inject(this);
-	}
+        setUpWebResource(savedInstanceState);
+    }
 
-	private void setUpWebResource(Bundle state) {
-		setUpWebResourceContent(state);
-	}
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
 
-	private void setUpWebResourceContent(Bundle state) {
-		if (!isWebResourceStateValid(state)){
-			setUpCustomTabs();
-		}
-	}
+    private void setUpWebResource(Bundle state) {
+        setUpWebResourceContent(state);
+    }
 
-	private void setUpCustomTabs(){
+    private void setUpWebResourceContent(Bundle state) {
+        if (!isWebResourceStateValid(state)) {
+            setUpCustomTabs();
+        }
+    }
 
-		mCustomTabsServiceConnection = new CustomTabsServiceConnection() {
-			@Override
-			public void onCustomTabsServiceConnected(ComponentName componentName, CustomTabsClient customTabsClient) {
-				mCustomTabsClient= customTabsClient;
-				mCustomTabsClient.warmup(0L);
-				mCustomTabsSession = mCustomTabsClient.newSession(null);
-			}
+    private void setUpCustomTabs() {
 
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				mCustomTabsClient= null;
-			}
-		};
+        mCustomTabsServiceConnection = new CustomTabsServiceConnection() {
+            @Override
+            public void onCustomTabsServiceConnected(ComponentName componentName, CustomTabsClient customTabsClient) {
+                mCustomTabsClient = customTabsClient;
+                mCustomTabsClient.warmup(0L);
+                mCustomTabsSession = mCustomTabsClient.newSession(null);
+            }
 
-		CustomTabsClient.bindCustomTabsService(this, getPackageName(), mCustomTabsServiceConnection);
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                mCustomTabsClient = null;
+            }
+        };
 
-		mCustomTabsIntent = new CustomTabsIntent.Builder(mCustomTabsSession)
-				.setShowTitle(true)
-				.build();
+        CustomTabsClient.bindCustomTabsService(this, getPackageName(), mCustomTabsServiceConnection);
 
-		mCustomTabsIntent.launchUrl(this,getWebResourceUri());
-	}
+        mCustomTabsIntent = new CustomTabsIntent.Builder(mCustomTabsSession)
+            .setShowTitle(true)
+            .build();
 
-	private boolean isWebResourceStateValid(Bundle state) {
-		return state != null;
-	}
+        mCustomTabsIntent.launchUrl(this, getWebResourceUri());
+    }
 
-	private Uri getWebResourceUri() {
-		return serverClient.getFileUri(getShare(), getFile());
-	}
+    private boolean isWebResourceStateValid(Bundle state) {
+        return state != null;
+    }
 
-	private ServerShare getShare() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
-	}
+    private Uri getWebResourceUri() {
+        return serverClient.getFileUri(getShare(), getFile());
+    }
 
-	private ServerFile getFile() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
-	}
+    private ServerShare getShare() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+    }
 
-	public static boolean supports(String mime_type) {
-		return SUPPORTED_FORMATS.contains(mime_type);
-	}
+    private ServerFile getFile() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		onBackPressed();
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+        onBackPressed();
+    }
 }

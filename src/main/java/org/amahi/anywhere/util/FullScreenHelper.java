@@ -47,11 +47,11 @@ public class FullScreenHelper {
         @Override
         public void run() {
             mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
     private ActionBar actionBar;
@@ -161,7 +161,7 @@ public class FullScreenHelper {
     public void show() {
         // Show the system bar
         mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
 
         // Schedule a runnable to display UI elements after a delay

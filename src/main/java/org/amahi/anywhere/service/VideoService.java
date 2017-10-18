@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.squareup.otto.Subscribe;
 
@@ -47,148 +46,144 @@ import javax.inject.Inject;
 /**
  * Video service. Does all the work related to the video playback.
  */
-public class VideoService extends Service
-{
-	private ServerShare videoShare;
-	private ServerFile videoFile;
+public class VideoService extends Service {
+    @Inject
+    ServerClient serverClient;
+    private ServerShare videoShare;
+    private ServerFile videoFile;
+    private LibVLC mLibVLC;
+    private MediaPlayer mMediaPlayer = null;
 
-	private LibVLC mLibVLC;
-	private MediaPlayer mMediaPlayer = null;
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new VideoServiceBinder(this);
+    }
 
-	@Inject
-	ServerClient serverClient;
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return new VideoServiceBinder(this);
-	}
+        setUpInjections();
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+        setUpVideoPlayer();
 
-		setUpInjections();
+        BusProvider.getBus().register(this);
+    }
 
-		setUpVideoPlayer();
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
 
-		BusProvider.getBus().register(this);
-	}
+    private void setUpVideoPlayer() {
+        final ArrayList<String> args = new ArrayList<>();
+        args.add("-vvv");
+        mLibVLC = new LibVLC(this, args);
+        mMediaPlayer = new MediaPlayer(mLibVLC);
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(this).inject(this);
-	}
+    public boolean isVideoStarted() {
+        return (videoShare != null) && (videoFile != null);
+    }
 
-	private void setUpVideoPlayer() {
-		final ArrayList<String> args = new ArrayList<>();
-		args.add("-vvv");
-		mLibVLC = new LibVLC(this, args);
-		mMediaPlayer = new MediaPlayer(mLibVLC);
-	}
+    public void startVideo(ServerShare videoShare, ServerFile videoFile, boolean isSubtitleEnabled) {
+        this.videoShare = videoShare;
+        this.videoFile = videoFile;
 
-	public boolean isVideoStarted() {
-		return (videoShare != null) && (videoFile != null);
-	}
+        setUpVideoPlayback(isSubtitleEnabled);
+    }
 
-	public void startVideo(ServerShare videoShare, ServerFile videoFile, boolean isSubtitleEnabled) {
-		this.videoShare = videoShare;
-		this.videoFile = videoFile;
+    private void setUpVideoPlayback(boolean isSubtitleEnabled) {
+        Media media = new Media(mLibVLC, getVideoUri());
+        mMediaPlayer.setMedia(media);
+        media.release();
+        if (isSubtitleEnabled) {
+            searchSubtitleFile();
+        }
+        mMediaPlayer.play();
+    }
 
-		setUpVideoPlayback(isSubtitleEnabled);
-	}
+    private Uri getVideoUri() {
+        return serverClient.getFileUri(videoShare, videoFile);
+    }
 
-	private void setUpVideoPlayback(boolean isSubtitleEnabled) {
-		Media media = new Media(mLibVLC, getVideoUri());
-		mMediaPlayer.setMedia(media);
-		media.release();
-		if (isSubtitleEnabled) {
-			searchSubtitleFile();
-		}
-		mMediaPlayer.play();
-	}
+    private void searchSubtitleFile() {
+        if (serverClient.isConnected()) {
+            if (!isDirectoryAvailable()) {
+                serverClient.getFiles(videoShare);
+            } else {
+                serverClient.getFiles(videoShare, getDirectory());
+            }
+        }
+    }
 
-	private Uri getVideoUri() {
-		return serverClient.getFileUri(videoShare, videoFile);
-	}
+    @Subscribe
+    public void onFilesLoaded(ServerFilesLoadedEvent event) {
+        List<ServerFile> files = event.getServerFiles();
+        for (ServerFile file : files) {
+            if (videoFile.getNameOnly().equals(file.getNameOnly())) {
+                if (Mimes.match(file.getMime()) == Mimes.Type.SUBTITLE) {
+                    mMediaPlayer.getMedia().addSlave(
+                        new Media.Slave(
+                            Media.Slave.Type.Subtitle, 4, getSubtitleUri(file)));
+                    break;
+                }
+            }
+        }
+    }
 
-	private void searchSubtitleFile() {
-		if (serverClient.isConnected()){
-			if (!isDirectoryAvailable()) {
-				serverClient.getFiles(videoShare);
-			} else {
-				serverClient.getFiles(videoShare, getDirectory());
-			}
-		}
-	}
+    private String getSubtitleUri(ServerFile file) {
+        return serverClient.getFileUri(videoShare, file).toString();
+    }
 
-	@Subscribe
-	public void onFilesLoaded(ServerFilesLoadedEvent event) {
-		List<ServerFile> files = event.getServerFiles();
-		for (ServerFile file:files) {
-			if (videoFile.getNameOnly().equals(file.getNameOnly())) {
-				if (Mimes.match(file.getMime()) == Mimes.Type.SUBTITLE) {
-					mMediaPlayer.getMedia().addSlave(
-							new Media.Slave(
-									Media.Slave.Type.Subtitle, 4, getSubtitleUri(file)));
-					break;
-				}
-			}
-		}
-	}
+    private boolean isDirectoryAvailable() {
+        return getDirectory() != null;
+    }
 
-	private String getSubtitleUri(ServerFile file) {
-		return serverClient.getFileUri(videoShare, file).toString();
-	}
+    private ServerFile getDirectory() {
+        return videoFile.getParentFile();
+    }
 
-	private boolean isDirectoryAvailable() {
-		return getDirectory() != null;
-	}
+    public MediaPlayer getMediaPlayer() {
+        return mMediaPlayer;
+    }
 
-	private ServerFile getDirectory() {
-		return videoFile.getParentFile();
-	}
+    public boolean isVideoPlaying() {
+        return mMediaPlayer.isPlaying();
+    }
 
-	public MediaPlayer getMediaPlayer() {
-		return mMediaPlayer;
-	}
+    public void playVideo() {
+        mMediaPlayer.play();
+    }
 
-	public boolean isVideoPlaying() {
-		return mMediaPlayer.isPlaying();
-	}
+    public void pauseVideo() {
+        mMediaPlayer.pause();
+    }
 
-	public void playVideo() {
-		mMediaPlayer.play();
-	}
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-	public void pauseVideo() {
-		mMediaPlayer.pause();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		tearDownVideoPlayback();
-		BusProvider.getBus().unregister(this);
-	}
+        tearDownVideoPlayback();
+        BusProvider.getBus().unregister(this);
+    }
 
 
-	private void tearDownVideoPlayback() {
-		mMediaPlayer.stop();
-		mMediaPlayer.release();
-		mLibVLC.release();
-	}
+    private void tearDownVideoPlayback() {
+        mMediaPlayer.stop();
+        mMediaPlayer.release();
+        mLibVLC.release();
+    }
 
 
-	public static final class VideoServiceBinder extends Binder
-	{
-		private final VideoService videoService;
+    public static final class VideoServiceBinder extends Binder {
+        private final VideoService videoService;
 
-		VideoServiceBinder(VideoService videoService) {
-			this.videoService = videoService;
-		}
+        VideoServiceBinder(VideoService videoService) {
+            this.videoService = videoService;
+        }
 
-		public VideoService getVideoService() {
-			return videoService;
-		}
-	}
+        public VideoService getVideoService() {
+            return videoService;
+        }
+    }
 }

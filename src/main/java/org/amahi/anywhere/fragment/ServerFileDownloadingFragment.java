@@ -44,99 +44,98 @@ import javax.inject.Inject;
 /**
  * File downloading dialog.
  */
-public class ServerFileDownloadingFragment extends DialogFragment
-{
-	public static final String TAG = "server_file_downloading";
+public class ServerFileDownloadingFragment extends DialogFragment {
+    public static final String TAG = "server_file_downloading";
 
-	@Inject
-	Downloader downloader;
+    @Inject
+    Downloader downloader;
 
-	@Inject
-	ServerClient serverClient;
+    @Inject
+    ServerClient serverClient;
 
-	public static ServerFileDownloadingFragment newInstance(ServerShare share, ServerFile file) {
-		ServerFileDownloadingFragment fragment = new ServerFileDownloadingFragment();
+    public static ServerFileDownloadingFragment newInstance(ServerShare share, ServerFile file) {
+        ServerFileDownloadingFragment fragment = new ServerFileDownloadingFragment();
 
-		Bundle arguments = new Bundle();
-		arguments.putParcelable(Fragments.Arguments.SERVER_SHARE, share);
-		arguments.putParcelable(Fragments.Arguments.SERVER_FILE, file);
-		fragment.setArguments(arguments);
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(Fragments.Arguments.SERVER_SHARE, share);
+        arguments.putParcelable(Fragments.Arguments.SERVER_FILE, file);
+        fragment.setArguments(arguments);
 
-		return fragment;
-	}
+        return fragment;
+    }
 
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		ProgressDialog dialog = new ProgressDialog(getActivity());
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        ProgressDialog dialog = new ProgressDialog(getActivity());
 
-		dialog.setMessage(getString(R.string.message_progress_file_downloading));
+        dialog.setMessage(getString(R.string.message_progress_file_downloading));
 
-		return dialog;
-	}
+        return dialog;
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		setUpInjections();
+        setUpInjections();
 
-		startFileDownloading(savedInstanceState);
-	}
+        startFileDownloading(savedInstanceState);
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
-	}
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
+    }
 
-	private void startFileDownloading(Bundle state) {
-		if (state == null) {
-			downloader.startFileDownloading(getFileUri(), getFile().getName());
-		}
-	}
+    private void startFileDownloading(Bundle state) {
+        if (state == null) {
+            downloader.startFileDownloading(getFileUri(), getFile().getName());
+        }
+    }
 
-	private Uri getFileUri() {
-		return serverClient.getFileUri(getShare(), getFile());
-	}
+    private Uri getFileUri() {
+        return serverClient.getFileUri(getShare(), getFile());
+    }
 
-	private ServerShare getShare() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
-	}
+    private ServerShare getShare() {
+        return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
+    }
 
-	private ServerFile getFile() {
-		return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
-	}
+    private ServerFile getFile() {
+        return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+    }
 
-	@Subscribe
-	public void onFileDownloaded(FileDownloadedEvent event) {
-		dismiss();
-	}
+    @Subscribe
+    public void onFileDownloaded(FileDownloadedEvent event) {
+        dismiss();
+    }
 
-	@Subscribe
-	public void onFileDownloadFailed(FileDownloadFailedEvent event) {
-		dismiss();
-	}
+    @Subscribe
+    public void onFileDownloadFailed(FileDownloadFailedEvent event) {
+        dismiss();
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		BusProvider.getBus().register(this);
-	}
+        BusProvider.getBus().register(this);
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
+    @Override
+    public void onPause() {
+        super.onPause();
 
-		BusProvider.getBus().unregister(this);
-	}
+        BusProvider.getBus().unregister(this);
+    }
 
-	@Override
-	public void onCancel(DialogInterface dialog) {
-		super.onCancel(dialog);
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
 
-		finishFileDownloading();
-	}
+        finishFileDownloading();
+    }
 
-	private void finishFileDownloading() {
-		downloader.finishFileDownloading();
-	}
+    private void finishFileDownloading() {
+        downloader.finishFileDownloading();
+    }
 }

@@ -72,11 +72,13 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
             String audioTitle = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
             String audioArtist = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+            String duration = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             Bitmap audioAlbumArt = extractAlbumArt(audioMetadataRetriever);
 
-            return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum, audioAlbumArt, viewHolder, serverFile);
+            return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum,
+                duration, audioAlbumArt, viewHolder, serverFile);
         } catch (RuntimeException e) {
-            return new AudioMetadataRetrievedEvent(null, null, null, null, viewHolder, serverFile);
+            return new AudioMetadataRetrievedEvent(null, null, null, null, null, viewHolder, serverFile);
         } finally {
             audioMetadataRetriever.release();
         }

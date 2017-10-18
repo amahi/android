@@ -103,10 +103,10 @@ public class SignOutFragment extends GuidedStepFragment implements AccountManage
 
     private void addAction(List<GuidedAction> actions, long id, String title, String desc) {
         actions.add(new GuidedAction.Builder(mContext)
-                .id(id)
-                .title(title)
-                .description(desc)
-                .build());
+            .id(id)
+            .title(title)
+            .description(desc)
+            .build());
     }
 
     private void tearDownAccount() {

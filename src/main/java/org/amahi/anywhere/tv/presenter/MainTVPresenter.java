@@ -83,9 +83,9 @@ public class MainTVPresenter extends Presenter {
     @Override
     public Presenter.ViewHolder onCreateViewHolder(ViewGroup parent) {
         mDefaultBackgroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.background_secondary);
+            ContextCompat.getColor(parent.getContext(), R.color.background_secondary);
         mSelectedBackgroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.primary);
+            ContextCompat.getColor(parent.getContext(), R.color.primary);
         ImageCardView cardView = new ImageCardView(parent.getContext()) {
             @Override
             public void setSelected(boolean selected) {
@@ -165,7 +165,7 @@ public class MainTVPresenter extends Presenter {
         if (isImage(serverFile)) {
             setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), getImageUri(serverFile));
         } else if (isAudio(serverFile)) {
-            AudioMetadataRetrievingTask.execute(getImageUri(serverFile), serverFile,viewHolder);
+            AudioMetadataRetrievingTask.execute(getImageUri(serverFile), serverFile, viewHolder);
         } else {
             setUpDrawable(serverFile, viewHolder);
         }
@@ -229,11 +229,11 @@ public class MainTVPresenter extends Presenter {
 
     private void setUpImageIcon(ServerFile file, ImageView fileIconView, Uri url) {
         Glide.with(fileIconView.getContext())
-                .load(url.toString())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
-                .placeholder(Mimes.getTVFileIcon(file))
-                .into(fileIconView);
+            .load(url.toString())
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+            .placeholder(Mimes.getTVFileIcon(file))
+            .into(fileIconView);
     }
 
     private Uri getImageUri(ServerFile file) {
@@ -257,7 +257,7 @@ public class MainTVPresenter extends Presenter {
         ViewHolder(View view) {
             super(view);
             mCardView = (ImageCardView) view;
-            mCardView.getMainImageView().setImageDrawable(ContextCompat.getDrawable(mContext,R.drawable.tv_ic_audio));
+            mCardView.getMainImageView().setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.tv_ic_audio));
         }
     }
 }

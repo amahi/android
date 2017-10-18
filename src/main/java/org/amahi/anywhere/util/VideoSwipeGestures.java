@@ -41,27 +41,13 @@ import java.util.Locale;
 public class VideoSwipeGestures implements View.OnTouchListener {
 
     private final AudioManager audio;
-    private float volumePer;
     private final int maxVolume;
+    private float volumePer;
     private Activity activity;
     private PercentageView percentageView;
     private SeekView seekView;
     private float seekDistance = 0;
     private SeekControl seekControl;
-
-
-    public interface SeekControl {
-        int getCurrentPosition();
-
-        void seekTo(int time);
-
-        int getDuration();
-    }
-
-    private enum Direction {
-        LEFT, RIGHT, UP, DOWN, NONE
-    }
-
     private GestureDetector gestureDetector;
 
     public VideoSwipeGestures(Activity activity, SeekControl seekControl, FrameLayout container) {
@@ -93,6 +79,64 @@ public class VideoSwipeGestures implements View.OnTouchListener {
             return gestureDetector.onTouchEvent(event);
         }
         return false;
+    }
+
+    private void changeBrightness(float distance) {
+        WindowManager.LayoutParams layout = activity.getWindow().getAttributes();
+        layout.screenBrightness += distance;
+        if (layout.screenBrightness > 1f) {
+            layout.screenBrightness = 1f;
+        } else if (layout.screenBrightness < 0f) {
+            layout.screenBrightness = 0f;
+        }
+        percentageView.setProgress((int) (layout.screenBrightness * 100));
+        activity.getWindow().setAttributes(layout);
+    }
+
+    private void changeVolume(float distance) {
+        float val = volumePer + distance;
+        if (val > 1f) {
+            val = 1f;
+        } else if (val < 0f) {
+            val = 0f;
+        }
+        percentageView.setProgress((int) (val * 100));
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, Math.round(val * maxVolume), 0);
+        volumePer = val;
+
+    }
+
+    private void seek(float distance) {
+        seekDistance += distance;
+        if (seekControl != null && seekView != null) {
+            float seekValue = seekControl.getCurrentPosition() + distance;
+            if (seekValue > 0 && seekValue < seekControl.getDuration()) {
+                seekControl.seekTo((int) seekValue);
+                String displayText = String.format(Locale.getDefault(),
+                    "%02d:%02d (%02d:%02d)",
+                    (int) Math.abs(seekDistance / 60000),
+                    (int) Math.abs((seekDistance % 60000) / 1000),
+                    (int) (seekValue / 60000),
+                    (int) ((seekValue % 60000) / 1000));
+                if (seekDistance > 0)
+                    seekView.setText("+" + displayText);
+                else
+                    seekView.setText("-" + displayText);
+            }
+        }
+    }
+
+
+    private enum Direction {
+        LEFT, RIGHT, UP, DOWN, NONE
+    }
+
+    public interface SeekControl {
+        int getCurrentPosition();
+
+        void seekTo(int time);
+
+        int getDuration();
     }
 
     private class CustomGestureDetect implements GestureDetector.OnGestureListener {
@@ -194,52 +238,6 @@ public class VideoSwipeGestures implements View.OnTouchListener {
             return false;
         }
 
-    }
-
-
-    private void changeBrightness(float distance) {
-        WindowManager.LayoutParams layout = activity.getWindow().getAttributes();
-        layout.screenBrightness += distance;
-        if (layout.screenBrightness > 1f) {
-            layout.screenBrightness = 1f;
-        } else if (layout.screenBrightness < 0f) {
-            layout.screenBrightness = 0f;
-        }
-        percentageView.setProgress((int) (layout.screenBrightness * 100));
-        activity.getWindow().setAttributes(layout);
-    }
-
-    private void changeVolume(float distance) {
-        float val = volumePer + distance;
-        if (val > 1f) {
-            val = 1f;
-        } else if (val < 0f) {
-            val = 0f;
-        }
-        percentageView.setProgress((int) (val * 100));
-        audio.setStreamVolume(AudioManager.STREAM_MUSIC, Math.round(val * maxVolume), 0);
-        volumePer = val;
-
-    }
-
-    private void seek(float distance) {
-        seekDistance += distance;
-        if (seekControl != null && seekView != null) {
-            float seekValue = seekControl.getCurrentPosition() + distance;
-            if (seekValue > 0 && seekValue < seekControl.getDuration()) {
-                seekControl.seekTo((int) seekValue);
-                String displayText = String.format(Locale.getDefault(),
-                        "%02d:%02d (%02d:%02d)",
-                        (int) Math.abs(seekDistance / 60000),
-                        (int) Math.abs((seekDistance % 60000) / 1000),
-                        (int) (seekValue / 60000),
-                        (int) ((seekValue % 60000) / 1000));
-                if (seekDistance > 0)
-                    seekView.setText("+" + displayText);
-                else
-                    seekView.setText("-" + displayText);
-            }
-        }
     }
 
 }

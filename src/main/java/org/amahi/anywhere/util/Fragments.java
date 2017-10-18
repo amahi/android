@@ -47,6 +47,7 @@ public final class Fragments {
     public static final class Arguments {
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_SHARE = "server_share";
+
         private Arguments() {
         }
     }
@@ -143,9 +144,9 @@ public final class Fragments {
             }
 
             fragmentManager
-                    .beginTransaction()
-                    .add(fragmentContainerId, fragment)
-                    .commit();
+                .beginTransaction()
+                .add(fragmentContainerId, fragment)
+                .commit();
         }
 
         private boolean isSet(int fragmentContainerId) {
@@ -154,17 +155,17 @@ public final class Fragments {
 
         public void replace(Fragment fragment, int fragmentContainerId) {
             fragmentManager
-                    .beginTransaction()
-                    .replace(fragmentContainerId, fragment)
-                    .commit();
+                .beginTransaction()
+                .replace(fragmentContainerId, fragment)
+                .commit();
         }
 
         public void replaceBackstacked(Fragment fragment, int fragmentContainerId) {
             fragmentManager
-                    .beginTransaction()
-                    .replace(fragmentContainerId, fragment)
-                    .addToBackStack(null)
-                    .commit();
+                .beginTransaction()
+                .replace(fragmentContainerId, fragment)
+                .addToBackStack(null)
+                .commit();
         }
     }
 }

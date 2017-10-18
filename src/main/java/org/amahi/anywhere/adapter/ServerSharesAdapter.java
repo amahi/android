@@ -38,59 +38,59 @@ import java.util.List;
  * Shares adapter. Visualizes shares
  * for the {@link org.amahi.anywhere.fragment.ServerSharesFragment}.
  */
-public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapter.ServerShareViewHolder>
-{
-	private List<ServerShare> shares;
+public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapter.ServerShareViewHolder> {
+    private List<ServerShare> shares;
 
-	class ServerShareViewHolder extends RecyclerView.ViewHolder{
-		TextView textView;
-		ServerShareViewHolder(View itemView) {
-			super(itemView);
-			textView = (TextView)itemView.findViewById(R.id.text);
-		}
-	}
+    public ServerSharesAdapter(Context context) {
+        this.shares = Collections.emptyList();
+    }
 
-	@Override
-	public ServerShareViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		return new ServerShareViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_share_item, parent, false));
-	}
+    @Override
+    public ServerShareViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ServerShareViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_share_item, parent, false));
+    }
 
-	@Override
-	public void onBindViewHolder(final ServerShareViewHolder holder, int position) {
-		holder.textView.setText(shares.get(position).getName());
-		holder.itemView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				BusProvider.getBus().post(new ShareSelectedEvent(shares.get(holder.getAdapterPosition())));
-			}
-		});
-	}
+    @Override
+    public void onBindViewHolder(final ServerShareViewHolder holder, int position) {
+        holder.textView.setText(shares.get(position).getName());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BusProvider.getBus().post(new ShareSelectedEvent(shares.get(holder.getAdapterPosition())));
+            }
+        });
+    }
 
-	@Override
-	public int getItemCount() {
-		return shares.size();
-	}
+    @Override
+    public int getItemCount() {
+        return shares.size();
+    }
 
-	public ServerSharesAdapter(Context context) {
-		this.shares = Collections.emptyList();
-	}
+    public void replaceWith(List<ServerShare> shares) {
+        this.shares = shares;
 
-	public void replaceWith(List<ServerShare> shares) {
-		this.shares = shares;
+        notifyDataSetChanged();
+    }
 
-		notifyDataSetChanged();
-	}
+    public List<ServerShare> getItems() {
+        return shares;
+    }
 
-	public List<ServerShare> getItems() {
-		return shares;
-	}
+    public ServerShare getItem(int position) {
+        return shares.get(position);
+    }
 
-	public ServerShare getItem(int position) {
-		return shares.get(position);
-	}
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+    class ServerShareViewHolder extends RecyclerView.ViewHolder {
+        TextView textView;
+
+        ServerShareViewHolder(View itemView) {
+            super(itemView);
+            textView = (TextView) itemView.findViewById(R.id.text);
+        }
+    }
 }

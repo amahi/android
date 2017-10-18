@@ -42,10 +42,10 @@ public class IconHeaderPresenter extends RowHeaderPresenter {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         mUnselectedAlpha = parent.getResources()
-                .getFraction(R.fraction.lb_browse_header_unselect_alpha, 1, 1);
+            .getFraction(R.fraction.lb_browse_header_unselect_alpha, 1, 1);
 
         LayoutInflater inflater = (LayoutInflater) parent.getContext()
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View view = inflater.inflate(R.layout.tv_header_item, null);
         view.setAlpha(mUnselectedAlpha);
@@ -79,6 +79,6 @@ public class IconHeaderPresenter extends RowHeaderPresenter {
     @Override
     protected void onSelectLevelChanged(RowHeaderPresenter.ViewHolder holder) {
         holder.view.setAlpha(mUnselectedAlpha + holder.getSelectLevel() *
-                (1.0f - mUnselectedAlpha));
+            (1.0f - mUnselectedAlpha));
     }
 }

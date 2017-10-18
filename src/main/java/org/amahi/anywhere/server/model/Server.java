@@ -27,73 +27,90 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Server API resource.
  */
-public class Server implements Parcelable
-{
-	@SerializedName("name")
-	private String name;
+public class Server implements Parcelable {
 
-	@SerializedName("session_token")
-	private String session;
+    public static final Creator<Server> CREATOR = new Creator<Server>() {
+        @Override
+        public Server createFromParcel(Parcel parcel) {
+            return new Server(parcel);
+        }
 
-	@SerializedName("active")
-	private boolean active;
+        @Override
+        public Server[] newArray(int size) {
+            return new Server[size];
+        }
+    };
 
-	@SerializedName("server_address")
-	private String serverAddress;
+    @SerializedName("name")
+    private String name;
+    @SerializedName("session_token")
+    private String session;
+    @SerializedName("active")
+    private boolean active;
+    private boolean debug = false;
+    private int index;
+    @SerializedName("server_address")
+    private String serverAddress;
 
-	public Server(String name, String session, String serverAddress, boolean active) {
-		this.name = name;
-		this.session = session;
-		this.serverAddress = serverAddress;
-		this.active = active;
-	}
+    public Server(int index, String name, String session) {
+        this.index = index;
+        this.name = name;
+        this.session = session;
+        this.active = true;
+        this.debug = true;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Server(String name, String session, String serverAddress, boolean active) {
+        this.name = name;
+        this.session = session;
+        this.serverAddress = serverAddress;
+        this.active = active;
+    }
 
-	public String getSession() {
-		return session;
-	}
+    public Server(String session) {
+        this.session = session;
+    }
 
-	public boolean isActive() {
-		return active;
-	}
+    public Server(Parcel parcel) {
+        this.name = parcel.readString();
+        this.session = parcel.readString();
+        this.active = Boolean.valueOf(parcel.readString());
+    }
 
-	public String getServerAddress() {
-		return serverAddress;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public static final Creator<Server> CREATOR = new Creator<Server>()
-	{
-		@Override
-		public Server createFromParcel(Parcel parcel) {
-			return new Server(parcel);
-		}
+    public String getServerAddress() {
+        return serverAddress;
+    }
 
-		@Override
-		public Server[] newArray(int size) {
-			return new Server[size];
-		}
-	};
+    public String getSession() {
+        return session;
+    }
 
-	private Server(Parcel parcel) {
-		this.name = parcel.readString();
-		this.session = parcel.readString();
-		this.active = Boolean.valueOf(parcel.readString());
-		this.serverAddress = parcel.readString();
-	}
+    public int getIndex() {
+        return index;
+    }
 
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeString(name);
-		parcel.writeString(session);
-		parcel.writeString(String.valueOf(active));
-		parcel.writeString(serverAddress);
-	}
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(name);
+        parcel.writeString(session);
+        parcel.writeString(String.valueOf(active));
+        parcel.writeString(serverAddress);
+    }
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    public boolean isActive() {
+        return active;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }

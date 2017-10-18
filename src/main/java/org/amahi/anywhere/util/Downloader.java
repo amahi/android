@@ -27,10 +27,13 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
+
+import java.io.File;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -66,10 +69,16 @@ public class Downloader extends BroadcastReceiver {
     }
 
     private void startDownloading(Uri downloadUri, String downloadName) {
+
+        //code to delete the file if it already exists
+        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName);
+        if (file.exists())
+            file.delete();
+
         DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri)
-                .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName)
-                .setVisibleInDownloadsUi(false)
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+            .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName)
+            .setVisibleInDownloadsUi(false)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
         this.downloadId = getDownloadManager(context).enqueue(downloadRequest);
     }
@@ -93,20 +102,26 @@ public class Downloader extends BroadcastReceiver {
 
     private void finishDownloading() {
         DownloadManager.Query downloadQuery = new DownloadManager.Query()
-                .setFilterById(downloadId);
+            .setFilterById(downloadId);
 
         Cursor downloadInformation = getDownloadManager(context).query(downloadQuery);
 
         downloadInformation.moveToFirst();
 
         int downloadStatus = downloadInformation.getInt(
-                downloadInformation.getColumnIndex(DownloadManager.COLUMN_STATUS));
+            downloadInformation.getColumnIndex(DownloadManager.COLUMN_STATUS));
 
         if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) {
             String downloadUri = downloadInformation.getString(
-                    downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 
-            BusProvider.getBus().post(new FileDownloadedEvent(Uri.parse(downloadUri)));
+            if (downloadUri.substring(0, 7).matches("file://")) {
+                downloadUri = downloadUri.substring(7);
+            }
+            File file = new File(downloadUri);
+            Uri contentUri = FileProvider.getUriForFile(context, "org.amahi.anywhere.fileprovider", file);
+
+            BusProvider.getBus().post(new FileDownloadedEvent(contentUri));
         } else {
             BusProvider.getBus().post(new FileDownloadFailedEvent());
         }

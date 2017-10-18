@@ -40,7 +40,7 @@ android {
     defaultConfig {
         def versionMajor = 2
         def versionMinor = 9
-        def versionPatch = 0
+        def versionPatch = 4
 
         versionName buildVersionName(versionMajor, versionMinor, versionPatch)
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
@@ -64,6 +64,7 @@ android {
         buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
         buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
         buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
+        buildConfigField "String", "CHROMECAST_APP_ID", formatStringField(apiProperties["chromecast.app.id"])
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -99,6 +100,7 @@ def formatStringField(field) {
 
 dependencies {
     repositories {
+        jcenter()
         mavenCentral()
         mavenLocal()
         maven { url 'https://maven.fabric.io/public' }
@@ -116,6 +118,8 @@ dependencies {
     compile "com.android.support:preference-v7:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:customtabs:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:leanback-v17:${SUPPORT_LIBRARY_VERSION}"
+    compile "com.android.support:mediarouter-v7:${SUPPORT_LIBRARY_VERSION}"
+    compile 'com.google.android.gms:play-services-cast-framework:11.0.2'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }
@@ -130,6 +134,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
     compile 'org.videolan:libvlc:2.1.1'
+    compile 'pub.devrel:easypermissions:0.4.2'
     testCompile 'org.robolectric:robolectric:3.1.2'
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:shadows-multidex:3.0'

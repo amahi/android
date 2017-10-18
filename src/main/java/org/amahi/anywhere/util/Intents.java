@@ -25,8 +25,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
@@ -39,6 +42,7 @@ import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
 import org.amahi.anywhere.tv.activity.TvPlaybackAudioActivity;
@@ -61,6 +65,8 @@ public final class Intents {
         public static final String SERVER_SHARE = "server_share";
         public static final String PUBLIC_KEY = "public_key";
         public static final String SERVER_NAME = "server_name";
+        public static final String IMAGE_URIS = "image_uris";
+
         private Extras() {
         }
     }
@@ -157,8 +163,8 @@ public final class Intents {
             PackageManager packageManager = context.getPackageManager();
 
             List<ResolveInfo> applications = packageManager.queryIntentActivities(
-                    buildServerFileOpeningIntent(file),
-                    PackageManager.MATCH_DEFAULT_ONLY);
+                buildServerFileOpeningIntent(file),
+                PackageManager.MATCH_DEFAULT_ONLY);
 
             return !applications.isEmpty();
         }
@@ -215,6 +221,33 @@ public final class Intents {
             intent.setData(Uri.parse(googlePlaySearchUri));
 
             return intent;
+        }
+
+        public Intent buildMediaPickerIntent() {
+            Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.setType("image/* video/*");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "video/*"});
+            }
+            intent = Intent.createChooser(intent, context.getString(R.string.message_media_upload));
+            return intent;
+        }
+
+        public Intent buildCameraIntent() {
+            return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        }
+
+        public Intent buildUploadServiceIntent(Uri uri) {
+            ArrayList<Uri> uris = new ArrayList<>();
+            uris.add(uri);
+            return buildUploadServiceIntent(uris);
+        }
+
+        public Intent buildUploadServiceIntent(ArrayList<Uri> uris) {
+            Intent uploadService = new Intent(context, UploadService.class);
+            uploadService.putParcelableArrayListExtra(Extras.IMAGE_URIS, uris);
+            return uploadService;
         }
     }
 }

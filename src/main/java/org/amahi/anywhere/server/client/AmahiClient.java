@@ -19,6 +19,8 @@
 
 package org.amahi.anywhere.server.client;
 
+import android.content.Context;
+
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.api.AmahiApi;
@@ -32,24 +34,23 @@ import javax.inject.Singleton;
  * Amahi API implementation. Wraps {@link org.amahi.anywhere.server.api.AmahiApi}.
  */
 @Singleton
-public class AmahiClient
-{
-	private final AmahiApi api;
+public class AmahiClient {
+    private final AmahiApi api;
 
-	@Inject
-	public AmahiClient(ApiAdapter apiAdapter) {
-		this.api = buildApi(apiAdapter);
-	}
+    @Inject
+    public AmahiClient(ApiAdapter apiAdapter) {
+        this.api = buildApi(apiAdapter);
+    }
 
-	private AmahiApi buildApi(ApiAdapter apiAdapter) {
-		return apiAdapter.create(AmahiApi.class, Api.getAmahiUrl());
-	}
+    private AmahiApi buildApi(ApiAdapter apiAdapter) {
+        return apiAdapter.create(AmahiApi.class, Api.getAmahiUrl());
+    }
 
-	public void authenticate(String username, String password) {
-		api.authenticate(Api.getClientId(), Api.getClientSecret(), username, password).enqueue(new AuthenticationResponse());
-	}
+    public void authenticate(String username, String password) {
+        api.authenticate(Api.getClientId(), Api.getClientSecret(), username, password).enqueue(new AuthenticationResponse());
+    }
 
-	public void getServers(String authenticationToken) {
-		api.getServers(authenticationToken).enqueue(new ServersResponse());
-	}
+    public void getServers(Context context, String authenticationToken) {
+        api.getServers(authenticationToken).enqueue(new ServersResponse(context));
+    }
 }

@@ -28,14 +28,19 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
     private final String audioTitle;
     private final String audioArtist;
     private final String audioAlbum;
+    private final long duration;
     private final Bitmap audioAlbumArt;
     private final MainTVPresenter.ViewHolder viewHolder;
     private final ServerFile serverFile;
 
-    public AudioMetadataRetrievedEvent(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt, MainTVPresenter.ViewHolder viewHolder, ServerFile serverFile) {
+    public AudioMetadataRetrievedEvent(String audioTitle, String audioArtist, String audioAlbum,
+                                       String duration, Bitmap audioAlbumArt,
+                                       MainTVPresenter.ViewHolder viewHolder,
+                                       ServerFile serverFile) {
         this.audioTitle = audioTitle;
         this.audioArtist = audioArtist;
         this.audioAlbum = audioAlbum;
+        this.duration = Long.valueOf(duration);
         this.audioAlbumArt = audioAlbumArt;
         this.viewHolder = viewHolder;
         this.serverFile = serverFile;
@@ -63,5 +68,9 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
 
     public ServerFile getServerFile() {
         return serverFile;
+    }
+
+    public long getDuration() {
+        return duration;
     }
 }

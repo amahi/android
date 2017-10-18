@@ -48,213 +48,210 @@ import javax.inject.Inject;
  * App activity. Shows web apps contents and allows basic navigation inside them.
  * Backed up by {@link android.webkit.WebView}.
  */
-public class ServerAppActivity extends AppCompatActivity
-{
-	private static final class AppWebAgentField
-	{
-		private AppWebAgentField() {
-		}
+public class ServerAppActivity extends AppCompatActivity {
+    @Inject
+    ServerClient serverClient;
 
-		public static final String HOST = "Vhost";
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_server_app);
 
-	@Inject
-	ServerClient serverClient;
+        setUpInjections();
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_server_app);
+        setUpApp(savedInstanceState);
 
-		setUpInjections();
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+    }
 
-		setUpApp(savedInstanceState);
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
 
-		getSupportActionBar().setIcon(R.drawable.ic_launcher);
-	}
+    private void setUpApp(Bundle state) {
+        setUpAppWebCookie();
+        setUpAppWebAgent();
+        setUpAppWebClient();
+        setUpAppWebSettings();
+        setUpAppWebTitle();
+        setUpAppWebContent(state);
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(this).inject(this);
-	}
+    private void setUpAppWebCookie() {
+        String appHost = getApp().getHost();
+        String appCookies = Preferences.ofCookie(this).getAppCookies(appHost);
 
-	private void setUpApp(Bundle state) {
-		setUpAppWebCookie();
-		setUpAppWebAgent();
-		setUpAppWebClient();
-		setUpAppWebSettings();
-		setUpAppWebTitle();
-		setUpAppWebContent(state);
-	}
+        for (String appCookie : TextUtils.split(appCookies, ";")) {
+            CookieManager.getInstance().setCookie(getAppUrl(), appCookie);
+        }
+    }
 
-	private void setUpAppWebCookie() {
-		String appHost = getApp().getHost();
-		String appCookies = Preferences.ofCookie(this).getAppCookies(appHost);
+    private ServerApp getApp() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_APP);
+    }
 
-		for (String appCookie : TextUtils.split(appCookies, ";")) {
-			CookieManager.getInstance().setCookie(getAppUrl(), appCookie);
-		}
-	}
+    private String getAppUrl() {
+        return serverClient.getServerAddress();
+    }
 
-	private ServerApp getApp() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_APP);
-	}
+    private void setUpAppWebAgent() {
+        getWebView().getSettings().setUserAgentString(getAppWebAgent());
+    }
 
-	private String getAppUrl() {
-		return serverClient.getServerAddress();
-	}
+    private WebView getWebView() {
+        return (WebView) findViewById(R.id.web_content);
+    }
 
-	private void setUpAppWebAgent() {
-		getWebView().getSettings().setUserAgentString(getAppWebAgent());
-	}
+    private String getAppWebAgent() {
+        Map<String, String> agentFields = new HashMap<String, String>();
+        agentFields.put(AppWebAgentField.HOST, getApp().getHost());
 
-	private WebView getWebView() {
-		return (WebView) findViewById(R.id.web_content);
-	}
+        return Identifier.getUserAgent(this, agentFields);
+    }
 
-	private String getAppWebAgent() {
-		Map<String, String> agentFields = new HashMap<String, String>();
-		agentFields.put(AppWebAgentField.HOST, getApp().getHost());
+    private void setUpAppWebClient() {
+        getWebView().setWebViewClient(new AppWebClient(this));
+    }
 
-		return Identifier.getUserAgent(this, agentFields);
-	}
+    private void setUpAppWebSettings() {
+        WebSettings settings = getWebView().getSettings();
 
-	private void setUpAppWebClient() {
-		getWebView().setWebViewClient(new AppWebClient(this));
-	}
+        settings.setJavaScriptEnabled(true);
 
-	private void setUpAppWebSettings() {
-		WebSettings settings = getWebView().getSettings();
+        settings.setUseWideViewPort(true);
 
-		settings.setJavaScriptEnabled(true);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
+    }
 
-		settings.setUseWideViewPort(true);
+    private void setUpAppWebTitle() {
+        getSupportActionBar().setTitle(getApp().getName());
+    }
 
-		settings.setSupportZoom(true);
-		settings.setBuiltInZoomControls(true);
-		settings.setDisplayZoomControls(false);
-	}
+    private void setUpAppWebContent(Bundle state) {
+        if (state == null) {
+            getWebView().loadUrl(getAppUrl());
+        }
+    }
 
-	private void setUpAppWebTitle() {
-		getSupportActionBar().setTitle(getApp().getName());
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bar_server_app, menu);
 
-	private void setUpAppWebContent(Bundle state) {
-		if (state == null) {
-			getWebView().loadUrl(getAppUrl());
-		}
-	}
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.action_bar_server_app, menu);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
 
-		return super.onCreateOptionsMenu(menu);
-	}
+            case R.id.menu_back:
+                if (getWebView().canGoBack()) {
+                    getWebView().goBack();
+                }
+                return true;
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		switch (menuItem.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
+            case R.id.menu_forward:
+                if (getWebView().canGoForward()) {
+                    getWebView().goForward();
+                }
+                return true;
 
-			case R.id.menu_back:
-				if (getWebView().canGoBack()) {
-					getWebView().goBack();
-				}
-				return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
 
-			case R.id.menu_forward:
-				if (getWebView().canGoForward()) {
-					getWebView().goForward();
-				}
-				return true;
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
 
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
-	}
+        getWebView().restoreState(savedInstanceState);
+    }
 
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		getWebView().restoreState(savedInstanceState);
-	}
+        getWebView().onResume();
+        getWebView().resumeTimers();
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onPause() {
+        super.onPause();
 
-		getWebView().onResume();
-		getWebView().resumeTimers();
-	}
+        getWebView().onPause();
+        getWebView().pauseTimers();
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-		getWebView().onPause();
-		getWebView().pauseTimers();
-	}
+        getWebView().saveState(outState);
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-		getWebView().saveState(outState);
-	}
+        getWebView().destroy();
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
+        if (isFinishing()) {
+            tearDownAppWebCookie();
+        }
+    }
 
-		getWebView().destroy();
+    private void tearDownAppWebCookie() {
+        String appHost = getApp().getHost();
+        String appCookies = CookieManager.getInstance().getCookie(getAppUrl());
 
-		if (isFinishing()) {
-			tearDownAppWebCookie();
-		}
-	}
+        Preferences.ofCookie(this).setAppCookies(appHost, appCookies);
 
-	private void tearDownAppWebCookie() {
-		String appHost = getApp().getHost();
-		String appCookies = CookieManager.getInstance().getCookie(getAppUrl());
+        if (CookieManager.getInstance().hasCookies()) {
+            CookieManager.getInstance().removeAllCookie();
+        }
+    }
 
-		Preferences.ofCookie(this).setAppCookies(appHost, appCookies);
+    private void showProgress() {
+        ViewDirector.of(this, R.id.animator).show(android.R.id.progress);
+    }
 
-		if (CookieManager.getInstance().hasCookies()) {
-			CookieManager.getInstance().removeAllCookie();
-		}
-	}
+    private void showApp() {
+        ViewDirector.of(this, R.id.animator).show(R.id.web_content);
+    }
 
-	private static final class AppWebClient extends WebViewClient
-	{
-		private final ServerAppActivity activity;
+    private static final class AppWebAgentField {
+        public static final String HOST = "Vhost";
 
-		public AppWebClient(ServerAppActivity activity) {
-			this.activity = activity;
-		}
+        private AppWebAgentField() {
+        }
+    }
 
-		@Override
-		public void onPageStarted(WebView appWebView, String appUrl, Bitmap appFavicon) {
-			super.onPageStarted(appWebView, appUrl, appFavicon);
+    private static final class AppWebClient extends WebViewClient {
+        private final ServerAppActivity activity;
 
-			activity.showProgress();
-		}
+        public AppWebClient(ServerAppActivity activity) {
+            this.activity = activity;
+        }
 
-		@Override
-		public void onPageFinished(WebView appWebView, String appUrl) {
-			super.onPageFinished(appWebView, appUrl);
+        @Override
+        public void onPageStarted(WebView appWebView, String appUrl, Bitmap appFavicon) {
+            super.onPageStarted(appWebView, appUrl, appFavicon);
 
-			activity.showApp();
-		}
-	}
+            activity.showProgress();
+        }
 
-	private void showProgress() {
-		ViewDirector.of(this, R.id.animator).show(android.R.id.progress);
-	}
+        @Override
+        public void onPageFinished(WebView appWebView, String appUrl) {
+            super.onPageFinished(appWebView, appUrl);
 
-	private void showApp() {
-		ViewDirector.of(this, R.id.animator).show(R.id.web_content);
-	}
+            activity.showApp();
+        }
+    }
 }

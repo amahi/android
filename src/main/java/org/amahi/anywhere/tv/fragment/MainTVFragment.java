@@ -20,26 +20,16 @@
 package org.amahi.anywhere.tv.fragment;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
-import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
-import android.support.v17.leanback.widget.Row;
-import android.support.v17.leanback.widget.RowPresenter;
-import android.util.DisplayMetrics;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -58,7 +48,6 @@ import org.amahi.anywhere.tv.presenter.IconHeaderPresenter;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 import org.amahi.anywhere.tv.presenter.SettingsItemPresenter;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.util.Mimes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -187,12 +176,12 @@ public class MainTVFragment extends BrowseFragment {
         adapter.add(0, settingsRow);
     }
 
-    private void sortHeaders(){
-        for(int i=0;i<mRowsAdapter.size()-1;i++){
-            for(int j=i+1;j<mRowsAdapter.size()-1;j++){
-                ListRow listRow1 = (ListRow)mRowsAdapter.get(i);
-                ListRow listRow2 = (ListRow)mRowsAdapter.get(j);
-                if((int)listRow2.getHeaderItem().getName().charAt(0)<(int)listRow1.getHeaderItem().getName().charAt(0)){
+    private void sortHeaders() {
+        for (int i = 0; i < mRowsAdapter.size() - 1; i++) {
+            for (int j = i + 1; j < mRowsAdapter.size() - 1; j++) {
+                ListRow listRow1 = (ListRow) mRowsAdapter.get(i);
+                ListRow listRow2 = (ListRow) mRowsAdapter.get(j);
+                if ((int) listRow2.getHeaderItem().getName().charAt(0) < (int) listRow1.getHeaderItem().getName().charAt(0)) {
                     int index1 = mRowsAdapter.indexOf(listRow1);
                     int index2 = mRowsAdapter.indexOf(listRow2);
                     mRowsAdapter.replace(index1, listRow2);

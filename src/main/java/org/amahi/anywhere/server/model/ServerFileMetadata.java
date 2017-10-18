@@ -24,48 +24,44 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ServerFileMetadata implements Parcelable
-{
-	@SerializedName("title")
-	private String title;
+public class ServerFileMetadata implements Parcelable {
+    public static final Creator<ServerFileMetadata> CREATOR = new Creator<ServerFileMetadata>() {
+        @Override
+        public ServerFileMetadata createFromParcel(Parcel parcel) {
+            return new ServerFileMetadata(parcel);
+        }
 
-	@SerializedName("artwork")
-	private String artworkUrl;
+        @Override
+        public ServerFileMetadata[] newArray(int size) {
+            return new ServerFileMetadata[size];
+        }
+    };
+    @SerializedName("title")
+    private String title;
+    @SerializedName("artwork")
+    private String artworkUrl;
 
-	public String getTitle() {
-		return title;
-	}
+    private ServerFileMetadata(Parcel parcel) {
+        this.title = parcel.readString();
+        this.artworkUrl = parcel.readString();
+    }
 
-	public String getArtworkUrl() {
-		return artworkUrl;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public static final Creator<ServerFileMetadata> CREATOR = new Creator<ServerFileMetadata>()
-	{
-		@Override
-		public ServerFileMetadata createFromParcel(Parcel parcel) {
-			return new ServerFileMetadata(parcel);
-		}
+    public String getArtworkUrl() {
+        return artworkUrl;
+    }
 
-		@Override
-		public ServerFileMetadata[] newArray(int size) {
-			return new ServerFileMetadata[size];
-		}
-	};
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(title);
+        parcel.writeString(artworkUrl);
+    }
 
-	private ServerFileMetadata(Parcel parcel) {
-		this.title = parcel.readString();
-		this.artworkUrl = parcel.readString();
-	}
-
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeString(title);
-		parcel.writeString(artworkUrl);
-	}
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }

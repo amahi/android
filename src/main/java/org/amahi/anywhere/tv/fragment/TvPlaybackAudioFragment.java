@@ -73,26 +73,21 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
 
     private static final int DEFAULT_UPDATE_PERIOD = 1000;
     private static final int UPDATE_PERIOD = 16;
-
+    @Inject
+    ServerClient serverClient;
     private ArrayObjectAdapter mRowsAdapter;
     private ArrayObjectAdapter mPrimaryActionsAdapter;
-
     private PlaybackControlsRow mPlaybackControlsRow;
     private PlaybackControlsRow.PlayPauseAction mPlayPauseAction;
     private PlaybackControlsRow.SkipNextAction mSkipNextAction;
     private PlaybackControlsRow.SkipPreviousAction mSkipPreviousAction;
     private PlaybackControlsRow.FastForwardAction mFastForwardAction;
     private PlaybackControlsRow.RewindAction mRewindAction;
-
     private int mCurrentPlaybackState;
     private Handler mHandler;
     private Runnable mRunnable;
-
     private MediaPlayer mediaPlayer;
     private ArrayList<ServerFile> mAudioList;
-
-    @Inject
-    ServerClient serverClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -145,7 +140,7 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
     }
 
     private void replaceFragment(ServerFile serverFile) {
-        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, Fragments.Builder.buildAudioFragment(serverFile,getAudioShare(),getAudioFiles())).commit();
+        getFragmentManager().beginTransaction().replace(R.id.playback_controls_fragment_container, Fragments.Builder.buildAudioFragment(serverFile, getAudioShare(), getAudioFiles())).commit();
     }
 
     private void setUpRows() {
@@ -180,7 +175,7 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         setAdapter(mRowsAdapter);
     }
 
-    private void setDataSource(){
+    private void setDataSource() {
         try {
             mediaPlayer.setDataSource(getActivity(), getFileUri());
         } catch (IOException e) {
@@ -188,14 +183,14 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         }
     }
 
-    private void prepareAudio(){
+    private void prepareAudio() {
         try {
             mediaPlayer.prepare();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void togglePlayPause(boolean isPaused) {
         if (isPaused) {

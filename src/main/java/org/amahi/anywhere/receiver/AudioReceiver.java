@@ -36,63 +36,62 @@ import org.amahi.anywhere.bus.BusProvider;
  * Audio system events receiver. Proxies system audio events such as changing track
  * or audio focus to the local {@link com.squareup.otto.Bus} as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class AudioReceiver extends BroadcastReceiver
-{
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		if (intent == null) {
-			return;
-		}
+public class AudioReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent == null) {
+            return;
+        }
 
-		String action = intent.getAction();
+        String action = intent.getAction();
 
-		if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
-			handleAudioChangeEvent();
-		}
+        if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
+            handleAudioChangeEvent();
+        }
 
-		if (Intent.ACTION_MEDIA_BUTTON.equals(action)) {
-			handleAudioControlEvent(intent);
-		}
-	}
+        if (Intent.ACTION_MEDIA_BUTTON.equals(action)) {
+            handleAudioControlEvent(intent);
+        }
+    }
 
-	private void handleAudioChangeEvent() {
-		BusProvider.getBus().post(new AudioControlPauseEvent());
-	}
+    private void handleAudioChangeEvent() {
+        BusProvider.getBus().post(new AudioControlPauseEvent());
+    }
 
-	private void handleAudioControlEvent(Intent intent) {
-		KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+    private void handleAudioControlEvent(Intent intent) {
+        KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
 
-		if (event == null) {
-			return;
-		}
+        if (event == null) {
+            return;
+        }
 
-		if (event.getAction() != KeyEvent.ACTION_DOWN) {
-			return;
-		}
+        if (event.getAction() != KeyEvent.ACTION_DOWN) {
+            return;
+        }
 
-		switch (event.getKeyCode()) {
-			case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-				BusProvider.getBus().post(new AudioControlPlayPauseEvent());
-				break;
+        switch (event.getKeyCode()) {
+            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                BusProvider.getBus().post(new AudioControlPlayPauseEvent());
+                break;
 
-			case KeyEvent.KEYCODE_MEDIA_PLAY:
-				BusProvider.getBus().post(new AudioControlPlayEvent());
-				break;
+            case KeyEvent.KEYCODE_MEDIA_PLAY:
+                BusProvider.getBus().post(new AudioControlPlayEvent());
+                break;
 
-			case KeyEvent.KEYCODE_MEDIA_PAUSE:
-				BusProvider.getBus().post(new AudioControlPauseEvent());
-				break;
+            case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                BusProvider.getBus().post(new AudioControlPauseEvent());
+                break;
 
-			case KeyEvent.KEYCODE_MEDIA_NEXT:
-				BusProvider.getBus().post(new AudioControlNextEvent());
-				break;
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                BusProvider.getBus().post(new AudioControlNextEvent());
+                break;
 
-			case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-				BusProvider.getBus().post(new AudioControlPreviousEvent());
-				break;
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                BusProvider.getBus().post(new AudioControlPreviousEvent());
+                break;
 
-			default:
-				break;
-		}
-	}
+            default:
+                break;
+        }
+    }
 }

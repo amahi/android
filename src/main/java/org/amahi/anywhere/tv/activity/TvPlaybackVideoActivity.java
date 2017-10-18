@@ -124,18 +124,18 @@ public class TvPlaybackVideoActivity extends Activity {
             playPause();
 
         builder.setTitle(getString(R.string.exit_title))
-                .setMessage(getString(R.string.exit_message))
-                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        TvPlaybackVideoActivity.super.onBackPressed();
-                    }
-                })
-                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
+            .setMessage(getString(R.string.exit_message))
+            .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    TvPlaybackVideoActivity.super.onBackPressed();
+                }
+            })
+            .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).show();
     }
 }

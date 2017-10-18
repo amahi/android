@@ -27,6 +27,9 @@ import android.view.WindowManager;
 import org.amahi.anywhere.BuildConfig;
 import org.amahi.anywhere.R;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * Android properties accessor.
  */
@@ -36,6 +39,10 @@ public final class Android {
 
     public static boolean isTablet(Context context) {
         return context.getResources().getBoolean(R.bool.tablet);
+    }
+
+    public static boolean isPermissionRequired() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
     public static String getVersion() {
@@ -79,5 +86,19 @@ public final class Android {
         }
 
         return screenMetrics;
+    }
+
+    public static String loadServersFromAsset(Context context) {
+        String json = "[]";
+        try {
+            InputStream is = context.getAssets().open("customServers.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ignored) {
+        }
+        return json;
     }
 }

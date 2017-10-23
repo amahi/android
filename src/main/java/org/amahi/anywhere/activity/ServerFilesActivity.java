@@ -20,6 +20,7 @@
 package org.amahi.anywhere.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -64,6 +65,7 @@ import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
+import org.videolan.libvlc.Dialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -139,10 +141,6 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void setUpUploadDialog() {
         uploadProgressDialog = new ProgressDialog(this);
-        uploadProgressDialog.setTitle(getString(R.string.message_file_upload_title));
-        uploadProgressDialog.setCancelable(false);
-        uploadProgressDialog.setIndeterminate(false);
-        uploadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
     }
 
     @Override
@@ -444,7 +442,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void uploadFile(File uploadFile) {
         serverClient.uploadFile(0, uploadFile, getShare(), file);
-        uploadProgressDialog.show();
+        new ProgressDialogFragment();
     }
 
     @Subscribe
@@ -553,6 +551,24 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
         public static final String FILE_ACTION = "file_action";
 
         private State() {
+        }
+    }
+
+    @SuppressLint("ValidFragment")
+    public class ProgressDialogFragment extends DialogFragment{
+        @Override
+        public void onCreate(Bundle savedInstanceState){
+            super.onCreate(savedInstanceState);
+            setCancelable(false);
+        }
+
+        @Override
+        public android.app.Dialog onCreateDialog(Bundle savedInstanceState){
+            uploadProgressDialog.setTitle(getString(R.string.message_file_upload_title));
+            uploadProgressDialog.setCancelable(false);
+            uploadProgressDialog.setIndeterminate(false);
+            uploadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            return uploadProgressDialog;
         }
     }
 }

@@ -442,7 +442,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void uploadFile(File uploadFile) {
         serverClient.uploadFile(0, uploadFile, getShare(), file);
-        new ProgressDialogFragment();
+        new ProgressDialogFragment().show(getFragmentManager(),"tag");
     }
 
     @Subscribe

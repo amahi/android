@@ -50,6 +50,10 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
         this.serverFile = serverFile;
     }
 
+    public AudioMetadataRetrievedEvent(MainTVPresenter.ViewHolder viewHolder, ServerFile serverFile) {
+        this(null, null, null, null, null, viewHolder, serverFile);
+    }
+
     public String getAudioTitle() {
         return audioTitle;
     }

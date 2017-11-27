@@ -210,6 +210,7 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop()
                     .placeholder(R.drawable.ic_file_audio)
+                    .error(R.drawable.ic_file_audio)
                     .into(imageView);
             }
         }

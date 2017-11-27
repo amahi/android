@@ -246,17 +246,16 @@ public class MediaNotificationManager extends BroadcastReceiver {
             .setSmallIcon(getAudioPlayerNotificationIcon())
             .setLargeIcon(getAudioPlayerNotificationArtwork(audioAlbumArt))
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setUsesChronometer(true)
             .setContentIntent(mService.createContentIntent())
             .setContentTitle(description.getTitle())
-            .setContentText(description.getSubtitle());
-
-        setNotificationPlaybackState(notificationBuilder);
+            .setContentText(description.getSubtitle())
+            .setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
+//        setNotificationPlaybackState(notificationBuilder);
         return notificationBuilder.build();
     }
 
     private int getAudioPlayerNotificationIcon() {
-        return R.drawable.ic_notification_audio;
+        return R.drawable.ic_launcher;
     }
 
     private Bitmap getAudioPlayerNotificationArtwork(Bitmap audioAlbumArt) {
@@ -304,8 +303,5 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setShowWhen(false)
                 .setUsesChronometer(false);
         }
-
-        // Make sure that the notification can be dismissed by the user when we are not playing:
-        builder.setOngoing(mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING);
     }
 }

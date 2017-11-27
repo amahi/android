@@ -42,12 +42,6 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
     private final MainTVPresenter.ViewHolder viewHolder;
     private final ServerFile serverFile;
 
-    private AudioMetadataRetrievingTask(Uri audioUri, ServerFile serverFile) {
-        this.audioUri = audioUri;
-        this.viewHolder = null;
-        this.serverFile = serverFile;
-    }
-
     private AudioMetadataRetrievingTask(Uri audioUri, ServerFile serverFile, MainTVPresenter.ViewHolder viewHolder) {
         this.audioUri = audioUri;
         this.viewHolder = viewHolder;
@@ -55,7 +49,7 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
     }
 
     public static void execute(Uri audioUri, ServerFile serverFile) {
-        new AudioMetadataRetrievingTask(audioUri, serverFile).execute();
+        new AudioMetadataRetrievingTask(audioUri, serverFile, null).execute();
     }
 
     public static void execute(Uri audioUri, ServerFile serverFile, MainTVPresenter.ViewHolder viewHolder) {
@@ -78,7 +72,7 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
             return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum,
                 duration, audioAlbumArt, viewHolder, serverFile);
         } catch (RuntimeException e) {
-            return new AudioMetadataRetrievedEvent(null, null, null, null, null, viewHolder, serverFile);
+            return new AudioMetadataRetrievedEvent(viewHolder, serverFile);
         } finally {
             audioMetadataRetriever.release();
         }

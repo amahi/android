@@ -210,17 +210,24 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Override
     public void onPrepared(MediaPlayer audioPlayer) {
+        if (audioMetadataFormatter == null) {
+            // Temporarily display empty audio metadata (to build notification)
+            BusProvider.getBus().post(new AudioMetadataRetrievedEvent(null, audioFile));
+        }
         BusProvider.getBus().post(new AudioPreparedEvent());
         playAudio();
     }
 
     private void setUpAudioMetadata() {
+        // Clear any previous metadata
+        tearDownAudioMetadataFormatter();
+        // Start fetching new metadata in the background
         AudioMetadataRetrievingTask.execute(getAudioUri(), audioFile);
     }
 
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-        if (audioFile != null) {
+        if (audioFile != null && audioFile == event.getServerFile()) {
             this.audioMetadataFormatter = new AudioMetadataFormatter(
                 event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
             this.audioMetadataFormatter.setDuration(event.getDuration());
@@ -446,13 +453,14 @@ public class AudioService extends MediaBrowserServiceCompat implements
     @Override
     public void onCompletion(MediaPlayer audioPlayer) {
         BusProvider.getBus().post(new AudioCompletedEvent());
-
+        tearDownAudioMetadataFormatter();
         startNextAudio();
     }
 
     @Override
     public boolean onError(MediaPlayer audioPlayer, int errorReason, int errorExtra) {
         getAudioPlayer().reset();
+        tearDownAudioMetadataFormatter();
         return true;
     }
 
@@ -465,6 +473,10 @@ public class AudioService extends MediaBrowserServiceCompat implements
         tearDownAudioPlayer();
         tearDownAudioPlayerRemote();
         tearDownAudioPlayerNotification();
+    }
+
+    private void tearDownAudioMetadataFormatter() {
+        audioMetadataFormatter = null;
     }
 
     private void tearDownBus() {

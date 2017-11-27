@@ -62,7 +62,7 @@ import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.ViewDirector;
-import org.amahi.anywhere.view.MediaControls;
+import org.amahi.anywhere.view.AudioControls;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,7 +99,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private AudioMetadataFormatter metadataFormatter;
     private PlaybackLocation mLocation = PlaybackLocation.LOCAL;
     private AudioService audioService;
-    private MediaControls audioControls;
+    private AudioControls audioControls;
     private ServerFile audioFile;
 
     public static boolean supports(String mime_type) {
@@ -172,14 +172,16 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-        metadataFormatter = new AudioMetadataFormatter(
-            event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
-        metadataFormatter.setDuration(event.getDuration());
-        if (mLocation == PlaybackLocation.LOCAL) {
-            setUpAudioMetadata(metadataFormatter, event.getAudioAlbumArt());
-        } else if (mLocation == PlaybackLocation.REMOTE) {
-            loadRemoteMedia(0, true);
-            finish();
+        if (audioFile != null && audioFile == event.getServerFile()) {
+            metadataFormatter = new AudioMetadataFormatter(
+                event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
+            metadataFormatter.setDuration(event.getDuration());
+            if (mLocation == PlaybackLocation.LOCAL) {
+                setUpAudioMetadata(metadataFormatter, event.getAudioAlbumArt());
+            } else if (mLocation == PlaybackLocation.REMOTE) {
+                loadRemoteMedia(0, true);
+                finish();
+            }
         }
     }
 
@@ -244,12 +246,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     private void setUpAudioControls() {
         if (!areAudioControlsAvailable()) {
-            audioControls = new MediaControls(this) {
-                @Override
-                public void hide() {
-                    // Do nothing
-                }
-            };
+            audioControls = new AudioControls(this);
 
             audioControls.setMediaPlayer(this);
             audioControls.setPrevNextListeners(new AudioControlsNextListener(), new AudioControlsPreviousListener());
@@ -311,25 +308,22 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     @Subscribe
     public void onNextAudio(AudioControlNextEvent event) {
         tearDownAudioTitle();
-        tearDownAudioMetadata();
-
         hideAudio();
+        tearDownAudioMetadata();
     }
 
     @Subscribe
     public void onPreviousAudio(AudioControlPreviousEvent event) {
         tearDownAudioTitle();
-        tearDownAudioMetadata();
-
         hideAudio();
+        tearDownAudioMetadata();
     }
 
     @Subscribe
     public void onAudioCompleted(AudioCompletedEvent event) {
         tearDownAudioTitle();
-        tearDownAudioMetadata();
-
         hideAudio();
+        tearDownAudioMetadata();
     }
 
     private void tearDownAudioTitle() {
@@ -337,8 +331,10 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void tearDownAudioMetadata() {
+        metadataFormatter = null;
         getAudioTitleView().setText(null);
         getAudioSubtitleView().setText(null);
+        getAudioAlbumArtView().setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         getAudioAlbumArtView().setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.default_audiotrack));
     }
 
@@ -353,7 +349,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     private void hideAudioControls() {
         if (areAudioControlsAvailable() && audioControls.isShowing()) {
-            audioControls.hide();
+            audioControls.hideControls();
         }
     }
 
@@ -494,7 +490,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     private void hideAudioControlsForced() {
         if (areAudioControlsAvailable() && audioControls.isShowing()) {
-            audioControls.hide();
+            audioControls.hideControls();
         }
     }
 

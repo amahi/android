@@ -197,7 +197,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     private void setUpAudioPlayback() {
         try {
-            audioPlayer.setDataSource(this, getAudioUri());
+            audioPlayer.setDataSource(getAudioUri().toString());
             audioPlayer.prepareAsync();
         } catch (IOException e) {
             throw new RuntimeException(e);

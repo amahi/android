@@ -37,6 +37,7 @@ import android.widget.MediaController;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaLoadOptions;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
@@ -243,7 +244,12 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     private void setUpAudioControls() {
         if (!areAudioControlsAvailable()) {
-            audioControls = new MediaControls(this);
+            audioControls = new MediaControls(this) {
+                @Override
+                public void hide() {
+                    // Do nothing
+                }
+            };
 
             audioControls.setMediaPlayer(this);
             audioControls.setPrevNextListeners(new AudioControlsNextListener(), new AudioControlsPreviousListener());
@@ -333,7 +339,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private void tearDownAudioMetadata() {
         getAudioTitleView().setText(null);
         getAudioSubtitleView().setText(null);
-        getAudioAlbumArtView().setImageBitmap(null);
+        getAudioAlbumArtView().setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.default_audiotrack));
     }
 
     private void hideAudio() {
@@ -453,7 +459,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void setUpAudioMetadata() {
-        if (!isAudioServiceAvailable()) {
+        if (!isAudioServiceAvailable() || audioService.getAudioMetadataFormatter() == null) {
             return;
         }
 
@@ -625,7 +631,11 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
             public void onAdBreakStatusUpdated() {
             }
         });
-        remoteMediaClient.load(buildMediaInfo(), autoPlay, position);
+        MediaLoadOptions mediaLoadOptions = new MediaLoadOptions.Builder()
+            .setAutoplay(autoPlay)
+            .setPlayPosition(position)
+            .build();
+        remoteMediaClient.load(buildMediaInfo(), mediaLoadOptions);
     }
 
     private MediaInfo buildMediaInfo() {

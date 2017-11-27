@@ -40,6 +40,7 @@
             android:id="@+id/image_album_art"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:src="@drawable/default_audiotrack"
             android:scaleType="centerCrop" />
 
         <LinearLayout

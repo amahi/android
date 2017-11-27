@@ -40,7 +40,11 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
         this.audioTitle = audioTitle;
         this.audioArtist = audioArtist;
         this.audioAlbum = audioAlbum;
-        this.duration = Long.valueOf(duration);
+        if (duration != null) {
+            this.duration = Long.valueOf(duration);
+        } else {
+            this.duration = 0;
+        }
         this.audioAlbumArt = audioAlbumArt;
         this.viewHolder = viewHolder;
         this.serverFile = serverFile;

@@ -187,9 +187,14 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
 
         @Override
         protected byte[] doInBackground(Void... params) {
-            MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
-            audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
-            return extractAlbumArt(audioMetadataRetriever);
+            try {
+                MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
+                audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
+                return extractAlbumArt(audioMetadataRetriever);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         private byte[] extractAlbumArt(MediaMetadataRetriever audioMetadataRetriever) {
@@ -198,13 +203,16 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
 
         @Override
         protected void onPostExecute(byte[] bitmap) {
-            Glide.with(applicationContext)
-                .load(bitmap)
-                .asBitmap()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
-                .placeholder(R.drawable.ic_file_audio)
-                .into(imageView);
+            if (bitmap != null) {
+                Glide.with(applicationContext)
+                    .load(bitmap)
+                    .asBitmap()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_file_audio)
+                    .error(R.drawable.ic_file_audio)
+                    .into(imageView);
+            }
         }
     }
 }

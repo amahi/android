@@ -2,10 +2,11 @@ buildscript {
     repositories {
         jcenter()
         maven { url 'https://maven.fabric.io/public' }
+        google()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'io.fabric.tools:gradle:1.22.1'
     }
 }
@@ -15,7 +16,7 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '27.0.1'
 
     signingConfigs {
         release {
@@ -86,15 +87,15 @@ android {
     }
 }
 
-def buildVersionName(versionMajor, versionMinor, versionPatch) {
+static def buildVersionName(versionMajor, versionMinor, versionPatch) {
     return "${versionMajor}.${versionMinor}.${versionPatch}"
 }
 
-def buildVersionCode(versionMajor, versionMinor, versionPatch) {
+static def buildVersionCode(versionMajor, versionMinor, versionPatch) {
     return versionMajor * 10**2 + versionMinor * 10**1 + versionPatch * 10**0
 }
 
-def formatStringField(field) {
+static def formatStringField(field) {
     return "\"${field}\""
 }
 
@@ -106,10 +107,9 @@ dependencies {
         maven { url 'https://maven.fabric.io/public' }
         maven { url 'http://dl.bintray.com/megabitdragon/maven' }
         maven { url 'https://jitpack.io' }
+        google()
     }
-
-    def SUPPORT_LIBRARY_VERSION = "25.3.1"
-
+    def SUPPORT_LIBRARY_VERSION = "25.4.0"
     compile "com.android.support:support-v4:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:support-v13:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:recyclerview-v7:${SUPPORT_LIBRARY_VERSION}"
@@ -119,7 +119,8 @@ dependencies {
     compile "com.android.support:customtabs:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:leanback-v17:${SUPPORT_LIBRARY_VERSION}"
     compile "com.android.support:mediarouter-v7:${SUPPORT_LIBRARY_VERSION}"
-    compile 'com.google.android.gms:play-services-cast-framework:11.0.2'
+    compile "com.android.support:cardview-v7:${SUPPORT_LIBRARY_VERSION}"
+    compile 'com.google.android.gms:play-services-cast-framework:11.6.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }
@@ -127,22 +128,22 @@ dependencies {
     compile 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
     compile 'com.jakewharton.timber:timber:4.5.1'
     compile 'com.squareup.dagger:dagger:1.2.5'
+    annotationProcessor 'com.squareup.dagger:dagger-compiler:1.2.5'
     compile 'com.squareup:otto:1.3.8'
     compile 'com.github.apl-devs:appintro:v4.2.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.squareup.retrofit2:retrofit:2.2.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     compile 'org.videolan:libvlc:2.1.1'
     compile 'pub.devrel:easypermissions:0.4.2'
     testCompile 'org.robolectric:robolectric:3.1.2'
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:shadows-multidex:3.0'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support:support-annotations:25.3.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestCompile 'com.android.support.test:runner:1.0.1'
+    androidTestCompile 'com.android.support:support-annotations:25.4.0'
     provided 'com.squareup.dagger:dagger-compiler:1.2.5'
-    compile 'com.android.support:cardview-v7:25.3.1'
     compile 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
 }
 

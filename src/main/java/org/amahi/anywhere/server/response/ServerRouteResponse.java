@@ -33,8 +33,7 @@ import retrofit2.Response;
  * Server route response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
  * as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class ServerRouteResponse implements Callback<ServerRoute>
-{
+public class ServerRouteResponse implements Callback<ServerRoute> {
     @Override
     public void onResponse(Call<ServerRoute> call, Response<ServerRoute> response) {
         if (response.isSuccessful())

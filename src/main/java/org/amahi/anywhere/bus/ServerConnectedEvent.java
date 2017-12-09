@@ -19,5 +19,16 @@
 
 package org.amahi.anywhere.bus;
 
+import org.amahi.anywhere.server.model.Server;
+
 public class ServerConnectedEvent implements BusEvent {
+    public Server server;
+
+    public ServerConnectedEvent(Server server) {
+        this.server = server;
+    }
+
+    public Server getServer() {
+        return server;
+    }
 }

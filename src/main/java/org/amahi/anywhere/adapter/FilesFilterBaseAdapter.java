@@ -19,9 +19,11 @@
 
 package org.amahi.anywhere.adapter;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.support.annotation.DrawableRes;
+import android.os.AsyncTask;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +43,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -51,27 +54,19 @@ import java.util.List;
 public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filterable {
 
 
+    static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
+    static String queryString;
     LayoutInflater layoutInflater;
     ServerClient serverClient;
-
     ServerShare serverShare;
-
     List<ServerFile> files;
     List<ServerFile> filteredFiles;
-
-    static String queryString;
-    static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
-
     private FilesFilter filesFilter;
     private onFilterListChange onFilterListChange;
 
     abstract void bindView(ServerFile file, View view);
 
     abstract View newView(ViewGroup container);
-
-    public interface onFilterListChange {
-        void isListEmpty(boolean empty);
-    }
 
     public <T extends onFilterListChange> void setFilterListChangeListener(T t) {
         this.onFilterListChange = t;
@@ -113,6 +108,11 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
         notifyDataSetChanged();
     }
 
+    public void removeFile(int position) {
+        this.files.remove(position);
+        notifyDataSetChanged();
+    }
+
     @Override
     public Filter getFilter() {
         if (filesFilter == null) {
@@ -123,6 +123,23 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
 
     public List<ServerFile> getItems() {
         return files;
+    }
+
+    void setUpImageIcon(ServerFile file, ImageView fileIconView) {
+        Glide.with(fileIconView.getContext())
+            .load(getImageUri(file))
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+            .placeholder(Mimes.getFileIcon(file))
+            .into(fileIconView);
+    }
+
+    private Uri getImageUri(ServerFile file) {
+        return serverClient.getFileUri(serverShare, file);
+    }
+
+    public interface onFilterListChange {
+        void isListEmpty(boolean empty);
     }
 
     private class FilesFilter extends Filter {
@@ -157,52 +174,45 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
         }
     }
 
-    @DrawableRes
-    static int getFileIcon(ServerFile file) {
-        switch (Mimes.match(file.getMime())) {
-            case Mimes.Type.ARCHIVE:
-                return R.drawable.ic_file_archive;
+    class AlbumArtFetcher extends AsyncTask<Void, Void, byte[]> {
+        private final ImageView imageView;
+        private final Uri audioUri;
+        private final Context applicationContext;
 
-            case Mimes.Type.AUDIO:
-                return R.drawable.ic_file_audio;
+        AlbumArtFetcher(ImageView imageView, Uri audioUri, Context applicationContext) {
+            this.imageView = imageView;
+            this.audioUri = audioUri;
+            this.applicationContext = applicationContext;
+        }
 
-            case Mimes.Type.CODE:
-                return R.drawable.ic_file_code;
+        @Override
+        protected byte[] doInBackground(Void... params) {
+            try {
+                MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
+                audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
+                return extractAlbumArt(audioMetadataRetriever);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
 
-            case Mimes.Type.DOCUMENT:
-                return R.drawable.ic_file_text;
+        private byte[] extractAlbumArt(MediaMetadataRetriever audioMetadataRetriever) {
+            return audioMetadataRetriever.getEmbeddedPicture();
+        }
 
-            case Mimes.Type.DIRECTORY:
-                return R.drawable.ic_file_directory;
-
-            case Mimes.Type.IMAGE:
-                return R.drawable.ic_file_image;
-
-            case Mimes.Type.PRESENTATION:
-                return R.drawable.ic_file_presentation;
-
-            case Mimes.Type.SPREADSHEET:
-                return R.drawable.ic_file_spreadsheet;
-
-            case Mimes.Type.VIDEO:
-                return R.drawable.ic_file_video;
-
-            default:
-                return R.drawable.ic_file_generic;
+        @Override
+        protected void onPostExecute(byte[] bitmap) {
+            if (bitmap != null) {
+                Glide.with(applicationContext)
+                    .load(bitmap)
+                    .asBitmap()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_file_audio)
+                    .error(R.drawable.ic_file_audio)
+                    .into(imageView);
+            }
         }
     }
-
-    void setUpImageIcon(ServerFile file, ImageView fileIconView) {
-        Glide.with(fileIconView.getContext())
-                .load(getImageUri(file))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
-                .placeholder(getFileIcon(file))
-                .into(fileIconView);
-    }
-
-    private Uri getImageUri(ServerFile file) {
-        return serverClient.getFileUri(serverShare, file);
-    }
-
 }

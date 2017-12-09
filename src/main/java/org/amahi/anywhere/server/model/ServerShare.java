@@ -29,70 +29,64 @@ import java.util.List;
 /**
  * Share API resource.
  */
-public class ServerShare implements Parcelable
-{
-	public static final class Tag
-	{
-		private Tag() {
-		}
+public class ServerShare implements Parcelable {
+    public static final Creator<ServerShare> CREATOR = new Creator<ServerShare>() {
+        @Override
+        public ServerShare createFromParcel(Parcel parcel) {
+            return new ServerShare(parcel);
+        }
 
-		public static final String FILES = "files";
+        @Override
+        public ServerShare[] newArray(int size) {
+            return new ServerShare[size];
+        }
+    };
+    @SerializedName("name")
+    private String name;
 
-		public static final String MOVIES = "movie";
-		public static final String TV = "tv";
-	}
+    @SerializedName("tags")
+    private List<String> tags;
 
-	@SerializedName("name")
-	private String name;
+    @SuppressWarnings("unchecked")
+    private ServerShare(Parcel parcel) {
+        this.name = parcel.readString();
+        this.tags = parcel.readArrayList(String.class.getClassLoader());
+    }
 
-	@SerializedName("tags")
-	private List<String> tags;
+    public String getName() {
+        return name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getTag() {
+        for (String tag : tags) {
+            if (tag.contains(Tag.MOVIES)) {
+                return Tag.MOVIES;
+            }
 
-	public String getTag() {
-		for (String tag : tags) {
-			if (tag.contains(Tag.MOVIES)) {
-				return Tag.MOVIES;
-			}
+            if (tag.contains(Tag.TV)) {
+                return Tag.TV;
+            }
+        }
 
-			if (tag.contains(Tag.TV)) {
-				return Tag.TV;
-			}
-		}
+        return Tag.FILES;
+    }
 
-		return Tag.FILES;
-	}
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(name);
+        parcel.writeList(tags);
+    }
 
-	public static final Creator<ServerShare> CREATOR = new Creator<ServerShare>()
-	{
-		@Override
-		public ServerShare createFromParcel(Parcel parcel) {
-			return new ServerShare(parcel);
-		}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-		@Override
-		public ServerShare[] newArray(int size) {
-			return new ServerShare[size];
-		}
-	};
-
-	@SuppressWarnings("unchecked")
-	private ServerShare(Parcel parcel) {
-		this.name = parcel.readString();
-		this.tags = parcel.readArrayList(String.class.getClassLoader());
-	}
-
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeString(name);
-		parcel.writeList(tags);
-	}
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    public static final class Tag {
+        public static final String FILES = "files";
+        public static final String MOVIES = "movie";
+        public static final String TV = "tv";
+        private Tag() {
+        }
+    }
 }

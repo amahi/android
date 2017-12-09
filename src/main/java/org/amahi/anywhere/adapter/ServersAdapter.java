@@ -35,90 +35,89 @@ import java.util.List;
  * Servers adapter. Visualizes servers
  * for the {@link org.amahi.anywhere.fragment.NavigationFragment}.
  */
-public class ServersAdapter extends BaseAdapter
-{
-	private final LayoutInflater layoutInflater;
+public class ServersAdapter extends BaseAdapter {
+    private final LayoutInflater layoutInflater;
 
-	private List<Server> servers;
+    private List<Server> servers;
 
-	public ServersAdapter(Context context) {
-		this.layoutInflater = LayoutInflater.from(context);
+    public ServersAdapter(Context context) {
+        this.layoutInflater = LayoutInflater.from(context);
 
-		this.servers = Collections.emptyList();
-	}
+        this.servers = Collections.emptyList();
+    }
 
-	public void replaceWith(List<Server> servers) {
-		this.servers = servers;
+    public void replaceWith(List<Server> servers) {
+        this.servers = servers;
 
-		notifyDataSetChanged();
-	}
+        notifyDataSetChanged();
+    }
 
-	@Override
-	public int getCount() {
-		return servers.size();
-	}
+    @Override
+    public int getCount() {
+        return servers.size();
+    }
 
-	public List<Server> getItems() {
-		return servers;
-	}
+    public List<Server> getItems() {
+        return servers;
+    }
 
-	@Override
-	public Server getItem(int position) {
-		return servers.get(position);
-	}
+    @Override
+    public Server getItem(int position) {
+        return servers.get(position);
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-	@Override
-	public View getView(int position, View view, ViewGroup container) {
-		Server server = getItem(position);
+    @Override
+    public View getView(int position, View view, ViewGroup container) {
+        Server server = getItem(position);
 
-		if (view == null) {
-			view = newView(container);
-		}
+        if (view == null) {
+            view = newView(container);
+        }
 
-		bindView(server, view);
+        bindView(server, view);
 
-		return view;
-	}
+        return view;
+    }
 
-	private View newView(ViewGroup container) {
-		return layoutInflater.inflate(android.R.layout.simple_spinner_item, container, false);
-	}
+    private View newView(ViewGroup container) {
+        return layoutInflater.inflate(android.R.layout.simple_spinner_item, container, false);
+    }
 
-	private void bindView(Server server, View view) {
-		TextView serverView = (TextView) view;
+    private void bindView(Server server, View view) {
+        TextView serverView = (TextView) view;
 
-		serverView.setText(getServerName(server));
-	}
+        serverView.setText(getServerName(server));
+    }
 
-	private String getServerName(Server server) {
-		return server.getName();
-	}
+    private String getServerName(Server server) {
+        return server.getName();
+    }
 
-	@Override
-	public View getDropDownView(int position, View view, ViewGroup container) {
-		Server server = getItem(position);
+    @Override
+    public View getDropDownView(int position, View view, ViewGroup container) {
+        Server server = getItem(position);
 
-		if (view == null) {
-			view = newDropDownView(container);
-		}
+        if (view == null) {
+            view = newDropDownView(container);
+        }
 
-		bindDropDownView(server, view);
+        bindDropDownView(server, view);
 
-		return view;
-	}
+        return view;
+    }
 
-	private View newDropDownView(ViewGroup container) {
-		return layoutInflater.inflate(android.R.layout.simple_spinner_dropdown_item, container, false);
-	}
+    private View newDropDownView(ViewGroup container) {
+        return layoutInflater.inflate(android.R.layout.simple_spinner_dropdown_item, container, false);
+    }
 
-	private void bindDropDownView(Server server, View view) {
-		TextView serverView = (TextView) view;
+    private void bindDropDownView(Server server, View view) {
+        TextView serverView = (TextView) view;
 
-		serverView.setText(getServerName(server));
-	}
+        serverView.setText(getServerName(server));
+    }
 }

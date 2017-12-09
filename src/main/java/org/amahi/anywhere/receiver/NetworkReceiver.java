@@ -27,37 +27,44 @@ import android.net.NetworkInfo;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.NetworkChangedEvent;
+import org.amahi.anywhere.service.UploadService;
+import org.amahi.anywhere.util.NetworkUtils;
 
 /**
  * Network system events receiver. Proxies system network events such as changing network connection
  * to the local {@link com.squareup.otto.Bus} as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class NetworkReceiver extends BroadcastReceiver
-{
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-			handleNetworkChangeEvent(context);
-		}
-	}
+public class NetworkReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+            handleNetworkChangeEvent(context);
+        }
+    }
 
-	private void handleNetworkChangeEvent(Context context) {
-		NetworkInfo network = getNetwork(context);
+    private void handleNetworkChangeEvent(Context context) {
+        NetworkUtils networkUtils = new NetworkUtils(context);
+        NetworkInfo network = networkUtils.getNetwork();
+        if (networkUtils.isNetworkConnected(network)) {
+            BusProvider.getBus().post(new NetworkChangedEvent(network.getType()));
+        }
 
-		if (isNetworkConnected(network)) {
-			BusProvider.getBus().post(new NetworkChangedEvent(network.getType()));
-		}
-	}
+        if (networkUtils.isUploadAllowed()) {
+            startUploadService(context);
+        } else {
+            stopUploadService(context);
+        }
+    }
 
-	private NetworkInfo getNetwork(Context context) {
-		return getNetworkManager(context).getActiveNetworkInfo();
-	}
+    private void startUploadService(Context context) {
+        Intent uploadService = new Intent(context, UploadService.class);
+        context.startService(uploadService);
+    }
 
-	private ConnectivityManager getNetworkManager(Context context) {
-		return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-	}
+    private void stopUploadService(Context context) {
+        Intent uploadService = new Intent(context, UploadService.class);
+        context.stopService(uploadService);
+    }
 
-	private boolean isNetworkConnected(NetworkInfo network) {
-		return (network != null) && network.isConnected();
-	}
+
 }

@@ -25,121 +25,165 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 
+import com.squareup.otto.Subscribe;
+
 import org.amahi.anywhere.AmahiApplication;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Mimes;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 /**
  * Video service. Does all the work related to the video playback.
  */
-public class VideoService extends Service
-{
-	private ServerShare videoShare;
-	private ServerFile videoFile;
+public class VideoService extends Service {
+    @Inject
+    ServerClient serverClient;
+    private ServerShare videoShare;
+    private ServerFile videoFile;
+    private LibVLC mLibVLC;
+    private MediaPlayer mMediaPlayer = null;
 
-	private LibVLC mLibVLC;
-	private MediaPlayer mMediaPlayer = null;
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new VideoServiceBinder(this);
+    }
 
-	@Inject
-	ServerClient serverClient;
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return new VideoServiceBinder(this);
-	}
+        setUpInjections();
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+        setUpVideoPlayer();
 
-		setUpInjections();
+        BusProvider.getBus().register(this);
+    }
 
-		setUpVideoPlayer();
-	}
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(this).inject(this);
-	}
+    private void setUpVideoPlayer() {
+        final ArrayList<String> args = new ArrayList<>();
+        args.add("-vvv");
+        mLibVLC = new LibVLC(this, args);
+        mMediaPlayer = new MediaPlayer(mLibVLC);
+    }
 
-	private void setUpVideoPlayer() {
-		final ArrayList<String> args = new ArrayList<>();
-		args.add("-vvv");
-		mLibVLC = new LibVLC(this, args);
-		mMediaPlayer = new MediaPlayer(mLibVLC);
-	}
+    public boolean isVideoStarted() {
+        return (videoShare != null) && (videoFile != null);
+    }
 
-	public boolean isVideoStarted() {
-		return (videoShare != null) && (videoFile != null);
-	}
+    public void startVideo(ServerShare videoShare, ServerFile videoFile, boolean isSubtitleEnabled) {
+        this.videoShare = videoShare;
+        this.videoFile = videoFile;
 
-	public void startVideo(ServerShare videoShare, ServerFile videoFile) {
-		this.videoShare = videoShare;
-		this.videoFile = videoFile;
+        setUpVideoPlayback(isSubtitleEnabled);
+    }
 
-		setUpVideoPlayback();
-	}
+    private void setUpVideoPlayback(boolean isSubtitleEnabled) {
+        Media media = new Media(mLibVLC, getVideoUri());
+        mMediaPlayer.setMedia(media);
+        media.release();
+        if (isSubtitleEnabled) {
+            searchSubtitleFile();
+        }
+        mMediaPlayer.play();
+    }
 
-	private void setUpVideoPlayback() {
-		Media media = new Media(mLibVLC, getVideoUri());
-		mMediaPlayer.setMedia(media);
-		media.release();
-		mMediaPlayer.play();
-	}
+    private Uri getVideoUri() {
+        return serverClient.getFileUri(videoShare, videoFile);
+    }
 
-	private Uri getVideoUri() {
-		return serverClient.getFileUri(videoShare, videoFile);
-	}
+    private void searchSubtitleFile() {
+        if (serverClient.isConnected()) {
+            if (!isDirectoryAvailable()) {
+                serverClient.getFiles(videoShare);
+            } else {
+                serverClient.getFiles(videoShare, getDirectory());
+            }
+        }
+    }
 
-	public MediaPlayer getMediaPlayer() {
-		return mMediaPlayer;
-	}
+    @Subscribe
+    public void onFilesLoaded(ServerFilesLoadedEvent event) {
+        List<ServerFile> files = event.getServerFiles();
+        for (ServerFile file : files) {
+            if (videoFile.getNameOnly().equals(file.getNameOnly())) {
+                if (Mimes.match(file.getMime()) == Mimes.Type.SUBTITLE) {
+                    mMediaPlayer.getMedia().addSlave(
+                        new Media.Slave(
+                            Media.Slave.Type.Subtitle, 4, getSubtitleUri(file)));
+                    break;
+                }
+            }
+        }
+    }
 
-	public boolean isVideoPlaying() {
-		return mMediaPlayer.isPlaying();
-	}
+    private String getSubtitleUri(ServerFile file) {
+        return serverClient.getFileUri(videoShare, file).toString();
+    }
 
-	public void playVideo() {
-		mMediaPlayer.play();
-	}
+    private boolean isDirectoryAvailable() {
+        return getDirectory() != null;
+    }
 
-	public void pauseVideo() {
-		mMediaPlayer.pause();
-	}
+    private ServerFile getDirectory() {
+        return videoFile.getParentFile();
+    }
+
+    public MediaPlayer getMediaPlayer() {
+        return mMediaPlayer;
+    }
+
+    public boolean isVideoPlaying() {
+        return mMediaPlayer.isPlaying();
+    }
+
+    public void playVideo() {
+        mMediaPlayer.play();
+    }
+
+    public void pauseVideo() {
+        mMediaPlayer.pause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        tearDownVideoPlayback();
+        BusProvider.getBus().unregister(this);
+    }
 
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		tearDownVideoPlayback();
-	}
-
-
-	private void tearDownVideoPlayback() {
-		mMediaPlayer.stop();
-		mMediaPlayer.release();
-		mLibVLC.release();
-	}
+    private void tearDownVideoPlayback() {
+        mMediaPlayer.stop();
+        mMediaPlayer.release();
+        mLibVLC.release();
+    }
 
 
-	public static final class VideoServiceBinder extends Binder
-	{
-		private final VideoService videoService;
+    public static final class VideoServiceBinder extends Binder {
+        private final VideoService videoService;
 
-		VideoServiceBinder(VideoService videoService) {
-			this.videoService = videoService;
-		}
+        VideoServiceBinder(VideoService videoService) {
+            this.videoService = videoService;
+        }
 
-		public VideoService getVideoService() {
-			return videoService;
-		}
-	}
+        public VideoService getVideoService() {
+            return videoService;
+        }
+    }
 }

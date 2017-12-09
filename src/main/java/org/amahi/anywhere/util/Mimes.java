@@ -21,6 +21,9 @@ package org.amahi.anywhere.util;
 
 import android.support.v4.util.ArrayMap;
 
+import org.amahi.anywhere.R;
+import org.amahi.anywhere.server.model.ServerFile;
+
 import java.util.Map;
 
 /**
@@ -72,6 +75,10 @@ public class Mimes {
         types.put("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Type.SPREADSHEET);
 
         types.put("application/x-quicktimeplayer", Type.VIDEO);
+
+        types.put("application/x-subrip", Mimes.Type.SUBTITLE);
+        types.put("image/vnd.dvb.subtitle", Mimes.Type.SUBTITLE);
+        types.put("application/x-subtitle", Type.SUBTITLE);
     }
 
     public static int match(String mime) {
@@ -116,6 +123,74 @@ public class Mimes {
         return Type.UNDEFINED;
     }
 
+    public static int getFileIcon(ServerFile file) {
+        switch (Mimes.match(file.getMime())) {
+            case Mimes.Type.ARCHIVE:
+                return R.drawable.ic_file_archive;
+
+            case Mimes.Type.AUDIO:
+                return R.drawable.ic_file_audio;
+
+            case Mimes.Type.CODE:
+                return R.drawable.ic_file_code;
+
+            case Mimes.Type.DOCUMENT:
+                return R.drawable.ic_file_text;
+
+            case Mimes.Type.DIRECTORY:
+                return R.drawable.ic_file_directory;
+
+            case Mimes.Type.IMAGE:
+                return R.drawable.ic_file_image;
+
+            case Mimes.Type.PRESENTATION:
+                return R.drawable.ic_file_presentation;
+
+            case Mimes.Type.SPREADSHEET:
+                return R.drawable.ic_file_spreadsheet;
+
+            case Mimes.Type.VIDEO:
+                return R.drawable.ic_file_video;
+
+            default:
+                return R.drawable.ic_file_generic;
+        }
+    }
+
+    public static int getTVFileIcon(ServerFile file) {
+        switch (Mimes.match(file.getMime())) {
+            case Mimes.Type.ARCHIVE:
+                return R.drawable.tv_ic_archive;
+
+            case Mimes.Type.AUDIO:
+                return R.drawable.tv_ic_audio;
+
+            case Mimes.Type.CODE:
+                return R.drawable.tv_ic_code;
+
+            case Mimes.Type.DOCUMENT:
+                return R.drawable.tv_ic_document;
+
+            case Mimes.Type.DIRECTORY:
+                return R.drawable.tv_ic_folder;
+
+            case Mimes.Type.IMAGE:
+                return R.drawable.tv_ic_images;
+
+            case Mimes.Type.PRESENTATION:
+                return R.drawable.tv_ic_presentation;
+
+            case Mimes.Type.SPREADSHEET:
+                return R.drawable.tv_ic_spreadsheet;
+
+            case Mimes.Type.VIDEO:
+                return R.drawable.tv_ic_video;
+
+            default:
+                return R.drawable.tv_ic_generic;
+        }
+    }
+
     public static final class Type {
         public static final int UNDEFINED = 0;
         public static final int ARCHIVE = 1;
@@ -127,6 +202,8 @@ public class Mimes {
         public static final int PRESENTATION = 7;
         public static final int SPREADSHEET = 8;
         public static final int VIDEO = 9;
+        public static final int SUBTITLE = 10;
+
         private Type() {
         }
 

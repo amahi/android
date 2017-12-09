@@ -40,42 +40,41 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * for possible consumers.
  */
 @Module(
-	complete = false,
-	library = true
+    complete = false,
+    library = true
 )
-public class ApiModule
-{
-	@Provides
-	@Singleton
-	OkHttpClient provideHttpClient(ApiHeaders headers, HttpLoggingInterceptor logging) {
-		OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-		clientBuilder.addInterceptor(headers);
-		clientBuilder.addInterceptor(logging);
-		return clientBuilder.build();
-	}
+public class ApiModule {
+    @Provides
+    @Singleton
+    OkHttpClient provideHttpClient(ApiHeaders headers, HttpLoggingInterceptor logging) {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        clientBuilder.addInterceptor(headers);
+        clientBuilder.addInterceptor(logging);
+        return clientBuilder.build();
+    }
 
-	@Provides
-	@Singleton
-	ApiHeaders provideHeaders(Context context) {
-		return new ApiHeaders(context);
-	}
+    @Provides
+    @Singleton
+    ApiHeaders provideHeaders(Context context) {
+        return new ApiHeaders(context);
+    }
 
-	@Provides
-	@Singleton
-	Converter.Factory provideJsonConverterFactory(Gson json) {
-		return GsonConverterFactory.create(json);
-	}
+    @Provides
+    @Singleton
+    Converter.Factory provideJsonConverterFactory(Gson json) {
+        return GsonConverterFactory.create(json);
+    }
 
-	@Provides
-	@Singleton
-	Gson provideJson() {
-		return new GsonBuilder().setDateFormat(Time.Format.RFC_1123).create();
-	}
+    @Provides
+    @Singleton
+    Gson provideJson() {
+        return new GsonBuilder().setDateFormat(Time.Format.RFC_1123).create();
+    }
 
-	@Provides
-	@Singleton
-	HttpLoggingInterceptor provideLogging() {
-		// change the level below to HttpLoggingInterceptor.Level.BODY to get the whole body in the logs
-		return new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
-	}
+    @Provides
+    @Singleton
+    HttpLoggingInterceptor provideLogging() {
+        // change the level below to HttpLoggingInterceptor.Level.BODY to get the whole body in the logs
+        return new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
+    }
 }

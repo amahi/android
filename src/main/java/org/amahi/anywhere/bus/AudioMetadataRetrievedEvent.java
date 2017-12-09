@@ -21,17 +21,37 @@ package org.amahi.anywhere.bus;
 
 import android.graphics.Bitmap;
 
+import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.tv.presenter.MainTVPresenter;
+
 public class AudioMetadataRetrievedEvent implements BusEvent {
     private final String audioTitle;
     private final String audioArtist;
     private final String audioAlbum;
+    private final long duration;
     private final Bitmap audioAlbumArt;
+    private final MainTVPresenter.ViewHolder viewHolder;
+    private final ServerFile serverFile;
 
-    public AudioMetadataRetrievedEvent(String audioTitle, String audioArtist, String audioAlbum, Bitmap audioAlbumArt) {
+    public AudioMetadataRetrievedEvent(String audioTitle, String audioArtist, String audioAlbum,
+                                       String duration, Bitmap audioAlbumArt,
+                                       MainTVPresenter.ViewHolder viewHolder,
+                                       ServerFile serverFile) {
         this.audioTitle = audioTitle;
         this.audioArtist = audioArtist;
         this.audioAlbum = audioAlbum;
+        if (duration != null) {
+            this.duration = Long.valueOf(duration);
+        } else {
+            this.duration = 0;
+        }
         this.audioAlbumArt = audioAlbumArt;
+        this.viewHolder = viewHolder;
+        this.serverFile = serverFile;
+    }
+
+    public AudioMetadataRetrievedEvent(MainTVPresenter.ViewHolder viewHolder, ServerFile serverFile) {
+        this(null, null, null, null, null, viewHolder, serverFile);
     }
 
     public String getAudioTitle() {
@@ -48,5 +68,17 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
 
     public Bitmap getAudioAlbumArt() {
         return audioAlbumArt;
+    }
+
+    public MainTVPresenter.ViewHolder getViewHolder() {
+        return viewHolder;
+    }
+
+    public ServerFile getServerFile() {
+        return serverFile;
+    }
+
+    public long getDuration() {
+        return duration;
     }
 }

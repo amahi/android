@@ -23,6 +23,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,34 +38,39 @@ import retrofit2.Response;
  * Files response proxy. Consumes API callback and posts it via {@link com.squareup.otto.Bus}
  * as {@link org.amahi.anywhere.bus.BusEvent}.
  */
-public class ServerFilesResponse implements Callback<List<ServerFile>>
-{
-	private final ServerFile serverDirectory;
+public class ServerFilesResponse implements Callback<List<ServerFile>> {
+    private ServerFile serverDirectory;
+    private ServerShare serverShare;
 
-	public ServerFilesResponse(ServerFile serverDirectory) {
-		this.serverDirectory = serverDirectory;
-	}
+    public ServerFilesResponse(ServerFile serverDirectory, ServerShare serverShare) {
+        this.serverDirectory = serverDirectory;
+        this.serverShare = serverShare;
+    }
 
-	@Override
-	public void onResponse(Call<List<ServerFile>> call, Response<List<ServerFile>> response) {
-		if (response.isSuccessful()) {
-			List<ServerFile> serverFiles = response.body();
-			if (serverFiles == null) {
-				serverFiles = Collections.emptyList();
-			}
+    public ServerFilesResponse(ServerShare serverShare) {
+        this.serverShare = serverShare;
+    }
 
-			for (ServerFile serverFile : serverFiles) {
-				serverFile.setParentFile(serverDirectory);
-			}
+    @Override
+    public void onResponse(Call<List<ServerFile>> call, Response<List<ServerFile>> response) {
+        if (response.isSuccessful()) {
+            List<ServerFile> serverFiles = response.body();
+            if (serverFiles == null) {
+                serverFiles = Collections.emptyList();
+            }
 
-			BusProvider.getBus().post(new ServerFilesLoadedEvent(serverFiles));
-		}
-		else
-			this.onFailure(call, new HttpException(response));
-	}
+            for (ServerFile serverFile : serverFiles) {
+                serverFile.setParentFile(serverDirectory);
+                serverFile.setParentShare(serverShare);
+            }
 
-	@Override
-	public void onFailure(Call<List<ServerFile>> call, Throwable t) {
-		BusProvider.getBus().post(new ServerFilesLoadFailedEvent());
-	}
+            BusProvider.getBus().post(new ServerFilesLoadedEvent(serverFiles));
+        } else
+            this.onFailure(call, new HttpException(response));
+    }
+
+    @Override
+    public void onFailure(Call<List<ServerFile>> call, Throwable t) {
+        BusProvider.getBus().post(new ServerFilesLoadFailedEvent());
+    }
 }

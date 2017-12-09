@@ -30,49 +30,74 @@ import java.util.Date;
 /**
  * File API resource.
  */
-public class ServerFile implements Parcelable
-{
-	private ServerFile parentFile;
+public class ServerFile implements Parcelable {
+    public static final Creator<ServerFile> CREATOR = new Creator<ServerFile>() {
+        @Override
+        public ServerFile createFromParcel(Parcel parcel) {
+            return new ServerFile(parcel);
+        }
 
-	@SerializedName("name")
-	private String name;
-
-	@SerializedName("mime_type")
-	private String mime;
-
-	@SerializedName("mtime")
-	private Date modificationTime;
-
+        @Override
+        public ServerFile[] newArray(int size) {
+            return new ServerFile[size];
+        }
+    };
+    private ServerFile parentFile;
+    private ServerShare parentShare;
+    @SerializedName("name")
+    private String name;
+    @SerializedName("mime_type")
+    private String mime;
+    @SerializedName("mtime")
+    private Date modificationTime;
     @SerializedName("size")
     private long size;
-
     private ServerFileMetadata fileMetadata;
+    private boolean isMetaDataFetched;
 
-	private boolean isMetaDataFetched;
+    private ServerFile(Parcel parcel) {
+        this.parentFile = parcel.readParcelable(ServerFile.class.getClassLoader());
+        this.name = parcel.readString();
+        this.mime = parcel.readString();
+        this.modificationTime = new Date(parcel.readLong());
+        this.size = parcel.readLong();
+    }
 
     public long getSize() {
-            return size;
-       }
+        return size;
+    }
+
+    public ServerShare getParentShare() {
+        return parentShare;
+    }
+
+    public void setParentShare(ServerShare parentShare) {
+        this.parentShare = parentShare;
+    }
+
+    public ServerFile getParentFile() {
+        return parentFile;
+    }
 
     public void setParentFile(ServerFile parentFile) {
-		this.parentFile = parentFile;
-	}
+        this.parentFile = parentFile;
+    }
 
-	public ServerFile getParentFile() {
-		return parentFile;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getNameOnly() {
+        return name.replace("." + getExtension(), "");
+    }
 
-	public String getMime() {
-		return mime;
-	}
+    public String getMime() {
+        return mime;
+    }
 
-	public Date getModificationTime() {
-		return modificationTime;
-	}
+    public Date getModificationTime() {
+        return modificationTime;
+    }
 
     public ServerFileMetadata getFileMetadata() {
         return fileMetadata;
@@ -82,93 +107,81 @@ public class ServerFile implements Parcelable
         this.fileMetadata = fileMetadata;
     }
 
-	public boolean isMetaDataFetched() {
-		return isMetaDataFetched;
-	}
+    public boolean isMetaDataFetched() {
+        return isMetaDataFetched;
+    }
 
-	public void setMetaDataFetched(boolean metaDataFetched) {
-		isMetaDataFetched = metaDataFetched;
-	}
+    public void setMetaDataFetched(boolean metaDataFetched) {
+        isMetaDataFetched = metaDataFetched;
+    }
 
-	public String getPath() {
-		Uri.Builder uri = new Uri.Builder();
+    public String getPath() {
+        Uri.Builder uri = new Uri.Builder();
 
-		if (parentFile != null) {
-			uri.appendPath(parentFile.getPath());
-		}
+        if (parentFile != null) {
+            uri.appendPath(parentFile.getPath());
+        }
 
-		uri.appendPath(name);
+        uri.appendPath(name);
 
-		return uri.build().getPath();
-	}
+        return uri.build().getPath();
+    }
 
-	public static final Creator<ServerFile> CREATOR = new Creator<ServerFile>()
-	{
-		@Override
-		public ServerFile createFromParcel(Parcel parcel) {
-			return new ServerFile(parcel);
-		}
+    public String getExtension() {
+        String[] splitString = name.split("\\.");
+        if (splitString.length > 1) {
+            return splitString[splitString.length - 1];
+        } else {
+            return "";
+        }
+    }
 
-		@Override
-		public ServerFile[] newArray(int size) {
-			return new ServerFile[size];
-		}
-	};
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeParcelable(parentFile, flags);
+        parcel.writeString(name);
+        parcel.writeString(mime);
+        parcel.writeLong(modificationTime.getTime());
+        parcel.writeLong(size);
+    }
 
-	private ServerFile(Parcel parcel) {
-		this.parentFile = parcel.readParcelable(ServerFile.class.getClassLoader());
-		this.name = parcel.readString();
-		this.mime = parcel.readString();
-		this.modificationTime = new Date(parcel.readLong());
-              this.size= parcel.readLong();
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeParcelable(parentFile, flags);
-		parcel.writeString(name);
-		parcel.writeString(mime);
-		parcel.writeLong(modificationTime.getTime());
-              parcel.writeLong(size);
-	}
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+        if (object == null) {
+            return false;
+        }
 
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
+        if (getClass() != object.getClass()) {
+            return false;
+        }
 
-		if (object == null) {
-			return false;
-		}
+        ServerFile file = (ServerFile) object;
 
-		if (getClass() != object.getClass()) {
-			return false;
-		}
+        if ((parentFile != null) && (!parentFile.equals(file.parentFile))) {
+            return false;
+        }
 
-		ServerFile file = (ServerFile) object;
+        if (!name.equals(file.name)) {
+            return false;
+        }
 
-		if ((parentFile != null) && (!parentFile.equals(file.parentFile))) {
-			return false;
-		}
+        if (!mime.equals(file.mime)) {
+            return false;
+        }
 
-		if (!name.equals(file.name)) {
-			return false;
-		}
+        if (!modificationTime.equals(file.modificationTime)) {
+            return false;
+        }
 
-		if (!mime.equals(file.mime)) {
-			return false;
-		}
-
-		if (!modificationTime.equals(file.modificationTime)) {
-			return false;
-		}
-
-		return true;
-	}
+        return true;
+    }
 }

@@ -27,57 +27,74 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Server API resource.
  */
-public class Server implements Parcelable
-{
-	@SerializedName("name")
-	private String name;
+public class Server implements Parcelable {
+    public static final Creator<Server> CREATOR = new Creator<Server>() {
+        @Override
+        public Server createFromParcel(Parcel parcel) {
+            return new Server(parcel);
+        }
 
-	@SerializedName("session_token")
-	private String session;
+        @Override
+        public Server[] newArray(int size) {
+            return new Server[size];
+        }
+    };
+    @SerializedName("name")
+    private String name;
+    @SerializedName("session_token")
+    private String session;
+    @SerializedName("active")
+    private boolean active;
+    private boolean debug = false;
+    private int index;
 
-	@SerializedName("active")
-	private boolean active;
+    public Server(int index, String name, String session) {
+        this.index = index;
+        this.name = name;
+        this.session = session;
+        this.active = true;
+        this.debug = true;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Server(String session) {
+        this.session = session;
+    }
 
-	public String getSession() {
-		return session;
-	}
+    public Server(Parcel parcel) {
+        this.name = parcel.readString();
+        this.session = parcel.readString();
+        this.active = Boolean.valueOf(parcel.readString());
+    }
 
-	public boolean isActive() {
-		return active;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public static final Creator<Server> CREATOR = new Creator<Server>()
-	{
-		@Override
-		public Server createFromParcel(Parcel parcel) {
-			return new Server(parcel);
-		}
+    public String getSession() {
+        return session;
+    }
 
-		@Override
-		public Server[] newArray(int size) {
-			return new Server[size];
-		}
-	};
+    public int getIndex() {
+        return index;
+    }
 
-	private Server(Parcel parcel) {
-		this.name = parcel.readString();
-		this.session = parcel.readString();
-		this.active = Boolean.valueOf(parcel.readString());
-	}
+    public boolean isActive() {
+        return active;
+    }
 
-	@Override
-	public void writeToParcel(Parcel parcel, int flags) {
-		parcel.writeString(name);
-		parcel.writeString(session);
-		parcel.writeString(String.valueOf(active));
-	}
+    public boolean isDebug() {
+        return debug;
+    }
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(name);
+        parcel.writeString(session);
+        parcel.writeString(String.valueOf(active));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }

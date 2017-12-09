@@ -28,6 +28,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.SessionManagerListener;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -55,195 +62,292 @@ import javax.inject.Inject;
  * Image activity. Shows images as a slide show.
  * Backed up by {@link org.amahi.anywhere.view.TouchImageView}.
  */
-public class ServerFileImageActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener
-{
-	private static final Set<String> SUPPORTED_FORMATS;
+public class ServerFileImageActivity extends AppCompatActivity implements
+    ViewPager.OnPageChangeListener,
+    SessionManagerListener<CastSession> {
+    private static final Set<String> SUPPORTED_FORMATS;
 
-	static {
-		SUPPORTED_FORMATS = new HashSet<>(Arrays.asList(
-			"image/bmp",
-			"image/jpeg",
-			"image/gif",
-			"image/png",
-			"image/webp"
-		));
-	}
+    static {
+        SUPPORTED_FORMATS = new HashSet<>(Arrays.asList(
+            "image/bmp",
+            "image/jpeg",
+            "image/gif",
+            "image/png",
+            "image/webp"
+        ));
+    }
 
-	@Inject
-	ServerClient serverClient;
+    @Inject
+    ServerClient serverClient;
+    private CastSession mCastSession;
+    private CastContext mCastContext;
+    private int imagePosition;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_server_file_image);
+    public static boolean supports(String mime_type) {
+        return SUPPORTED_FORMATS.contains(mime_type);
+    }
 
-		setUpInjections();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_server_file_image);
 
-		setUpHomeNavigation();
+        setUpInjections();
 
-		setUpImage();
+        setUpHomeNavigation();
 
-		setUpFullScreen();
-	}
+        setUpImage();
 
-	private void setUpInjections() {
-		AmahiApplication.from(this).inject(this);
-	}
+        setUpCast();
 
-	private void setUpFullScreen() {
-		final FullScreenHelper fullScreen = new FullScreenHelper(getSupportActionBar(), getImagePager());
-		fullScreen.enableOnClickToggle(false);
-		getImagePager().setOnViewPagerClickListener(new ClickableViewPager.OnClickListener() {
-			@Override
-			public void onViewPagerClick(ViewPager viewPager) {
-				fullScreen.toggle();
-			}
-		});
-		fullScreen.init();
-	}
+        setUpFullScreen();
+    }
 
-	private void setUpHomeNavigation() {
-		getSupportActionBar().setHomeButtonEnabled(true);
-		getSupportActionBar().setIcon(R.drawable.ic_launcher);
-	}
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
 
-	private void setUpImage() {
-		setUpImageTitle();
-		setUpImageAdapter();
-		setUpImagePosition();
-		setUpImageListener();
-	}
+    private void setUpFullScreen() {
+        final FullScreenHelper fullScreen = new FullScreenHelper(getSupportActionBar(), getImagePager());
+        fullScreen.enableOnClickToggle(false);
+        getImagePager().setOnViewPagerClickListener(new ClickableViewPager.OnClickListener() {
+            @Override
+            public void onViewPagerClick(ViewPager viewPager) {
+                fullScreen.toggle();
+            }
+        });
+        fullScreen.init();
+    }
 
-	private void setUpImageTitle() {
-		setUpImageTitle(getFile());
-	}
+    private void setUpHomeNavigation() {
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+    }
 
-	private void setUpImageTitle(ServerFile file) {
-		getSupportActionBar().setTitle(file.getName());
-	}
+    private void setUpImage() {
+        setUpImageTitle();
+        setUpImageAdapter();
+        setUpImagePosition();
+        setUpImageListener();
+    }
 
-	private ServerFile getFile() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
-	}
+    private boolean isCastConnected() {
+        return mCastSession != null && mCastSession.isConnected();
+    }
 
-	private void setUpImageAdapter() {
-		getImagePager().setAdapter(new ServerFilesImagePagerAdapter(getSupportFragmentManager(), getShare(), getImageFiles()));
-	}
+    private void setUpCast() {
+        mCastContext = CastContext.getSharedInstance(this);
+        mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
+        if (isCastConnected()) {
+            loadRemoteMedia();
+        }
+    }
 
-	private ClickableViewPager getImagePager() {
-		return (ClickableViewPager) findViewById(R.id.pager_images);
-	}
+    private void setUpImageTitle() {
+        setUpImageTitle(getFile());
+    }
 
-	private ServerShare getShare() {
-		return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
-	}
+    private void setUpImageTitle(ServerFile file) {
+        getSupportActionBar().setTitle(file.getName());
+    }
 
-	private List<ServerFile> getImageFiles() {
-		List<ServerFile> imageFiles = new ArrayList<ServerFile>();
+    private ServerFile getFile() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
+    }
 
-		for (ServerFile file : getFiles()) {
-			if (SUPPORTED_FORMATS.contains(file.getMime())) {
-				imageFiles.add(file);
-			}
-		}
+    private void setUpImageAdapter() {
+        getImagePager().setAdapter(new ServerFilesImagePagerAdapter(getSupportFragmentManager(), getShare(), getImageFiles()));
+    }
 
-		return imageFiles;
-	}
+    private ClickableViewPager getImagePager() {
+        return (ClickableViewPager) findViewById(R.id.pager_images);
+    }
 
-	private List<ServerFile> getFiles() {
-		return getIntent().getParcelableArrayListExtra(Intents.Extras.SERVER_FILES);
-	}
+    private ServerShare getShare() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_SHARE);
+    }
 
-	private void setUpImagePosition() {
-		getImagePager().setCurrentItem(getImageFiles().indexOf(getFile()));
-	}
+    private List<ServerFile> getImageFiles() {
+        List<ServerFile> imageFiles = new ArrayList<>();
 
-	private void setUpImageListener() {
-		getImagePager().addOnPageChangeListener(this);
-	}
+        for (ServerFile file : getFiles()) {
+            if (SUPPORTED_FORMATS.contains(file.getMime())) {
+                imageFiles.add(file);
+            }
+        }
 
-	@Override
-	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-	}
+        return imageFiles;
+    }
 
-	@Override
-	public void onPageScrollStateChanged(int state) {
-	}
+    private List<ServerFile> getFiles() {
+        return getIntent().getParcelableArrayListExtra(Intents.Extras.SERVER_FILES);
+    }
 
-	@Override
-	public void onPageSelected(int position) {
-		setUpImageTitle(getImageFiles().get(position));
-	}
+    private void setUpImagePosition() {
+        imagePosition = getImageFiles().indexOf(getFile());
+        getImagePager().setCurrentItem(imagePosition);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.action_bar_server_file_image, menu);
+    private void setUpImageListener() {
+        getImagePager().addOnPageChangeListener(this);
+    }
 
-		return super.onCreateOptionsMenu(menu);
-	}
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		switch (menuItem.getItemId()) {
-			case android.R.id.home:
-				finish();
-				return true;
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
 
-			case R.id.menu_share:
-				startFileSharingActivity();
-				return true;
+    @Override
+    public void onPageSelected(int position) {
+        this.imagePosition = position;
+        setUpImageTitle(getImageFiles().get(position));
+        if (isCastConnected()) {
+            loadRemoteMedia();
+        }
+    }
 
-			default:
-				return super.onOptionsItemSelected(menuItem);
-		}
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bar_server_file_image, menu);
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+            R.id.media_route_menu_item);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	private void startFileSharingActivity() {
-		startFileDownloading(getShare(), getCurrentFile());
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
 
-	private ServerFile getCurrentFile() {
-		return getImageFiles().get(getImagePager().getCurrentItem());
-	}
+            case R.id.menu_share:
+                startFileSharingActivity();
+                return true;
 
-	private void startFileDownloading(ServerShare share, ServerFile file) {
-		showFileDownloadingFragment(share, file);
-	}
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
+    }
 
-	private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
-		DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
-		fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
-	}
+    private void startFileSharingActivity() {
+        startFileDownloading(getShare(), getCurrentFile());
+    }
 
-	@Subscribe
-	public void onFileDownloaded(FileDownloadedEvent event) {
-		finishFileDownloading(event.getFileUri());
-	}
+    private ServerFile getCurrentFile() {
+        return getImageFiles().get(getImagePager().getCurrentItem());
+    }
 
-	private void finishFileDownloading(Uri fileUri) {
-		startFileSharingActivity(getCurrentFile(), fileUri);
-	}
+    private void startFileDownloading(ServerShare share, ServerFile file) {
+        showFileDownloadingFragment(share, file);
+    }
 
-	private void startFileSharingActivity(ServerFile file, Uri fileUri) {
-		Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
-		startActivity(intent);
-	}
+    private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
+        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
+        fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Subscribe
+    public void onFileDownloaded(FileDownloadedEvent event) {
+        finishFileDownloading(event.getFileUri());
+    }
 
-		BusProvider.getBus().register(this);
-	}
+    private void finishFileDownloading(Uri fileUri) {
+        startFileSharingActivity(getCurrentFile(), fileUri);
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+    private void startFileSharingActivity(ServerFile file, Uri fileUri) {
+        Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
+        startActivity(intent);
+    }
 
-		BusProvider.getBus().unregister(this);
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-	public static boolean supports(String mime_type) {
-		return SUPPORTED_FORMATS.contains(mime_type);
-	}
+        mCastContext.getSessionManager().addSessionManagerListener(this, CastSession.class);
+        BusProvider.getBus().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mCastContext.getSessionManager().removeSessionManagerListener(this, CastSession.class);
+        BusProvider.getBus().unregister(this);
+    }
+
+    @Override
+    public void onSessionEnded(CastSession session, int error) {
+        onApplicationDisconnected();
+    }
+
+    @Override
+    public void onSessionResumed(CastSession session, boolean wasSuspended) {
+        onApplicationConnected(session);
+    }
+
+    @Override
+    public void onSessionResumeFailed(CastSession session, int error) {
+        onApplicationDisconnected();
+    }
+
+    @Override
+    public void onSessionStarted(CastSession session, String sessionId) {
+        onApplicationConnected(session);
+    }
+
+    @Override
+    public void onSessionStartFailed(CastSession session, int error) {
+        onApplicationDisconnected();
+    }
+
+    @Override
+    public void onSessionStarting(CastSession session) {
+    }
+
+    @Override
+    public void onSessionEnding(CastSession session) {
+    }
+
+    @Override
+    public void onSessionResuming(CastSession session, String sessionId) {
+    }
+
+    @Override
+    public void onSessionSuspended(CastSession session, int reason) {
+    }
+
+    private void onApplicationConnected(CastSession castSession) {
+        mCastSession = castSession;
+        invalidateOptionsMenu();
+        loadRemoteMedia();
+    }
+
+    private void onApplicationDisconnected() {
+        mCastSession = null;
+        invalidateOptionsMenu();
+    }
+
+    private void loadRemoteMedia() {
+        final RemoteMediaClient remoteMediaClient = mCastSession.getRemoteMediaClient();
+        if (remoteMediaClient != null) {
+            remoteMediaClient.load(buildMediaInfo());
+        }
+    }
+
+    private MediaInfo buildMediaInfo() {
+        ServerFile file = getImageFiles().get(imagePosition);
+        MediaMetadata imageMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_PHOTO);
+        imageMetadata.putString(MediaMetadata.KEY_TITLE, file.getNameOnly());
+        String imageUrl = serverClient.getFileUri(getShare(), file).toString();
+        return new MediaInfo.Builder(imageUrl)
+            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+            .setContentType(file.getMime())
+            .setMetadata(imageMetadata)
+            .build();
+    }
 }

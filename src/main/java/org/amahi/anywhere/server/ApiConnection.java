@@ -19,9 +19,8 @@
 
 package org.amahi.anywhere.server;
 
-public enum ApiConnection
-{
-	AUTO,
-	LOCAL,
-	REMOTE
+public enum ApiConnection {
+    AUTO,
+    LOCAL,
+    REMOTE
 }

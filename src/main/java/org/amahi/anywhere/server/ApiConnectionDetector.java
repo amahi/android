@@ -36,54 +36,52 @@ import timber.log.Timber;
  * API connection guesser. Tries to connect to the server address to determine if it is available
  * and returns it if succeed or another one otherwise.
  */
-public class ApiConnectionDetector
-{
-	private static final class Connection
-	{
-		private Connection() {
-		}
+public class ApiConnectionDetector {
+    private OkHttpClient httpClient;
 
-		static final int TIMEOUT = 1;
-	}
+    public ApiConnectionDetector() {
+        this.httpClient = buildHttpClient();
+    }
 
-	private OkHttpClient httpClient;
+    private OkHttpClient buildHttpClient() {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        clientBuilder.connectTimeout(Connection.TIMEOUT, TimeUnit.SECONDS);
+        httpClient = clientBuilder.build();
+        return httpClient;
+    }
 
-	public ApiConnectionDetector() {
-		this.httpClient = buildHttpClient();
-	}
+    public String detect(ServerRoute serverRoute) {
+        Timber.tag("CONNECTION");
 
-	private OkHttpClient buildHttpClient() {
-		OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-		clientBuilder.connectTimeout(Connection.TIMEOUT, TimeUnit.SECONDS);
-		httpClient = clientBuilder.build();
-		return httpClient;
-	}
+        try {
+            Request httpRequest = new Request.Builder()
+                .url(getConnectionUrl(serverRoute.getLocalAddress()))
+                .build();
 
-	public String detect(ServerRoute serverRoute) {
-		Timber.tag("CONNECTION");
+            Response httpResponse = httpClient
+                .newCall(httpRequest)
+                .execute();
 
-		try {
-			Request httpRequest = new Request.Builder()
-				.url(getConnectionUrl(serverRoute.getLocalAddress()))
-				.build();
+            httpResponse.body().close();
 
-			Response httpResponse = httpClient
-				.newCall(httpRequest)
-				.execute();
+            Timber.d("Using local address.");
 
-			httpResponse.body().close();
+            return serverRoute.getLocalAddress();
+        } catch (IOException e) {
+            Timber.d("Using remote address.");
 
-			Timber.d("Using local address.");
+            return serverRoute.getRemoteAddress();
+        }
+    }
 
-			return serverRoute.getLocalAddress();
-		} catch (IOException e) {
-			Timber.d("Using remote address.");
+    private URL getConnectionUrl(String serverAddress) throws IOException {
+        return new URL(Uri.parse(serverAddress).buildUpon().appendPath("shares").build().toString());
+    }
 
-			return serverRoute.getRemoteAddress();
-		}
-	}
+    private static final class Connection {
+        static final int TIMEOUT = 1;
 
-	private URL getConnectionUrl(String serverAddress) throws IOException {
-		return new URL(Uri.parse(serverAddress).buildUpon().appendPath("shares").build().toString());
-	}
+        private Connection() {
+        }
+    }
 }

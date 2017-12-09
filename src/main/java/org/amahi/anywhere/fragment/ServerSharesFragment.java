@@ -51,137 +51,125 @@ import javax.inject.Inject;
 /**
  * Shares fragment. Shows shares list.
  */
-public class ServerSharesFragment extends Fragment
-{
-	private static final class State
-	{
-		private State() {
-		}
+public class ServerSharesFragment extends Fragment {
+    @Inject
+    ServerClient serverClient;
+    private RecyclerView mRecyclerView;
 
-		public static final String SHARES = "shares";
-	}
+    private ServerSharesAdapter mServerSharesAdapter;
 
-	private RecyclerView mRecyclerView;
-
-	private ServerSharesAdapter mServerSharesAdapter;
-
-	private LinearLayout mEmptyLinearLayout;
+    private LinearLayout mEmptyLinearLayout;
 
     private LinearLayout mErrorLinearLayout;
 
-	@Inject
-	ServerClient serverClient;
+    @Override
+    public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
 
-	@Override
-	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
 
-		View rootView = layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
 
-		mRecyclerView = (RecyclerView)rootView.findViewById(R.id.list);
+        mServerSharesAdapter = new ServerSharesAdapter(getActivity());
 
-		mServerSharesAdapter = new ServerSharesAdapter(getActivity());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
-
-		mEmptyLinearLayout = (LinearLayout)rootView.findViewById(R.id.empty);
+        mEmptyLinearLayout = (LinearLayout) rootView.findViewById(R.id.empty);
 
         mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
 
-		mRecyclerView.addItemDecoration(new
-				DividerItemDecoration(getActivity(),
-				DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new
+            DividerItemDecoration(getActivity(),
+            DividerItemDecoration.VERTICAL));
 
-		return rootView;
-	}
+        return rootView;
+    }
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-		setUpInjections();
+        setUpInjections();
 
-		setUpShares(savedInstanceState);
-	}
+        setUpShares(savedInstanceState);
+    }
 
-	private void setUpInjections() {
-		AmahiApplication.from(getActivity()).inject(this);
-	}
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
+    }
 
-	private void setUpShares(Bundle state) {
-		setUpSharesAdapter();
+    private void setUpShares(Bundle state) {
+        setUpSharesAdapter();
 
-		setUpSharesContent(state);
-	}
+        setUpSharesContent(state);
+    }
 
-	private void setUpSharesAdapter() {
-		mRecyclerView.setAdapter(mServerSharesAdapter);
-	}
+    private void setUpSharesAdapter() {
+        mRecyclerView.setAdapter(mServerSharesAdapter);
+    }
 
-	private void setUpSharesContent(Bundle state) {
-		if (isSharesStateValid(state)) {
-			setUpSharesState(state);
-		} else {
-			setUpSharesContent();
-		}
-	}
+    private void setUpSharesContent(Bundle state) {
+        if (isSharesStateValid(state)) {
+            setUpSharesState(state);
+        } else {
+            setUpSharesContent();
+        }
+    }
 
-	private boolean isSharesStateValid(Bundle state) {
-		return (state != null) && (state.containsKey(State.SHARES));
-	}
+    private boolean isSharesStateValid(Bundle state) {
+        return (state != null) && (state.containsKey(State.SHARES));
+    }
 
-	private void setUpSharesState(Bundle state) {
-		List<ServerShare> shares = state.getParcelableArrayList(State.SHARES);
-		if(shares!=null) {
-			setUpSharesContent(shares);
+    private void setUpSharesState(Bundle state) {
+        List<ServerShare> shares = state.getParcelableArrayList(State.SHARES);
+        if (shares != null) {
+            setUpSharesContent(shares);
 
-			showSharesContent();
+            showSharesContent();
 
-			mEmptyLinearLayout.setVisibility(View.GONE);
-		}
-		else{
+            mEmptyLinearLayout.setVisibility(View.GONE);
+        } else {
 
-			mEmptyLinearLayout.setVisibility(View.VISIBLE);
+            mEmptyLinearLayout.setVisibility(View.VISIBLE);
 
-		}
-	}
+        }
+    }
 
-	private void setUpSharesContent(List<ServerShare> shares) {
-		getSharesAdapter().replaceWith(shares);
-	}
+    private void setUpSharesContent(List<ServerShare> shares) {
+        getSharesAdapter().replaceWith(shares);
+    }
 
-	private ServerSharesAdapter getSharesAdapter() {
-		return mServerSharesAdapter;
-	}
+    private ServerSharesAdapter getSharesAdapter() {
+        return mServerSharesAdapter;
+    }
 
-	private void showSharesContent() {
-		ViewDirector.of(getActivity(), R.id.animator).show(R.id.content);
-	}
+    private void showSharesContent() {
+        ViewDirector.of(getActivity(), R.id.animator).show(R.id.content);
+    }
 
-	private void setUpSharesContent() {
-		if (serverClient.isConnected()) {
-			serverClient.getShares();
-		}
-	}
+    private void setUpSharesContent() {
+        if (serverClient.isConnected()) {
+            serverClient.getShares();
+        }
+    }
 
-	@Subscribe
-	public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
-		serverClient.getShares();
-	}
+    @Subscribe
+    public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        serverClient.getShares();
+    }
 
-	@Subscribe
-	public void onSharesLoaded(ServerSharesLoadedEvent event) {
-		setUpSharesContent(event.getServerShares());
+    @Subscribe
+    public void onSharesLoaded(ServerSharesLoadedEvent event) {
+        setUpSharesContent(event.getServerShares());
+        showSharesContent();
+    }
 
-		showSharesContent();
-	}
+    @Subscribe
+    public void onSharesLoadFailed(ServerSharesLoadFailedEvent event) {
+        showSharesError();
+    }
 
-	@Subscribe
-	public void onSharesLoadFailed(ServerSharesLoadFailedEvent event) {
-		showSharesError();
-	}
-
-	private void showSharesError() {
-		ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
+    private void showSharesError() {
+        ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
         mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -189,36 +177,43 @@ public class ServerSharesFragment extends Fragment
                 setUpSharesContent();
             }
         });
-	}
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		BusProvider.getBus().register(this);
-	}
+        BusProvider.getBus().register(this);
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
+    @Override
+    public void onPause() {
+        super.onPause();
 
-		BusProvider.getBus().unregister(this);
-	}
+        BusProvider.getBus().unregister(this);
+    }
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-		tearDownSharesState(outState);
-	}
+        tearDownSharesState(outState);
+    }
 
-	private void tearDownSharesState(Bundle state) {
-		if (areSharesLoaded()) {
-			state.putParcelableArrayList(State.SHARES, new ArrayList<Parcelable>(getSharesAdapter().getItems()));
-		}
-	}
+    private void tearDownSharesState(Bundle state) {
+        if (areSharesLoaded()) {
+            state.putParcelableArrayList(State.SHARES, new ArrayList<Parcelable>(getSharesAdapter().getItems()));
+        }
+    }
 
-	private boolean areSharesLoaded() {
-		return getSharesAdapter() != null;
-	}
+    private boolean areSharesLoaded() {
+        return getSharesAdapter() != null;
+    }
+
+    private static final class State {
+        public static final String SHARES = "shares";
+
+        private State() {
+        }
+    }
 }

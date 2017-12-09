@@ -29,9 +29,13 @@ import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.ServerSharesFragment;
-import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.tv.fragment.ServerFileTvFragment;
+import org.amahi.anywhere.tv.fragment.TvPlaybackAudioFragment;
+import org.amahi.anywhere.tv.fragment.TvPlaybackVideoFragment;
+
+import java.util.ArrayList;
 
 /**
  * Fragments accessor. Provides a factory for building fragments and an operator for placing them.
@@ -43,6 +47,7 @@ public final class Fragments {
     public static final class Arguments {
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_SHARE = "server_share";
+
         private Arguments() {
         }
     }
@@ -87,6 +92,39 @@ public final class Fragments {
             return fileFragment;
         }
 
+        public static android.app.Fragment buildFirstTvFragment(ServerFile serverFile, ServerShare serverShare) {
+            android.app.Fragment fragment = new ServerFileTvFragment();
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
+            bundle.putParcelable(Intents.Extras.SERVER_SHARE, serverShare);
+            fragment.setArguments(bundle);
+            return fragment;
+        }
+
+        public static android.app.Fragment buildVideoFragment(ServerFile serverFile, ServerShare serverShare, ArrayList<ServerFile> serverFiles) {
+            android.app.Fragment fragment = new TvPlaybackVideoFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Intents.Extras.SERVER_SHARE, serverShare);
+            bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
+            bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, serverFiles);
+
+            fragment.setArguments(bundle);
+            return fragment;
+        }
+
+        public static android.app.Fragment buildAudioFragment(ServerFile serverFile, ServerShare serverShare, ArrayList<ServerFile> serverFiles) {
+            android.app.Fragment fragment = new TvPlaybackAudioFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Intents.Extras.SERVER_SHARE, serverShare);
+            bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
+            bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, serverFiles);
+
+            fragment.setArguments(bundle);
+            return fragment;
+        }
+
     }
 
     public static final class Operator {
@@ -106,9 +144,9 @@ public final class Fragments {
             }
 
             fragmentManager
-                    .beginTransaction()
-                    .add(fragmentContainerId, fragment)
-                    .commit();
+                .beginTransaction()
+                .add(fragmentContainerId, fragment)
+                .commit();
         }
 
         private boolean isSet(int fragmentContainerId) {
@@ -117,17 +155,17 @@ public final class Fragments {
 
         public void replace(Fragment fragment, int fragmentContainerId) {
             fragmentManager
-                    .beginTransaction()
-                    .replace(fragmentContainerId, fragment)
-                    .commit();
+                .beginTransaction()
+                .replace(fragmentContainerId, fragment)
+                .commit();
         }
 
         public void replaceBackstacked(Fragment fragment, int fragmentContainerId) {
             fragmentManager
-                    .beginTransaction()
-                    .replace(fragmentContainerId, fragment)
-                    .addToBackStack(null)
-                    .commit();
+                .beginTransaction()
+                .replace(fragmentContainerId, fragment)
+                .addToBackStack(null)
+                .commit();
         }
     }
 }

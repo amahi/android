@@ -40,6 +40,10 @@ public final class AudioMetadataFormatter {
         this.audioAlbum = audioAlbum;
     }
 
+    public AudioMetadataFormatter() {
+        this(null, null, null);
+    }
+
     public long getDuration() {
         return duration;
     }

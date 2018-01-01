@@ -173,46 +173,4 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
             notifyDataSetChanged();
         }
     }
-
-    class AlbumArtFetcher extends AsyncTask<Void, Void, byte[]> {
-        private final ImageView imageView;
-        private final Uri audioUri;
-        private final Context applicationContext;
-
-        AlbumArtFetcher(ImageView imageView, Uri audioUri, Context applicationContext) {
-            this.imageView = imageView;
-            this.audioUri = audioUri;
-            this.applicationContext = applicationContext;
-        }
-
-        @Override
-        protected byte[] doInBackground(Void... params) {
-            try {
-                MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
-                audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
-                return extractAlbumArt(audioMetadataRetriever);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        private byte[] extractAlbumArt(MediaMetadataRetriever audioMetadataRetriever) {
-            return audioMetadataRetriever.getEmbeddedPicture();
-        }
-
-        @Override
-        protected void onPostExecute(byte[] bitmap) {
-            if (bitmap != null) {
-                Glide.with(applicationContext)
-                    .load(bitmap)
-                    .asBitmap()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_file_audio)
-                    .error(R.drawable.ic_file_audio)
-                    .into(imageView);
-            }
-        }
-    }
 }

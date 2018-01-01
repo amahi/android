@@ -396,7 +396,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpFilesAdapter() {
         if (!isMetadataAvailable()) {
-            setListAdapter(new ServerFilesAdapter(getActivity(), getActivity().getApplicationContext(), serverClient));
+            setListAdapter(new ServerFilesAdapter(getActivity(), serverClient));
         } else {
             setListAdapter(new ServerFilesMetadataAdapter(getActivity(), serverClient));
         }
@@ -764,6 +764,8 @@ public class ServerFilesFragment extends Fragment implements
         super.onDestroyView();
         if (isMetadataAvailable()) {
             getFilesMetadataAdapter().tearDownCallbacks();
+        } else {
+            getFilesAdapter().tearDownCallbacks();
         }
     }
 

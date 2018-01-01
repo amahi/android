@@ -54,6 +54,7 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -105,7 +106,7 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
 
         getAllAudioFiles();
 
-        AudioMetadataRetrievingTask.execute(getFileUri(), getAudioFile());
+        AudioMetadataRetrievingTask.newInstance(getActivity(), getFileUri(), getAudioFile()).execute();
 
         mediaPlayer = new MediaPlayer();
 
@@ -380,10 +381,11 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
             }
         });
         mPlaybackControlsRow.setTotalTime(mediaPlayer.getDuration());
-        if (event.getAudioAlbumArt() != null) {
+        AudioMetadata metadata = event.getAudioMetadata();
+        if (metadata.getAudioAlbumArt() != null) {
             getBackground().setPadding(0, 0, 0, 0);
-            getBackground().setImageBitmap(event.getAudioAlbumArt());
-            mPlaybackControlsRow.setImageBitmap(getActivity(), event.getAudioAlbumArt());
+            getBackground().setImageBitmap(metadata.getAudioAlbumArt());
+            mPlaybackControlsRow.setImageBitmap(getActivity(), metadata.getAudioAlbumArt());
         } else {
             Drawable audioDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.tv_ic_audio);
             getBackground().setPadding(100, 100, 100, 100);

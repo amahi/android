@@ -39,6 +39,7 @@ import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -165,7 +166,10 @@ public class MainTVPresenter extends Presenter {
         if (isImage(serverFile)) {
             setUpImageIcon(serverFile, viewHolder.mCardView.getMainImageView(), getImageUri(serverFile));
         } else if (isAudio(serverFile)) {
-            AudioMetadataRetrievingTask.execute(getImageUri(serverFile), serverFile, viewHolder);
+            AudioMetadataRetrievingTask
+                .newInstance(mContext, getImageUri(serverFile), serverFile)
+                .setViewHolder(viewHolder)
+                .execute();
         } else {
             setUpDrawable(serverFile, viewHolder);
         }
@@ -197,10 +201,11 @@ public class MainTVPresenter extends Presenter {
 
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-        if (event.getAudioAlbumArt() != null) {
+        AudioMetadata metadata = event.getAudioMetadata();
+        if (metadata.getAudioAlbumArt() != null) {
             ViewHolder viewHolder = event.getViewHolder();
             if (viewHolder != null) {
-                viewHolder.mCardView.getMainImageView().setImageBitmap(event.getAudioAlbumArt());
+                viewHolder.mCardView.getMainImageView().setImageBitmap(metadata.getAudioAlbumArt());
             }
         } else
             setUpMusicLogo(event.getViewHolder());

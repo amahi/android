@@ -20,6 +20,7 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -31,14 +32,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.otto.Subscribe;
+
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
+import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Files adapter. Visualizes files
@@ -46,15 +53,14 @@ import java.util.Date;
  */
 public class ServerFilesAdapter extends FilesFilterBaseAdapter {
     private Context context;
-    private Context applicationContext;
 
-    public ServerFilesAdapter(Context context, Context applicationContext, ServerClient serverClient) {
+    public ServerFilesAdapter(Context context, ServerClient serverClient) {
         this.serverClient = serverClient;
         this.layoutInflater = LayoutInflater.from(context);
         this.context = context;
-        this.applicationContext = applicationContext;
         this.files = Collections.emptyList();
         this.filteredFiles = Collections.emptyList();
+        BusProvider.getBus().register(this);
     }
 
     protected View newView(ViewGroup container) {
@@ -77,7 +83,7 @@ public class ServerFilesAdapter extends FilesFilterBaseAdapter {
             fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
 
             Date d = getLastModified(file);
-            SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy");
+            SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
             fileLastModified.setText(dt.format(d));
         }
 
@@ -107,6 +113,23 @@ public class ServerFilesAdapter extends FilesFilterBaseAdapter {
     }
 
     private void setUpAudioArt(ServerFile serverFile, ImageView fileIconView) {
-        new AlbumArtFetcher(fileIconView, serverClient.getFileUri(serverShare, serverFile), applicationContext).execute();
+        AudioMetadataRetrievingTask
+            .newInstance(context, serverClient.getFileUri(serverShare, serverFile), serverFile)
+            .setImageView(fileIconView)
+            .execute();
+    }
+
+    @Subscribe
+    public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
+        ImageView imageView = event.getImageView();
+        Bitmap bitmap = event.getAudioMetadata().getAudioAlbumArt();
+        if (bitmap != null && imageView != null) {
+            imageView.setImageBitmap(bitmap);
+        }
+    }
+
+
+    public void tearDownCallbacks() {
+        BusProvider.getBus().unregister(this);
     }
 }

@@ -26,8 +26,11 @@ class MemoryCache {
                 // The cache size will be measured in kilobytes rather than
                 // number of items. Used only bitmap to measure the size since
                 // size of other fields won't make much impact.
-                // size of other fields won't make much impact.
-                return metadata.getAudioAlbumArt().getByteCount() / 1024;
+                if (metadata.getAudioAlbumArt() != null) {
+                    return metadata.getAudioAlbumArt().getByteCount() / 1024;
+                } else {
+                    return 0;
+                }
             }
         };
     }

@@ -31,6 +31,7 @@ import org.amahi.anywhere.activity.ServerFileImageActivity;
 import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
+import org.amahi.anywhere.cache.CacheModule;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
@@ -43,6 +44,7 @@ import org.amahi.anywhere.server.ApiModule;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.service.VideoService;
+import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
 import org.amahi.anywhere.tv.activity.TvPlaybackAudioActivity;
 import org.amahi.anywhere.tv.activity.TvPlaybackVideoActivity;
@@ -63,7 +65,8 @@ import dagger.Provides;
  */
 @Module(
     includes = {
-        ApiModule.class
+        ApiModule.class,
+        CacheModule.class
     },
     injects = {
         AuthenticationActivity.class,
@@ -93,7 +96,8 @@ import dagger.Provides;
         TvPlaybackVideoFragment.class,
         TvPlaybackVideoActivity.class,
         TvPlaybackAudioActivity.class,
-        TvPlaybackAudioFragment.class
+        TvPlaybackAudioFragment.class,
+        AudioMetadataRetrievingTask.class
     }
 )
 class AmahiModule {

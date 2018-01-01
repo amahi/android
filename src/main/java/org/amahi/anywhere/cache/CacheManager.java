@@ -19,12 +19,15 @@
 
 package org.amahi.anywhere.cache;
 
+import android.Manifest;
 import android.content.Context;
 
 import org.amahi.anywhere.model.AudioMetadata;
 
+import pub.devrel.easypermissions.EasyPermissions;
+
 /**
- * Manager class for managing cache for audio files album art images.
+ * Manager class for managing cache for {@link AudioMetadata}.
  */
 
 public class CacheManager {
@@ -33,48 +36,27 @@ public class CacheManager {
 
     public CacheManager(Context context) {
         memoryCache = new MemoryCache();
-        diskCache = new DiskCache(context);
-    }
-
-/*
-    class AudioMetadataWorkerTask extends AsyncTask<Integer, Void, AudioMetadata> {
-        // Decode image in background.
-        @Override
-        protected AudioMetadata doInBackground(Integer... params) {
-            final String imageKey = String.valueOf(params[0]);
-
-            // Check disk cache in background thread
-            AudioMetadata metadata = memoryCache.getAudioMetadata(imageKey);
-
-            if (metadata == null) { // Not found in disk cache
-                // Process as normal
-                //TODO fetch metadata from internet
-            }
-
-            // Add final metadata to caches
-            addAudioMetadataToCache(imageKey, metadata);
-
-            return metadata;
+        if (EasyPermissions.hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            diskCache = new DiskCache(context);
         }
     }
-*/
-
 
     public AudioMetadata getMetadataFromCache(String key) {
         AudioMetadata metadata = memoryCache.get(key);
-        if (metadata == null) {
+        if (metadata == null && diskCache != null) {
             metadata = diskCache.get(key);
         }
         return metadata;
     }
 
-    public void addAudioMetadataToCache(String key, AudioMetadata metadata) {
+    public void addMetadataToCache(String key, AudioMetadata metadata) {
         // Add to memory cache
         memoryCache.add(key, metadata);
 
-        // Also add to disk cache
-        diskCache.add(key, metadata);
+        if (diskCache != null) {
+            // Also add to disk cache
+            diskCache.add(key, metadata);
+        }
     }
-
 
 }

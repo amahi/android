@@ -1,10 +1,8 @@
 package org.amahi.anywhere.cache;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -31,7 +29,7 @@ public class DiskCache {
     private final Object mDiskCacheLock = new Object();
     private boolean mDiskCacheStarting = true;
     private static final int DISK_CACHE_SIZE = 1024 * 1024 * 10; // 10MB
-    private static final String DISK_CACHE_SUBDIR = "album_arts";
+    private static final String DISK_CACHE_SUBDIR = "metadata";
     private static final int APP_VERSION = 1;
     private static final int VALUE_COUNT = 5;
 
@@ -43,24 +41,14 @@ public class DiskCache {
 
     DiskCache(Context context) {
         File cacheDir = getDiskCacheDir(context, DISK_CACHE_SUBDIR);
-        new InitDiskCacheTask().execute(cacheDir);
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    class InitDiskCacheTask extends AsyncTask<File, Void, Void> {
-        @Override
-        protected Void doInBackground(File... params) {
-            synchronized (mDiskCacheLock) {
-                try {
-                    File cacheDir = params[0];
-                    mDiskLruCache = DiskLruCache.open(cacheDir, APP_VERSION, VALUE_COUNT, DISK_CACHE_SIZE);
-                    mDiskCacheStarting = false; // Finished initialization
-                    mDiskCacheLock.notifyAll(); // Wake any waiting threads
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        synchronized (mDiskCacheLock) {
+            try {
+                mDiskLruCache = DiskLruCache.open(cacheDir, APP_VERSION, VALUE_COUNT, DISK_CACHE_SIZE);
+                mDiskCacheStarting = false; // Finished initialization
+                mDiskCacheLock.notifyAll(); // Wake any waiting threads
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            return null;
         }
     }
 
@@ -168,13 +156,14 @@ public class DiskCache {
                     metadata.setAudioTitle(value.getString(TITLE_INDEX));
                     metadata.setAudioAlbum(value.getString(ALBUM_INDEX));
                     metadata.setAudioArtist(value.getString(ARTIST_INDEX));
-                    metadata.setDuration(Long.valueOf(value.getString(DURATION_INDEX)));
+                    metadata.setDuration(value.getString(DURATION_INDEX));
                 } catch (IOException e) {
                     e.printStackTrace();
+                    metadata = null;
                 }
 
                 if (BuildConfig.DEBUG) {
-                    Log.d("cache_test_DISK_", "metadata read from disk " + key);
+                    Log.d("cache_test_DISK_", (metadata == null ? "metadata read failed " : "metadata read ") + key);
                 }
                 return metadata;
             }

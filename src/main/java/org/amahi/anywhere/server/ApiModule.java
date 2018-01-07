@@ -23,6 +23,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.readystatesoftware.chuck.ChuckInterceptor;
 
 import org.amahi.anywhere.util.Time;
 
@@ -46,10 +47,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiModule {
     @Provides
     @Singleton
-    OkHttpClient provideHttpClient(ApiHeaders headers, HttpLoggingInterceptor logging) {
+    OkHttpClient provideHttpClient(ApiHeaders headers, HttpLoggingInterceptor logging, ChuckInterceptor chuck) {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         clientBuilder.addInterceptor(headers);
         clientBuilder.addInterceptor(logging);
+        clientBuilder.addInterceptor(chuck);
         return clientBuilder.build();
     }
 
@@ -57,6 +59,12 @@ public class ApiModule {
     @Singleton
     ApiHeaders provideHeaders(Context context) {
         return new ApiHeaders(context);
+    }
+
+    @Provides
+    @Singleton
+    ChuckInterceptor provideChuckInterceptor(Context context) {
+        return new ChuckInterceptor(context);
     }
 
     @Provides

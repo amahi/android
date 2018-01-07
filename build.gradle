@@ -39,9 +39,9 @@ android {
 
 
     defaultConfig {
-        def versionMajor = 2
-        def versionMinor = 9
-        def versionPatch = 4
+        def versionMajor = 3
+        def versionMinor = 0
+        def versionPatch = 0
 
         versionName buildVersionName(versionMajor, versionMinor, versionPatch)
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
@@ -145,6 +145,8 @@ dependencies {
     androidTestCompile 'com.android.support:support-annotations:25.4.0'
     provided 'com.squareup.dagger:dagger-compiler:1.2.5'
     compile 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
+    debugCompile 'com.readystatesoftware.chuck:library:1.1.0'
+    releaseCompile 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 }
 
 task generateWrapper(type: Wrapper) {

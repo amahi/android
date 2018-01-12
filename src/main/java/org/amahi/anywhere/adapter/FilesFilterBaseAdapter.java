@@ -19,11 +19,8 @@
 
 package org.amahi.anywhere.adapter;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,14 +33,12 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**

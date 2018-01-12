@@ -803,6 +803,7 @@ public class ServerFilesFragment extends Fragment implements
     private static final class State {
         public static final String FILES = "files";
         public static final String FILES_SORT = "files_sort";
+
         private State() {
         }
     }

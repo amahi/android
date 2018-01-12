@@ -159,6 +159,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter {
         public static final int FILE = R.attr.server_share;
         public static final int FILE_TITLE = R.id.text;
         public static final int FILE_ICON = R.id.icon;
+
         private Tags() {
         }
     }

@@ -46,13 +46,13 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
         return viewHolder;
     }
 
-    public void setImageView(ImageView imageView) {
-        this.imageView = imageView;
-    }
-
     @Nullable
     public ImageView getImageView() {
         return imageView;
+    }
+
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
     }
 
     public ServerFile getServerFile() {

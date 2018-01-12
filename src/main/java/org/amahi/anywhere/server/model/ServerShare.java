@@ -86,6 +86,7 @@ public class ServerShare implements Parcelable {
         public static final String FILES = "files";
         public static final String MOVIES = "movie";
         public static final String TV = "tv";
+
         private Tag() {
         }
     }

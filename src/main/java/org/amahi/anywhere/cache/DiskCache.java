@@ -25,19 +25,19 @@ import static android.os.Environment.isExternalStorageRemovable;
  */
 
 public class DiskCache {
-    private DiskLruCache mDiskLruCache;
-    private final Object mDiskCacheLock = new Object();
-    private boolean mDiskCacheStarting = true;
     private static final int DISK_CACHE_SIZE = 1024 * 1024 * 10; // 10MB
     private static final String DISK_CACHE_SUBDIR = "metadata";
     private static final int APP_VERSION = 1;
     private static final int VALUE_COUNT = 5;
-
     private static final int BITMAP_INDEX = 0;
     private static final int TITLE_INDEX = 1;
     private static final int ALBUM_INDEX = 2;
     private static final int ARTIST_INDEX = 3;
     private static final int DURATION_INDEX = 4;
+
+    private final Object mDiskCacheLock = new Object();
+    private DiskLruCache mDiskLruCache;
+    private boolean mDiskCacheStarting = true;
 
     DiskCache(Context context) {
         File cacheDir = getDiskCacheDir(context, DISK_CACHE_SUBDIR);

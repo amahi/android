@@ -22,9 +22,12 @@ package org.amahi.anywhere.server.model;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 /**
@@ -105,6 +108,24 @@ public class ServerFile implements Parcelable {
 
     public void setFileMetadata(ServerFileMetadata fileMetadata) {
         this.fileMetadata = fileMetadata;
+    }
+
+    @Nullable
+    public String getUniqueKey() {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(getName().getBytes());
+            md.update(getModificationTime().toString().getBytes());
+            byte[] digest = md.digest();
+            StringBuilder sb = new StringBuilder();
+            for (byte aDigest : digest) {
+                sb.append(Integer.toHexString((aDigest & 0xFF) | 0x100).substring(1, 3));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public boolean isMetaDataFetched() {

@@ -46,12 +46,10 @@ import javax.inject.Inject;
  * The retrieving itself is done via {@link android.media.MediaMetadataRetriever}.
  */
 public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent> {
-    @Inject
-    CacheManager cacheManager;
-
     private final Uri audioUri;
     private final ServerFile serverFile;
-
+    @Inject
+    CacheManager cacheManager;
     private MainTVPresenter.ViewHolder viewHolder;
     private WeakReference<ImageView> imageViewWeakReference;
 
@@ -83,8 +81,8 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
     @Override
     protected BusEvent doInBackground(Void... parameters) {
         AudioMetadata metadata;
-        String key = serverFile.getName();
-        metadata = cacheManager.getMetadataFromCache(key);
+        String uniqueKey = serverFile.getUniqueKey();
+        metadata = cacheManager.getMetadataFromCache(uniqueKey);
         if (metadata == null) {
             metadata = new AudioMetadata();
             MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
@@ -98,7 +96,8 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
                 metadata.setDuration(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
                 metadata.setAudioAlbumArt(extractAlbumArt(audioMetadataRetriever));
 
-                cacheManager.addMetadataToCache(key, metadata);
+                if (uniqueKey != null)
+                    cacheManager.addMetadataToCache(uniqueKey, metadata);
             } catch (RuntimeException ignored) {
             } finally {
                 audioMetadataRetriever.release();

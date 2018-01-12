@@ -42,9 +42,12 @@ public class CacheManager {
     }
 
     public AudioMetadata getMetadataFromCache(String key) {
-        AudioMetadata metadata = memoryCache.get(key);
-        if (metadata == null && diskCache != null) {
-            metadata = diskCache.get(key);
+        AudioMetadata metadata = null;
+        if (key != null) {
+            metadata = memoryCache.get(key);
+            if (metadata == null && diskCache != null) {
+                metadata = diskCache.get(key);
+            }
         }
         return metadata;
     }

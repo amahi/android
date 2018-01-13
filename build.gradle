@@ -147,6 +147,7 @@ dependencies {
     compile 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
     debugCompile 'com.readystatesoftware.chuck:library:1.1.0'
     releaseCompile 'com.readystatesoftware.chuck:library-no-op:1.1.0'
+    betaReleaseCompile 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 }
 
 task generateWrapper(type: Wrapper) {

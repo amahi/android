@@ -26,12 +26,14 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -43,8 +45,17 @@ import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.SessionManagerListener;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
@@ -55,6 +66,8 @@ import org.amahi.anywhere.view.MediaControls;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
+
+import javax.inject.Inject;
 
 /**
  * Video activity. Shows videos, supports basic operations such as pausing, resuming, scrolling.
@@ -67,36 +80,44 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     IVLCVout.OnNewVideoLayoutListener,
     MediaPlayer.EventListener,
     View.OnLayoutChangeListener,
-    VideoSwipeGestures.SeekControl {
+    VideoSwipeGestures.SeekControl,
+    SessionManagerListener<CastSession> {
 
     private static final boolean ENABLE_SUBTITLES = false;
-    private static SurfaceSizes CURRENT_SIZE = SurfaceSizes.SURFACE_BEST_FIT;
+
+    @Inject
+    ServerClient serverClient;
+
     private VideoService videoService;
     private MediaControls videoControls;
     private FullScreenHelper fullScreen;
     private Handler layoutChangeHandler;
+
+    private CastContext mCastContext;
+    private CastSession mCastSession;
+
     private int mVideoHeight = 0;
     private int mVideoWidth = 0;
     private int mVideoVisibleHeight = 0;
     private int mVideoVisibleWidth = 0;
     private int mVideoSarNum = 0;
     private int mVideoSarDen = 0;
+
     private SurfaceView mSubtitlesSurface = null;
-    private final Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            updateVideoSurfaces();
-        }
-    };
     private float bufferPercent = 0.0f;
 
-    //TODO Add feature for changing the screen size
-
-    public static boolean supports(String mime_type) {
-        String type = mime_type.split("/")[0];
-
-        return "video".equals(type);
+    private enum SurfaceSizes {
+        SURFACE_BEST_FIT,
+        SURFACE_FIT_SCREEN,
+        SURFACE_FILL,
+        SURFACE_16_9,
+        SURFACE_4_3,
+        SURFACE_ORIGINAL;
     }
+
+    private static SurfaceSizes CURRENT_SIZE = SurfaceSizes.SURFACE_BEST_FIT;
+
+    //TODO Add feature for changing the screen size
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,15 +128,11 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
         setUpHomeNavigation();
 
-        setUpViews();
+        setUpCast();
+
+        setUpVideoTitle();
 
         setUpVideo();
-
-        setUpFullScreen();
-
-        setUpGestureListener();
-
-        setUpVideoService();
     }
 
     private void setUpInjections() {
@@ -127,15 +144,30 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         getSupportActionBar().setIcon(R.drawable.ic_launcher);
     }
 
+    private void setUpCast() {
+        mCastContext = CastContext.getSharedInstance(this);
+        mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
+    }
+
+    private void setUpVideo() {
+        if (mCastSession != null && mCastSession.isConnected()) {
+            loadRemoteMedia(0, true);
+        } else {
+            setUpViews();
+
+            setUpFullScreen();
+
+            setUpGestureListener();
+
+            setUpVideoService();
+        }
+    }
+
     private void setUpViews() {
         final ViewStub stub = (ViewStub) findViewById(R.id.subtitles_stub);
         mSubtitlesSurface = (SurfaceView) stub.inflate();
         mSubtitlesSurface.setZOrderMediaOverlay(true);
         mSubtitlesSurface.getHolder().setFormat(PixelFormat.TRANSLUCENT);
-    }
-
-    private void setUpVideo() {
-        setUpVideoTitle();
     }
 
     private void setUpVideoTitle() {
@@ -298,6 +330,13 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
             layoutChangeHandler.post(mRunnable);
         }
     }
+
+    private final Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            updateVideoSurfaces();
+        }
+    };
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -556,6 +595,15 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.action_bar_cast_button, menu);
+        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+            R.id.media_route_menu_item);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case android.R.id.home:
@@ -568,10 +616,20 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onResume() {
+        mCastContext.getSessionManager().addSessionManagerListener(this, CastSession.class);
+        super.onResume();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
 
-        videoControls.hide();
+        mCastContext.getSessionManager().removeSessionManagerListener(this, CastSession.class);
+
+        if (videoControls != null && videoControls.isShowing()) {
+            videoControls.hide();
+        }
 
         if (!isChangingConfigurations()) {
             pause();
@@ -611,12 +669,112 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         stopService(intent);
     }
 
-    private enum SurfaceSizes {
-        SURFACE_BEST_FIT,
-        SURFACE_FIT_SCREEN,
-        SURFACE_FILL,
-        SURFACE_16_9,
-        SURFACE_4_3,
-        SURFACE_ORIGINAL;
+    public static boolean supports(String mime_type) {
+        String type = mime_type.split("/")[0];
+
+        return "video".equals(type);
+    }
+
+    @Override
+    public void onSessionEnded(CastSession session, int error) {
+    }
+
+    @Override
+    public void onSessionResumed(CastSession session, boolean wasSuspended) {
+        onApplicationConnected(session);
+    }
+
+    @Override
+    public void onSessionResumeFailed(CastSession session, int error) {
+    }
+
+    @Override
+    public void onSessionStarted(CastSession session, String sessionId) {
+        onApplicationConnected(session);
+    }
+
+    @Override
+    public void onSessionStartFailed(CastSession session, int error) {
+    }
+
+    @Override
+    public void onSessionStarting(CastSession session) {
+    }
+
+    @Override
+    public void onSessionEnding(CastSession session) {
+    }
+
+    @Override
+    public void onSessionResuming(CastSession session, String sessionId) {
+    }
+
+    @Override
+    public void onSessionSuspended(CastSession session, int reason) {
+    }
+
+    private void onApplicationConnected(CastSession castSession) {
+        mCastSession = castSession;
+        boolean isVideoPlaying = videoService.getMediaPlayer().isPlaying();
+        if (isVideoPlaying)
+            pause();
+        loadRemoteMedia(getCurrentPosition(), isVideoPlaying);
+    }
+
+    private void loadRemoteMedia(int position, boolean autoPlay) {
+        if (mCastSession == null) {
+            return;
+        }
+        final RemoteMediaClient remoteMediaClient = mCastSession.getRemoteMediaClient();
+        if (remoteMediaClient == null) {
+            return;
+        }
+        remoteMediaClient.addListener(new RemoteMediaClient.Listener() {
+            @Override
+            public void onStatusUpdated() {
+                Intent intent = new Intent(ServerFileVideoActivity.this, ExpandedControlsActivity.class);
+                startActivity(intent);
+                remoteMediaClient.removeListener(this);
+                finish();
+            }
+
+            @Override
+            public void onMetadataUpdated() {
+            }
+
+            @Override
+            public void onQueueStatusUpdated() {
+            }
+
+            @Override
+            public void onPreloadStatusUpdated() {
+            }
+
+            @Override
+            public void onSendingRemoteMediaRequest() {
+            }
+
+            @Override
+            public void onAdBreakStatusUpdated() {
+            }
+        });
+        remoteMediaClient.load(buildMediaInfo(), autoPlay, position);
+    }
+
+    private Uri getVideoUri() {
+        return serverClient.getFileUri(getVideoShare(), getVideoFile());
+    }
+
+    private MediaInfo buildMediaInfo() {
+        MediaMetadata movieMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
+        movieMetadata.putString(MediaMetadata.KEY_TITLE, getVideoFile().getNameOnly());
+        MediaInfo.Builder builder = new MediaInfo.Builder(getVideoUri().toString())
+            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+            .setContentType(getVideoFile().getMime())
+            .setMetadata(movieMetadata);
+        if (videoService != null && videoService.getMediaPlayer() != null) {
+            builder.setStreamDuration(videoService.getMediaPlayer().getLength());
+        }
+        return builder.build();
     }
 }

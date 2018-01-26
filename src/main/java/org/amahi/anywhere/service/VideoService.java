@@ -47,12 +47,14 @@ import javax.inject.Inject;
  * Video service. Does all the work related to the video playback.
  */
 public class VideoService extends Service {
-    @Inject
-    ServerClient serverClient;
     private ServerShare videoShare;
     private ServerFile videoFile;
+
     private LibVLC mLibVLC;
     private MediaPlayer mMediaPlayer = null;
+
+    @Inject
+    ServerClient serverClient;
 
     @Override
     public IBinder onBind(Intent intent) {

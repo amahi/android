@@ -308,9 +308,9 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
         BusProvider.getBus().unregister(this);
     }
-    
+
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         finishAffinity();
     }
 }

@@ -18,6 +18,7 @@ Gradle, Android SDK and project dependencies will be downloaded automatically.
   url.proxy = URL
   client.id = ID
   client.secret = SECRET
+  chromecast.app.id = APP_ID
   ```
 
 This is something to keep **private** and you obtain it by asking in the [Amahi IRC channel](http://talk.amahi.org) or send a message to `support at Amahi dot org`.

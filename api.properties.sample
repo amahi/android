@@ -6,3 +6,4 @@ url.amahi=https://amahi.org
 url.proxy=https://amahi.org
 client.id=1234567890
 client.secret=abcdefghijklmnopqrstuvwxyz
+chromecast.app.id=4F8B3483

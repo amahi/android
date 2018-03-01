@@ -30,6 +30,7 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -247,6 +248,11 @@ public final class Intents {
             Intent uploadService = new Intent(context, UploadService.class);
             uploadService.putParcelableArrayListExtra(Extras.IMAGE_URIS, uris);
             return uploadService;
+        }
+
+        public Intent buildIntroductionIntent() {
+            Intent introduction = new Intent(context, IntroductionActivity.class);
+            return introduction;
         }
     }
 }

@@ -58,7 +58,6 @@ public class IntroductionActivity extends AppIntro {
     }
 
     private void launchTv() {
-        startActivity(new Intent(this, NavigationActivity.class));
         finish();
     }
 }

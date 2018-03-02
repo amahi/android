@@ -27,6 +27,7 @@
     <string name="preference_title_about_feedback">Feedback</string>
     <string name="preference_title_about_rating">Rate</string>
     <string name="preference_title_about_version">Version</string>
+    <string name="preference_title_about_intro">Intro</string>
     <string name="preference_title_account_sign_out">Sign out</string>
     <string name="preference_title_server_connection">Connection</string>
     <string name="preference_title_tell_a_friend">Tell a friend</string>
@@ -45,6 +46,7 @@
     <string name="preference_key_about_feedback" translatable="false">application_feedback</string>
     <string name="preference_key_about_rating" translatable="false">application_rating</string>
     <string name="preference_key_about_version" translatable="false">application_version</string>
+    <string name="preference_key_about_intro" translatable="false">application_intro</string>
     <string name="preference_key_account_sign_out" translatable="false">account_sign_out</string>
     <string name="preference_key_server_connection" translatable="false">server_connection</string>
     <string name="preference_key_server_connection_auto" translatable="false">auto</string>

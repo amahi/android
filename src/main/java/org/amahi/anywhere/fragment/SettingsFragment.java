@@ -122,6 +122,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     private void setUpSettingsListeners() {
         Preference accountSignOut = getPreference(R.string.preference_key_account_sign_out);
+        Preference applicationIntro = getPreference(R.string.preference_key_about_intro);
         Preference applicationVersion = getPreference(R.string.preference_key_about_version);
         Preference applicationFeedback = getPreference(R.string.preference_key_about_feedback);
         Preference applicationRating = getPreference(R.string.preference_key_about_rating);
@@ -129,17 +130,21 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
         accountSignOut.setOnPreferenceClickListener(this);
+        applicationIntro.setOnPreferenceClickListener(this);
         applicationVersion.setOnPreferenceClickListener(this);
         applicationFeedback.setOnPreferenceClickListener(this);
         applicationRating.setOnPreferenceClickListener(this);
         shareApp.setOnPreferenceClickListener(this);
         autoUpload.setOnPreferenceClickListener(this);
+
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (preference.getKey().equals(getString(R.string.preference_key_account_sign_out))) {
             tearDownAccount();
+        } else if(preference.getKey().equals(getString(R.string.preference_key_about_intro))){
+            setUpApplicationIntro();
         } else if (preference.getKey().equals(getString(R.string.preference_key_about_version))) {
             setUpApplicationVersion();
         } else if (preference.getKey().equals(getString(R.string.preference_key_about_feedback))) {
@@ -152,6 +157,11 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             openUploadSettingsFragment();
         }
         return true;
+    }
+
+    private void setUpApplicationIntro() {
+        Intent intent = Intents.Builder.with(getActivity()).buildIntroductionIntent();
+        startActivity(intent);
     }
 
     private void openUploadSettingsFragment() {

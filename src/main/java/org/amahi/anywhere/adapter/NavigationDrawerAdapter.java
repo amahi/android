@@ -21,6 +21,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
     private final List<Integer> navigationItems;
     private Context mContext;
+
     public NavigationDrawerAdapter(Context context, List<Integer> navigationItems) {
         this.navigationItems = navigationItems;
         mContext = context;
@@ -65,6 +66,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
     public static final class NavigationItems {
         public static final int SHARES = 0;
         public static final int APPS = 1;
+
         private NavigationItems() {
         }
     }

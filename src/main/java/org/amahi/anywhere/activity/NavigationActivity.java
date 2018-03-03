@@ -392,6 +392,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     private static final class State {
         public static final String NAVIGATION_TITLE = "navigation_title";
         public static final String NAVIGATION_DRAWER_VISIBLE = "navigation_drawer_visible";
+
         private State() {
         }
     }

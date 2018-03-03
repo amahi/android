@@ -19,19 +19,27 @@
 
 package org.amahi.anywhere.task;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.widget.ImageView;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.cache.CacheManager;
+import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
+
+import javax.inject.Inject;
 
 /**
  * Async wrapper for audio metadata retrieving.
@@ -39,43 +47,68 @@ import java.util.HashMap;
  */
 public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent> {
     private final Uri audioUri;
-    private final MainTVPresenter.ViewHolder viewHolder;
     private final ServerFile serverFile;
+    @Inject
+    CacheManager cacheManager;
+    private MainTVPresenter.ViewHolder viewHolder;
+    private WeakReference<ImageView> imageViewWeakReference;
 
-    private AudioMetadataRetrievingTask(Uri audioUri, ServerFile serverFile, MainTVPresenter.ViewHolder viewHolder) {
+    private AudioMetadataRetrievingTask(Context context, Uri audioUri, ServerFile serverFile) {
         this.audioUri = audioUri;
-        this.viewHolder = viewHolder;
         this.serverFile = serverFile;
+        setUpInjections(context);
     }
 
-    public static void execute(Uri audioUri, ServerFile serverFile) {
-        new AudioMetadataRetrievingTask(audioUri, serverFile, null).execute();
+    public static AudioMetadataRetrievingTask newInstance(Context context, Uri audioUri, ServerFile serverFile) {
+        return new AudioMetadataRetrievingTask(context, audioUri, serverFile);
     }
 
-    public static void execute(Uri audioUri, ServerFile serverFile, MainTVPresenter.ViewHolder viewHolder) {
-        new AudioMetadataRetrievingTask(audioUri, serverFile, viewHolder).execute();
+
+    private void setUpInjections(Context context) {
+        AmahiApplication.from(context).inject(this);
+    }
+
+    public AudioMetadataRetrievingTask setViewHolder(MainTVPresenter.ViewHolder viewHolder) {
+        this.viewHolder = viewHolder;
+        return this;
+    }
+
+    public AudioMetadataRetrievingTask setImageView(ImageView imageView) {
+        this.imageViewWeakReference = new WeakReference<>(imageView);
+        return this;
     }
 
     @Override
     protected BusEvent doInBackground(Void... parameters) {
-        MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
+        AudioMetadata metadata;
+        String uniqueKey = serverFile.getUniqueKey();
+        metadata = cacheManager.getMetadataFromCache(uniqueKey);
+        if (metadata == null) {
+            metadata = new AudioMetadata();
+            MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
 
-        try {
-            audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
+            try {
+                audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
 
-            String audioTitle = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            String audioArtist = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            String audioAlbum = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-            String duration = audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            Bitmap audioAlbumArt = extractAlbumArt(audioMetadataRetriever);
+                metadata.setAudioTitle(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+                metadata.setAudioArtist(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+                metadata.setAudioAlbum(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+                metadata.setDuration(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                metadata.setAudioAlbumArt(extractAlbumArt(audioMetadataRetriever));
 
-            return new AudioMetadataRetrievedEvent(audioTitle, audioArtist, audioAlbum,
-                duration, audioAlbumArt, viewHolder, serverFile);
-        } catch (RuntimeException e) {
-            return new AudioMetadataRetrievedEvent(viewHolder, serverFile);
-        } finally {
-            audioMetadataRetriever.release();
+                if (uniqueKey != null)
+                    cacheManager.addMetadataToCache(uniqueKey, metadata);
+            } catch (RuntimeException ignored) {
+            } finally {
+                audioMetadataRetriever.release();
+            }
         }
+
+        AudioMetadataRetrievedEvent event = new AudioMetadataRetrievedEvent(metadata, serverFile, viewHolder);
+        if (imageViewWeakReference != null && imageViewWeakReference.get() != null) {
+            event.setImageView(imageViewWeakReference.get());
+        }
+        return event;
     }
 
     private Bitmap extractAlbumArt(MediaMetadataRetriever audioMetadataRetriever) {

@@ -33,6 +33,7 @@ public class UploadOption {
     private int type;
     private String name;
     private int icon;
+
     public UploadOption(@Types int type, String name, int icon) {
         this.name = name;
         this.icon = icon;

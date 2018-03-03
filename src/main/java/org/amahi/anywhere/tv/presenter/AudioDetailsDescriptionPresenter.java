@@ -5,6 +5,7 @@ import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter;
 import android.text.format.Formatter;
 
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
+import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.model.ServerFile;
 
 import java.text.SimpleDateFormat;
@@ -20,14 +21,15 @@ public class AudioDetailsDescriptionPresenter extends AbstractDetailsDescription
     @Override
     protected void onBindDescription(ViewHolder viewHolder, Object item) {
         AudioMetadataRetrievedEvent event = (AudioMetadataRetrievedEvent) item;
+        AudioMetadata metadata = event.getAudioMetadata();
 
-        if (event.getAudioTitle() != null)
-            viewHolder.getTitle().setText(event.getAudioTitle());
+        if (metadata.getAudioTitle() != null)
+            viewHolder.getTitle().setText(metadata.getAudioTitle());
         else
             viewHolder.getTitle().setText(event.getServerFile().getName());
 
-        if (event.getAudioAlbum() != null && event.getAudioArtist() != null) {
-            viewHolder.getSubtitle().setText(event.getAudioAlbum() + " - " + event.getAudioArtist());
+        if (metadata.getAudioAlbum() != null && metadata.getAudioArtist() != null) {
+            viewHolder.getSubtitle().setText(metadata.getAudioAlbum() + " - " + metadata.getAudioArtist());
         } else
             viewHolder.getSubtitle().setText(getDate(event.getServerFile()));
 

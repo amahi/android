@@ -42,6 +42,7 @@ public class PercentageView {
     public static final int BRIGHTNESS = 2;
     private ViewHolder viewHolder;
     private View view;
+
     public PercentageView(FrameLayout parentView) {
         LayoutInflater inflater = (LayoutInflater) parentView.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(R.layout.percentage_view, parentView, false);

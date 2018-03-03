@@ -19,11 +19,8 @@
 
 package org.amahi.anywhere.adapter;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,14 +33,12 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -171,48 +166,6 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
             onFilterListChange.isListEmpty(filterResults.count == 0);
             filteredFiles = (List<ServerFile>) filterResults.values;
             notifyDataSetChanged();
-        }
-    }
-
-    class AlbumArtFetcher extends AsyncTask<Void, Void, byte[]> {
-        private final ImageView imageView;
-        private final Uri audioUri;
-        private final Context applicationContext;
-
-        AlbumArtFetcher(ImageView imageView, Uri audioUri, Context applicationContext) {
-            this.imageView = imageView;
-            this.audioUri = audioUri;
-            this.applicationContext = applicationContext;
-        }
-
-        @Override
-        protected byte[] doInBackground(Void... params) {
-            try {
-                MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
-                audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
-                return extractAlbumArt(audioMetadataRetriever);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        private byte[] extractAlbumArt(MediaMetadataRetriever audioMetadataRetriever) {
-            return audioMetadataRetriever.getEmbeddedPicture();
-        }
-
-        @Override
-        protected void onPostExecute(byte[] bitmap) {
-            if (bitmap != null) {
-                Glide.with(applicationContext)
-                    .load(bitmap)
-                    .asBitmap()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_file_audio)
-                    .error(R.drawable.ic_file_audio)
-                    .into(imageView);
-            }
         }
     }
 }

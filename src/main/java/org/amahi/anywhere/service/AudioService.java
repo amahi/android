@@ -56,6 +56,7 @@ import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.receiver.AudioReceiver;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -179,7 +180,9 @@ public class AudioService extends MediaBrowserServiceCompat implements
             .setActions(getAvailableActions())
             .build());
 
-        audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        if (audioManager != null) {
+            audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        }
     }
 
     public boolean isAudioStarted() {
@@ -212,7 +215,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     public void onPrepared(MediaPlayer audioPlayer) {
         if (audioMetadataFormatter == null) {
             // Temporarily display empty audio metadata (to build notification)
-            BusProvider.getBus().post(new AudioMetadataRetrievedEvent(null, audioFile));
+            BusProvider.getBus().post(new AudioMetadataRetrievedEvent(new AudioMetadata(), audioFile, null));
         }
         BusProvider.getBus().post(new AudioPreparedEvent());
         playAudio();
@@ -222,17 +225,19 @@ public class AudioService extends MediaBrowserServiceCompat implements
         // Clear any previous metadata
         tearDownAudioMetadataFormatter();
         // Start fetching new metadata in the background
-        AudioMetadataRetrievingTask.execute(getAudioUri(), audioFile);
+        AudioMetadataRetrievingTask
+            .newInstance(this, getAudioUri(), audioFile)
+            .execute();
     }
 
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
         if (audioFile != null && audioFile == event.getServerFile()) {
+            final AudioMetadata metadata = event.getAudioMetadata();
             this.audioMetadataFormatter = new AudioMetadataFormatter(
-                event.getAudioTitle(), event.getAudioArtist(), event.getAudioAlbum());
-            this.audioMetadataFormatter.setDuration(event.getDuration());
-            this.audioAlbumArt = event.getAudioAlbumArt();
-
+                metadata.getAudioTitle(), metadata.getAudioArtist(), metadata.getAudioAlbum());
+            this.audioMetadataFormatter.setDuration(metadata.getDuration());
+            this.audioAlbumArt = metadata.getAudioAlbumArt();
             setUpAudioPlayerRemote(audioMetadataFormatter, audioAlbumArt);
 
             mMediaNotificationManager.startNotification();
@@ -491,7 +496,9 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private void tearDownAudioPlayerRemote() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        audioManager.abandonAudioFocus(this);
+        if (audioManager != null) {
+            audioManager.abandonAudioFocus(this);
+        }
         mediaSession.release();
     }
 

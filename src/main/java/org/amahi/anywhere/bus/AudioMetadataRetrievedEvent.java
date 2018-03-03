@@ -19,66 +19,47 @@
 
 package org.amahi.anywhere.bus;
 
-import android.graphics.Bitmap;
+import android.support.annotation.Nullable;
+import android.widget.ImageView;
 
+import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 
 public class AudioMetadataRetrievedEvent implements BusEvent {
-    private final String audioTitle;
-    private final String audioArtist;
-    private final String audioAlbum;
-    private final long duration;
-    private final Bitmap audioAlbumArt;
-    private final MainTVPresenter.ViewHolder viewHolder;
+    private final AudioMetadata metadata;
     private final ServerFile serverFile;
 
-    public AudioMetadataRetrievedEvent(String audioTitle, String audioArtist, String audioAlbum,
-                                       String duration, Bitmap audioAlbumArt,
-                                       MainTVPresenter.ViewHolder viewHolder,
-                                       ServerFile serverFile) {
-        this.audioTitle = audioTitle;
-        this.audioArtist = audioArtist;
-        this.audioAlbum = audioAlbum;
-        if (duration != null) {
-            this.duration = Long.valueOf(duration);
-        } else {
-            this.duration = 0;
-        }
-        this.audioAlbumArt = audioAlbumArt;
-        this.viewHolder = viewHolder;
+    private MainTVPresenter.ViewHolder viewHolder;
+    private ImageView imageView;
+
+    public AudioMetadataRetrievedEvent(AudioMetadata metadata,
+                                       ServerFile serverFile,
+                                       MainTVPresenter.ViewHolder viewHolder) {
+        this.metadata = metadata;
         this.serverFile = serverFile;
+        this.viewHolder = viewHolder;
     }
 
-    public AudioMetadataRetrievedEvent(MainTVPresenter.ViewHolder viewHolder, ServerFile serverFile) {
-        this(null, null, null, null, null, viewHolder, serverFile);
-    }
-
-    public String getAudioTitle() {
-        return audioTitle;
-    }
-
-    public String getAudioArtist() {
-        return audioArtist;
-    }
-
-    public String getAudioAlbum() {
-        return audioAlbum;
-    }
-
-    public Bitmap getAudioAlbumArt() {
-        return audioAlbumArt;
-    }
-
+    @Nullable
     public MainTVPresenter.ViewHolder getViewHolder() {
         return viewHolder;
+    }
+
+    @Nullable
+    public ImageView getImageView() {
+        return imageView;
+    }
+
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
     }
 
     public ServerFile getServerFile() {
         return serverFile;
     }
 
-    public long getDuration() {
-        return duration;
+    public AudioMetadata getAudioMetadata() {
+        return this.metadata;
     }
 }

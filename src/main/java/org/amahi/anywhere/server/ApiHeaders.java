@@ -36,6 +36,7 @@ import okhttp3.Response;
 class ApiHeaders implements Interceptor {
     private final String acceptHeader;
     private final String userAgentHeader;
+
     public ApiHeaders(Context context) {
         this.acceptHeader = getAcceptHeader();
         this.userAgentHeader = getUserAgentHeader(context);
@@ -64,6 +65,7 @@ class ApiHeaders implements Interceptor {
     private static final class HeaderFields {
         public static final String ACCEPT = "Accept";
         public static final String USER_AGENT = "User-Agent";
+
         private HeaderFields() {
         }
     }

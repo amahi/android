@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.readystatesoftware.chuck.ChuckInterceptor;
 
+import org.amahi.anywhere.BuildConfig;
 import org.amahi.anywhere.util.Time;
 
 import javax.inject.Singleton;
@@ -82,7 +83,15 @@ public class ApiModule {
     @Provides
     @Singleton
     HttpLoggingInterceptor provideLogging() {
-        // change the level below to HttpLoggingInterceptor.Level.BODY to get the whole body in the logs
-        return new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+
+        if (BuildConfig.DEBUG) {
+            // This level can be decreased to Level.HEADERS or Level.BASIC to reduce the details shown
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        } else {
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
+        }
+
+        return loggingInterceptor;
     }
 }

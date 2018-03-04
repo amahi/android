@@ -35,10 +35,6 @@
     <color name="background_transparent_secondary">#80000000</color>
     <color name="primary_text_material_light">#deffffff</color>
 
-    <!--Ripple effect color-->
-    <color name="ripple_secondary_color">#616161</color>
-    <color name="ripple_primary_color">#bdbdbd</color>
-
     <!--ATV COLORS-->
     <color name="intro_1">#0277bd</color>
     <color name="intro_2">#3949ab</color>

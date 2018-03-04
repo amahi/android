@@ -110,44 +110,44 @@ dependencies {
         google()
     }
     def SUPPORT_LIBRARY_VERSION = "25.4.0"
-    compile "com.android.support:support-v4:${SUPPORT_LIBRARY_VERSION}"
-    compile "com.android.support:support-v13:${SUPPORT_LIBRARY_VERSION}"
-    compile "com.android.support:recyclerview-v7:${SUPPORT_LIBRARY_VERSION}"
-    compile "com.android.support:appcompat-v7:${SUPPORT_LIBRARY_VERSION}"
-    compile "com.android.support:design:${SUPPORT_LIBRARY_VERSION}"
-    compile "com.android.support:preference-v7:${SUPPORT_LIBRARY_VERSION}"
-    compile "com.android.support:customtabs:${SUPPORT_LIBRARY_VERSION}"
-    compile "com.android.support:leanback-v17:${SUPPORT_LIBRARY_VERSION}"
-    compile "com.android.support:mediarouter-v7:${SUPPORT_LIBRARY_VERSION}"
-    compile "com.android.support:cardview-v7:${SUPPORT_LIBRARY_VERSION}"
-    compile 'com.google.android.gms:play-services-cast-framework:11.6.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
+    implementation "com.android.support:support-v4:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:support-v13:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:recyclerview-v7:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:appcompat-v7:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:design:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:preference-v7:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:customtabs:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:leanback-v17:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:mediarouter-v7:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:cardview-v7:${SUPPORT_LIBRARY_VERSION}"
+    implementation 'com.google.android.gms:play-services-cast-framework:11.6.0'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }
 
-    compile 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
-    compile 'com.jakewharton.timber:timber:4.5.1'
-    compile 'com.squareup.dagger:dagger:1.2.5'
+    implementation 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
+    implementation 'com.jakewharton.timber:timber:4.5.1'
+    implementation 'com.squareup.dagger:dagger:1.2.5'
     annotationProcessor 'com.squareup.dagger:dagger-compiler:1.2.5'
-    compile 'com.squareup:otto:1.3.8'
-    compile 'com.github.apl-devs:appintro:v4.2.0'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-    compile 'org.videolan:libvlc:2.1.1'
-    compile 'pub.devrel:easypermissions:0.4.2'
-    testCompile 'org.robolectric:robolectric:3.1.2'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:shadows-multidex:3.0'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
-    androidTestCompile 'com.android.support.test:runner:1.0.1'
-    androidTestCompile 'com.android.support:support-annotations:25.4.0'
-    provided 'com.squareup.dagger:dagger-compiler:1.2.5'
-    compile 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
-    debugCompile 'com.readystatesoftware.chuck:library:1.1.0'
-    releaseCompile 'com.readystatesoftware.chuck:library-no-op:1.1.0'
-    betaReleaseCompile 'com.readystatesoftware.chuck:library-no-op:1.1.0'
+    implementation 'com.squareup:otto:1.3.8'
+    implementation 'com.github.apl-devs:appintro:v4.2.0'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+    implementation 'org.videolan:libvlc:2.1.1'
+    implementation 'pub.devrel:easypermissions:0.4.2'
+    testImplementation 'org.robolectric:robolectric:3.1.2'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:shadows-multidex:3.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support:support-annotations:25.4.0'
+    compileOnly 'com.squareup.dagger:dagger-compiler:1.2.5'
+    implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
+    debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
+    releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
+    betaReleaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 }
 
 task generateWrapper(type: Wrapper) {

@@ -17,18 +17,13 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/llViewServerShareItem"
-    android:layout_height="?android:attr/listPreferredItemHeight"
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:background="?attr/selectableItemBackground"
-    >
-    <TextView android:id="@+id/text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:maxLines="1"
-        android:padding="8dp"
-        android:textSize="@dimen/text_medium" />
-</LinearLayout>
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:background="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:maxLines="1"
+    android:padding="8dp"
+    android:textSize="@dimen/text_medium" />

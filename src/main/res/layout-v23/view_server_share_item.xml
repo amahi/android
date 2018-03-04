@@ -22,7 +22,7 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/background_ripple_view_server_share_item"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
     >
     <TextView android:id="@+id/text"
         android:layout_width="match_parent"

@@ -43,10 +43,8 @@ import java.util.List;
  */
 public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapter.ServerShareViewHolder> {
     private List<ServerShare> shares;
-    private Context mContext;
     public ServerSharesAdapter(Context context) {
         this.shares = Collections.emptyList();
-        mContext = context;
     }
 
     @Override
@@ -91,16 +89,10 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
 
     class ServerShareViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
-        LinearLayout llViewServerShareItem;
 
         ServerShareViewHolder(View itemView) {
             super(itemView);
             textView = (TextView) itemView.findViewById(R.id.text);
-            llViewServerShareItem = (LinearLayout) itemView.findViewById(R.id.llViewServerShareItem);
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                llViewServerShareItem.setBackground(mContext.getResources()
-                    .getDrawable(R.drawable.background_ripple_view_server_share_item));
-            }
         }
     }
 }

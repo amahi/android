@@ -21,7 +21,6 @@ package org.amahi.anywhere.activity;
 
 import android.Manifest;
 import android.app.DialogFragment;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -53,6 +52,7 @@ import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
 import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
+import org.amahi.anywhere.fragment.ProgressDialogFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.UploadBottomSheet;
@@ -91,7 +91,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     ServerClient serverClient;
     private ServerFile file;
     private FileAction fileAction;
-    private ProgressDialog uploadProgressDialog;
+    private ProgressDialogFragment uploadDialogFragment;
     private File cameraImage;
 
     @Override
@@ -138,11 +138,10 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     private void setUpUploadDialog() {
-        uploadProgressDialog = new ProgressDialog(this);
-        uploadProgressDialog.setTitle(getString(R.string.message_file_upload_title));
-        uploadProgressDialog.setCancelable(false);
-        uploadProgressDialog.setIndeterminate(false);
-        uploadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progress_dialog");
+        if (uploadDialogFragment == null) {
+            uploadDialogFragment = new ProgressDialogFragment();
+        }
     }
 
     @Override
@@ -444,19 +443,20 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void uploadFile(File uploadFile) {
         serverClient.uploadFile(0, uploadFile, getShare(), file);
-        uploadProgressDialog.show();
+        uploadDialogFragment.show(getFragmentManager(), "progress_dialog");
     }
 
     @Subscribe
     public void onFileUploadProgressEvent(ServerFileUploadProgressEvent fileUploadProgressEvent) {
-        if (uploadProgressDialog.isShowing()) {
-            uploadProgressDialog.setProgress(fileUploadProgressEvent.getProgress());
+        if (uploadDialogFragment.isAdded()) {
+            uploadDialogFragment.setProgress(fileUploadProgressEvent.getProgress());
         }
     }
 
     @Subscribe
     public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent event) {
-        uploadProgressDialog.dismiss();
+
+        uploadDialogFragment.dismiss();
         if (event.wasUploadSuccessful()) {
             Fragments.Operator.at(this).replace(buildFilesFragment(getShare(), file), R.id.container_files);
             Snackbar.make(getParentView(), R.string.message_file_upload_complete, Snackbar.LENGTH_LONG).show();

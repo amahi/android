@@ -143,7 +143,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     public boolean onPreferenceClick(Preference preference) {
         if (preference.getKey().equals(getString(R.string.preference_key_account_sign_out))) {
             tearDownAccount();
-        } else if(preference.getKey().equals(getString(R.string.preference_key_about_intro))){
+        } else if (preference.getKey().equals(getString(R.string.preference_key_about_intro))) {
             setUpApplicationIntro();
         } else if (preference.getKey().equals(getString(R.string.preference_key_about_version))) {
             setUpApplicationVersion();

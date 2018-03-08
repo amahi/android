@@ -25,7 +25,7 @@ public class ProgressDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    public void setProgress(int progress){
+    public void setProgress(int progress) {
         dialog.setProgress(progress);
     }
 }

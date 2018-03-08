@@ -139,7 +139,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void setUpUploadDialog() {
         uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progress_dialog");
-        if(uploadDialogFragment == null) {
+        if (uploadDialogFragment == null) {
             uploadDialogFragment = new ProgressDialogFragment();
         }
     }
@@ -443,12 +443,12 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void uploadFile(File uploadFile) {
         serverClient.uploadFile(0, uploadFile, getShare(), file);
-        uploadDialogFragment.show(getFragmentManager(),"progress_dialog");
+        uploadDialogFragment.show(getFragmentManager(), "progress_dialog");
     }
 
     @Subscribe
     public void onFileUploadProgressEvent(ServerFileUploadProgressEvent fileUploadProgressEvent) {
-        if(uploadDialogFragment.isAdded()){
+        if (uploadDialogFragment.isAdded()) {
             uploadDialogFragment.setProgress(fileUploadProgressEvent.getProgress());
         }
     }

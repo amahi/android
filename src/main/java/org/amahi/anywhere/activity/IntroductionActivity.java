@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.activity;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;

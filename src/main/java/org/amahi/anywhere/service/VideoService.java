@@ -24,12 +24,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
+import org.amahi.anywhere.db.FileInfoDbHelper;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -51,6 +54,11 @@ public class VideoService extends Service {
     ServerClient serverClient;
     private ServerShare videoShare;
     private ServerFile videoFile;
+
+    private FileInfoDbHelper fileInfoDbHelper;
+
+    private long pauseTime;
+
     private LibVLC mLibVLC;
     private MediaPlayer mMediaPlayer = null;
 
@@ -157,16 +165,51 @@ public class VideoService extends Service {
 
     public void pauseVideo() {
         mMediaPlayer.pause();
+        updatePauseTime();
+    }
+
+    private void updatePauseTime() {
+        pauseTime = getMediaPlayer().getTime();
+    }
+
+    public ServerFile getVideoFile() {
+        return videoFile;
+    }
+
+    public ServerShare getVideoShare() {
+        return videoShare;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
+        checkVideoFilePlayed();
+
         tearDownVideoPlayback();
         BusProvider.getBus().unregister(this);
     }
 
+
+    private void checkVideoFilePlayed() {
+        setUpDbHelper();
+
+        String file_path = getVideoShare().getName() + getVideoFile().getPath();
+
+        if (pauseTime > 10000 && !fileInfoDbHelper.getFilePlayed(file_path)) {
+            fileInfoDbHelper.setFilePlayed(file_path, true);
+        }
+
+        closeDb();
+    }
+
+    private void setUpDbHelper() {
+        fileInfoDbHelper = FileInfoDbHelper.init(this);
+    }
+
+    private void closeDb() {
+        fileInfoDbHelper.closeDataBase();
+    }
 
     private void tearDownVideoPlayback() {
         mMediaPlayer.stop();

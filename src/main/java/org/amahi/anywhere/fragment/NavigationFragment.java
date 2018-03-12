@@ -43,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -56,6 +57,7 @@ import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
+import org.amahi.anywhere.bus.ServerReconnectEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
@@ -412,6 +414,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         setUpServerConnection();
         setUpServerNavigation();
         if (CheckTV.isATV(getContext())) launchTV();
+    }
+
+    @Subscribe
+    public void onServerReconnectRequest(ServerReconnectEvent event) {
+        Server server = (Server) getServersSpinner().getSelectedItem();
+
+        setUpServerConnection(server);
     }
 
     private void setUpServerConnection() {

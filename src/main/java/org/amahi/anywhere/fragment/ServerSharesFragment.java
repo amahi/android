@@ -29,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -37,6 +38,8 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerSharesAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
+import org.amahi.anywhere.bus.ServerConnectionFailedEvent;
+import org.amahi.anywhere.bus.ServerReconnectEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -150,6 +153,28 @@ public class ServerSharesFragment extends Fragment {
         if (serverClient.isConnected()) {
             serverClient.getShares();
         }
+    }
+
+    @Subscribe
+    public void onServerConnectionFailed(ServerConnectionFailedEvent event) {
+        Toast.makeText(getContext(), getResources()
+            .getString(R.string.message_error_amahi_anywhere_app), Toast.LENGTH_LONG).show();
+        showConnectionError();
+    }
+
+    private void showConnectionError() {
+        ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
+        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+                retryServerConnection();
+            }
+        });
+    }
+
+    private void retryServerConnection() {
+        BusProvider.getBus().post(new ServerReconnectEvent());
     }
 
     @Subscribe

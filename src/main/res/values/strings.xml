@@ -60,6 +60,8 @@
     <string name="message_error_connection">Connection Error</string>
     <string name="message_tap_to_retry">Tap to retry</string>
     <string name="message_error_video">Error playing the video</string>
+    <string name="message_error_amahi_anywhere_app">Your Amahi server may not be running Amahi Anywhere. Please ensure the Amahi Anywhere app is installed and running.</string>
+
 
     <string name="message_notice_check_settings">Check your settings and try again</string>
     <string name="message_notice_create_some">Create some and try again</string>

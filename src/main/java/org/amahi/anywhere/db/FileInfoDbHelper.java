@@ -3,6 +3,7 @@ package org.amahi.anywhere.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import static org.amahi.anywhere.db.FileInfoDb.FILE_PLAYED;
@@ -32,7 +33,7 @@ public class FileInfoDbHelper {
         return fileInfoDbHelper;
     }
 
-    public long setFilePlayed(String filePath, boolean filePlayedBool) {
+    public void setFilePlayed(String filePath, boolean filePlayedBool) {
 
         int filePlayedInt;
 
@@ -47,9 +48,12 @@ public class FileInfoDbHelper {
         values.put(KEY_FILE_PATH, filePath);
         values.put(FILE_PLAYED, filePlayedInt);
 
-        long newRowId = sqLiteDatabase.insert(TABLE_NAME, null, values);
+        try {
+            sqLiteDatabase.insert(TABLE_NAME, null, values);
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
 
-        return newRowId;
     }
 
     public boolean getFilePlayed(String filePath) {
@@ -82,7 +86,6 @@ public class FileInfoDbHelper {
                 return false;
             }
         } else {
-            cursor.close();
             return false;
         }
 

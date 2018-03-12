@@ -31,7 +31,7 @@ class FileInfoDb extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "("
+        String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "("
             + KEY_FILE_PATH + " VARCHAR(200) PRIMARY KEY, "
             + FILE_PLAYED + " INTEGER NOT NULL CHECK (" + FILE_PLAYED + " IN (0,1)))";
 
@@ -40,6 +40,16 @@ class FileInfoDb extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Procedure to follow when database is upgraded (DATABASE_VERSION increased)
+
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+
+        onCreate(db);
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Procedure to follow when database is downgraded (DATABASE_VERSION decreased)
     }
 
 }

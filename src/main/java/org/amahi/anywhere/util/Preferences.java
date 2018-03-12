@@ -87,11 +87,11 @@ public final class Preferences {
     }
 
     public static String getServerName(Context context) {
-        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.server_name), null);
+        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.selected_server_name), null);
     }
 
     public static void setServerName(Context context, String serverName) {
-        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.server_name), serverName).apply();
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.selected_server_name), serverName).apply();
     }
 
     public static Preferences ofCookie(Context context) {

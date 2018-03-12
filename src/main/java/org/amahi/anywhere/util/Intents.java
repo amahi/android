@@ -179,8 +179,17 @@ public final class Intents {
         public Intent buildServerFileOpeningIntent(ServerFile file, Uri fileUri) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(fileUri, file.getMime());
+            grantUriPermission(intent, fileUri);
 
             return Intent.createChooser(intent, null);
+        }
+
+        private void grantUriPermission(Intent intent, Uri fileUri) {
+            List<ResolveInfo> resolvedIntentActivities = context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
+                String packageName = resolvedIntentInfo.activityInfo.packageName;
+                context.grantUriPermission(packageName, fileUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
         }
 
         public Intent buildServerFileSharingIntent(ServerFile file, Uri fileUri) {

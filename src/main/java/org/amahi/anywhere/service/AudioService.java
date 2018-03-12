@@ -40,7 +40,6 @@ import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -82,6 +81,7 @@ import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Identifier;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.MediaNotificationManager;
+import org.amahi.anywhere.util.Preferences;
 
 import java.io.File;
 import java.io.IOException;
@@ -486,7 +486,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private void setAudioFilePlayed() {
         setUpDbHelper();
 
-        String file_path = getAudioShare().getName() + getAudioFile().getPath();
+        String file_path = Preferences.getServerName(this) + "/" + getAudioShare().getName() + getAudioFile().getPath();
 
         if (!fileInfoDbHelper.getFilePlayed(file_path)) {
             fileInfoDbHelper.setFilePlayed(file_path, true);
@@ -511,11 +511,10 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private void checkAudioFilePlayed() {
         setUpDbHelper();
 
-        String file_path = getAudioShare().getName() + getAudioFile().getPath();
+        String file_path = Preferences.getServerName(this) + "/" + getAudioShare().getName() + getAudioFile().getPath();
 
         if (getAudioPlayer().getCurrentPosition() > 10000 && !fileInfoDbHelper.getFilePlayed(file_path)) {
             fileInfoDbHelper.setFilePlayed(file_path, true);
-            Toast.makeText(this, "Audio Played 10 secs", Toast.LENGTH_LONG).show();
         }
 
         closeDb();

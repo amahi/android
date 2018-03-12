@@ -46,6 +46,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.RecyclerViewItemClickListener;
+import org.amahi.anywhere.util.Preferences;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -134,7 +135,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
 
             setUpDbHelper();
 
-            String file_path = serverShare.getName() + file.getPath();
+            String file_path = Preferences.getServerName(context) + "/" + serverShare.getName() + file.getPath();
 
             if (fileInfoDbHelper.getFilePlayed(file_path)) {
                 fileHolder.fileTextView.setTypeface(fileHolder.fileTextView.getTypeface(), Typeface.BOLD);

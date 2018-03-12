@@ -24,8 +24,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -37,6 +35,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.Preferences;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
@@ -194,7 +193,7 @@ public class VideoService extends Service {
     private void checkVideoFilePlayed() {
         setUpDbHelper();
 
-        String file_path = getVideoShare().getName() + getVideoFile().getPath();
+        String file_path = Preferences.getServerName(this) + "/" + getVideoShare().getName() + getVideoFile().getPath();
 
         if (pauseTime > 10000 && !fileInfoDbHelper.getFilePlayed(file_path)) {
             fileInfoDbHelper.setFilePlayed(file_path, true);

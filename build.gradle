@@ -145,9 +145,14 @@ dependencies {
     androidTestImplementation 'com.android.support:support-annotations:25.4.0'
     compileOnly 'com.squareup.dagger:dagger-compiler:1.2.5'
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
+
+    // Uncomment the dependencies below to enable Chuck Interceptor for logging
+/*
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
     releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
     betaReleaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
+*/
+
 }
 
 task generateWrapper(type: Wrapper) {

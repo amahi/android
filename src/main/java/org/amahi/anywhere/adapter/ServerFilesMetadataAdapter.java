@@ -1,25 +1,7 @@
-/*
- * Copyright (c) 2014 Amahi
- *
- * This file is part of Amahi.
- *
- * Amahi is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Amahi is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
- */
-
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -41,10 +23,17 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.task.FileMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.RecyclerViewItemClickListener;
 
 import java.util.Collections;
 
-public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter {
+/**
+ * Files adapter. Visualizes files
+ * for the {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
+ */
+
+public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
+
     public ServerFilesMetadataAdapter(Context context, ServerClient serverClient) {
         this.layoutInflater = LayoutInflater.from(context);
 
@@ -56,59 +45,81 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter {
         BusProvider.getBus().register(this);
     }
 
-    protected View newView(ViewGroup container) {
-        View fileView = layoutInflater.inflate(R.layout.view_server_file_metadata_item, container, false);
+    public void setOnClickListener(RecyclerViewItemClickListener mListener) {
+        this.mListener = mListener;
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View fileView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_file_metadata_item, parent, false);
 
         fileView.setTag(Tags.FILE_TITLE, fileView.findViewById(R.id.text));
         fileView.setTag(Tags.FILE_ICON, fileView.findViewById(R.id.icon));
 
-        return fileView;
+        return new ServerFileMetadataViewHolder(fileView);
     }
 
-    protected void bindView(ServerFile file, View fileView) {
-        unbindFileView(file, fileView);
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ServerFile file = getItems().get(position);
+        final ServerFileMetadataViewHolder fileHolder = (ServerFileMetadataViewHolder) holder;
+        unbindFileView(file, fileHolder);
 
-        ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
         if (Mimes.match(file.getMime()) != Mimes.Type.VIDEO) {
-            bindFileView(file, fileView);
+            bindFileView(file, fileHolder);
         } else {
             if (!file.isMetaDataFetched()) {
-                bindFileMetadataView(file, fileView);
+                bindFileMetadataView(file, fileHolder.itemView);
             } else {
-                bindView(file, file.getFileMetadata(), fileView);
+                bindView(file, file.getFileMetadata(), fileHolder);
             }
         }
         if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
-            setUpImageIcon(file, fileIcon);
+            setUpImageIcon(file, fileHolder.fileIcon);
         }
+
+        fileHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectedPosition = fileHolder.getAdapterPosition();
+                mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
+                fileHolder.itemView.setActivated(true);
+            }
+        });
+
+        fileHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                selectedPosition = fileHolder.getAdapterPosition();
+                boolean isHandled = mListener.onLongItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
+                fileHolder.itemView.setActivated(true);
+                return isHandled;
+            }
+        });
+
+        fileHolder.itemView.setActivated(selectedPosition == position);
     }
 
-    private void unbindFileView(ServerFile file, View fileView) {
-        TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
-        ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
+    private void unbindFileView(ServerFile file, ServerFileMetadataViewHolder holder) {
+        holder.fileTitle.setText(null);
+        holder.fileTitle.setBackgroundResource(android.R.color.transparent);
 
-        fileTitle.setText(null);
-        fileTitle.setBackgroundResource(android.R.color.transparent);
-
-        fileIcon.setImageResource(Mimes.getFileIcon(file));
-        fileIcon.setBackgroundResource(R.color.background_secondary);
+        holder.fileIcon.setImageResource(Mimes.getFileIcon(file));
+        holder.fileIcon.setBackgroundResource(R.color.background_secondary);
     }
 
-    private void bindFileView(ServerFile file, View fileView) {
-        TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
-        ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
-
+    private void bindFileView(ServerFile file, ServerFileMetadataViewHolder holder) {
         SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
         if (queryString != null && !TextUtils.isEmpty(queryString)) {
             int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
             if (searchMatchPosition != -1)
                 sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         }
-        fileTitle.setText(sb);
-        fileTitle.setBackgroundResource(R.color.background_transparent_secondary);
+        holder.fileTitle.setText(sb);
+        holder.fileTitle.setBackgroundResource(R.color.background_transparent_secondary);
 
-        fileIcon.setImageResource(Mimes.getFileIcon(file));
-        fileIcon.setBackgroundResource(R.color.background_secondary);
+        holder.fileIcon.setImageResource(Mimes.getFileIcon(file));
+        holder.fileIcon.setBackgroundResource(R.color.background_secondary);
     }
 
     private void bindFileMetadataView(ServerFile file, View fileView) {
@@ -121,33 +132,30 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter {
     @Subscribe
     public void onFileMetadataRetrieved(FileMetadataRetrievedEvent event) {
         event.getFile().setMetaDataFetched(true);
-        bindView(event.getFile(), event.getFileMetadata(), event.getFileView());
+        bindView(event.getFile(), event.getFileMetadata(), new ServerFileMetadataViewHolder(event.getFileView()));
     }
 
-    private void bindView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
+    private void bindView(ServerFile file, ServerFileMetadata fileMetadata, final ServerFileMetadataViewHolder holder) {
         if (fileMetadata == null) {
-            bindFileView(file, fileView);
+            bindFileView(file, holder);
         } else {
             file.setFileMetadata(fileMetadata);
-            bindFileMetadataView(file, fileMetadata, fileView);
+            bindFileMetadataView(file, fileMetadata, holder);
         }
     }
 
-    private void bindFileMetadataView(ServerFile file, ServerFileMetadata fileMetadata, View fileView) {
-        TextView fileTitle = (TextView) fileView.getTag(Tags.FILE_TITLE);
-        ImageView fileIcon = (ImageView) fileView.getTag(Tags.FILE_ICON);
+    private void bindFileMetadataView(ServerFile file, ServerFileMetadata fileMetadata, ServerFileMetadataViewHolder holder) {
+        holder.fileTitle.setText(null);
+        holder.fileTitle.setBackgroundResource(android.R.color.transparent);
 
-        fileTitle.setText(null);
-        fileTitle.setBackgroundResource(android.R.color.transparent);
-
-        Glide.with(fileView.getContext())
+        Glide.with(holder.itemView.getContext())
             .load(fileMetadata.getArtworkUrl())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .centerCrop()
             .fitCenter()
             .placeholder(Mimes.getFileIcon(file))
             .error(Mimes.getFileIcon(file))
-            .into(fileIcon);
+            .into(holder.fileIcon);
     }
 
     public void tearDownCallbacks() {
@@ -161,6 +169,18 @@ public class ServerFilesMetadataAdapter extends FilesFilterBaseAdapter {
         public static final int FILE_ICON = R.id.icon;
 
         private Tags() {
+        }
+    }
+
+    public class ServerFileMetadataViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView fileIcon;
+        TextView fileTitle;
+
+        ServerFileMetadataViewHolder(View itemView) {
+            super(itemView);
+            fileIcon = (ImageView) itemView.getTag(Tags.FILE_ICON);
+            fileTitle = (TextView) itemView.getTag(Tags.FILE_TITLE);
         }
     }
 }

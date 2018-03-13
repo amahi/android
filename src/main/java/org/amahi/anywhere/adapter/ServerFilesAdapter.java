@@ -21,6 +21,7 @@ package org.amahi.anywhere.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -41,6 +42,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.RecyclerViewItemClickListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -51,7 +53,7 @@ import java.util.Locale;
  * Files adapter. Visualizes files
  * for the {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
-public class ServerFilesAdapter extends FilesFilterBaseAdapter {
+public class ServerFilesAdapter extends FilesFilterAdapter {
     private Context context;
 
     public ServerFilesAdapter(Context context, ServerClient serverClient) {
@@ -63,28 +65,27 @@ public class ServerFilesAdapter extends FilesFilterBaseAdapter {
         BusProvider.getBus().register(this);
     }
 
-    protected View newView(ViewGroup container) {
-        return layoutInflater.inflate(R.layout.view_server_file_item, container, false);
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ServerFileViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_file_item, parent, false));
     }
 
-    protected void bindView(ServerFile file, View view) {
-        ImageView fileIconView = (ImageView) view.findViewById(R.id.icon);
-        TextView fileTextView = (TextView) view.findViewById(R.id.text);
-        TextView fileSize = (TextView) view.findViewById(R.id.file_size);
-        TextView fileLastModified = (TextView) view.findViewById(R.id.last_modified);
-        LinearLayout moreInfo = (LinearLayout) view.findViewById(R.id.more_info);
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        final ServerFileViewHolder fileHolder = (ServerFileViewHolder) holder;
+        final ServerFile file = getItems().get(position);
 
         if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
-            moreInfo.setVisibility(View.GONE);
+            fileHolder.moreInfo.setVisibility(View.GONE);
 
         } else {
-            moreInfo.setVisibility(View.VISIBLE);
+            fileHolder.moreInfo.setVisibility(View.VISIBLE);
 
-            fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
+            fileHolder.fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
 
             Date d = getLastModified(file);
             SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
-            fileLastModified.setText(dt.format(d));
+            fileHolder.fileLastModified.setText(dt.format(d));
         }
 
         SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
@@ -93,15 +94,36 @@ public class ServerFilesAdapter extends FilesFilterBaseAdapter {
             if (searchMatchPosition != -1)
                 sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         }
-        fileTextView.setText(sb);
+        fileHolder.fileTextView.setText(sb);
 
         if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
-            setUpImageIcon(file, fileIconView);
+            setUpImageIcon(file, fileHolder.fileIconView);
         } else if (Mimes.match(file.getMime()) == Mimes.Type.AUDIO) {
-            setUpAudioArt(file, fileIconView);
+            setUpAudioArt(file, fileHolder.fileIconView);
         } else {
-            fileIconView.setImageResource(Mimes.getFileIcon(file));
+            fileHolder.fileIconView.setImageResource(Mimes.getFileIcon(file));
         }
+
+        fileHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectedPosition = fileHolder.getAdapterPosition();
+                mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
+                fileHolder.itemView.setActivated(true);
+            }
+        });
+
+        fileHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                selectedPosition = fileHolder.getAdapterPosition();
+                boolean isHandled = mListener.onLongItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
+                fileHolder.itemView.setActivated(true);
+                return isHandled;
+            }
+        });
+
+        fileHolder.itemView.setActivated(selectedPosition == position);
     }
 
     private long getFileSize(ServerFile file) {
@@ -132,4 +154,24 @@ public class ServerFilesAdapter extends FilesFilterBaseAdapter {
     public void tearDownCallbacks() {
         BusProvider.getBus().unregister(this);
     }
+
+    public class ServerFileViewHolder extends RecyclerView.ViewHolder {
+        ImageView fileIconView;
+        TextView fileTextView, fileSize, fileLastModified;
+        LinearLayout moreInfo;
+
+        ServerFileViewHolder(View itemView) {
+            super(itemView);
+            fileIconView = (ImageView) itemView.findViewById(R.id.icon);
+            fileTextView = (TextView) itemView.findViewById(R.id.text);
+            fileSize = (TextView) itemView.findViewById(R.id.file_size);
+            fileLastModified = (TextView) itemView.findViewById(R.id.last_modified);
+            moreInfo = (LinearLayout) itemView.findViewById(R.id.more_info);
+        }
+    }
+
+    public void setOnClickListener(RecyclerViewItemClickListener mListener) {
+        this.mListener = mListener;
+    }
+
 }

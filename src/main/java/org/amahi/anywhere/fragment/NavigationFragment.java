@@ -356,6 +356,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+                getNavigationListView().dispatchSetActivated(false);
                 view.setActivated(true);
                 switch (position) {
                     case NavigationDrawerAdapter.NavigationItems.SHARES:

@@ -53,3 +53,9 @@ This is something to keep **private** and you obtain it by asking in the [Amahi 
   ```
   $ ./gradlew clean assembleDebug generateDebugJavadoc
   ```
+
+## Debugging
+
+* For debugging the APIs and logging requests and responses you can either use `Logcat` on Android Studio or enable `Chuck Interceptor` (UI based) from the steps given [here](DEBUG.md#enabling-chuck-interceptor).
+
+* To debug with some special purpose server, you can find steps [here](DEBUG.md#using-a-custom-server).

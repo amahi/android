@@ -29,7 +29,9 @@ import org.amahi.anywhere.bus.NetworkChangedEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerConnectionDetectedEvent;
+import org.amahi.anywhere.bus.ServerConnectionFailedEvent;
 import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
+import org.amahi.anywhere.bus.ServerRouteLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.server.ApiAdapter;
@@ -154,7 +156,7 @@ public class ServerClient {
     }
 
     public boolean isConnected(Server server) {
-        return (this.server != null) && (this.server.getSession().equals(server.getSession()));
+        return (this.server != null) && (this.serverRoute != null) && (this.server.getSession().equals(server.getSession()));
     }
 
     public boolean isConnectedLocal() {
@@ -189,6 +191,16 @@ public class ServerClient {
         this.serverRoute = event.getServerRoute();
 
         finishServerConnection();
+    }
+
+    @Subscribe
+    public void onServerRouteLoadFailed(ServerRouteLoadFailedEvent event) {
+        this.serverRoute = null;
+        serverConnectionFailed(event.getErrorMessage());
+    }
+
+    private void serverConnectionFailed(String errorMessage) {
+        BusProvider.getBus().post(new ServerConnectionFailedEvent(errorMessage));
     }
 
     private void finishServerConnection() {

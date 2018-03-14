@@ -28,6 +28,7 @@
     <color name="secondary_text">#757575</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
+    <color name="error_red">#d32f2f</color>
 
     <color name="background_primary">#1a1a1a</color>
     <color name="background_secondary">#333333</color>

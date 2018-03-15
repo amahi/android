@@ -34,6 +34,7 @@ import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.cache.CacheModule;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
+import org.amahi.anywhere.fragment.ServerFileAudioFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
@@ -83,6 +84,7 @@ import dagger.Provides;
         ServerAppsFragment.class,
         ServerFilesFragment.class,
         ServerFileImageFragment.class,
+        ServerFileAudioFragment.class,
         ServerFileDownloadingFragment.class,
         SettingsFragment.class,
         UploadSettingsFragment.class,

@@ -26,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
+import org.amahi.anywhere.fragment.ServerFileAudioFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.ServerSharesFragment;
@@ -82,6 +83,18 @@ public final class Fragments {
 
         public static Fragment buildServerFileImageFragment(ServerShare share, ServerFile file) {
             Fragment fileFragment = new ServerFileImageFragment();
+
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(Arguments.SERVER_SHARE, share);
+            arguments.putParcelable(Arguments.SERVER_FILE, file);
+
+            fileFragment.setArguments(arguments);
+
+            return fileFragment;
+        }
+
+        public static Fragment buildServerFileAudioFragment(ServerShare share, ServerFile file) {
+            Fragment fileFragment = new ServerFileAudioFragment();
 
             Bundle arguments = new Bundle();
             arguments.putParcelable(Arguments.SERVER_SHARE, share);

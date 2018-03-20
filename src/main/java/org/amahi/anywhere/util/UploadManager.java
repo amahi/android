@@ -132,12 +132,7 @@ public class UploadManager {
         }
 
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                processNextFile();
-            }
-        }, 500);
+        handler.postDelayed(this::processNextFile, 500);
     }
 
     public interface UploadCallbacks {

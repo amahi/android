@@ -56,7 +56,7 @@ public class TVWebViewActivity extends Activity {
     }
 
     private void setWebPage() {
-        WebView webView = (WebView) findViewById(R.id.tv_web_view);
+        WebView webView = findViewById(R.id.tv_web_view);
         webView.loadUrl(String.valueOf(getWebResourceUri()));
     }
 

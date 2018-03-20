@@ -68,11 +68,11 @@ public class ServerFilesAdapter extends FilesFilterBaseAdapter {
     }
 
     protected void bindView(ServerFile file, View view) {
-        ImageView fileIconView = (ImageView) view.findViewById(R.id.icon);
-        TextView fileTextView = (TextView) view.findViewById(R.id.text);
-        TextView fileSize = (TextView) view.findViewById(R.id.file_size);
-        TextView fileLastModified = (TextView) view.findViewById(R.id.last_modified);
-        LinearLayout moreInfo = (LinearLayout) view.findViewById(R.id.more_info);
+        ImageView fileIconView = view.findViewById(R.id.icon);
+        TextView fileTextView = view.findViewById(R.id.text);
+        TextView fileSize = view.findViewById(R.id.file_size);
+        TextView fileLastModified = view.findViewById(R.id.last_modified);
+        LinearLayout moreInfo = view.findViewById(R.id.more_info);
 
         if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
             moreInfo.setVisibility(View.GONE);

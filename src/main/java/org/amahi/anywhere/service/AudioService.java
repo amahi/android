@@ -77,10 +77,7 @@ import javax.inject.Inject;
  * handles audio focus changes as well.
  */
 public class AudioService extends MediaBrowserServiceCompat implements
-    AudioManager.OnAudioFocusChangeListener,
-    MediaPlayer.OnPreparedListener,
-    MediaPlayer.OnCompletionListener,
-    MediaPlayer.OnErrorListener {
+    AudioManager.OnAudioFocusChangeListener {
     @Inject
     ServerClient serverClient;
     private MediaNotificationManager mMediaNotificationManager;
@@ -149,9 +146,24 @@ public class AudioService extends MediaBrowserServiceCompat implements
         audioPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
         audioPlayer.setVolume(1.0f, 1.0f);
 
-        audioPlayer.setOnPreparedListener(this);
-        audioPlayer.setOnCompletionListener(this);
-        audioPlayer.setOnErrorListener(this);
+        audioPlayer.setOnPreparedListener(mp -> {
+            if (audioMetadataFormatter == null) {
+                // Temporarily display empty audio metadata (to build notification)
+                BusProvider.getBus().post(new AudioMetadataRetrievedEvent(new AudioMetadata(), audioFile, null));
+            }
+            BusProvider.getBus().post(new AudioPreparedEvent());
+            playAudio();
+        });
+        audioPlayer.setOnCompletionListener(mp -> {
+            BusProvider.getBus().post(new AudioCompletedEvent());
+            tearDownAudioMetadataFormatter();
+            startNextAudio();
+        });
+        audioPlayer.setOnErrorListener((mp, what, extra) -> {
+            getAudioPlayer().reset();
+            tearDownAudioMetadataFormatter();
+            return true;
+        });
     }
 
     private void setUpAudioPlayerRemote() {
@@ -209,16 +221,6 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     private Uri getAudioUri() {
         return serverClient.getFileUri(audioShare, audioFile);
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer audioPlayer) {
-        if (audioMetadataFormatter == null) {
-            // Temporarily display empty audio metadata (to build notification)
-            BusProvider.getBus().post(new AudioMetadataRetrievedEvent(new AudioMetadata(), audioFile, null));
-        }
-        BusProvider.getBus().post(new AudioPreparedEvent());
-        playAudio();
     }
 
     private void setUpAudioMetadata() {
@@ -453,20 +455,6 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     private void tearDownAudioVolume() {
         audioPlayer.setVolume(0.3f, 0.3f);
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer audioPlayer) {
-        BusProvider.getBus().post(new AudioCompletedEvent());
-        tearDownAudioMetadataFormatter();
-        startNextAudio();
-    }
-
-    @Override
-    public boolean onError(MediaPlayer audioPlayer, int errorReason, int errorExtra) {
-        getAudioPlayer().reset();
-        tearDownAudioMetadataFormatter();
-        return true;
     }
 
     @Override

@@ -70,15 +70,15 @@ public class ServerSharesFragment extends Fragment {
 
         View rootView = layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
 
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
+        mRecyclerView = rootView.findViewById(R.id.list);
 
         mServerSharesAdapter = new ServerSharesAdapter(getActivity());
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-        mEmptyLinearLayout = (LinearLayout) rootView.findViewById(R.id.empty);
+        mEmptyLinearLayout = rootView.findViewById(R.id.empty);
 
-        mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
+        mErrorLinearLayout = rootView.findViewById(R.id.error);
 
         mRecyclerView.addItemDecoration(new
             DividerItemDecoration(getActivity(),
@@ -164,12 +164,9 @@ public class ServerSharesFragment extends Fragment {
 
     private void showConnectionError() {
         ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
-        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-                retryServerConnection();
-            }
+        mErrorLinearLayout.setOnClickListener(view -> {
+            ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+            retryServerConnection();
         });
     }
 
@@ -195,12 +192,9 @@ public class ServerSharesFragment extends Fragment {
 
     private void showSharesError() {
         ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
-        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-                setUpSharesContent();
-            }
+        mErrorLinearLayout.setOnClickListener(view -> {
+            ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+            setUpSharesContent();
         });
     }
 

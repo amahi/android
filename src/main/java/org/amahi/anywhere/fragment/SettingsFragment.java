@@ -53,7 +53,7 @@ import javax.inject.Inject;
 /**
  * Settings fragment. Shows application's settings.
  */
-public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener,
+public class SettingsFragment extends PreferenceFragment implements
     SharedPreferences.OnSharedPreferenceChangeListener,
     AccountManagerCallback<Boolean> {
     @Inject
@@ -129,34 +129,35 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
-        accountSignOut.setOnPreferenceClickListener(this);
-        applicationIntro.setOnPreferenceClickListener(this);
-        applicationVersion.setOnPreferenceClickListener(this);
-        applicationFeedback.setOnPreferenceClickListener(this);
-        applicationRating.setOnPreferenceClickListener(this);
-        shareApp.setOnPreferenceClickListener(this);
-        autoUpload.setOnPreferenceClickListener(this);
-
-    }
-
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        if (preference.getKey().equals(getString(R.string.preference_key_account_sign_out))) {
+        accountSignOut.setOnPreferenceClickListener(preference -> {
             tearDownAccount();
-        } else if (preference.getKey().equals(getString(R.string.preference_key_about_intro))) {
+            return true;
+        });
+        applicationIntro.setOnPreferenceClickListener(preference -> {
             setUpApplicationIntro();
-        } else if (preference.getKey().equals(getString(R.string.preference_key_about_version))) {
+            return true;
+        });
+        applicationVersion.setOnPreferenceClickListener(preference -> {
             setUpApplicationVersion();
-        } else if (preference.getKey().equals(getString(R.string.preference_key_about_feedback))) {
+            return true;
+        });
+        applicationFeedback.setOnPreferenceClickListener(preference -> {
             setUpApplicationFeedback();
-        } else if (preference.getKey().equals(getString(R.string.preference_key_about_rating))) {
+            return true;
+        });
+        applicationRating.setOnPreferenceClickListener(preference -> {
             setUpApplicationRating();
-        } else if (preference.getKey().equals(getString(R.string.preference_key_tell_a_friend))) {
+            return true;
+        });
+        shareApp.setOnPreferenceClickListener(preference -> {
             sharedIntent();
-        } else if (preference.getKey().equals(getString(R.string.preference_screen_key_upload))) {
+            return true;
+        });
+        autoUpload.setOnPreferenceClickListener(preference -> {
             openUploadSettingsFragment();
-        }
-        return true;
+            return true;
+        });
+
     }
 
     private void setUpApplicationIntro() {

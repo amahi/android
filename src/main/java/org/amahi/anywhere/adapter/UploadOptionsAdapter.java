@@ -71,8 +71,8 @@ public class UploadOptionsAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.upload_list_item, parent, false);
             convertView.setTag(holder);
 
-            holder.image = (ImageView) convertView.findViewById(R.id.option_icon);
-            holder.text = (TextView) convertView.findViewById(R.id.option_text);
+            holder.image = convertView.findViewById(R.id.option_icon);
+            holder.text = convertView.findViewById(R.id.option_text);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }

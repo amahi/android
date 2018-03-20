@@ -39,7 +39,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
-import android.view.View;
 
 import com.squareup.otto.Subscribe;
 
@@ -57,7 +56,6 @@ import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerShare;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,11 +64,12 @@ import javax.inject.Inject;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static org.amahi.anywhere.server.model.Server.filterActiveServers;
+
 /**
  * Upload Settings fragment. Shows upload settings.
  */
 public class UploadSettingsFragment extends PreferenceFragment implements
-    Preference.OnPreferenceChangeListener,
     AccountManagerCallback<Bundle>,
     EasyPermissions.PermissionCallbacks {
 
@@ -161,7 +160,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     private void setUpServersContent(List<Server> servers) {
-        ArrayList<Server> activeServers = filterActiveServers(servers);
+        List<Server> activeServers = filterActiveServers(servers);
         String[] serverNames = new String[activeServers.size()];
         String[] serverSessions = new String[activeServers.size()];
 
@@ -181,18 +180,6 @@ public class UploadSettingsFragment extends PreferenceFragment implements
         }
     }
 
-    private ArrayList<Server> filterActiveServers(List<Server> servers) {
-        ArrayList<Server> activeServers = new ArrayList<>();
-
-        for (Server server : servers) {
-            if (server.isActive()) {
-                activeServers.add(server);
-            }
-        }
-
-        return activeServers;
-    }
-
     private boolean isUploadEnabled() {
         PreferenceManager preferenceManager = getPreferenceManager();
         return preferenceManager.getSharedPreferences()
@@ -204,15 +191,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     private void setUpSettingsListeners() {
-        getAutoUploadSwitchPreference().setOnPreferenceChangeListener(this);
-        getHdaPreference().setOnPreferenceChangeListener(this);
-        getSharePreference().setOnPreferenceChangeListener(this);
-    }
-
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        String key = preference.getKey();
-        if (key.equals(getString(R.string.preference_key_upload_switch))) {
+        getAutoUploadSwitchPreference().setOnPreferenceChangeListener((preference, newValue) -> {
             boolean isUploadEnabled = (boolean) newValue;
             if (isUploadEnabled) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -222,13 +201,17 @@ public class UploadSettingsFragment extends PreferenceFragment implements
             }
             toggleUploadSettings(isUploadEnabled);
             preference.setTitle(getAutoUploadTitle(isUploadEnabled));
-        } else if (key.equals(getString(R.string.preference_key_upload_hda))) {
+            return true;
+        });
+        getHdaPreference().setOnPreferenceChangeListener((preference, newValue) -> {
             setUpServer(String.valueOf(newValue));
-        } else if (key.equals(getString(R.string.preference_key_upload_share))) {
+            return true;
+        });
+        getSharePreference().setOnPreferenceChangeListener((preference, newValue) -> {
             getPathPreference().setEnabled(true);
             getAllowOnDataPreference().setEnabled(true);
-        }
-        return true;
+            return true;
+        });
     }
 
     private void setUpServer(String session) {
@@ -398,12 +381,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
     private void showPermissionSnackBar(String message) {
         Snackbar.make(getView(), message, Snackbar.LENGTH_LONG)
-            .setAction(R.string.menu_settings, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new AppSettingsDialog.Builder(UploadSettingsFragment.this).build().show();
-                }
-            })
+            .setAction(R.string.menu_settings, v -> new AppSettingsDialog.Builder(UploadSettingsFragment.this).build().show())
             .show();
     }
 

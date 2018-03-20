@@ -192,7 +192,7 @@ public class MainTVFragment extends BrowseFragment {
     }
 
     private List<ServerFile> sortFiles(List<ServerFile> files) {
-        List<ServerFile> sortedFiles = new ArrayList<ServerFile>(files);
+        List<ServerFile> sortedFiles = new ArrayList<>(files);
 
         Collections.sort(sortedFiles, getFilesComparator());
 
@@ -202,10 +202,10 @@ public class MainTVFragment extends BrowseFragment {
     private Comparator<ServerFile> getFilesComparator() {
         switch (filesSort) {
             case NAME:
-                return new FileNameComparator();
+                return ServerFile::compareByName;
 
             case MODIFICATION_TIME:
-                return new FileModificationTimeComparator();
+                return ServerFile::compareByModificationTime;
 
             default:
                 return null;
@@ -253,19 +253,5 @@ public class MainTVFragment extends BrowseFragment {
 
     private enum FilesSort {
         NAME, MODIFICATION_TIME
-    }
-
-    private static final class FileNameComparator implements Comparator<ServerFile> {
-        @Override
-        public int compare(ServerFile firstFile, ServerFile secondFile) {
-            return firstFile.getName().compareTo(secondFile.getName());
-        }
-    }
-
-    private static final class FileModificationTimeComparator implements Comparator<ServerFile> {
-        @Override
-        public int compare(ServerFile firstFile, ServerFile secondFile) {
-            return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
-        }
     }
 }

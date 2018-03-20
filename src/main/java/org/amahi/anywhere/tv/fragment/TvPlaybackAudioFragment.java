@@ -38,13 +38,9 @@ import android.support.v17.leanback.widget.ControlButtonPresenterSelector;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
-import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
 import android.support.v17.leanback.widget.PlaybackControlsRowPresenter;
-import android.support.v17.leanback.widget.Presenter;
-import android.support.v17.leanback.widget.Row;
-import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v4.content.ContextCompat;
 import android.widget.ImageView;
 
@@ -110,12 +106,7 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
 
         mediaPlayer = new MediaPlayer();
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                skipNext();
-            }
-        });
+        mediaPlayer.setOnCompletionListener(mp -> skipNext());
 
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
@@ -125,13 +116,10 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
 
         mediaPlayer.start();
 
-        setOnItemViewClickedListener(new OnItemViewClickedListener() {
-            @Override
-            public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-                if (item instanceof ServerFile) {
-                    ServerFile serverFile = (ServerFile) item;
-                    replaceFragment(serverFile);
-                }
+        setOnItemViewClickedListener((OnItemViewClickedListener) (itemViewHolder, item, rowViewHolder, row) -> {
+            if (item instanceof ServerFile) {
+                ServerFile serverFile = (ServerFile) item;
+                replaceFragment(serverFile);
             }
         });
     }
@@ -153,24 +141,20 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         mRowsAdapter = new ArrayObjectAdapter(ps);
         playbackControlsRowPresenter.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.primary));
         playbackControlsRowPresenter.setProgressColor(Color.WHITE);
-        playbackControlsRowPresenter.setOnActionClickedListener(new OnActionClickedListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onActionClicked(Action action) {
-                if (action.getId() == mPlayPauseAction.getId()) {
-                    togglePlayPause(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
-                } else if (action.getId() == mRewindAction.getId()) {
-                    rewind();
-                } else if (action.getId() == mFastForwardAction.getId()) {
-                    fastForward();
-                } else if (action.getId() == mSkipNextAction.getId()) {
-                    skipNext();
-                } else if (action.getId() == mSkipPreviousAction.getId()) {
-                    skipPrevious();
-                }
-                if (action instanceof PlaybackControlsRow.MultiAction) {
-                    notifyChanged(action);
-                }
+        playbackControlsRowPresenter.setOnActionClickedListener(action -> {
+            if (action.getId() == mPlayPauseAction.getId()) {
+                togglePlayPause(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
+            } else if (action.getId() == mRewindAction.getId()) {
+                rewind();
+            } else if (action.getId() == mFastForwardAction.getId()) {
+                fastForward();
+            } else if (action.getId() == mSkipNextAction.getId()) {
+                skipNext();
+            } else if (action.getId() == mSkipPreviousAction.getId()) {
+                skipPrevious();
+            }
+            if (action instanceof PlaybackControlsRow.MultiAction) {
+                notifyChanged(action);
             }
         });
         setAdapter(mRowsAdapter);
@@ -365,7 +349,7 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
     }
 
     private ImageView getBackground() {
-        return (ImageView) getActivity().findViewById(R.id.imageViewBackground);
+        return getActivity().findViewById(R.id.imageViewBackground);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -373,12 +357,9 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
         addPlaybackControlsRow(event);
         addOtherRows();
-        mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-            @Override
-            public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                int time = percent * mediaPlayer.getDuration();
-                mPlaybackControlsRow.setBufferedProgress(time);
-            }
+        mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
+            int time = percent * mediaPlayer.getDuration();
+            mPlaybackControlsRow.setBufferedProgress(time);
         });
         mPlaybackControlsRow.setTotalTime(mediaPlayer.getDuration());
         AudioMetadata metadata = event.getAudioMetadata();

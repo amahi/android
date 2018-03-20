@@ -23,7 +23,6 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,7 +42,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -93,12 +91,8 @@ import pub.devrel.easypermissions.EasyPermissions;
  */
 
 public class ServerFilesFragment extends Fragment implements
-    SwipeRefreshLayout.OnRefreshListener,
-    AdapterView.OnItemClickListener,
-    AdapterView.OnItemLongClickListener,
     ActionMode.Callback,
     SearchView.OnQueryTextListener,
-    FilesFilterBaseAdapter.onFilterListChange,
     EasyPermissions.PermissionCallbacks,
     CastStateListener {
     private static final int SHARE_PERMISSIONS = 101;
@@ -124,7 +118,7 @@ public class ServerFilesFragment extends Fragment implements
         } else {
             rootView = layoutInflater.inflate(R.layout.fragment_server_files_metadata, container, false);
         }
-        mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
+        mErrorLinearLayout = rootView.findViewById(R.id.error);
         return rootView;
     }
 
@@ -161,23 +155,15 @@ public class ServerFilesFragment extends Fragment implements
             mIntroductoryOverlay.remove();
         }
         if ((mediaRouteMenuItem != null) && mediaRouteMenuItem.isVisible()) {
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    mIntroductoryOverlay = new IntroductoryOverlay
-                        .Builder(getActivity(), mediaRouteMenuItem)
-                        .setTitleText("Introducing Cast")
-                        .setSingleTime()
-                        .setOnOverlayDismissedListener(
-                            new IntroductoryOverlay.OnOverlayDismissedListener() {
-                                @Override
-                                public void onOverlayDismissed() {
-                                    mIntroductoryOverlay = null;
-                                }
-                            })
-                        .build();
-                    mIntroductoryOverlay.show();
-                }
+            new Handler().post(() -> {
+                mIntroductoryOverlay = new IntroductoryOverlay
+                    .Builder(getActivity(), mediaRouteMenuItem)
+                    .setTitleText("Introducing Cast")
+                    .setSingleTime()
+                    .setOnOverlayDismissedListener(
+                        () -> mIntroductoryOverlay = null)
+                    .build();
+                mIntroductoryOverlay.show();
             });
         }
     }
@@ -202,26 +188,32 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void setUpFilesActions() {
-        getListView().setOnItemClickListener(this);
-        getListView().setOnItemLongClickListener(this);
+        getListView().setOnItemClickListener((parent, view, filePosition, id) -> {
+            if (!areFilesActionsAvailable()) {
+                collapseSearchView();
+                startFileOpening(getFile(filePosition));
+
+                if (isDirectory(getFile(filePosition))) {
+                    setUpTitle(getFile(filePosition).getName());
+                }
+            }
+        });
+        getListView().setOnItemLongClickListener((parent, view, filePosition, id) -> {
+            if (!areFilesActionsAvailable()) {
+                getListView().clearChoices();
+                getListView().setItemChecked(filePosition, true);
+
+                getListView().startActionMode(this);
+
+                return true;
+            } else {
+                return false;
+            }
+        });
     }
 
     private AbsListView getListView() {
-        return (AbsListView) getView().findViewById(android.R.id.list);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> filesListView, View fileView, int filePosition, long fileId) {
-        if (!areFilesActionsAvailable()) {
-            getListView().clearChoices();
-            getListView().setItemChecked(filePosition, true);
-
-            getListView().startActionMode(this);
-
-            return true;
-        } else {
-            return false;
-        }
+        return getView().findViewById(android.R.id.list);
     }
 
     private boolean areFilesActionsAvailable() {
@@ -317,12 +309,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void showPermissionSnackBar(String message) {
         Snackbar.make(getView(), message, Snackbar.LENGTH_LONG)
-            .setAction(R.string.menu_settings, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new AppSettingsDialog.Builder(ServerFilesFragment.this).build().show();
-                }
-            })
+            .setAction(R.string.menu_settings, v -> new AppSettingsDialog.Builder(ServerFilesFragment.this).build().show())
             .show();
     }
 
@@ -335,13 +322,10 @@ public class ServerFilesFragment extends Fragment implements
         new AlertDialog.Builder(getContext())
             .setTitle(R.string.message_delete_file_title)
             .setMessage(R.string.message_delete_file_body)
-            .setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    deleteProgressDialog.show();
-                    serverClient.deleteFile(getShare(), file);
-                    actionMode.finish();
-                }
+            .setPositiveButton(R.string.button_yes, (dialog, which) -> {
+                deleteProgressDialog.show();
+                serverClient.deleteFile(getShare(), file);
+                actionMode.finish();
             })
             .setNegativeButton(R.string.button_no, null)
             .show();
@@ -390,7 +374,10 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void setListAdapter(FilesFilterBaseAdapter adapter) {
-        adapter.setFilterListChangeListener(this);
+        adapter.setFilterListChangeListener(empty -> {
+            if (getView().findViewById(R.id.none_text) != null)
+                getView().findViewById(R.id.none_text).setVisibility(empty ? View.VISIBLE : View.GONE);
+        });
         getListView().setAdapter(adapter);
     }
 
@@ -434,7 +421,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private List<ServerFile> getMetadataFiles(List<ServerFile> files) {
-        List<ServerFile> metadataFiles = new ArrayList<ServerFile>();
+        List<ServerFile> metadataFiles = new ArrayList<>();
 
         for (ServerFile file : files) {
             if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
@@ -514,7 +501,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private List<ServerFile> sortFiles(List<ServerFile> files) {
-        List<ServerFile> sortedFiles = new ArrayList<ServerFile>(files);
+        List<ServerFile> sortedFiles = new ArrayList<>(files);
 
         Collections.sort(sortedFiles, getFilesComparator());
 
@@ -524,10 +511,10 @@ public class ServerFilesFragment extends Fragment implements
     private Comparator<ServerFile> getFilesComparator() {
         switch (filesSort) {
             case NAME:
-                return new FileNameComparator();
+                return ServerFile::compareByName;
 
             case MODIFICATION_TIME:
-                return new FileModificationTimeComparator();
+                return ServerFile::compareByModificationTime;
 
             default:
                 return null;
@@ -539,7 +526,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
-        return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
+        return getView().findViewById(R.id.layout_refresh);
     }
 
     @Subscribe
@@ -551,12 +538,9 @@ public class ServerFilesFragment extends Fragment implements
 
     private void showFilesError() {
         ViewDirector.of(this, R.id.animator).show(R.id.error);
-        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-                setUpFilesContent();
-            }
+        mErrorLinearLayout.setOnClickListener(view -> {
+            ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+            setUpFilesContent();
         });
     }
 
@@ -569,24 +553,7 @@ public class ServerFilesFragment extends Fragment implements
             android.R.color.holo_green_light,
             android.R.color.holo_red_light);
 
-        refreshLayout.setOnRefreshListener(this);
-    }
-
-    @Override
-    public void onRefresh() {
-        setUpFilesContent();
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> filesListView, View fileView, int filePosition, long fileId) {
-        if (!areFilesActionsAvailable()) {
-            collapseSearchView();
-            startFileOpening(getFile(filePosition));
-
-            if (isDirectory(getFile(filePosition))) {
-                setUpTitle(getFile(filePosition).getName());
-            }
-        }
+        refreshLayout.setOnRefreshListener(this::setUpFilesContent);
     }
 
     private void startFileOpening(ServerFile file) {
@@ -637,7 +604,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setSearchCursor() {
         final int textViewID = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-        final AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(textViewID);
+        final AutoCompleteTextView searchTextView = searchView.findViewById(textViewID);
         try {
             Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
             mCursorDrawableRes.setAccessible(true);
@@ -712,12 +679,6 @@ public class ServerFilesFragment extends Fragment implements
             getFilesMetadataAdapter().getFilter().filter(s);
         }
         return true;
-    }
-
-    @Override
-    public void isListEmpty(boolean empty) {
-        if (getView().findViewById(R.id.none_text) != null)
-            getView().findViewById(R.id.none_text).setVisibility(empty ? View.VISIBLE : View.GONE);
     }
 
     private void collapseSearchView() {
@@ -805,20 +766,6 @@ public class ServerFilesFragment extends Fragment implements
         public static final String FILES_SORT = "files_sort";
 
         private State() {
-        }
-    }
-
-    private static final class FileNameComparator implements Comparator<ServerFile> {
-        @Override
-        public int compare(ServerFile firstFile, ServerFile secondFile) {
-            return firstFile.getName().compareTo(secondFile.getName());
-        }
-    }
-
-    private static final class FileModificationTimeComparator implements Comparator<ServerFile> {
-        @Override
-        public int compare(ServerFile firstFile, ServerFile secondFile) {
-            return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
         }
     }
 }

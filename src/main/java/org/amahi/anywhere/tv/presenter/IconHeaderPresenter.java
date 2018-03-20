@@ -57,7 +57,7 @@ public class IconHeaderPresenter extends RowHeaderPresenter {
         HeaderItem headerItem = ((ListRow) item).getHeaderItem();
         View rootView = viewHolder.view;
         rootView.setFocusable(true);
-        ImageView imageView = (ImageView) rootView.findViewById(R.id.header_icon);
+        ImageView imageView = rootView.findViewById(R.id.header_icon);
 
         if (headerItem.getName().matches("Settings")) {
             imageView.setVisibility(View.VISIBLE);
@@ -65,7 +65,7 @@ public class IconHeaderPresenter extends RowHeaderPresenter {
             imageView.setImageDrawable(icon);
         } else {
             imageView.setVisibility(View.GONE);
-            TextView label = (TextView) rootView.findViewById(R.id.header_label);
+            TextView label = rootView.findViewById(R.id.header_label);
             label.setTextColor(Color.WHITE);
             label.setText(headerItem.getName());
         }

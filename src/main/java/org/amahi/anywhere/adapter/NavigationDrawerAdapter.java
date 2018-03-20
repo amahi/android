@@ -76,7 +76,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
         NavigationDrawerViewHolder(View itemView) {
             super(itemView);
-            titleShare = (TextView) itemView.findViewById(R.id.text_share_title);
+            titleShare = itemView.findViewById(R.id.text_share_title);
         }
     }
 

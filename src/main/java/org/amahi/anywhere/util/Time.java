@@ -37,7 +37,7 @@ public class Time {
 
     public static long getDuration(String videoUrl) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(videoUrl, new HashMap<String, String>());
+        mmr.setDataSource(videoUrl, new HashMap<>());
         return Long.parseLong(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
     }
 

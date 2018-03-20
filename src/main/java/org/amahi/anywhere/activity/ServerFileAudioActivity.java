@@ -150,15 +150,15 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private TextView getAudioTitleView() {
-        return (TextView) findViewById(R.id.text_title);
+        return findViewById(R.id.text_title);
     }
 
     private TextView getAudioSubtitleView() {
-        return (TextView) findViewById(R.id.text_subtitle);
+        return findViewById(R.id.text_subtitle);
     }
 
     private ImageView getAudioAlbumArtView() {
-        return (ImageView) findViewById(R.id.image_album_art);
+        return findViewById(R.id.image_album_art);
     }
 
     private void showAudioMetadata() {
@@ -267,7 +267,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private List<ServerFile> getAudioFiles() {
-        List<ServerFile> audioFiles = new ArrayList<ServerFile>();
+        List<ServerFile> audioFiles = new ArrayList<>();
 
         for (ServerFile file : getFiles()) {
             if (SUPPORTED_FORMATS.contains(file.getMime())) {

@@ -43,7 +43,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -78,13 +77,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import static org.amahi.anywhere.server.model.Server.filterActiveServers;
+
 /**
  * Navigation fragments. Shows main application sections and servers list as well.
  */
 public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
     OnAccountsUpdateListener,
-    AdapterView.OnItemSelectedListener,
-    SwipeRefreshLayout.OnRefreshListener {
+    AdapterView.OnItemSelectedListener {
     @Inject
     AmahiClient amahiClient;
     @Inject
@@ -156,13 +156,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
             android.R.color.holo_green_light,
             android.R.color.holo_red_light);
 
-        refreshLayout.setOnRefreshListener(this);
-    }
-
-    @Override
-    public void onRefresh() {
-        ViewDirector.of(this, R.id.animator_content).show(R.id.empty_view);
-        setUpServers(new Bundle());
+        refreshLayout.setOnRefreshListener(() -> {
+            ViewDirector.of(this, R.id.animator_content).show(R.id.empty_view);
+            setUpServers(new Bundle());
+        });
     }
 
     private List<Account> getAccounts() {
@@ -215,7 +212,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private Spinner getServersSpinner() {
-        return (Spinner) getView().findViewById(R.id.spinner_servers);
+        return getView().findViewById(R.id.spinner_servers);
     }
 
     private void setUpServersContent(Bundle state) {
@@ -277,18 +274,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         return (ServersAdapter) getServersSpinner().getAdapter();
     }
 
-    private List<Server> filterActiveServers(List<Server> servers) {
-        List<Server> activeServers = new ArrayList<Server>();
-
-        for (Server server : servers) {
-            if (server.isActive()) {
-                activeServers.add(server);
-            }
-        }
-
-        return activeServers;
-    }
-
     private void showContent() {
         getRefreshLayout().setRefreshing(false);
         ViewDirector.of(this, R.id.animator_content).show(R.id.layout_content);
@@ -326,7 +311,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
-        return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
+        return getView().findViewById(R.id.layout_refresh);
     }
 
     private void setUpNavigation() {
@@ -351,7 +336,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private RecyclerView getNavigationListView() {
-        return (RecyclerView) getView().findViewById(R.id.list_navigation);
+        return getView().findViewById(R.id.list_navigation);
     }
 
     private void setUpNavigationListener() {

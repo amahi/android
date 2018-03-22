@@ -126,10 +126,20 @@ public class DiskCache {
         if (file != null) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            FileInputStream fileInputStream = null;
             try {
-                bitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, options);
+                fileInputStream = new FileInputStream(file);
+                bitmap = BitmapFactory.decodeStream(fileInputStream, null, options);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
+            } finally {
+                if (fileInputStream != null) {
+                    try {
+                        fileInputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
         return bitmap;

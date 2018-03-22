@@ -21,11 +21,9 @@ package org.amahi.anywhere.adapter;
 
 import android.graphics.Color;
 import android.net.Uri;
+import android.support.v7.widget.RecyclerView;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -37,6 +35,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.RecyclerViewItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +45,10 @@ import java.util.List;
  * for the {@link ServerFilesAdapter}
  * and the {@link ServerFilesMetadataAdapter}.
  */
-public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filterable {
+public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
-
+    protected RecyclerViewItemClickListener mListener;
+    protected int selectedPosition = -1;
     static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
     static String queryString;
     LayoutInflater layoutInflater;
@@ -59,20 +59,19 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
     private FilesFilter filesFilter;
     private onFilterListChange onFilterListChange;
 
-    abstract void bindView(ServerFile file, View view);
-
-    abstract View newView(ViewGroup container);
-
     public <T extends onFilterListChange> void setFilterListChangeListener(T t) {
         this.onFilterListChange = t;
     }
 
-    @Override
-    public int getCount() {
-        return filteredFiles.size();
+    public void setOnClickListener(RecyclerViewItemClickListener mListener) {
+        this.mListener = mListener;
     }
 
     @Override
+    public int getItemCount() {
+        return filteredFiles.size();
+    }
+
     public ServerFile getItem(int i) {
         return filteredFiles.get(i);
     }
@@ -80,19 +79,6 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
     @Override
     public long getItemId(int position) {
         return position;
-    }
-
-    @Override
-    public View getView(int position, View view, ViewGroup container) {
-        ServerFile file = getItem(position);
-
-        if (view == null) {
-            view = newView(container);
-        }
-
-        bindView(file, view);
-
-        return view;
     }
 
     public void replaceWith(ServerShare serverShare, List<ServerFile> files) {
@@ -167,5 +153,13 @@ public abstract class FilesFilterBaseAdapter extends BaseAdapter implements Filt
             filteredFiles = (List<ServerFile>) filterResults.values;
             notifyDataSetChanged();
         }
+    }
+
+    public boolean isEmpty() {
+        return (filteredFiles.isEmpty());
+    }
+
+    public int getSelectedPosition() {
+        return selectedPosition;
     }
 }

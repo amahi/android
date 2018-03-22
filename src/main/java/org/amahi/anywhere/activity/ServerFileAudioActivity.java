@@ -23,11 +23,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,7 +47,9 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.adapter.ServerFilesAudioPageAdapter;
 import org.amahi.anywhere.bus.AudioCompletedEvent;
+import org.amahi.anywhere.bus.AudioControlChangeEvent;
 import org.amahi.anywhere.bus.AudioControlNextEvent;
 import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
@@ -79,6 +80,7 @@ import javax.inject.Inject;
  * Backed up by {@link android.media.MediaPlayer}.
  */
 public class ServerFileAudioActivity extends AppCompatActivity implements
+    ViewPager.OnPageChangeListener,
     ServiceConnection,
     MediaController.MediaPlayerControl,
     SessionManagerListener<CastSession> {
@@ -101,6 +103,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private PlaybackLocation mLocation = PlaybackLocation.LOCAL;
     private AudioService audioService;
     private AudioControls audioControls;
+    private int audioPosition;
 
     public static boolean supports(String mime_type) {
         return SUPPORTED_FORMATS.contains(mime_type);
@@ -139,6 +142,54 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     private void setUpAudio() {
         setUpAudioTitle();
+        setUpAudioAdapter();
+        setUpAudioPosition();
+        setUpAudioListener();
+    }
+
+    private void setUpAudioAdapter() {
+        getAudioPager().setAdapter(new ServerFilesAudioPageAdapter(getSupportFragmentManager(), getShare(), getAudioFiles()));
+    }
+
+    private ViewPager getAudioPager() {
+        return (ViewPager) findViewById(R.id.pager_audio);
+    }
+
+    private void setUpAudioPosition() {
+        audioPosition = getAudioFiles().indexOf(getFile());
+        getAudioPager().setCurrentItem(audioPosition);
+    }
+
+    private void setUpAudioListener() {
+        getAudioPager().addOnPageChangeListener(this);
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        this.audioPosition = position;
+        boolean isPlaying = false;
+        if (audioService != null) {
+            isPlaying = audioService.isAudioStarted();
+            if (isPlaying) {
+                audioService.pauseAudio();
+            }
+        }
+        if (isCastConnected()) {
+            loadRemoteMedia(position, isPlaying);
+        }
+        BusProvider.getBus().post(new AudioControlChangeEvent(position));
+    }
+
+    private boolean isCastConnected() {
+        return mCastSession != null && mCastSession.isConnected();
     }
 
     private ServerFile getFile() {
@@ -146,19 +197,23 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void setUpAudioTitle() {
-        getSupportActionBar().setTitle(getFile().getName());
+        setUpAudioTitle(getFiles().get(audioPosition));
+    }
+
+    private void setUpAudioTitle(ServerFile file) {
+        getSupportActionBar().setTitle(file.getName());
     }
 
     private TextView getAudioTitleView() {
-        return findViewById(R.id.text_title);
+        return (TextView) findViewById(R.id.text_title);
     }
 
     private TextView getAudioSubtitleView() {
-        return findViewById(R.id.text_subtitle);
+        return (TextView) findViewById(R.id.text_subtitle);
     }
 
-    private ImageView getAudioAlbumArtView() {
-        return findViewById(R.id.image_album_art);
+    public ServerFilesAudioPageAdapter getAudioAdapter() {
+        return (ServerFilesAudioPageAdapter) getAudioPager().getAdapter();
     }
 
     private void showAudioMetadata() {
@@ -175,7 +230,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
                     metadata.getAudioTitle(), metadata.getAudioArtist(), metadata.getAudioAlbum());
                 this.metadataFormatter.setDuration(metadata.getDuration());
                 if (mLocation == PlaybackLocation.LOCAL) {
-                    setUpAudioMetadata(metadataFormatter, metadata.getAudioAlbumArt());
+                    setUpAudioMetadata(metadataFormatter);
                 } else if (mLocation == PlaybackLocation.REMOTE) {
                     loadRemoteMedia(0, true);
                     finish();
@@ -184,16 +239,9 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         }
     }
 
-    private void setUpAudioMetadata(AudioMetadataFormatter audioMetadataFormatter, Bitmap audioAlbumArt) {
+    private void setUpAudioMetadata(AudioMetadataFormatter audioMetadataFormatter) {
         getAudioTitleView().setText(audioMetadataFormatter.getAudioTitle(audioService.getAudioFile()));
         getAudioSubtitleView().setText(audioMetadataFormatter.getAudioSubtitle(getShare()));
-        if (audioAlbumArt == null) {
-            audioAlbumArt = BitmapFactory.decodeResource(getResources(), R.drawable.default_audiotrack);
-            getAudioAlbumArtView().setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        } else {
-            getAudioAlbumArtView().setScaleType(ImageView.ScaleType.CENTER_CROP);
-        }
-        getAudioAlbumArtView().setImageBitmap(audioAlbumArt);
     }
 
     private ServerShare getShare() {
@@ -267,7 +315,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private List<ServerFile> getAudioFiles() {
-        List<ServerFile> audioFiles = new ArrayList<>();
+        List<ServerFile> audioFiles = new ArrayList<ServerFile>();
 
         for (ServerFile file : getFiles()) {
             if (SUPPORTED_FORMATS.contains(file.getMime())) {
@@ -288,6 +336,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
         setUpAudioTitle();
 
+        audioControls.setMediaPlayer(this);
         showAudio();
     }
 
@@ -304,23 +353,31 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     @Subscribe
     public void onNextAudio(AudioControlNextEvent event) {
-        tearDownAudioTitle();
-        hideAudio();
-        tearDownAudioMetadata();
+        audioPosition += 1;
+        if (audioPosition == getAudioFiles().size()) {
+            audioPosition = 0;
+        }
+        getAudioPager().setCurrentItem(audioPosition);
     }
 
     @Subscribe
     public void onPreviousAudio(AudioControlPreviousEvent event) {
-        tearDownAudioTitle();
+        audioPosition -= 1;
+        if (audioPosition == -1) {
+            audioPosition = getAudioFiles().size() - 1;
+        }
+        getAudioPager().setCurrentItem(audioPosition);
+    }
+
+    @Subscribe
+    public void onChangeAudio(AudioControlChangeEvent event) {
+        setUpAudioMetadata();
         hideAudio();
-        tearDownAudioMetadata();
     }
 
     @Subscribe
     public void onAudioCompleted(AudioCompletedEvent event) {
-        tearDownAudioTitle();
-        hideAudio();
-        tearDownAudioMetadata();
+        BusProvider.getBus().post(new AudioControlNextEvent());
     }
 
     private void tearDownAudioTitle() {
@@ -331,12 +388,9 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         metadataFormatter = null;
         getAudioTitleView().setText(null);
         getAudioSubtitleView().setText(null);
-        getAudioAlbumArtView().setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        getAudioAlbumArtView().setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.default_audiotrack));
     }
 
     private void hideAudio() {
-        hideAudioMetadata();
         hideAudioControls();
     }
 
@@ -456,7 +510,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         tearDownAudioMetadata();
 
         setUpAudioTitle();
-        setUpAudioMetadata(audioService.getAudioMetadataFormatter(), audioService.getAudioAlbumArt());
+        setUpAudioMetadata(audioService.getAudioMetadataFormatter());
     }
 
     private boolean isAudioServiceAvailable() {

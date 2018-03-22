@@ -146,7 +146,11 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void setUpAudioTitle() {
-        getSupportActionBar().setTitle(getFile().getName());
+        if (audioService != null) {
+            getSupportActionBar().setTitle(audioService.getAudioFile().getName());
+        } else {
+            getSupportActionBar().setTitle(getFile().getName());
+        }
     }
 
     private TextView getAudioTitleView() {

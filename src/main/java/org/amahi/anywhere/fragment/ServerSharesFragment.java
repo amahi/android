@@ -22,6 +22,7 @@ package org.amahi.anywhere.fragment;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,7 +55,8 @@ import javax.inject.Inject;
 /**
  * Shares fragment. Shows shares list.
  */
-public class ServerSharesFragment extends Fragment {
+public class ServerSharesFragment extends Fragment implements
+    SwipeRefreshLayout.OnRefreshListener{
     @Inject
     ServerClient serverClient;
     private RecyclerView mRecyclerView;
@@ -65,26 +67,39 @@ public class ServerSharesFragment extends Fragment {
 
     private LinearLayout mErrorLinearLayout;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh);
+
+
+
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
 
         mServerSharesAdapter = new ServerSharesAdapter(getActivity());
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()
+            , LinearLayoutManager.VERTICAL, false));
 
         mEmptyLinearLayout = (LinearLayout) rootView.findViewById(R.id.empty);
 
         mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
+
+        setSwipeToRefresh();
 
         mRecyclerView.addItemDecoration(new
             DividerItemDecoration(getActivity(),
             DividerItemDecoration.VERTICAL));
 
         return rootView;
+    }
+
+    private void setSwipeToRefresh() {
+        mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
     @Override
@@ -151,6 +166,7 @@ public class ServerSharesFragment extends Fragment {
 
     private void setUpSharesContent() {
         if (serverClient.isConnected()) {
+            mSwipeRefreshLayout.setRefreshing(true);
             serverClient.getShares();
         }
     }
@@ -179,11 +195,12 @@ public class ServerSharesFragment extends Fragment {
 
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
-        serverClient.getShares();
+        setUpSharesContent();
     }
 
     @Subscribe
     public void onSharesLoaded(ServerSharesLoadedEvent event) {
+        mSwipeRefreshLayout.setRefreshing(false);
         setUpSharesContent(event.getServerShares());
         showSharesContent();
     }
@@ -194,6 +211,7 @@ public class ServerSharesFragment extends Fragment {
     }
 
     private void showSharesError() {
+        mSwipeRefreshLayout.setRefreshing(false);
         ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
         mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,6 +251,11 @@ public class ServerSharesFragment extends Fragment {
 
     private boolean areSharesLoaded() {
         return getSharesAdapter() != null;
+    }
+
+    @Override
+    public void onRefresh() {
+        setUpSharesContent();
     }
 
     private static final class State {

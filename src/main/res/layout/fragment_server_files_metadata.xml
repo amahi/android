@@ -40,24 +40,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <GridView
+            <android.support.v7.widget.RecyclerView
                 android:id="@android:id/list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:choiceMode="singleChoice"
                 android:clipToPadding="false"
-                android:columnWidth="157dp"
-                android:divider="@null"
-                android:dividerHeight="4dp"
-                android:drawSelectorOnTop="true"
-                android:horizontalSpacing="8dp"
-                android:numColumns="2"
                 android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:paddingTop="8dp"
-                android:scrollbarStyle="outsideOverlay"
-                android:verticalSpacing="8dp" />
+                android:scrollbarStyle="outsideOverlay" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
 

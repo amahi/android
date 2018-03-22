@@ -24,6 +24,7 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,7 +35,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.DisplayMetrics;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,11 +47,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,7 +62,7 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.ServerFilesActivity;
-import org.amahi.anywhere.adapter.FilesFilterBaseAdapter;
+import org.amahi.anywhere.adapter.FilesFilterAdapter;
 import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
@@ -75,6 +77,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.RecyclerViewItemClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
 import java.lang.reflect.Field;
@@ -94,11 +97,10 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class ServerFilesFragment extends Fragment implements
     SwipeRefreshLayout.OnRefreshListener,
-    AdapterView.OnItemClickListener,
-    AdapterView.OnItemLongClickListener,
+    RecyclerViewItemClickListener,
     ActionMode.Callback,
     SearchView.OnQueryTextListener,
-    FilesFilterBaseAdapter.onFilterListChange,
+    FilesFilterAdapter.onFilterListChange,
     EasyPermissions.PermissionCallbacks,
     CastStateListener {
     private static final int SHARE_PERMISSIONS = 101;
@@ -184,8 +186,8 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpFiles(Bundle state) {
         setUpFilesMenu();
-        setUpFilesActions();
         setUpFilesAdapter();
+        setUpFilesActions();
         setUpFilesContent(state);
         setUpFilesContentRefreshing();
     }
@@ -202,26 +204,17 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void setUpFilesActions() {
-        getListView().setOnItemClickListener(this);
-        getListView().setOnItemLongClickListener(this);
-    }
-
-    private AbsListView getListView() {
-        return (AbsListView) getView().findViewById(android.R.id.list);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> filesListView, View fileView, int filePosition, long fileId) {
-        if (!areFilesActionsAvailable()) {
-            getListView().clearChoices();
-            getListView().setItemChecked(filePosition, true);
-
-            getListView().startActionMode(this);
-
-            return true;
+        FilesFilterAdapter adapter;
+        if (!isMetadataAvailable()) {
+            adapter = (ServerFilesAdapter) getRecyclerView().getAdapter();
         } else {
-            return false;
+            adapter = (ServerFilesMetadataAdapter) getRecyclerView().getAdapter();
         }
+        adapter.setOnClickListener(this);
+    }
+
+    private RecyclerView getRecyclerView() {
+        return (RecyclerView) getView().findViewById(android.R.id.list);
     }
 
     private boolean areFilesActionsAvailable() {
@@ -250,8 +243,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void clearFileChoices() {
-        getListView().clearChoices();
-        getListView().requestLayout();
+        getRecyclerView().dispatchSetActivated(false);
     }
 
     @Override
@@ -281,7 +273,7 @@ public class ServerFilesFragment extends Fragment implements
         if (EasyPermissions.hasPermissions(getContext(), perms)) {
             startFileSharing(getCheckedFile());
         } else {
-            lastCheckedFileIndex = getListView().getCheckedItemPosition();
+            lastCheckedFileIndex = getListAdapter().getSelectedPosition();
             EasyPermissions.requestPermissions(this, getString(R.string.share_permission),
                 SHARE_PERMISSIONS, perms);
         }
@@ -331,7 +323,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void deleteFile(final ServerFile file, final ActionMode actionMode) {
-        deleteFilePosition = getListView().getCheckedItemPosition();
+        deleteFilePosition = getListAdapter().getSelectedPosition();
         new AlertDialog.Builder(getContext())
             .setTitle(R.string.message_delete_file_title)
             .setMessage(R.string.message_delete_file_body)
@@ -362,7 +354,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private ServerFile getCheckedFile() {
-        return getFile(getListView().getCheckedItemPosition());
+        return getFile(getListAdapter().getSelectedPosition());
     }
 
     private ServerFile getFile(int position) {
@@ -385,21 +377,46 @@ public class ServerFilesFragment extends Fragment implements
         return (ServerFilesMetadataAdapter) getListAdapter();
     }
 
-    private ListAdapter getListAdapter() {
-        return getListView().getAdapter();
+    private FilesFilterAdapter getListAdapter() {
+        return (FilesFilterAdapter) getRecyclerView().getAdapter();
     }
 
-    private void setListAdapter(FilesFilterBaseAdapter adapter) {
+    private void setListAdapter(FilesFilterAdapter adapter) {
         adapter.setFilterListChangeListener(this);
-        getListView().setAdapter(adapter);
+        getRecyclerView().setAdapter(adapter);
     }
 
     private void setUpFilesAdapter() {
+        setUpRecyclerLayout();
+
         if (!isMetadataAvailable()) {
             setListAdapter(new ServerFilesAdapter(getActivity(), serverClient));
         } else {
             setListAdapter(new ServerFilesMetadataAdapter(getActivity(), serverClient));
         }
+    }
+
+    private void setUpRecyclerLayout() {
+        if (!isMetadataAvailable()) {
+            getRecyclerView().setLayoutManager(new LinearLayoutManager(getActivity()));
+        } else {
+            if (isLandscapeOrientation()) {
+                getRecyclerView().setLayoutManager(new GridLayoutManager(getActivity(), calculateNoOfColumns(getActivity())));
+            } else {
+                getRecyclerView().setLayoutManager(new GridLayoutManager(getActivity(), 2));
+            }
+        }
+    }
+
+    public int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        return (int) ((dpWidth - 32) / 157);
+    }
+
+    public boolean isLandscapeOrientation() {
+        int screenOrientation = getActivity().getResources().getConfiguration().orientation;
+        return screenOrientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
     private void setUpFilesContent(Bundle state) {
@@ -434,7 +451,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private List<ServerFile> getMetadataFiles(List<ServerFile> files) {
-        List<ServerFile> metadataFiles = new ArrayList<ServerFile>();
+        List<ServerFile> metadataFiles = new ArrayList<>();
 
         for (ServerFile file : files) {
             if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
@@ -514,7 +531,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private List<ServerFile> sortFiles(List<ServerFile> files) {
-        List<ServerFile> sortedFiles = new ArrayList<ServerFile>(files);
+        List<ServerFile> sortedFiles = new ArrayList<>(files);
 
         Collections.sort(sortedFiles, getFilesComparator());
 
@@ -575,18 +592,6 @@ public class ServerFilesFragment extends Fragment implements
     @Override
     public void onRefresh() {
         setUpFilesContent();
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> filesListView, View fileView, int filePosition, long fileId) {
-        if (!areFilesActionsAvailable()) {
-            collapseSearchView();
-            startFileOpening(getFile(filePosition));
-
-            if (isDirectory(getFile(filePosition))) {
-                setUpTitle(getFile(filePosition).getName());
-            }
-        }
     }
 
     private void startFileOpening(ServerFile file) {
@@ -714,12 +719,6 @@ public class ServerFilesFragment extends Fragment implements
         return true;
     }
 
-    @Override
-    public void isListEmpty(boolean empty) {
-        if (getView().findViewById(R.id.none_text) != null)
-            getView().findViewById(R.id.none_text).setVisibility(empty ? View.VISIBLE : View.GONE);
-    }
-
     private void collapseSearchView() {
         if (searchView.isShown()) {
             searchMenuItem.collapseActionView();
@@ -794,6 +793,37 @@ public class ServerFilesFragment extends Fragment implements
         } else {
             return getFilesMetadataAdapter() != null;
         }
+    }
+
+    @Override
+    public void onItemClick(View view, int filePosition) {
+        getRecyclerView().dispatchSetActivated(false);
+        if (!areFilesActionsAvailable()) {
+            collapseSearchView();
+            startFileOpening(getFile(filePosition));
+
+            if (isDirectory(getFile(filePosition))) {
+                setUpTitle(getFile(filePosition).getName());
+            }
+        }
+    }
+
+    @Override
+    public boolean onLongItemClick(View view, int position) {
+        getRecyclerView().dispatchSetActivated(false);
+        if (!areFilesActionsAvailable()) {
+            getRecyclerView().startActionMode(this);
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void isListEmpty(boolean empty) {
+        if (getView().findViewById(R.id.none_text) != null)
+            getView().findViewById(R.id.none_text).setVisibility(empty ? View.VISIBLE : View.GONE);
     }
 
     private enum FilesSort {

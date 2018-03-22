@@ -48,6 +48,7 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AudioCompletedEvent;
+import org.amahi.anywhere.bus.AudioControlChangeEvent;
 import org.amahi.anywhere.bus.AudioControlNextEvent;
 import org.amahi.anywhere.bus.AudioControlPauseEvent;
 import org.amahi.anywhere.bus.AudioControlPlayEvent;
@@ -213,10 +214,6 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Override
     public void onPrepared(MediaPlayer audioPlayer) {
-        if (audioMetadataFormatter == null) {
-            // Temporarily display empty audio metadata (to build notification)
-            BusProvider.getBus().post(new AudioMetadataRetrievedEvent(new AudioMetadata(), audioFile, null));
-        }
         BusProvider.getBus().post(new AudioPreparedEvent());
         playAudio();
     }
@@ -224,7 +221,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private void setUpAudioMetadata() {
         // Clear any previous metadata
         tearDownAudioMetadataFormatter();
-        // Start fetching new metadata in the background
+//        // Start fetching new metadata in the background
         AudioMetadataRetrievingTask
             .newInstance(this, getAudioUri(), audioFile)
             .execute();
@@ -309,13 +306,8 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     @Subscribe
-    public void onAudioControlNext(AudioControlNextEvent event) {
-        startNextAudio();
-    }
-
-    @Subscribe
-    public void onAudioControlPrevious(AudioControlPreviousEvent event) {
-        startPreviousAudio();
+    public void onAudioControlChange(AudioControlChangeEvent event) {
+        startChangedAudio(event.getPosition());
     }
 
     public void playAudio() {
@@ -349,33 +341,14 @@ public class AudioService extends MediaBrowserServiceCompat implements
         return actions;
     }
 
-    private void startNextAudio() {
-        this.audioFile = getNextAudioFile();
-
-        tearDownAudioPlayback();
-
-        setUpAudioPlayback();
-        setUpAudioMetadata();
-    }
-
-    private ServerFile getNextAudioFile() {
-        int currentAudioFilePosition = audioFiles.indexOf(audioFile);
-
-        if (currentAudioFilePosition == audioFiles.size() - 1) {
-            return audioFiles.get(0);
-        }
-
-        return audioFiles.get(currentAudioFilePosition + 1);
-    }
-
     private void tearDownAudioPlayback() {
         if (isAudioPlaying())
             pauseAudio();
         audioPlayer.reset();
     }
 
-    private void startPreviousAudio() {
-        this.audioFile = getPreviousAudioFile();
+    private void startChangedAudio(int position) {
+        this.audioFile = getChangedAudioFile(position);
 
         tearDownAudioPlayback();
 
@@ -383,14 +356,8 @@ public class AudioService extends MediaBrowserServiceCompat implements
         setUpAudioMetadata();
     }
 
-    private ServerFile getPreviousAudioFile() {
-        int currentAudioFilePosition = audioFiles.indexOf(audioFile);
-
-        if (currentAudioFilePosition == 0) {
-            return audioFiles.get(audioFiles.size() - 1);
-        }
-
-        return audioFiles.get(currentAudioFilePosition - 1);
+    private ServerFile getChangedAudioFile(int position) {
+        return audioFiles.get(position);
     }
 
     @Override
@@ -458,8 +425,6 @@ public class AudioService extends MediaBrowserServiceCompat implements
     @Override
     public void onCompletion(MediaPlayer audioPlayer) {
         BusProvider.getBus().post(new AudioCompletedEvent());
-        tearDownAudioMetadataFormatter();
-        startNextAudio();
     }
 
     @Override
@@ -535,12 +500,12 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
         @Override
         public void onSkipToNext() {
-            startNextAudio();
+            BusProvider.getBus().post(new AudioControlNextEvent());
         }
 
         @Override
         public void onSkipToPrevious() {
-            startPreviousAudio();
+            BusProvider.getBus().post(new AudioControlPreviousEvent());
         }
     }
 }

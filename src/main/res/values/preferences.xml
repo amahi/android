@@ -31,12 +31,17 @@
     <string name="preference_title_account_sign_out">Sign out</string>
     <string name="preference_title_server_connection">Connection</string>
     <string name="preference_title_tell_a_friend">Tell a friend</string>
-    <string name="preference_title_upload_settings">Auto Upload</string>
+    <string name="preference_title_upload_settings">Auto Upload Photos</string>
 
     <string name="preference_title_upload_hda">HDA Server</string>
+    <string name="preference_title_upload_server">Server</string>
     <string name="preference_title_upload_share">Share</string>
     <string name="preference_title_upload_path">Path</string>
     <string name="preference_title_upload_data">Allow on Cellular Data</string>
+
+    <string name="preference_summary_server">Select Server</string>
+    <string name="preference_summary_share">Select Share</string>
+    <string name="preference_summary_path">Select Path</string>
 
 
     <string name="preference_entry_server_connection_auto">Autodetect</string>

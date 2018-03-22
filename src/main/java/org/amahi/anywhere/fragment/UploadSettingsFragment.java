@@ -39,6 +39,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 
 import com.squareup.otto.Subscribe;
@@ -111,10 +112,27 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
     private void setUpSettingsContent() {
         addPreferencesFromResource(R.xml.upload_settings);
+        setUploadPathSummary(getUploadPath());
+    }
+
+    private void setUploadPathSummary(String path){
+        if(!path.isEmpty()){
+            if(path.length()>25){
+                path = path.substring(0,21);
+                path += "...";
+            }
+            getPathPreference().setSummary(path);
+        }
     }
 
     private void setUpSettingsTitle() {
         getAutoUploadSwitchPreference().setTitle(getAutoUploadTitle(isUploadEnabled()));
+
+        if (isConnectionLocal()) {
+            getHdaPreference().setTitle(getString(R.string.preference_title_upload_server));
+        } else {
+            getHdaPreference().setTitle(getString(R.string.preference_title_upload_hda));
+        }
     }
 
     private AccountManager getAccountManager() {
@@ -157,6 +175,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
     @Subscribe
     public void onServersLoaded(ServersLoadedEvent event) {
+        if(isUploadEnabled())
         setUpServersContent(event.getServers());
     }
 
@@ -178,6 +197,8 @@ public class UploadSettingsFragment extends PreferenceFragment implements
         String session = getHdaPreference().getValue();
         if (session != null) {
             setUpServer(session);
+            String selectedServerName = getHdaPreference().getEntry().toString();
+            getHdaPreference().setSummary(selectedServerName);
         }
     }
 
@@ -200,13 +221,14 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     private String getAutoUploadTitle(boolean isUploadEnabled) {
-        return isUploadEnabled ? "Disable" : "Enable";
+        return isUploadEnabled ? "Enable" : "Disable";
     }
 
     private void setUpSettingsListeners() {
         getAutoUploadSwitchPreference().setOnPreferenceChangeListener(this);
         getHdaPreference().setOnPreferenceChangeListener(this);
         getSharePreference().setOnPreferenceChangeListener(this);
+        getPathPreference().setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -216,17 +238,32 @@ public class UploadSettingsFragment extends PreferenceFragment implements
             boolean isUploadEnabled = (boolean) newValue;
             if (isUploadEnabled) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    checkReadPermissions();
-                    return false;
+                    boolean b = checkReadPermissions();
+                    Log.d("UploadPer","value = " + b);
+                    return b;
                 }
             }
             toggleUploadSettings(isUploadEnabled);
             preference.setTitle(getAutoUploadTitle(isUploadEnabled));
         } else if (key.equals(getString(R.string.preference_key_upload_hda))) {
-            setUpServer(String.valueOf(newValue));
+            String session = String.valueOf(newValue);
+            setUpServer(session);
+            if(!session.equals(getHdaPreference().getValue())){
+                getSharePreference().setSummary(null);
+                getSharePreference().setValue(null);
+                getHdaPreference().setSummary(getHdaPreference().getEntries()[getHdaPreference().findIndexOfValue(session)]);
+            }
         } else if (key.equals(getString(R.string.preference_key_upload_share))) {
+            getSharePreference().setSummary(String.valueOf(newValue));
             getPathPreference().setEnabled(true);
             getAllowOnDataPreference().setEnabled(true);
+        }else if (key.equals(getString(R.string.preference_key_upload_path))){
+            String path = String.valueOf(newValue);
+            if(path.isEmpty()){
+                getPathPreference().setSummary("Select Path");
+            }else {
+                setUploadPathSummary(String.valueOf(newValue));
+            }
         }
         return true;
     }
@@ -269,6 +306,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        if(isUploadEnabled())
         setUpSharesContent();
     }
 
@@ -280,6 +318,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
     @Subscribe
     public void onSharesLoaded(ServerSharesLoadedEvent event) {
+        if(isUploadEnabled())
         setUpSharesContent(event.getServerShares());
     }
 
@@ -294,9 +333,17 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
         String selectedShare = getSharePreference().getValue();
         if (selectedShare != null) {
+            getSharePreference().setSummary(selectedShare);
             getPathPreference().setEnabled(true);
             getAllowOnDataPreference().setEnabled(true);
+        }else {
+            getSharePreference().setSummary("Select Share");
         }
+    }
+
+    private String getUploadPath() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return preferences.getString(getString(R.string.preference_key_upload_path),null);
     }
 
     private boolean isConnectionAvailable() {
@@ -358,7 +405,6 @@ public class UploadSettingsFragment extends PreferenceFragment implements
         getActivity().finish();
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -384,6 +430,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
         if (requestCode == READ_PERMISSIONS) {
+            getAutoUploadSwitchPreference().setChecked(true);
             toggleUploadSettings(true);
             getAutoUploadSwitchPreference().setTitle(getAutoUploadTitle(true));
         }
@@ -408,11 +455,15 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void checkReadPermissions() {
+    private boolean checkReadPermissions() {
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
         if (!EasyPermissions.hasPermissions(getContext(), perms)) {
             EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
                 READ_PERMISSIONS, perms);
+            return false;
         }
+        toggleUploadSettings(true);
+        getAutoUploadSwitchPreference().setTitle(getAutoUploadTitle(true));
+        return true;
     }
 }

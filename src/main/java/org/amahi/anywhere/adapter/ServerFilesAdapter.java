@@ -109,7 +109,6 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             public void onClick(View view) {
                 selectedPosition = fileHolder.getAdapterPosition();
                 mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-                fileHolder.itemView.setActivated(true);
             }
         });
 

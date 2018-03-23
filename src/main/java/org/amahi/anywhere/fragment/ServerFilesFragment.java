@@ -746,6 +746,10 @@ public class ServerFilesFragment extends Fragment implements
     public void onResume() {
         super.onResume();
 
+        if (!areFilesActionsAvailable()) {
+            clearFileChoices();
+        }
+
         mCastContext.addCastStateListener(this);
         BusProvider.getBus().register(this);
     }
@@ -797,7 +801,12 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public void onItemClick(View view, int filePosition) {
-        getRecyclerView().dispatchSetActivated(false);
+        clearFileChoices();
+
+        if (areFilesActionsAvailable()) {
+            view.setActivated(true);
+        }
+
         if (!areFilesActionsAvailable()) {
             collapseSearchView();
             startFileOpening(getFile(filePosition));
@@ -810,7 +819,8 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public boolean onLongItemClick(View view, int position) {
-        getRecyclerView().dispatchSetActivated(false);
+        clearFileChoices();
+
         if (!areFilesActionsAvailable()) {
             getRecyclerView().startActionMode(this);
 

@@ -36,6 +36,9 @@
     <color name="background_transparent_secondary">#80000000</color>
     <color name="primary_text_material_light">#deffffff</color>
 
+    <color name="dialog_background_color_white">#fafafa</color>
+    <color name="dialog_text_color_black">#212121</color>
+
     <!--ATV COLORS-->
     <color name="intro_1">#0277bd</color>
     <color name="intro_2">#3949ab</color>

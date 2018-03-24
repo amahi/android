@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -39,6 +40,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.format.Formatter;
 import android.util.DisplayMetrics;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -48,6 +50,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -81,10 +84,13 @@ import org.amahi.anywhere.util.RecyclerViewItemClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -260,12 +266,16 @@ public class ServerFilesFragment extends Fragment implements
             case R.id.menu_delete:
                 deleteFile(getCheckedFile(), actionMode);
                 break;
+            case R.id.menu_information:
+                showFileInformation(getCheckedFile(), actionMode);
+                break;
             default:
                 return false;
         }
 
         return true;
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkSharePermissions(ActionMode actionMode) {
@@ -337,6 +347,39 @@ public class ServerFilesFragment extends Fragment implements
             })
             .setNegativeButton(R.string.button_no, null)
             .show();
+    }
+
+    private void showFileInformation(ServerFile checkedFile, final ActionMode actionMode) {
+        final BottomSheetDialog dialofFileInfo = new BottomSheetDialog(getContext());
+        dialofFileInfo.setContentView(LayoutInflater.from(getContext())
+            .inflate(R.layout.dialog_file_information, null));
+        TextView textFileName = (TextView) dialofFileInfo.findViewById(R.id.text_file_name);
+        TextView textFileType = (TextView) dialofFileInfo.findViewById(R.id.text_file_type);
+        TextView textFileModification = (TextView) dialofFileInfo.findViewById(R.id.text_file_modification);
+        TextView textFileSize = (TextView) dialofFileInfo.findViewById(R.id.text_file_size);
+        Button btnCancel = (Button) dialofFileInfo.findViewById(R.id.btn_cancel);
+
+        textFileName.setText(checkedFile.getName());
+        textFileType.setText(checkedFile.getMime());
+        textFileModification.setText(getLocalDateTime(checkedFile.getModificationTime()));
+        textFileSize.setText(Formatter.formatFileSize(getContext(), checkedFile.getSize()));
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(dialofFileInfo != null) {
+                    dialofFileInfo.dismiss();
+                    actionMode.finish();
+
+                }
+            }
+        });
+
+        dialofFileInfo.show();
+    }
+
+    private String getLocalDateTime(Date modificationTime) {;
+        SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
+        return dt.format(modificationTime);
     }
 
     @Subscribe

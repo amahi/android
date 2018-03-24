@@ -377,7 +377,7 @@ public class ServerFilesFragment extends Fragment implements
         dialofFileInfo.show();
     }
 
-    private String getLocalDateTime(Date modificationTime) {;
+    private String getLocalDateTime(Date modificationTime) {
         SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
         return dt.format(modificationTime);
     }

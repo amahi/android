@@ -35,15 +35,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 
 import com.squareup.otto.Subscribe;
 
@@ -57,7 +58,6 @@ import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
-import org.amahi.anywhere.bus.ServerReconnectEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
@@ -83,17 +83,22 @@ import javax.inject.Inject;
  */
 public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
     OnAccountsUpdateListener,
-    AdapterView.OnItemSelectedListener,
-    SwipeRefreshLayout.OnRefreshListener {
+
+    SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     @Inject
     AmahiClient amahiClient;
     @Inject
     ServerClient serverClient;
+    View view;
+    ServersAdapter serversAdapter;
+    boolean mServerTitleClicked;
     private Intent tvIntent;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-        return layoutInflater.inflate(R.layout.fragment_navigation, container, false);
+        mServerTitleClicked = false;
+        view = layoutInflater.inflate(R.layout.fragment_navigation, container, false);
+        return view;
     }
 
     @Override
@@ -111,6 +116,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         setUpContentRefreshing();
 
         setUpServers(savedInstanceState);
+
+
     }
 
     private void launchIntro() {
@@ -206,16 +213,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         getRefreshLayout().setRefreshing(true);
         setUpServersAdapter();
         setUpServersContent(state);
+/*
         setUpServersListener();
+*/
     }
 
     private void setUpServersAdapter() {
         if (!areServersLoaded())
-            getServersSpinner().setAdapter(new ServersAdapter(getActivity()));
-    }
-
-    private Spinner getServersSpinner() {
-        return (Spinner) getView().findViewById(R.id.spinner_servers);
+            serversAdapter = new ServersAdapter(getActivity());
     }
 
     private void setUpServersContent(Bundle state) {
@@ -274,7 +279,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private ServersAdapter getServersAdapter() {
-        return (ServersAdapter) getServersSpinner().getAdapter();
+        return serversAdapter;
     }
 
     private List<Server> filterActiveServers(List<Server> servers) {
@@ -305,7 +310,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     private void setUpServers(String authenticationToken) {
         setUpServersAdapter();
         setUpServersContent(authenticationToken);
+/*
         setUpServersListener();
+*/
     }
 
     private void setUpServersContent(String authenticationToken) {
@@ -330,13 +337,18 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpNavigation() {
+
+        getNavigationListView().setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+
         setUpNavigationAdapter();
+
         setUpNavigationListener();
+
+        setUpServerSelectListener();
     }
 
     private void setUpNavigationAdapter() {
         //Setting the layout of a vertical list dynamically.
-        getNavigationListView().setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         if (!serverClient.isConnected()) {
             getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(getActivity()));
@@ -354,26 +366,72 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         return (RecyclerView) getView().findViewById(R.id.list_navigation);
     }
 
+    private LinearLayout getLinearLayoutSelectedServer() {
+        return (LinearLayout) getView().findViewById(R.id.server_select_LinearLayout);
+    }
+
+    private TextView getServerNameTextView() {
+        return (TextView) getView().findViewById(R.id.server_name);
+    }
+
     private void setUpNavigationListener() {
         getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 getNavigationListView().dispatchSetActivated(false);
+
                 view.setActivated(true);
-                switch (position) {
-                    case NavigationDrawerAdapter.NavigationItems.SHARES:
-                        BusProvider.getBus().post(new SharesSelectedEvent());
-                        break;
 
-                    case NavigationDrawerAdapter.NavigationItems.APPS:
-                        BusProvider.getBus().post(new AppsSelectedEvent());
-                        break;
-
-                    default:
-                        break;
-                }
+                performNavigationOnItemClick(position);
             }
         }));
+    }
+
+    private void performNavigationOnItemClick(int position) {
+        if (!mServerTitleClicked) {
+
+            Log.i("amahi", "Old Navigation Item Clicked.");
+
+            switch (position) {
+                case NavigationDrawerAdapter.NavigationItems.SHARES:
+                    BusProvider.getBus().post(new SharesSelectedEvent());
+                    break;
+
+                case NavigationDrawerAdapter.NavigationItems.APPS:
+                    BusProvider.getBus().post(new AppsSelectedEvent());
+                    break;
+
+                default:
+                    break;
+            }
+        } else {
+            Log.i("amahi", "New Navigation Item Clicked.");
+
+            //Changing the Title Server Name
+            getServerNameTextView().setText(getServersAdapter().getItem(position).getName());
+
+            //changing serverTitleClicked to false
+            mServerTitleClicked = false;
+
+            //set Arrow down
+            getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
+                0, 0, R.drawable.quantum_ic_keyboard_arrow_down_white_36, 0);
+
+            //setting up old navigation
+            getNavigationListView().setAdapter(null);
+            setUpServerNavigation();
+            //Setting up server
+            Server server = getServersAdapter().getItem(position);
+            setUpServerConnection(server);
+
+
+            //getting Shares of the new Server
+            BusProvider.getBus().post(new SharesSelectedEvent());
+        }
+    }
+
+    private void setUpServerSelectListener() {
+        getLinearLayoutSelectedServer().setOnClickListener(this);
     }
 
     @Subscribe
@@ -386,25 +444,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         ViewDirector.of(this, R.id.animator_content).show(R.id.layout_error);
     }
 
-    private void setUpServersListener() {
-        getServersSpinner().setOnItemSelectedListener(this);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> spinnerView) {
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> spinnerView, View view, int position, long id) {
-        Server server = getServersAdapter().getItem(position);
-
-        setUpServerConnection(server);
-    }
-
     private void setUpServerConnection(Server server) {
         if (serverClient.isConnected(server)) {
             setUpServerConnection();
-            setUpServerNavigation();
         } else {
             serverClient.connect(getContext(), server);
         }
@@ -417,12 +459,12 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (CheckTV.isATV(getContext())) launchTV();
     }
 
-    @Subscribe
+/*    @Subscribe
     public void onServerReconnectRequest(ServerReconnectEvent event) {
         Server server = (Server) getServersSpinner().getSelectedItem();
 
         setUpServerConnection(server);
-    }
+    }*/
 
     private void setUpServerConnection() {
         if (!isConnectionAvailable() || isConnectionAuto()) {
@@ -436,6 +478,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
             serverClient.connectRemote();
         }
     }
+
 
     private void launchTV() {
         startActivity(tvIntent);
@@ -529,6 +572,36 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void tearDownAuthenticationListener() {
         getAccountManager().removeOnAccountsUpdatedListener(this);
+    }
+
+    //
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.server_select_LinearLayout:
+
+                mServerTitleClicked = true;
+
+                getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
+                    0, 0, R.drawable.quantum_ic_keyboard_arrow_up_white_36, 0);
+
+                showServers();
+
+                break;
+        }
+    }
+
+    /*Sets the adapter for navigation drawer after getting server names*/
+    public void showServers() {
+        getNavigationListView().setAdapter(null);
+        getNavigationListView().setAdapter(new NavigationDrawerAdapter(getServerNames()));
+    }
+
+    public ArrayList<String> getServerNames() {
+        ArrayList<String> serverArray = new ArrayList<>();
+        for (int i = 0; i < getServersAdapter().getCount(); i++)
+            serverArray.add(getServersAdapter().getItem(i).getName());
+        return serverArray;
     }
 
     private static final class State {

@@ -145,7 +145,9 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     private void setUpHomeNavigation() {
         getSupportActionBar().setHomeButtonEnabled(isNavigationDrawerAvailable());
         getSupportActionBar().setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
+/*
         getSupportActionBar().setIcon(R.drawable.ic_launcher);
+*/
     }
 
     private boolean isNavigationDrawerAvailable() {

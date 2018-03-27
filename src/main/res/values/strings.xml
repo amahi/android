@@ -21,9 +21,12 @@
 
     <string name="application_name" translatable="false">Amahi</string>
 
+
     <string name="title_apps">Apps</string>
     <string name="title_settings">Settings</string>
     <string name="title_shares">Shares</string>
+    <string name="title_selected_server">Selected Server:</string>
+    <string name="server_name">Server Name</string>
     <string name="title_upload_list">Upload</string>
 
     <string name="button_search_application">Search Google Play</string>

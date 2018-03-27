@@ -13,6 +13,7 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
 import org.amahi.anywhere.R;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,13 +26,14 @@ import java.util.List;
 
 public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDrawerAdapter.NavigationDrawerViewHolder> {
 
+    //for selected server options
     private final List<Integer> mNavigationItems;
     private Context mContext;
 
+    //for server list
     private final ArrayList<String> mServerName;
 
-
-    //for Old Navigation List
+    //for selected server options
     private NavigationDrawerAdapter(Context context, List<Integer> navigationItems) {
         this.mNavigationItems = navigationItems;
         this.mServerName = null;
@@ -61,40 +63,44 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
         //get first letter of each String item
         String firstLetter = String.valueOf(serverList.get(position).charAt(0));
 
-        ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
-        // generate random color
-        int color = generator.getColor(serverList.get(position));
-        //int color = generator.getRandomColor();
-
+        //generate color bubble based on Server Name
         TextDrawable drawable = TextDrawable.builder()
-            .buildRound(firstLetter, color); // radius in px
+            .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(serverList.get(position)));
 
         return drawable;
     }
 
     @Override
     public void onBindViewHolder(NavigationDrawerViewHolder holder, int position) {
-
         if (mServerName != null) {
-            holder.server_bubble.setImageDrawable(getServerBubble(mServerName, position));
-            holder.titleShare.setText(mServerName.get(position));
+            setSelectedServerOptions(holder, position);
             return;
         }
+        setServerList(holder, position);
+    }
 
-        holder.titleShare.setText(getNavigationName(mContext, position));
-        holder.server_bubble.setImageResource(R.drawable.ic_app_logo_shadowless);
-        holder.server_bubble.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    private void setSelectedServerOptions(NavigationDrawerViewHolder holder, int position) {
+        getServerBubble(holder).setImageDrawable(getServerBubble(mServerName, position));
+        getTitleShare(holder).setText(mServerName.get(position));
+    }
 
+    private void setServerList(NavigationDrawerViewHolder holder, int position) {
+        getTitleShare(holder).setText(getNavigationName(mContext, position));
+        getServerBubble(holder).setImageResource(R.drawable.ic_app_logo_shadowless);
+        getServerBubble(holder).setScaleType(ImageView.ScaleType.CENTER_CROP);
+    }
 
+    private ImageView getServerBubble(NavigationDrawerViewHolder holder) {
+        return holder.server_bubble;
+    }
+
+    private TextView getTitleShare(NavigationDrawerViewHolder holder) {
+        return holder.titleShare;
     }
 
     @Override
     public int getItemCount() {
-        if (mNavigationItems != null) {
-            return mNavigationItems.size();
-        } else {
-            return mServerName.size();
-        }
+        return mNavigationItems != null ? mNavigationItems.size() : mServerName.size();
     }
 
     private String getNavigationName(Context context, int navigationItem) {

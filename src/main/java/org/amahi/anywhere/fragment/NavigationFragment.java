@@ -96,10 +96,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-        mServerTitleClicked = false;
         view = layoutInflater.inflate(R.layout.fragment_navigation, container, false);
         return view;
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -116,6 +116,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         setUpContentRefreshing();
 
         setUpServers(savedInstanceState);
+
+        setServerTitleClicked(false);
 
 
     }
@@ -166,6 +168,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         refreshLayout.setOnRefreshListener(this);
     }
 
+    private boolean getServerTitleClicked() {
+        return this.mServerTitleClicked;
+    }
+
+    private void setServerTitleClicked(boolean option) {
+        this.mServerTitleClicked = option;
+    }
+
     @Override
     public void onRefresh() {
         ViewDirector.of(this, R.id.animator_content).show(R.id.empty_view);
@@ -213,9 +223,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         getRefreshLayout().setRefreshing(true);
         setUpServersAdapter();
         setUpServersContent(state);
-/*
-        setUpServersListener();
-*/
     }
 
     private void setUpServersAdapter() {
@@ -263,8 +270,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private int findTheServer(List<Server> serverList) {
         String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), serverList.get(0).getName());
-        int i;
-        for (i = 0; i < serverList.size(); i++) {
+
+        for (int i = 0; i < serverList.size(); i++) {
             if (serverName.matches(serverList.get(i).getName()))
                 return i;
         }
@@ -310,9 +317,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     private void setUpServers(String authenticationToken) {
         setUpServersAdapter();
         setUpServersContent(authenticationToken);
-/*
-        setUpServersListener();
-*/
     }
 
     private void setUpServersContent(String authenticationToken) {
@@ -382,52 +386,59 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
                 view.setActivated(true);
 
-                performNavigationOnItemClick(position);
+                if (!getServerTitleClicked()) {
+                    selectedServerListener(position);
+                } else {
+                    selectServerListener(position);
+                }
             }
         }));
     }
 
-    private void performNavigationOnItemClick(int position) {
-        if (!mServerTitleClicked) {
+    private void selectedServerListener(int position) {
 
-            Log.i("amahi", "Old Navigation Item Clicked.");
+        switch (position) {
+            case NavigationDrawerAdapter.NavigationItems.SHARES:
+                BusProvider.getBus().post(new SharesSelectedEvent());
+                break;
 
-            switch (position) {
-                case NavigationDrawerAdapter.NavigationItems.SHARES:
-                    BusProvider.getBus().post(new SharesSelectedEvent());
-                    break;
+            case NavigationDrawerAdapter.NavigationItems.APPS:
+                BusProvider.getBus().post(new AppsSelectedEvent());
+                break;
 
-                case NavigationDrawerAdapter.NavigationItems.APPS:
-                    BusProvider.getBus().post(new AppsSelectedEvent());
-                    break;
-
-                default:
-                    break;
-            }
-        } else {
-            Log.i("amahi", "New Navigation Item Clicked.");
-
-            //Changing the Title Server Name
-            getServerNameTextView().setText(getServersAdapter().getItem(position).getName());
-
-            //changing serverTitleClicked to false
-            mServerTitleClicked = false;
-
-            //set Arrow down
-            getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
-                0, 0, R.drawable.quantum_ic_keyboard_arrow_down_white_36, 0);
-
-            //setting up old navigation
-            getNavigationListView().setAdapter(null);
-            setUpServerNavigation();
-            //Setting up server
-            Server server = getServersAdapter().getItem(position);
-            setUpServerConnection(server);
-
-
-            //getting Shares of the new Server
-            BusProvider.getBus().post(new SharesSelectedEvent());
+            default:
+                break;
         }
+    }
+
+    private void selectServerListener(int position) {
+
+        //Changing the Title Server Name
+        getServerNameTextView().setText(getServersAdapter().getItem(position).getName());
+
+        //changing serverTitleClicked to false
+        setServerTitleClicked(false);
+
+        //set Arrow down
+        getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.quantum_ic_keyboard_arrow_down_white_36, 0);
+
+        changeNavigationAdapter();
+
+        setupServer(position);
+    }
+
+    public void changeNavigationAdapter() {
+        getNavigationListView().setAdapter(null);
+        setUpServerNavigation();
+    }
+
+    public void setupServer(int position) {
+        //Setting up server
+        Server server = getServersAdapter().getItem(position);
+        setUpServerConnection(server);
+
+        //getting Shares of the new Server
+        BusProvider.getBus().post(new SharesSelectedEvent());
     }
 
     private void setUpServerSelectListener() {
@@ -458,13 +469,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         setUpServerNavigation();
         if (CheckTV.isATV(getContext())) launchTV();
     }
-
-/*    @Subscribe
-    public void onServerReconnectRequest(ServerReconnectEvent event) {
-        Server server = (Server) getServersSpinner().getSelectedItem();
-
-        setUpServerConnection(server);
-    }*/
 
     private void setUpServerConnection() {
         if (!isConnectionAvailable() || isConnectionAuto()) {
@@ -580,7 +584,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         switch (v.getId()) {
             case R.id.server_select_LinearLayout:
 
-                mServerTitleClicked = true;
+                setServerTitleClicked(true);
 
                 getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
                     0, 0, R.drawable.quantum_ic_keyboard_arrow_up_white_36, 0);

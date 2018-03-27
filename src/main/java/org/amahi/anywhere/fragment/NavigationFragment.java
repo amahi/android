@@ -420,7 +420,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         setServerTitleClicked(false);
 
         //set Arrow down
-        getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.quantum_ic_keyboard_arrow_down_white_36, 0);
+        getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.nav_arrow_down, 0);
 
         changeNavigationAdapter();
 
@@ -587,7 +587,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
                 setServerTitleClicked(true);
 
                 getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
-                    0, 0, R.drawable.quantum_ic_keyboard_arrow_up_white_36, 0);
+                    0, 0, R.drawable.nav_arrow_up, 0);
 
                 showServers();
 

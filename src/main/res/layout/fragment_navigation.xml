@@ -100,7 +100,7 @@
                         android:id="@+id/server_name"
                         android:layout_width="match_parent"
                         android:layout_height="28dp"
-                        android:drawableEnd="@drawable/quantum_ic_keyboard_arrow_down_white_36"
+                        android:drawableEnd="@drawable/nav_arrow_down"
                         android:ellipsize="end"
                         android:gravity="center_vertical"
                         android:maxLines="1"

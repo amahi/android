@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/message_no_search_result"
-            android:textSize="@dimen/text_large"
+            android:textSize="@dimen/text_extra_large"
             android:textStyle="bold"
             android:visibility="gone" />
 
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:text="@string/message_no_files"
-                android:textSize="@dimen/text_large"
+                android:textSize="@dimen/text_extra_large"
                 android:textStyle="bold" />
 
             <Space
@@ -105,7 +105,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/message_connection_error"
-            android:textSize="@dimen/text_large"
+            android:textSize="@dimen/text_extra_large"
             android:textStyle="bold" />
 
         <Space

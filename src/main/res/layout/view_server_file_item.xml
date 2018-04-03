@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textSize="@dimen/text_medium" />
+            android:textSize="@dimen/text_large" />
 
         <LinearLayout
             android:id="@+id/more_info"

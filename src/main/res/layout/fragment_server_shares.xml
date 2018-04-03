@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="@string/message_empty_shares"
-                    android:textSize="@dimen/text_large"
+                    android:textSize="@dimen/text_extra_large"
                     android:textStyle="bold" />
 
                 <Space
@@ -91,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:text="@string/message_error_connection"
-                android:textSize="@dimen/text_large"
+                android:textSize="@dimen/text_extra_large"
                 android:textStyle="bold" />
 
             <Space

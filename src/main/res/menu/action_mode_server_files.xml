@@ -32,4 +32,11 @@
         android:title="@string/menu_delete"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/menu_information"
+        android:icon="@drawable/ic_info_outline"
+        android:title="@string/menu_information"
+        app:showAsAction="ifRoom"
+        />
+
 </menu>

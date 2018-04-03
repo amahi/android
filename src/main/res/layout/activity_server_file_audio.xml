@@ -60,7 +60,7 @@
                 android:paddingLeft="32dp"
                 android:paddingRight="32dp"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/text_medium"
+                android:textSize="@dimen/text_large"
                 android:textStyle="bold" />
 
             <Space

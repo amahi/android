@@ -29,32 +29,12 @@
         android:textSize="@dimen/text_small"
         android:textColor="@color/dialog_text_color_black"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_row="1"
-        android:layout_gravity="end"
-        android:text="@string/dialog_file_type"
-        android:textSize="@dimen/text_small"
-        android:textColor="@color/dialog_text_title_color_grey"/>
-
-    <TextView
-        android:id="@+id/text_file_type"
-        android:layout_width="0dp"
-        android:layout_gravity="fill_horizontal"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_row="1"
-        android:layout_marginStart="@dimen/margin_large"
-        android:textSize="@dimen/text_small"
-        android:textColor="@color/dialog_text_color_black"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_column="0"
-        android:layout_row="2"
+        android:layout_row="1"
         android:layout_gravity="end"
         android:text="@string/dialog_file_modification"
         android:textSize="@dimen/text_small"
@@ -66,7 +46,7 @@
         android:layout_gravity="fill_horizontal"
         android:layout_height="wrap_content"
         android:layout_column="1"
-        android:layout_row="2"
+        android:layout_row="1"
         android:layout_marginStart="@dimen/margin_large"
         android:textSize="@dimen/text_small"
         android:textColor="@color/dialog_text_color_black"/>
@@ -75,7 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_column="0"
-        android:layout_row="3"
+        android:layout_row="2"
         android:layout_gravity="end"
         android:text="@string/dialog_file_size"
         android:textSize="@dimen/text_small"
@@ -87,7 +67,7 @@
         android:layout_gravity="fill_horizontal"
         android:layout_height="wrap_content"
         android:layout_column="1"
-        android:layout_row="3"
+        android:layout_row="2"
         android:layout_marginStart="@dimen/margin_large"
         android:textSize="@dimen/text_small"
         android:textColor="@color/dialog_text_color_black"/>

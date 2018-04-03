@@ -354,12 +354,10 @@ public class ServerFilesFragment extends Fragment implements
         dialofFileInfo.setContentView(LayoutInflater.from(getContext())
             .inflate(R.layout.dialog_file_information, null));
         TextView textFileName = (TextView) dialofFileInfo.findViewById(R.id.text_file_name);
-        TextView textFileType = (TextView) dialofFileInfo.findViewById(R.id.text_file_type);
         TextView textFileModification = (TextView) dialofFileInfo.findViewById(R.id.text_file_modification);
         TextView textFileSize = (TextView) dialofFileInfo.findViewById(R.id.text_file_size);
 
         textFileName.setText(checkedFile.getName());
-        textFileType.setText(checkedFile.getMime());
         textFileModification.setText(getLocalDateTime(checkedFile.getModificationTime()));
         textFileSize.setText(Formatter.formatFileSize(getContext(), checkedFile.getSize()));
 

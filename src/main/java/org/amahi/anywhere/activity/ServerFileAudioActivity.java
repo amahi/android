@@ -490,6 +490,9 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
         BusProvider.getBus().register(this);
 
+        if (isAudioServiceAvailable()) {
+            audioPosition = audioService.getAudioFilePosition();
+        }
         setUpAudioMetadata();
     }
 

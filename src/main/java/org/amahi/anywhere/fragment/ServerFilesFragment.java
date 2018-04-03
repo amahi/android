@@ -357,20 +357,18 @@ public class ServerFilesFragment extends Fragment implements
         TextView textFileType = (TextView) dialofFileInfo.findViewById(R.id.text_file_type);
         TextView textFileModification = (TextView) dialofFileInfo.findViewById(R.id.text_file_modification);
         TextView textFileSize = (TextView) dialofFileInfo.findViewById(R.id.text_file_size);
-        Button btnCancel = (Button) dialofFileInfo.findViewById(R.id.btn_cancel);
 
         textFileName.setText(checkedFile.getName());
         textFileType.setText(checkedFile.getMime());
         textFileModification.setText(getLocalDateTime(checkedFile.getModificationTime()));
         textFileSize.setText(Formatter.formatFileSize(getContext(), checkedFile.getSize()));
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(dialofFileInfo != null) {
-                    dialofFileInfo.dismiss();
-                    actionMode.finish();
 
-                }
+        dialofFileInfo.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                dialofFileInfo.dismiss();
+                actionMode.finish();
+
             }
         });
 

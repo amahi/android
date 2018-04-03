@@ -152,10 +152,10 @@
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
 
     <!--Dialog File Info-->
-    <string name="dialog_file_name">Name:</string>
-    <string name="dialog_file_type">File Type:</string>
-    <string name="dialog_file_modification">Modified:</string>
-    <string name="dialog_file_size">Size:</string>
+    <string name="dialog_file_name">Name</string>
+    <string name="dialog_file_type">File Type</string>
+    <string name="dialog_file_modification">Modified</string>
+    <string name="dialog_file_size">Size</string>
     <string name="dialog_cancel">Cancel</string>
 
 </resources>

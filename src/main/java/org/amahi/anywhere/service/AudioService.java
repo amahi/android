@@ -221,7 +221,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private void setUpAudioMetadata() {
         // Clear any previous metadata
         tearDownAudioMetadataFormatter();
-//        // Start fetching new metadata in the background
+        // Start fetching new metadata in the background
         AudioMetadataRetrievingTask
             .newInstance(this, getAudioUri(), audioFile)
             .execute();

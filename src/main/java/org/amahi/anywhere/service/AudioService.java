@@ -315,22 +315,27 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     @Subscribe
-    public void onAudioControlNext(AudioControlNextEvent event){
+    public void onAudioControlNext(AudioControlNextEvent event) {
         startChangedAudio(getNextAudioPosition());
     }
 
     @Subscribe
-    public void onAudioControlPrev(AudioControlPreviousEvent event){
+    public void onAudioControlPrev(AudioControlPreviousEvent event) {
         startChangedAudio(getPreviousAudioPosition());
+    }
+
+    @Subscribe
+    public void onAudioCompleted(AudioCompletedEvent event) {
+        startChangedAudio(getNextAudioPosition());
     }
 
     private int getNextAudioPosition() {
         int currentPosition = getAudioFilePosition();
 
-        if (currentPosition == audioFiles.size()-1) {
+        if (currentPosition == audioFiles.size() - 1) {
             return 0;
         } else {
-            return currentPosition+1;
+            return currentPosition + 1;
         }
     }
 
@@ -338,9 +343,9 @@ public class AudioService extends MediaBrowserServiceCompat implements
         int currentPosition = getAudioFilePosition();
 
         if (currentPosition == 0) {
-            return audioFiles.size()-1;
+            return audioFiles.size() - 1;
         } else {
-            return currentPosition-1;
+            return currentPosition - 1;
         }
     }
 

@@ -33,15 +33,17 @@
     <string name="preference_title_tell_a_friend">Tell a friend</string>
     <string name="preference_title_upload_settings">Auto Upload Photos</string>
 
-    <string name="preference_title_upload_hda">HDA Server</string>
     <string name="preference_title_upload_server">Server</string>
     <string name="preference_title_upload_share">Share</string>
-    <string name="preference_title_upload_path">Path</string>
+    <string name="preference_title_upload_location">Location</string>
     <string name="preference_title_upload_data">Allow on Cellular Data</string>
 
     <string name="preference_summary_server">Select Server</string>
     <string name="preference_summary_share">Select Share</string>
-    <string name="preference_summary_path">Select Path</string>
+    <string name="preference_summary_location">Select Location</string>
+
+    <string name="preference_message_no_server">"No Server is selected"</string>
+    <string name="preference_message_no_share">"No Share is selected"</string>
 
 
     <string name="preference_entry_server_connection_auto">Autodetect</string>
@@ -61,9 +63,9 @@
     <string name="preference_screen_key_upload" translatable="false">auto_upload_screen</string>
 
     <string name="preference_key_upload_switch">auto_upload_switch</string>
-    <string name="preference_key_upload_hda">auto_upload_hda</string>
+    <string name="preference_key_upload_server">auto_upload_server</string>
     <string name="preference_key_upload_share">auto_upload_share</string>
-    <string name="preference_key_upload_path">auto_upload_path</string>
+    <string name="preference_key_upload_location">auto_upload_location</string>
     <string name="preference_key_upload_data">auto_upload_data</string>
 
     <string-array name="preference_entries_server_connection" translatable="false">

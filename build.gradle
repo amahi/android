@@ -145,7 +145,7 @@ dependencies {
     androidTestImplementation 'com.android.support:support-annotations:25.4.0'
     compileOnly 'com.squareup.dagger:dagger-compiler:1.2.5'
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
-
+    implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
     // Uncomment the dependencies below to enable Chuck Interceptor for logging
 /*
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'

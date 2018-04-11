@@ -134,7 +134,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private void setUpCast() {
         mCastContext = CastContext.getSharedInstance(this);
         mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
-        if (mCastSession != null && mCastSession.isConnected()) {
+        if (isCastConnected()) {
             mLocation = PlaybackLocation.REMOTE;
         }
     }
@@ -175,15 +175,12 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     public void onPageSelected(int position) {
         setUpAudioTitle(getAudioFiles().get(position));
         if (changeAudio) {
-            boolean isPlaying = false;
+            boolean isPlaying;
             if (audioService != null) {
                 isPlaying = audioService.isAudioStarted();
                 if (isPlaying) {
                     audioService.pauseAudio();
                 }
-            }
-            if (isCastConnected()) {
-                loadRemoteMedia(position, isPlaying);
             }
             BusProvider.getBus().post(new AudioControlChangeEvent(position));
         }
@@ -288,7 +285,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         setUpAudioPlayback();
 
         changeAudio = false;
-        getAudioPager().setCurrentItem(audioService.getAudioPosition());
+        getAudioPager().setCurrentItem(audioService.getAudioPosition(), false);
         changeAudio = true;
     }
 
@@ -464,10 +461,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     @Override
     public int getAudioSessionId() {
-//        MediaController.MediaPlayerControl playerControl=new MediaController(ExoPlayer.);
-//
-//        int audioSessionId = playerControl.getAudioSessionId();
-//        return audioService.getAudioPlayer().getAudioSessionId();
         return 0;
     }
 

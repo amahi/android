@@ -214,7 +214,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private void setUpAudioPlayback() {
         MediaSource mediaSource = buildMediaSource(getAudioUri());
         audioPlayer.prepare(mediaSource, true, false);
-        audioPlayer.setPlayWhenReady(true);
+        playAudio();
     }
 
     private Uri getAudioUri() {
@@ -351,7 +351,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
         int audioPosition = audioFiles.indexOf(audioFile);
 
         if (audioPosition == 0) {
-            audioPosition = audioFiles.size() - 1;
+            audioPosition = audioFiles.size();
         }
         return audioFiles.get(audioPosition - 1);
     }

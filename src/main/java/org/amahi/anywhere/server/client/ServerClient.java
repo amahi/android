@@ -210,8 +210,7 @@ public class ServerClient {
         }
         this.serverAddress = serverRoute.getLocalAddress();
         this.serverApi = buildServerApi();
-        BusProvider.getBus().post(new ServerConnectionDetectedEvent(serverRoute.getLocalAddress()));
-
+        finishServerConnectionDetection();
     }
 
     public void connectRemote() {
@@ -221,7 +220,7 @@ public class ServerClient {
         }
         this.serverAddress = serverRoute.getRemoteAddress();
         this.serverApi = buildServerApi();
-        BusProvider.getBus().post(new ServerConnectionDetectedEvent(serverRoute.getRemoteAddress()));
+        finishServerConnectionDetection();
     }
 
     public String getServerAddress() {

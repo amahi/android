@@ -42,6 +42,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -76,6 +77,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
+import org.amahi.anywhere.util.Identifier;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.MediaNotificationManager;
 
@@ -154,8 +156,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     private void setUpAudioPlayer() {
         audioPlayer =
-            ExoPlayerFactory.newSimpleInstance(
-                getApplicationContext(), new DefaultTrackSelector(), new DefaultLoadControl());
+            ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(this), new DefaultTrackSelector(), new DefaultLoadControl());
         audioPlayer.addListener(this);
         audioPlayer.setPlayWhenReady(true);
         audioPlayer.setVolume(1.0f);
@@ -163,7 +164,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     private MediaSource buildMediaSource(Uri uri) {
         return new ExtractorMediaSource.Factory(
-            new DefaultHttpDataSourceFactory(getString(R.string.application_name)))
+            new DefaultHttpDataSourceFactory(Identifier.getUserAgent(this)))
             .createMediaSource(uri);
     }
 

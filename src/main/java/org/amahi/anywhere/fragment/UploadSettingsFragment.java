@@ -82,6 +82,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     ServerClient serverClient;
 
     private String authenticationToken;
+    private ArrayList<Server> activeServers;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,12 +106,23 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     private void setUpSettings() {
         setUpSettingsContent();
         setUpSettingsTitle();
-        toggleUploadSettings(isUploadEnabled());
+        setUpAuthenticationToken();
         setUpSettingsListeners();
     }
 
     private void setUpSettingsContent() {
         addPreferencesFromResource(R.xml.upload_settings);
+        setUploadLocationSummary(getUploadLocation());
+    }
+
+    private void setUploadLocationSummary(String location) {
+        if (!location.isEmpty()) {
+            if (location.length() > 25) {
+                location = location.substring(0, 21);
+                location += "...";
+            }
+            getLocationPreference().setSummary(location);
+        }
     }
 
     private void setUpSettingsTitle() {
@@ -161,7 +173,8 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     private void setUpServersContent(List<Server> servers) {
-        ArrayList<Server> activeServers = filterActiveServers(servers);
+
+        activeServers = filterActiveServers(servers);
         String[] serverNames = new String[activeServers.size()];
         String[] serverSessions = new String[activeServers.size()];
 
@@ -177,7 +190,12 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
         String session = getHdaPreference().getValue();
         if (session != null) {
-            setUpServer(session);
+            Server server = getServer(session);
+            if (server != null) {
+                setUpServer(server);
+                String selectedServerName = getHdaPreference().getEntry().toString();
+                getHdaPreference().setSummary(selectedServerName);
+            }
         }
     }
 
@@ -193,6 +211,17 @@ public class UploadSettingsFragment extends PreferenceFragment implements
         return activeServers;
     }
 
+    private Server getServer(String session) {
+
+        // for working with debug server
+        for (Server server : activeServers) {
+            if (server.getSession().equals(session)) {
+                return server;
+            }
+        }
+        return null;
+    }
+
     private boolean isUploadEnabled() {
         PreferenceManager preferenceManager = getPreferenceManager();
         return preferenceManager.getSharedPreferences()
@@ -200,13 +229,14 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     private String getAutoUploadTitle(boolean isUploadEnabled) {
-        return isUploadEnabled ? "Disable" : "Enable";
+        return isUploadEnabled ? "Enable" : "Disable";
     }
 
     private void setUpSettingsListeners() {
         getAutoUploadSwitchPreference().setOnPreferenceChangeListener(this);
         getHdaPreference().setOnPreferenceChangeListener(this);
         getSharePreference().setOnPreferenceChangeListener(this);
+        getLocationPreference().setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -216,27 +246,50 @@ public class UploadSettingsFragment extends PreferenceFragment implements
             boolean isUploadEnabled = (boolean) newValue;
             if (isUploadEnabled) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    checkReadPermissions();
-                    return false;
+                    return checkReadPermissions() && areSettingsValid();
                 }
             }
-            toggleUploadSettings(isUploadEnabled);
             preference.setTitle(getAutoUploadTitle(isUploadEnabled));
-        } else if (key.equals(getString(R.string.preference_key_upload_hda))) {
-            setUpServer(String.valueOf(newValue));
+        } else if (key.equals(getString(R.string.preference_key_upload_server))) {
+            String session = String.valueOf(newValue);
+
+            setUpServer(getServer(session));
+            if (!session.equals(getHdaPreference().getValue())) {
+                getSharePreference().setSummary(getString(R.string.preference_summary_share));
+                getAutoUploadSwitchPreference().setChecked(false);
+                getAutoUploadSwitchPreference().setTitle(getAutoUploadTitle(isUploadEnabled()));
+                getSharePreference().setValue(null);
+                getHdaPreference().setSummary(getHdaPreference().getEntries()[getHdaPreference().findIndexOfValue(session)]);
+                getSharePreference().setEnabled(false);
+            }
         } else if (key.equals(getString(R.string.preference_key_upload_share))) {
-            getPathPreference().setEnabled(true);
-            getAllowOnDataPreference().setEnabled(true);
+            getSharePreference().setSummary(String.valueOf(newValue));
+        } else if (key.equals(getString(R.string.preference_key_upload_location))) {
+            String location = String.valueOf(newValue);
+            if (location.isEmpty()) {
+                getLocationPreference().setSummary(getString(R.string.preference_summary_location));
+            } else {
+                setUploadLocationSummary(String.valueOf(newValue));
+            }
         }
         return true;
     }
 
-    private void setUpServer(String session) {
-        getSharePreference().setEnabled(false);
-        getPathPreference().setEnabled(false);
-        getAllowOnDataPreference().setEnabled(false);
+    private boolean areSettingsValid() {
+        if (getHdaPreference().getValue() == null) {
+            Snackbar.make(getView(), getString(R.string.preference_message_no_server), Snackbar.LENGTH_SHORT).show();
+            return false;
+        }
 
-        Server server = new Server(session);
+        if (getSharePreference().getValue() == null) {
+            Snackbar.make(getView(), getString(R.string.preference_message_no_share), Snackbar.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void setUpServer(Server server) {
         setUpServerConnection(server);
     }
 
@@ -266,7 +319,6 @@ public class UploadSettingsFragment extends PreferenceFragment implements
         }
     }
 
-
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
         setUpSharesContent();
@@ -294,9 +346,15 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
         String selectedShare = getSharePreference().getValue();
         if (selectedShare != null) {
-            getPathPreference().setEnabled(true);
-            getAllowOnDataPreference().setEnabled(true);
+            getSharePreference().setSummary(selectedShare);
+        } else {
+            getSharePreference().setSummary(getString(R.string.preference_summary_share));
         }
+    }
+
+    private String getUploadLocation() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return preferences.getString(getString(R.string.preference_key_upload_location), null);
     }
 
     private boolean isConnectionAvailable() {
@@ -319,17 +377,6 @@ public class UploadSettingsFragment extends PreferenceFragment implements
         return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
     }
 
-    private void toggleUploadSettings(boolean isUploadEnabled) {
-        if (isUploadEnabled) {
-            setUpAuthenticationToken();
-        } else {
-            getHdaPreference().setEnabled(false);
-            getSharePreference().setEnabled(false);
-            getPathPreference().setEnabled(false);
-            getAllowOnDataPreference().setEnabled(false);
-        }
-    }
-
     private Preference getPreference(int id) {
         return findPreference(getString(id));
     }
@@ -339,25 +386,20 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     private ListPreference getHdaPreference() {
-        return (ListPreference) getPreference(R.string.preference_key_upload_hda);
+        return (ListPreference) getPreference(R.string.preference_key_upload_server);
     }
 
     private ListPreference getSharePreference() {
         return (ListPreference) getPreference(R.string.preference_key_upload_share);
     }
 
-    private EditTextPreference getPathPreference() {
-        return (EditTextPreference) getPreference(R.string.preference_key_upload_path);
-    }
-
-    private SwitchPreference getAllowOnDataPreference() {
-        return (SwitchPreference) getPreference(R.string.preference_key_upload_data);
+    private EditTextPreference getLocationPreference() {
+        return (EditTextPreference) getPreference(R.string.preference_key_upload_location);
     }
 
     private void tearDownActivity() {
         getActivity().finish();
     }
-
 
     @Override
     public void onResume() {
@@ -384,8 +426,10 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
         if (requestCode == READ_PERMISSIONS) {
-            toggleUploadSettings(true);
-            getAutoUploadSwitchPreference().setTitle(getAutoUploadTitle(true));
+            if (areSettingsValid()) {
+                getAutoUploadSwitchPreference().setChecked(true);
+                getAutoUploadSwitchPreference().setTitle(getAutoUploadTitle(true));
+            }
         }
     }
 
@@ -408,11 +452,19 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void checkReadPermissions() {
+    private boolean checkReadPermissions() {
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
         if (!EasyPermissions.hasPermissions(getContext(), perms)) {
             EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
                 READ_PERMISSIONS, perms);
+            return false;
         }
+
+        if (areSettingsValid()) {
+            getAutoUploadSwitchPreference().setTitle(getAutoUploadTitle(true));
+            return true;
+        }
+
+        return false;
     }
 }

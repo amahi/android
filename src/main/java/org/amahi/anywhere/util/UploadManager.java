@@ -109,7 +109,7 @@ public class UploadManager {
 
     private String getUploadPath() {
         return PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(context.getString(R.string.preference_key_upload_path), null);
+            .getString(context.getString(R.string.preference_key_upload_location), null);
     }
 
 

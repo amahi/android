@@ -316,17 +316,17 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Subscribe
     public void onAudioControlNext(AudioControlNextEvent event) {
-        startChangedAudio(getNextAudioPosition());
+        BusProvider.getBus().post(new AudioControlChangeEvent(getNextAudioPosition()));
     }
 
     @Subscribe
     public void onAudioControlPrev(AudioControlPreviousEvent event) {
-        startChangedAudio(getPreviousAudioPosition());
+        BusProvider.getBus().post(new AudioControlChangeEvent(getPreviousAudioPosition()));
     }
 
     @Subscribe
     public void onAudioCompleted(AudioCompletedEvent event) {
-        startChangedAudio(getNextAudioPosition());
+        BusProvider.getBus().post(new AudioControlChangeEvent(getNextAudioPosition()));
     }
 
     private int getNextAudioPosition() {

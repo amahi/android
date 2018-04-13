@@ -311,7 +311,9 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Subscribe
     public void onAudioControlChange(AudioControlChangeEvent event) {
-        startChangedAudio(event.getPosition());
+        if (audioFile != getChangedAudioFile(event.getPosition())) {
+            startChangedAudio(event.getPosition());
+        }
     }
 
     @Subscribe

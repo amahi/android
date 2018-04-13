@@ -104,6 +104,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private AudioService audioService;
     private AudioControls audioControls;
     private int audioPosition;
+    private boolean resumeAudioPlay = false;
 
     public static boolean supports(String mime_type) {
         return SUPPORTED_FORMATS.contains(mime_type);
@@ -176,16 +177,24 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     public void onPageSelected(int position) {
         this.audioPosition = position;
         boolean isPlaying = false;
-        if (audioService != null) {
+
+        if (isAudioServiceAvailable()) {
             isPlaying = audioService.isAudioStarted();
             if (isPlaying) {
-                audioService.pauseAudio();
+                setUpAudioTitle();
+                if (!resumeAudioPlay) {
+                    audioService.pauseAudio();
+                }
             }
         }
         if (isCastConnected()) {
             loadRemoteMedia(position, isPlaying);
         }
-        BusProvider.getBus().post(new AudioControlChangeEvent(position));
+        if (!resumeAudioPlay) {
+            BusProvider.getBus().post(new AudioControlChangeEvent(position));
+        }
+
+        resumeAudioPlay = false;
     }
 
     private boolean isCastConnected() {
@@ -222,7 +231,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-        if (audioService != null) {
+        if (isAudioServiceAvailable()) {
             ServerFile audioFile = audioService.getAudioFile();
             if (audioFile != null && audioFile == event.getServerFile()) {
                 final AudioMetadata metadata = event.getAudioMetadata();
@@ -490,7 +499,20 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
         BusProvider.getBus().register(this);
 
+        setUpAudioOnResume();
+    }
+
+    private void setUpAudioOnResume() {
+        if (isAudioServiceAvailable() && audioPosition != audioService.getAudioFilePosition()) {
+            resumeAudioPlay = true;
+            audioPosition = audioService.getAudioFilePosition();
+        }
+
         setUpAudioMetadata();
+
+        if (isAudioServiceAvailable()) {
+            getAudioPager().setCurrentItem(audioPosition);
+        }
     }
 
     private void showAudioControlsForced() {
@@ -614,7 +636,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         mCastSession = castSession;
         boolean isPlaying = false;
         int position = 0;
-        if (audioService != null) {
+        if (isAudioServiceAvailable()) {
             isPlaying = audioService.isAudioStarted();
             if (isPlaying) {
                 audioService.pauseAudio();

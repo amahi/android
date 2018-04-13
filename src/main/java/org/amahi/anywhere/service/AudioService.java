@@ -221,7 +221,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private void setUpAudioMetadata() {
         // Clear any previous metadata
         tearDownAudioMetadataFormatter();
-//        // Start fetching new metadata in the background
+        // Start fetching new metadata in the background
         AudioMetadataRetrievingTask
             .newInstance(this, getAudioUri(), audioFile)
             .execute();
@@ -274,6 +274,10 @@ public class AudioService extends MediaBrowserServiceCompat implements
         return audioFile;
     }
 
+    public int getAudioFilePosition() {
+        return audioFiles.indexOf(audioFile);
+    }
+
     public AudioMetadataFormatter getAudioMetadataFormatter() {
         return audioMetadataFormatter;
     }
@@ -307,7 +311,44 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Subscribe
     public void onAudioControlChange(AudioControlChangeEvent event) {
-        startChangedAudio(event.getPosition());
+        if (audioFile != getChangedAudioFile(event.getPosition())) {
+            startChangedAudio(event.getPosition());
+        }
+    }
+
+    @Subscribe
+    public void onAudioControlNext(AudioControlNextEvent event) {
+        BusProvider.getBus().post(new AudioControlChangeEvent(getNextAudioPosition()));
+    }
+
+    @Subscribe
+    public void onAudioControlPrev(AudioControlPreviousEvent event) {
+        BusProvider.getBus().post(new AudioControlChangeEvent(getPreviousAudioPosition()));
+    }
+
+    @Subscribe
+    public void onAudioCompleted(AudioCompletedEvent event) {
+        BusProvider.getBus().post(new AudioControlChangeEvent(getNextAudioPosition()));
+    }
+
+    private int getNextAudioPosition() {
+        int currentPosition = getAudioFilePosition();
+
+        if (currentPosition == audioFiles.size() - 1) {
+            return 0;
+        } else {
+            return currentPosition + 1;
+        }
+    }
+
+    private int getPreviousAudioPosition() {
+        int currentPosition = getAudioFilePosition();
+
+        if (currentPosition == 0) {
+            return audioFiles.size() - 1;
+        } else {
+            return currentPosition - 1;
+        }
     }
 
     public void playAudio() {

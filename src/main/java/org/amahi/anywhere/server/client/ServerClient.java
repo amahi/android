@@ -222,6 +222,7 @@ public class ServerClient {
         }
         this.serverAddress = serverRoute.getLocalAddress();
         this.serverApi = buildServerApi();
+        finishServerConnectionDetection();
     }
 
     public void connectRemote() {
@@ -231,6 +232,7 @@ public class ServerClient {
         }
         this.serverAddress = serverRoute.getRemoteAddress();
         this.serverApi = buildServerApi();
+        finishServerConnectionDetection();
     }
 
     public String getServerAddress() {

@@ -456,6 +456,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     @Subscribe
     public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent event) {
 
+        if(uploadDialogFragment.isAdded())
         uploadDialogFragment.dismiss();
         if (event.wasUploadSuccessful()) {
             Fragments.Operator.at(this).replace(buildFilesFragment(getShare(), file), R.id.container_files);

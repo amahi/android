@@ -45,15 +45,13 @@
     <PreferenceCategory android:title="@string/preference_category_about">
 
 
-
         <Preference
             android:key="@string/preference_key_about_version"
             android:title="@string/preference_title_about_version" />
 
         <Preference
             android:key="@string/preference_key_about_intro"
-            android:title="@string/preference_title_about_intro"
-            />
+            android:title="@string/preference_title_about_intro" />
 
         <Preference
             android:key="@string/preference_key_about_feedback"

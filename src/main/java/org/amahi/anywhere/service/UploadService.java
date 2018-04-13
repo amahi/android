@@ -204,7 +204,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
     private Server getUploadServer() {
         String session = PreferenceManager.getDefaultSharedPreferences(this)
-            .getString(getString(R.string.preference_key_upload_hda), null);
+            .getString(getString(R.string.preference_key_upload_server), null);
         if (session != null) {
             return new Server(session);
         } else {

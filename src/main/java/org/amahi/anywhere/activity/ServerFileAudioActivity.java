@@ -141,9 +141,9 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void setUpAudio() {
-        setUpAudioTitle();
         setUpAudioAdapter();
         setUpAudioPosition();
+        setUpAudioTitle();
         setUpAudioListener();
     }
 

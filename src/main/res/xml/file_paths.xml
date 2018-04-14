@@ -2,8 +2,8 @@
 <paths>
     <external-path
         name="user_images"
-        path="Android/data/org.amahi.anywhere/files/Pictures"/>
+        path="Android/data/org.amahi.anywhere/files/Pictures" />
     <external-path
         name="user_downloads"
-        path="Android/data/org.amahi.anywhere/files/Download"/>
+        path="Android/data/org.amahi.anywhere/files/Download" />
 </paths>

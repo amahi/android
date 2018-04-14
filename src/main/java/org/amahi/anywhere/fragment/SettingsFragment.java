@@ -288,6 +288,9 @@ public class SettingsFragment extends PreferenceFragment implements
 
         setUpSettingsPreferenceListener();
         setUpTitle();
+
+        // for updating Auto Upload Title
+        getPreference(R.string.preference_screen_key_upload).setSummary(getAutoUploadSummary());
     }
 
     private void setUpSettingsPreferenceListener() {

@@ -241,6 +241,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private void setUpAudioMetadata(AudioMetadataFormatter audioMetadataFormatter) {
         getAudioTitleView().setText(audioMetadataFormatter.getAudioTitle(audioService.getAudioFile()));
         getAudioSubtitleView().setText(audioMetadataFormatter.getAudioSubtitle(getShare()));
+        showAudioMetadata();
     }
 
     private ServerShare getShare() {
@@ -506,13 +507,17 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void setUpAudioMetadata() {
-        if (!isAudioServiceAvailable() || audioService.getAudioMetadataFormatter() == null) {
+        if (!isAudioServiceAvailable()) {
             return;
         }
 
-        metadataFormatter = audioService.getAudioMetadataFormatter();
-        tearDownAudioMetadata();
-        setUpAudioMetadata(audioService.getAudioMetadataFormatter());
+        if (audioService.isAudioStarted()) {
+            showAudio();
+        }
+
+        if (audioService.getAudioMetadataFormatter() != null) {
+            setUpAudioMetadata(audioService.getAudioMetadataFormatter());
+        }
     }
 
     private boolean isAudioServiceAvailable() {

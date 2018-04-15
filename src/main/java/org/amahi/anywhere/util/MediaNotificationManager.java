@@ -73,13 +73,17 @@ public class MediaNotificationManager extends BroadcastReceiver {
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
             mPlaybackState = state;
             Log.d(TAG, "Received new playback state");
-            if (state.getState() == PlaybackStateCompat.STATE_STOPPED ||
-                state.getState() == PlaybackStateCompat.STATE_NONE) {
+            if (state.getState() == PlaybackStateCompat.STATE_STOPPED
+                || state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
             } else {
                 Notification notification = createNotification();
                 if (notification != null) {
                     mNotificationManager.notify(NOTIFICATION_ID, notification);
+                }
+
+                if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
+                    pauseNotification();
                 }
             }
         }
@@ -172,12 +176,19 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
     }
 
+    private void pauseNotification() {
+        if (mStarted) {
+            mService.stopForeground(false);
+        }
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
         switch (action) {
             case ACTION_PAUSE:
                 mTransportControls.pause();
+                pauseNotification();
                 break;
             case ACTION_PLAY:
                 mTransportControls.play();
@@ -192,6 +203,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 Log.w(TAG, "Unknown intent ignored. Action=" + action);
         }
     }
+
 
     /**
      * Update the state based on a change on the session token. Called either when

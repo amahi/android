@@ -35,6 +35,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -406,6 +407,16 @@ public class ServerFilesFragment extends Fragment implements
                 getRecyclerView().setLayoutManager(new GridLayoutManager(getActivity(), 2));
             }
         }
+
+        addListItemDivider();
+    }
+
+    private void addListItemDivider() {
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
+            getRecyclerView().getContext(),
+            DividerItemDecoration.VERTICAL);
+
+        getRecyclerView().addItemDecoration(dividerItemDecoration);
     }
 
     public int calculateNoOfColumns(Context context) {

@@ -16,7 +16,6 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -54,7 +53,9 @@ public class ServerFileAudioFragment extends Fragment {
     private void setUpAudioMetadata() {
         AudioMetadataRetrievingTask
             .newInstance(getActivity(), getAudioUri(), getFile())
+            .setImageView(getImageView())
             .execute();
+        ;
     }
 
     private Uri getAudioUri() {
@@ -63,21 +64,12 @@ public class ServerFileAudioFragment extends Fragment {
 
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-        ServerFile audioFile = getFile();
-        if (audioFile != null && audioFile == event.getServerFile()) {
-            AudioMetadata metadata = event.getAudioMetadata();
-            setupImage(metadata.getAudioAlbumArt());
+        ImageView imageView = event.getImageView();
+        Bitmap bitmap = event.getAudioMetadata().getAudioAlbumArt();
+        if (bitmap != null && imageView != null) {
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setImageBitmap(bitmap);
         }
-    }
-
-    private void setupImage(Bitmap audioAlbumArt) {
-        if (audioAlbumArt == null) {
-            audioAlbumArt = BitmapFactory.decodeResource(getResources(), R.drawable.default_audiotrack);
-            getImageView().setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        } else {
-            getImageView().setScaleType(ImageView.ScaleType.CENTER_CROP);
-        }
-        getImageView().setImageBitmap(audioAlbumArt);
     }
 
     @Override

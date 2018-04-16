@@ -19,7 +19,7 @@ public class SeekView {
         LayoutInflater inflater = (LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(R.layout.seek_view, viewGroup, false);
         view.requestLayout();
-        textView = (TextView) view.findViewById(R.id.seek_value);
+        textView = view.findViewById(R.id.seek_value);
     }
 
     public View getView() {

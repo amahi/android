@@ -23,7 +23,6 @@ import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
-import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -64,12 +63,7 @@ public class FullScreenHelper {
                 mControlsView.setVisibility(View.VISIBLE);
         }
     };
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };
+    private final Runnable mHideRunnable = this::hide;
 
     public FullScreenHelper(ActionBar actionBar, @NonNull View contentView) {
         setActionBar(actionBar);
@@ -112,26 +106,18 @@ public class FullScreenHelper {
 
         if (onClickToggleEnabled) {
             // Toggle hide/show on click
-            mContentView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    toggle();
-                }
-            });
+            mContentView.setOnClickListener(view -> toggle());
         }
 
         if (mControlsView != null) {
             // Upon interacting with UI controls, delay any scheduled hide()
             // operations to prevent the jarring behavior of controls going away
             // while interacting with the UI.
-            mControlsView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    if (autoHide) {
-                        delayedHide();
-                    }
-                    return false;
+            mControlsView.setOnTouchListener((view, motionEvent) -> {
+                if (autoHide) {
+                    delayedHide();
                 }
+                return false;
             });
         }
     }

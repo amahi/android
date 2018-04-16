@@ -20,7 +20,6 @@
 package org.amahi.anywhere.activity;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -60,8 +59,6 @@ import javax.inject.Inject;
  * Backed up by {@link android.media.MediaPlayer}.
  */
 public class NativeVideoActivity extends AppCompatActivity implements
-    MediaPlayer.OnPreparedListener,
-    MediaPlayer.OnCompletionListener,
     SessionManagerListener<CastSession> {
 
     private static final Set<String> SUPPORTED_FORMATS;
@@ -145,7 +142,7 @@ public class NativeVideoActivity extends AppCompatActivity implements
     }
 
     private FrameLayout getVideoMainFrame() {
-        return (FrameLayout) findViewById(R.id.video_main_frame);
+        return findViewById(R.id.video_main_frame);
     }
 
     private View getControlsContainer() {
@@ -153,14 +150,20 @@ public class NativeVideoActivity extends AppCompatActivity implements
     }
 
     private ProgressBar getProgressBar() {
-        return (ProgressBar) findViewById(android.R.id.progress);
+        return findViewById(android.R.id.progress);
     }
 
     private void setUpVideoView() {
-        videoView = (VideoView) findViewById(R.id.video_view);
+        videoView = findViewById(R.id.video_view);
         setUpVideoControls();
-        videoView.setOnPreparedListener(this);
-        videoView.setOnCompletionListener(this);
+        videoView.setOnPreparedListener(mp -> {
+            getProgressBar().setVisibility(View.GONE);
+            getVideoMainFrame().setVisibility(View.VISIBLE);
+            videoControls.setAnchorView(getControlsContainer());
+        });
+        videoView.setOnCompletionListener(mp -> {
+            finish();
+        });
         videoView.setVideoURI(getVideoUri());
         videoView.setMediaController(videoControls);
     }
@@ -245,13 +248,6 @@ public class NativeVideoActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
-        getProgressBar().setVisibility(View.GONE);
-        getVideoMainFrame().setVisibility(View.VISIBLE);
-        videoControls.setAnchorView(getControlsContainer());
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (videoView != null) {
             outState.putInt(VIDEO_POSITION, videoView.getCurrentPosition());
@@ -266,11 +262,6 @@ public class NativeVideoActivity extends AppCompatActivity implements
             videoView.seekTo(videoPosition);
         }
         super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        finish();
     }
 
     @Override

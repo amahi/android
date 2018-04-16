@@ -94,11 +94,11 @@ public class ServerFileImageFragment extends Fragment implements RequestListener
     }
 
     private TouchImageView getImageView() {
-        return (TouchImageView) getView().findViewById(R.id.image);
+        return getView().findViewById(R.id.image);
     }
 
     private ProgressBar getProgressBar() {
-        return (ProgressBar) getView().findViewById(android.R.id.progress);
+        return getView().findViewById(android.R.id.progress);
     }
 
     @Override

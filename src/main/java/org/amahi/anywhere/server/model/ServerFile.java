@@ -66,6 +66,14 @@ public class ServerFile implements Parcelable {
         this.size = parcel.readLong();
     }
 
+    public static int compareByName(ServerFile a, ServerFile b) {
+        return a.getName().compareTo(b.getName());
+    }
+
+    public static int compareByModificationTime(ServerFile a, ServerFile b) {
+        return -a.getModificationTime().compareTo(b.getModificationTime());
+    }
+
     public long getSize() {
         return size;
     }
@@ -199,10 +207,6 @@ public class ServerFile implements Parcelable {
             return false;
         }
 
-        if (!modificationTime.equals(file.modificationTime)) {
-            return false;
-        }
-
-        return true;
+        return modificationTime.equals(file.modificationTime);
     }
 }

@@ -26,7 +26,7 @@ public class Identifier {
     }
 
     public static String getUserAgent(Context context, Map<String, String> fields) {
-        List<String> userAgentFields = new ArrayList<String>();
+        List<String> userAgentFields = new ArrayList<>();
 
         userAgentFields.add(getUserAgent(context));
 

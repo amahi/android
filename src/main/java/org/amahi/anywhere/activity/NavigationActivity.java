@@ -108,12 +108,12 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void inflateStubs() {
-        ViewStub tvLoadingStub = (ViewStub) findViewById(R.id.view_stub_tv_loading);
+        ViewStub tvLoadingStub = findViewById(R.id.view_stub_tv_loading);
         tvLoadingStub.inflate();
     }
 
     private void hideMobileContainers() {
-        RelativeLayout tvLoading = (RelativeLayout) findViewById(R.id.tv_loading);
+        RelativeLayout tvLoading = findViewById(R.id.tv_loading);
 
         getContainerContent().setVisibility(View.INVISIBLE);
 
@@ -123,11 +123,11 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private FrameLayout getContainerContent() {
-        return (FrameLayout) findViewById(R.id.container_content);
+        return findViewById(R.id.container_content);
     }
 
     private FrameLayout getContainerNavigation() {
-        return (FrameLayout) findViewById(R.id.container_navigation);
+        return findViewById(R.id.container_navigation);
     }
 
     private void displayTvLoading(RelativeLayout tvLoading) {
@@ -177,7 +177,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private DrawerLayout getDrawer() {
-        return (DrawerLayout) findViewById(R.id.drawer_content);
+        return findViewById(R.id.drawer_content);
     }
 
     @Override

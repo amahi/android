@@ -66,15 +66,15 @@ public class ServerAppsFragment extends Fragment {
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
 
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list_server_apps);
+        mRecyclerView = rootView.findViewById(R.id.list_server_apps);
 
         mServerAppsAdapter = new ServerAppsAdapter(getActivity());
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-        mEmptyLinearLayout = (LinearLayout) rootView.findViewById(R.id.empty_server_apps);
+        mEmptyLinearLayout = rootView.findViewById(R.id.empty_server_apps);
 
-        mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
+        mErrorLinearLayout = rootView.findViewById(R.id.error);
 
         mRecyclerView.addItemDecoration(new
             DividerItemDecoration(getActivity(),
@@ -165,12 +165,9 @@ public class ServerAppsFragment extends Fragment {
 
     private void showAppsError() {
         ViewDirector.of(this, R.id.animator).show(R.id.error);
-        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-                setUpAppsContent();
-            }
+        mErrorLinearLayout.setOnClickListener(view -> {
+            ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+            setUpAppsContent();
         });
     }
 

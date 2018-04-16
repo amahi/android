@@ -34,7 +34,7 @@ public class Mimes {
     private static final Map<String, Integer> types;
 
     static {
-        types = new ArrayMap<String, Integer>();
+        types = new ArrayMap<>();
 
         types.put("application/octet-stream", Type.UNDEFINED);
 

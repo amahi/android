@@ -35,7 +35,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,7 +43,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 
 import com.squareup.otto.Subscribe;
 
@@ -82,9 +80,7 @@ import javax.inject.Inject;
  * Navigation fragments. Shows main application sections and servers list as well.
  */
 public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
-    OnAccountsUpdateListener,
-
-    SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
+    OnAccountsUpdateListener {
     @Inject
     AmahiClient amahiClient;
     @Inject
@@ -165,7 +161,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
             android.R.color.holo_green_light,
             android.R.color.holo_red_light);
 
-        refreshLayout.setOnRefreshListener(this);
+        refreshLayout.setOnRefreshListener(() -> {
+            ViewDirector.of(getActivity(), R.id.animator_content).show(R.id.empty_view);
+            setUpServers(new Bundle());
+        });
     }
 
     private boolean getServerTitleClicked() {
@@ -174,12 +173,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void setServerTitleClicked(boolean option) {
         this.mServerTitleClicked = option;
-    }
-
-    @Override
-    public void onRefresh() {
-        ViewDirector.of(this, R.id.animator_content).show(R.id.empty_view);
-        setUpServers(new Bundle());
     }
 
     private List<Account> getAccounts() {
@@ -379,18 +372,15 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpNavigationListener() {
-        getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                getNavigationListView().dispatchSetActivated(false);
+        getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(getContext(), (view, position) -> {
+            getNavigationListView().dispatchSetActivated(false);
 
-                view.setActivated(true);
+            view.setActivated(true);
 
-                if (!getServerTitleClicked()) {
-                    selectedServerListener(position);
-                } else {
-                    selectServerListener(position);
-                }
+            if (!getServerTitleClicked()) {
+                selectedServerListener(position);
+            } else {
+                selectServerListener(position);
             }
         }));
     }
@@ -442,7 +432,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpServerSelectListener() {
-        getLinearLayoutSelectedServer().setOnClickListener(this);
+        getLinearLayoutSelectedServer().setOnClickListener(view -> {
+            setServerTitleClicked(true);
+
+            getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
+                0, 0, R.drawable.nav_arrow_up, 0);
+
+            showServers();
+        });
     }
 
     @Subscribe
@@ -576,23 +573,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void tearDownAuthenticationListener() {
         getAccountManager().removeOnAccountsUpdatedListener(this);
-    }
-
-    //
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.server_select_LinearLayout:
-
-                setServerTitleClicked(true);
-
-                getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
-                    0, 0, R.drawable.nav_arrow_up, 0);
-
-                showServers();
-
-                break;
-        }
     }
 
     /*Sets the adapter for navigation drawer after getting server names*/

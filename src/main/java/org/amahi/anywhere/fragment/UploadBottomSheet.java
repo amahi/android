@@ -28,7 +28,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
@@ -44,7 +43,7 @@ import java.util.ArrayList;
  * Bottom sheet component for showing upload related options.
  * Extends {@link android.support.design.widget.BottomSheetDialog}
  */
-public class UploadBottomSheet extends BottomSheetDialogFragment implements AdapterView.OnItemClickListener {
+public class UploadBottomSheet extends BottomSheetDialogFragment {
 
     @Nullable
     @Override
@@ -55,7 +54,7 @@ public class UploadBottomSheet extends BottomSheetDialogFragment implements Adap
             @Override
             public void onGlobalLayout() {
                 BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) getDialog();
-                FrameLayout bottomSheet = (FrameLayout) bottomSheetDialog.findViewById(android.support.design.R.id.design_bottom_sheet);
+                FrameLayout bottomSheet = bottomSheetDialog.findViewById(android.support.design.R.id.design_bottom_sheet);
                 assert bottomSheet != null;
                 BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
                 behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -87,16 +86,13 @@ public class UploadBottomSheet extends BottomSheetDialogFragment implements Adap
 
     private void setUpListView(View view) {
         UploadOptionsAdapter adapter = new UploadOptionsAdapter(getContext(), getListItems());
-        ListView listView = (ListView) view.findViewById(R.id.upload_options_list);
+        ListView listView = view.findViewById(R.id.upload_options_list);
         assert listView != null;
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        UploadOption uploadOption = getListItems().get(position);
-        BusProvider.getBus().post(new UploadClickEvent(uploadOption.getType()));
-        dismiss();
+        listView.setOnItemClickListener((parent, view1, position, id) -> {
+            UploadOption uploadOption = getListItems().get(position);
+            BusProvider.getBus().post(new UploadClickEvent(uploadOption.getType()));
+            dismiss();
+        });
     }
 }

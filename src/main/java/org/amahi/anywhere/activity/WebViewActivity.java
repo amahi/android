@@ -19,7 +19,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         setUpHomeNavigation();
         setContentView(R.layout.activity_web_view);
-        webView = (WebView) findViewById(R.id.webview);
+        webView = findViewById(R.id.webview);
 
         loadWebView("https://www.amahi.org/android");
 

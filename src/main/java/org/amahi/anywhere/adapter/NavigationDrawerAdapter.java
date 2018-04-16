@@ -130,8 +130,8 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
         NavigationDrawerViewHolder(View itemView) {
             super(itemView);
-            titleShare = (TextView) itemView.findViewById(R.id.text_share_server_title);
-            server_bubble = (ImageView) itemView.findViewById(R.id.server_bubble_image);
+            titleShare = itemView.findViewById(R.id.text_share_server_title);
+            server_bubble = itemView.findViewById(R.id.server_bubble_image);
         }
     }
 

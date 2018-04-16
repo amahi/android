@@ -82,7 +82,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                     mNotificationManager.notify(NOTIFICATION_ID, notification);
                 }
 
-                if(state.getState() == PlaybackStateCompat.STATE_PAUSED) {
+                if (state.getState() == PlaybackStateCompat.STATE_PAUSED) {
                     pauseNotification();
                 }
             }
@@ -203,7 +203,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 Log.w(TAG, "Unknown intent ignored. Action=" + action);
         }
     }
-
 
 
     /**

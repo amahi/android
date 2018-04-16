@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.v17.leanback.widget.Presenter;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -77,23 +76,20 @@ public class SettingsItemPresenter extends Presenter {
 
         settingsTv.setText(settingsText);
 
-        settingsTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (settingsText.matches(mContext.getString(R.string.pref_title_server_select))) {
-                    Intent intent = new Intent(mContext, SettingsActivity.class);
-                    intent.putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_server_select));
-                    intent.putParcelableArrayListExtra(mContext.getString(R.string.intent_servers), serverArrayList);
-                    mContext.startActivity(intent);
-                }
+        settingsTv.setOnClickListener(v -> {
+            if (settingsText.matches(mContext.getString(R.string.pref_title_server_select))) {
+                Intent intent = new Intent(mContext, SettingsActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_server_select));
+                intent.putParcelableArrayListExtra(mContext.getString(R.string.intent_servers), serverArrayList);
+                mContext.startActivity(intent);
+            }
 
-                if (settingsText.matches(mContext.getString(R.string.pref_title_sign_out))) {
-                    mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_sign_out)));
-                } else if (settingsText.matches(mContext.getString(R.string.pref_title_connection))) {
-                    mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_connection)));
-                } else if (settingsText.matches(mContext.getString(R.string.pref_title_select_theme))) {
-                    mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_select_theme)));
-                }
+            if (settingsText.matches(mContext.getString(R.string.pref_title_sign_out))) {
+                mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_sign_out)));
+            } else if (settingsText.matches(mContext.getString(R.string.pref_title_connection))) {
+                mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_connection)));
+            } else if (settingsText.matches(mContext.getString(R.string.pref_title_select_theme))) {
+                mContext.startActivity(new Intent(mContext, SettingsActivity.class).putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_select_theme)));
             }
         });
     }

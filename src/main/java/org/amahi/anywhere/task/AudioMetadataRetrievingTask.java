@@ -88,7 +88,7 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
             MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
 
             try {
-                audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<String, String>());
+                audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<>());
 
                 metadata.setAudioTitle(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
                 metadata.setAudioArtist(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));

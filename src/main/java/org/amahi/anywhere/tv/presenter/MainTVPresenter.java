@@ -127,15 +127,12 @@ public class MainTVPresenter extends Presenter {
             setUpDimensions(viewHolder);
         }
         populateData(serverFile, viewHolder);
-        viewHolder.mCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isDirectory(serverFile)) {
-                    Intent intent = Intents.Builder.with(mContext).buildServerTvFilesActivity(serverFile.getParentShare(), serverFile);
-                    mContext.startActivity(intent);
-                } else {
-                    startFileOpening(serverFile);
-                }
+        viewHolder.mCardView.setOnClickListener(v -> {
+            if (isDirectory(serverFile)) {
+                Intent intent = Intents.Builder.with(mContext).buildServerTvFilesActivity(serverFile.getParentShare(), serverFile);
+                mContext.startActivity(intent);
+            } else {
+                startFileOpening(serverFile);
             }
         });
     }

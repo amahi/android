@@ -24,6 +24,9 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Server API resource.
  */
@@ -64,6 +67,16 @@ public class Server implements Parcelable {
         this.name = parcel.readString();
         this.session = parcel.readString();
         this.active = Boolean.valueOf(parcel.readString());
+    }
+
+    public static List<Server> filterActiveServers(List<Server> servers) {
+        List<Server> activeServers = new ArrayList<>();
+        for (Server server : servers) {
+            if (server.isActive()) {
+                activeServers.add(server);
+            }
+        }
+        return activeServers;
     }
 
     public String getName() {

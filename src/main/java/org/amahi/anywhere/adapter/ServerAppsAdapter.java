@@ -72,12 +72,7 @@ public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.Se
                 .error(R.drawable.ic_app_logo)
                 .into(holder.logo);
         }
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BusProvider.getBus().post(new AppSelectedEvent(apps.get(holder.getAdapterPosition())));
-            }
-        });
+        holder.itemView.setOnClickListener(view -> BusProvider.getBus().post(new AppSelectedEvent(apps.get(holder.getAdapterPosition()))));
     }
 
     @Override
@@ -110,8 +105,8 @@ public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.Se
 
         ServerAppsViewHolder(View itemView) {
             super(itemView);
-            text = (TextView) itemView.findViewById(R.id.text);
-            logo = (ImageView) itemView.findViewById(R.id.logo);
+            text = itemView.findViewById(R.id.text);
+            logo = itemView.findViewById(R.id.logo);
         }
     }
 }

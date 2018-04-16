@@ -20,5 +20,6 @@ fabric.properties
 
 # Key
 signing.properties
+amahi-release-key.keystore
 
 .DS*

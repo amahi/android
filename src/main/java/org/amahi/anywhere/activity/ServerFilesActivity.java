@@ -21,7 +21,6 @@ package org.amahi.anywhere.activity;
 
 import android.Manifest;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -128,13 +127,8 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     private void setUpUploadFAB() {
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_upload);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new UploadBottomSheet().show(getSupportFragmentManager(), "upload_dialog");
-            }
-        });
+        final FloatingActionButton fab = findViewById(R.id.fab_upload);
+        fab.setOnClickListener(view -> new UploadBottomSheet().show(getSupportFragmentManager(), "upload_dialog"));
     }
 
     private void setUpUploadDialog() {
@@ -296,12 +290,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void showPermissionSnackBar(String message) {
         Snackbar.make(getParentView(), message, Snackbar.LENGTH_LONG)
-            .setAction(R.string.menu_settings, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new AppSettingsDialog.Builder(ServerFilesActivity.this).build().show();
-                }
-            })
+            .setAction(R.string.menu_settings, v -> new AppSettingsDialog.Builder(ServerFilesActivity.this).build().show())
             .show();
     }
 
@@ -431,12 +420,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
         new AlertDialog.Builder(this)
             .setTitle(R.string.message_duplicate_file_upload)
             .setMessage(getString(R.string.message_duplicate_file_upload_body, file.getName()))
-            .setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    uploadFile(file);
-                }
-            })
+            .setPositiveButton(R.string.button_yes, (dialog, which) -> uploadFile(file))
             .setNegativeButton(R.string.button_no, null)
             .show();
     }
@@ -468,12 +452,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
             Snackbar snackbar = Snackbar.make(getParentView(), R.string.message_file_upload_error, Snackbar.LENGTH_LONG);
             if (cameraImage != null && cameraImage.exists()) {
                 snackbar
-                    .setAction(R.string.button_retry, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            uploadFile(cameraImage);
-                        }
-                    })
+                    .setAction(R.string.button_retry, v -> uploadFile(cameraImage))
                     .addCallback(new Snackbar.Callback() {
                         @Override
                         public void onDismissed(Snackbar transientBottomBar, int event) {

@@ -35,14 +35,10 @@ import android.support.v17.leanback.widget.ControlButtonPresenterSelector;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
-import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
 import android.support.v17.leanback.widget.PlaybackControlsRowPresenter;
-import android.support.v17.leanback.widget.Presenter;
-import android.support.v17.leanback.widget.Row;
-import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.SurfaceHolder;
@@ -115,31 +111,20 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
         addOtherRows();
 
-        mediaPlayer.setEventListener(new MediaPlayer.EventListener() {
-            @Override
-            public void onEvent(MediaPlayer.Event event) {
-                if (event.type == MediaPlayer.Event.EndReached) {
-                    skipNext();
-                }
+        mediaPlayer.setEventListener(event -> {
+            if (event.type == MediaPlayer.Event.EndReached) {
+                skipNext();
             }
         });
 
-        setOnItemViewClickedListener(new OnItemViewClickedListener() {
-            @Override
-            public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-                if (item instanceof ServerFile) {
-                    ServerFile serverFile = (ServerFile) item;
-                    replaceFragment(serverFile);
-                }
+        setOnItemViewClickedListener((OnItemViewClickedListener) (itemViewHolder, item, rowViewHolder, row) -> {
+            if (item instanceof ServerFile) {
+                ServerFile serverFile = (ServerFile) item;
+                replaceFragment(serverFile);
             }
         });
 
-        setOnItemViewSelectedListener(new OnItemViewSelectedListener() {
-            @Override
-            public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-                mSavedState = item;
-            }
-        });
+        setOnItemViewSelectedListener((OnItemViewSelectedListener) (itemViewHolder, item, rowViewHolder, row) -> mSavedState = item);
     }
 
     private ArrayList<ServerFile> setAllVideoFiles() {
@@ -175,7 +160,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
     }
 
     private void playVideo() {
-        SurfaceView mSurfaceView = (SurfaceView) getActivity().findViewById(R.id.surfaceView);
+        SurfaceView mSurfaceView = getActivity().findViewById(R.id.surfaceView);
         mSurfaceHolder = mSurfaceView.getHolder();
         setVideoHolder();
         setLibVlc();
@@ -231,25 +216,22 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         playbackControlsRowPresenter.setProgressColor(Color.WHITE);
 
         mPlaybackControlsRow.setTotalTime(mDuration);
-        playbackControlsRowPresenter.setOnActionClickedListener(new OnActionClickedListener() {
-            @Override
-            public void onActionClicked(Action action) {
-                if (action.getId() == mPlayPauseAction.getId()) {
-                    togglePlayPause(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
-                } else if (action.getId() == mRewindAction.getId()) {
-                    setFadingEnabled(false);
-                    rewind();
-                } else if (action.getId() == mFastForwardAction.getId()) {
-                    setFadingEnabled(false);
-                    fastForward();
-                } else if (action.getId() == mSkipNextAction.getId()) {
-                    skipNext();
-                } else if (action.getId() == mSkipPreviousAction.getId()) {
-                    skipPrevious();
-                }
-                if (action instanceof PlaybackControlsRow.MultiAction) {
-                    notifyChanged(action);
-                }
+        playbackControlsRowPresenter.setOnActionClickedListener(action -> {
+            if (action.getId() == mPlayPauseAction.getId()) {
+                togglePlayPause(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
+            } else if (action.getId() == mRewindAction.getId()) {
+                setFadingEnabled(false);
+                rewind();
+            } else if (action.getId() == mFastForwardAction.getId()) {
+                setFadingEnabled(false);
+                fastForward();
+            } else if (action.getId() == mSkipNextAction.getId()) {
+                skipNext();
+            } else if (action.getId() == mSkipPreviousAction.getId()) {
+                skipPrevious();
+            }
+            if (action instanceof PlaybackControlsRow.MultiAction) {
+                notifyChanged(action);
             }
         });
         setAdapter(mRowsAdapter);

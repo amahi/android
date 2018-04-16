@@ -53,12 +53,7 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
     @Override
     public void onBindViewHolder(final ServerShareViewHolder holder, int position) {
         holder.textView.setText(shares.get(position).getName());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BusProvider.getBus().post(new ShareSelectedEvent(shares.get(holder.getAdapterPosition())));
-            }
-        });
+        holder.itemView.setOnClickListener(view -> BusProvider.getBus().post(new ShareSelectedEvent(shares.get(holder.getAdapterPosition()))));
     }
 
     @Override
@@ -90,7 +85,7 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
 
         ServerShareViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView) itemView.findViewById(R.id.text);
+            textView = itemView.findViewById(R.id.text);
         }
     }
 }

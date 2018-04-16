@@ -22,7 +22,6 @@ package org.amahi.anywhere.tv.activity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -125,17 +124,7 @@ public class TvPlaybackVideoActivity extends Activity {
 
         builder.setTitle(getString(R.string.exit_title))
             .setMessage(getString(R.string.exit_message))
-            .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    TvPlaybackVideoActivity.super.onBackPressed();
-                }
-            })
-            .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            }).show();
+            .setPositiveButton(getString(R.string.yes), (dialog, which) -> TvPlaybackVideoActivity.super.onBackPressed())
+            .setNegativeButton(getString(R.string.no), (dialog, which) -> dialog.dismiss()).show();
     }
 }

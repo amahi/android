@@ -442,12 +442,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
     private void showPermissionSnackBar(String message) {
         Snackbar.make(getView(), message, Snackbar.LENGTH_LONG)
-            .setAction(R.string.menu_settings, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new AppSettingsDialog.Builder(UploadSettingsFragment.this).build().show();
-                }
-            })
+            .setAction(R.string.menu_settings, v -> new AppSettingsDialog.Builder(UploadSettingsFragment.this).build().show())
             .show();
     }
 

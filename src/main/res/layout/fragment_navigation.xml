@@ -93,7 +93,7 @@
                         android:paddingEnd="16dp"
                         android:paddingStart="16dp"
                         android:text="@string/title_selected_server"
-			android:textSize="@dimen/text_small" />
+                        android:textSize="@dimen/text_small" />
 
                     <TextView
                         android:id="@+id/server_name"

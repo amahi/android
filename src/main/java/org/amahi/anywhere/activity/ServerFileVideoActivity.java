@@ -78,46 +78,37 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     ServiceConnection,
     MediaController.MediaPlayerControl,
     IVLCVout.OnNewVideoLayoutListener,
-    MediaPlayer.EventListener,
     View.OnLayoutChangeListener,
     VideoSwipeGestures.SeekControl,
     SessionManagerListener<CastSession> {
 
     private static final boolean ENABLE_SUBTITLES = false;
-
+    private static SurfaceSizes CURRENT_SIZE = SurfaceSizes.SURFACE_BEST_FIT;
     @Inject
     ServerClient serverClient;
-
     private VideoService videoService;
     private MediaControls videoControls;
     private FullScreenHelper fullScreen;
     private Handler layoutChangeHandler;
-
     private CastContext mCastContext;
     private CastSession mCastSession;
-
     private int mVideoHeight = 0;
     private int mVideoWidth = 0;
     private int mVideoVisibleHeight = 0;
     private int mVideoVisibleWidth = 0;
     private int mVideoSarNum = 0;
     private int mVideoSarDen = 0;
-
     private SurfaceView mSubtitlesSurface = null;
+    private final Runnable mRunnable = this::updateVideoSurfaces;
     private float bufferPercent = 0.0f;
 
-    private enum SurfaceSizes {
-        SURFACE_BEST_FIT,
-        SURFACE_FIT_SCREEN,
-        SURFACE_FILL,
-        SURFACE_16_9,
-        SURFACE_4_3,
-        SURFACE_ORIGINAL;
-    }
-
-    private static SurfaceSizes CURRENT_SIZE = SurfaceSizes.SURFACE_BEST_FIT;
-
     //TODO Add feature for changing the screen size
+
+    public static boolean supports(String mime_type) {
+        String type = mime_type.split("/")[0];
+
+        return "video".equals(type);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,7 +155,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     }
 
     private void setUpViews() {
-        final ViewStub stub = (ViewStub) findViewById(R.id.subtitles_stub);
+        final ViewStub stub = findViewById(R.id.subtitles_stub);
         mSubtitlesSurface = (SurfaceView) stub.inflate();
         mSubtitlesSurface.setZOrderMediaOverlay(true);
         mSubtitlesSurface.getHolder().setFormat(PixelFormat.TRANSLUCENT);
@@ -181,18 +172,15 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     private void setUpFullScreen() {
         fullScreen = new FullScreenHelper(getSupportActionBar(), getVideoMainFrame());
         fullScreen.enableOnClickToggle(false);
-        getVideoMainFrame().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fullScreen.toggle();
-                videoControls.toggle();
-            }
+        getVideoMainFrame().setOnClickListener(view -> {
+            fullScreen.toggle();
+            videoControls.toggle();
         });
         fullScreen.init();
     }
 
     private FrameLayout getSwipeContainer() {
-        return (FrameLayout) findViewById(R.id.swipe_controls_frame);
+        return findViewById(R.id.swipe_controls_frame);
     }
 
     private void setUpGestureListener() {
@@ -249,19 +237,19 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         if (mSubtitlesSurface != null)
             vlcVout.setSubtitlesView(mSubtitlesSurface);
         vlcVout.attachViews(this);
-        getMediaPlayer().setEventListener(this);
+        getMediaPlayer().setEventListener(this::onEvent);
     }
 
     private SurfaceView getSurface() {
-        return (SurfaceView) findViewById(R.id.surface);
+        return findViewById(R.id.surface);
     }
 
     private FrameLayout getSurfaceFrame() {
-        return (FrameLayout) findViewById(R.id.video_surface_frame);
+        return findViewById(R.id.video_surface_frame);
     }
 
     private FrameLayout getVideoMainFrame() {
-        return (FrameLayout) findViewById(R.id.video_main_frame);
+        return findViewById(R.id.video_main_frame);
     }
 
     private void setUpVideoControls() {
@@ -311,7 +299,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     }
 
     private ProgressBar getProgressBar() {
-        return (ProgressBar) findViewById(android.R.id.progress);
+        return findViewById(android.R.id.progress);
     }
 
     private ServerShare getVideoShare() {
@@ -330,13 +318,6 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
             layoutChangeHandler.post(mRunnable);
         }
     }
-
-    private final Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            updateVideoSurfaces();
-        }
-    };
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -567,7 +548,6 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         return 0;
     }
 
-    @Override
     public void onEvent(MediaPlayer.Event event) {
 
         switch (event.type) {
@@ -667,12 +647,6 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     private void tearDownVideoService() {
         Intent intent = new Intent(this, VideoService.class);
         stopService(intent);
-    }
-
-    public static boolean supports(String mime_type) {
-        String type = mime_type.split("/")[0];
-
-        return "video".equals(type);
     }
 
     @Override
@@ -776,5 +750,14 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
             builder.setStreamDuration(videoService.getMediaPlayer().getLength());
         }
         return builder.build();
+    }
+
+    private enum SurfaceSizes {
+        SURFACE_BEST_FIT,
+        SURFACE_FIT_SCREEN,
+        SURFACE_FILL,
+        SURFACE_16_9,
+        SURFACE_4_3,
+        SURFACE_ORIGINAL;
     }
 }

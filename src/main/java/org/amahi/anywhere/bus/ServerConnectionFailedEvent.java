@@ -22,7 +22,8 @@ package org.amahi.anywhere.bus;
 public class ServerConnectionFailedEvent implements BusEvent {
     private String errorMessage;
 
-    public ServerConnectionFailedEvent(){}
+    public ServerConnectionFailedEvent() {
+    }
 
     public ServerConnectionFailedEvent(String errorMessage) {
         this.errorMessage = errorMessage;

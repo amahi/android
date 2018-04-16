@@ -99,11 +99,11 @@ public class ServerAppActivity extends AppCompatActivity {
     }
 
     private WebView getWebView() {
-        return (WebView) findViewById(R.id.web_content);
+        return findViewById(R.id.web_content);
     }
 
     private String getAppWebAgent() {
-        Map<String, String> agentFields = new HashMap<String, String>();
+        Map<String, String> agentFields = new HashMap<>();
         agentFields.put(AppWebAgentField.HOST, getApp().getHost());
 
         return Identifier.getUserAgent(this, agentFields);

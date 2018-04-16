@@ -110,12 +110,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     private void setUpFullScreen() {
         final FullScreenHelper fullScreen = new FullScreenHelper(getSupportActionBar(), getImagePager());
         fullScreen.enableOnClickToggle(false);
-        getImagePager().setOnViewPagerClickListener(new ClickableViewPager.OnClickListener() {
-            @Override
-            public void onViewPagerClick(ViewPager viewPager) {
-                fullScreen.toggle();
-            }
-        });
+        getImagePager().setOnViewPagerClickListener(viewPager -> fullScreen.toggle());
         fullScreen.init();
     }
 
@@ -160,7 +155,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     }
 
     private ClickableViewPager getImagePager() {
-        return (ClickableViewPager) findViewById(R.id.pager_images);
+        return findViewById(R.id.pager_images);
     }
 
     private ServerShare getShare() {

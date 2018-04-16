@@ -76,67 +76,62 @@ public class TouchImageView extends AppCompatImageView {
         setImageMatrix(matrix);
         setScaleType(AppCompatImageView.ScaleType.MATRIX);
 
-        setOnTouchListener(new View.OnTouchListener() {
+        setOnTouchListener((v, event) -> {
+            mScaleDetector.onTouchEvent(event);
+            PointF curr = new PointF(event.getX(), event.getY());
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                mScaleDetector.onTouchEvent(event);
-                PointF curr = new PointF(event.getX(), event.getY());
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    onSingleClick(curr);
+                    thisTouchTime = System.currentTimeMillis();
+                    if (thisTouchTime - previousTouchTime <= DOUBLE_CLICK_INTERVAL) {
+                        onDoubleClick(curr);
+                    }
+                    previousTouchTime = thisTouchTime;
+                    break;
 
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        onSingleClick(curr);
-                        thisTouchTime = System.currentTimeMillis();
-                        if (thisTouchTime - previousTouchTime <= DOUBLE_CLICK_INTERVAL) {
-                            onDoubleClick(curr);
-                        }
-                        previousTouchTime = thisTouchTime;
-                        break;
-
-                    case MotionEvent.ACTION_MOVE:
-                        if (mode == State.DRAG) {
-                            float deltaX = curr.x - last.x;
-                            float deltaY = curr.y - last.y;
-                            if (deltaX != 0f || deltaY != 0f) {
-                                float fixTransX = getFixDragTrans(deltaX, viewWidth,
-                                    origWidth * saveScale);
-                                float fixTransY = getFixDragTrans(deltaY, viewHeight,
-                                    origHeight * saveScale);
-                                if (saveScale > 1f) {
-                                    matrix.getValues(m);
-                                    float absTransX = Math.abs(m[Matrix.MTRANS_X]);
-                                    float transXMax = (origWidth * (saveScale - 1f));
-                                    if ((transXMax - absTransX < 0.5f && fixTransX < 0f)
-                                        || (absTransX < 0.5f && fixTransX > 0f))
-                                        getParent().requestDisallowInterceptTouchEvent(false);
-                                    else
-                                        getParent().requestDisallowInterceptTouchEvent(true);
-                                }
-                                matrix.postTranslate(fixTransX, fixTransY);
-                                fixTrans();
-                                last.set(curr.x, curr.y);
+                case MotionEvent.ACTION_MOVE:
+                    if (mode == State.DRAG) {
+                        float deltaX = curr.x - last.x;
+                        float deltaY = curr.y - last.y;
+                        if (deltaX != 0f || deltaY != 0f) {
+                            float fixTransX = getFixDragTrans(deltaX, viewWidth,
+                                origWidth * saveScale);
+                            float fixTransY = getFixDragTrans(deltaY, viewHeight,
+                                origHeight * saveScale);
+                            if (saveScale > 1f) {
+                                matrix.getValues(m);
+                                float absTransX = Math.abs(m[Matrix.MTRANS_X]);
+                                float transXMax = (origWidth * (saveScale - 1f));
+                                if ((transXMax - absTransX < 0.5f && fixTransX < 0f)
+                                    || (absTransX < 0.5f && fixTransX > 0f))
+                                    getParent().requestDisallowInterceptTouchEvent(false);
+                                else
+                                    getParent().requestDisallowInterceptTouchEvent(true);
                             }
+                            matrix.postTranslate(fixTransX, fixTransY);
+                            fixTrans();
+                            last.set(curr.x, curr.y);
                         }
-                        break;
+                    }
+                    break;
 
-                    case MotionEvent.ACTION_UP:
-                        mode = State.NONE;
-                        int xDiff = (int) Math.abs(curr.x - start.x);
-                        int yDiff = (int) Math.abs(curr.y - start.y);
-                        if (xDiff < CLICK && yDiff < CLICK)
-                            performClick();
-                        break;
+                case MotionEvent.ACTION_UP:
+                    mode = State.NONE;
+                    int xDiff = (int) Math.abs(curr.x - start.x);
+                    int yDiff = (int) Math.abs(curr.y - start.y);
+                    if (xDiff < CLICK && yDiff < CLICK)
+                        performClick();
+                    break;
 
-                    case MotionEvent.ACTION_POINTER_UP:
-                        mode = State.NONE;
-                        break;
-                }
-
-                setImageMatrix(matrix);
-                invalidate();
-                return true; // indicate event was handled
+                case MotionEvent.ACTION_POINTER_UP:
+                    mode = State.NONE;
+                    break;
             }
 
+            setImageMatrix(matrix);
+            invalidate();
+            return true; // indicate event was handled
         });
 
     }

@@ -49,7 +49,7 @@ public class ServerFileWebActivity extends AppCompatActivity {
     private static final Set<String> SUPPORTED_FORMATS;
 
     static {
-        SUPPORTED_FORMATS = new HashSet<String>(Arrays.asList(
+        SUPPORTED_FORMATS = new HashSet<>(Arrays.asList(
             "image/svg+xml",
             "text/html",
             "text/plain"

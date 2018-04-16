@@ -30,7 +30,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -55,7 +54,7 @@ import javax.inject.Inject;
  * Authentication activity. Allows user authentication. If operation succeed
  * the authentication token is saved at the {@link android.accounts.AccountManager}.
  */
-public class AuthenticationActivity extends AccountAuthenticatorActivity implements TextWatcher, View.OnClickListener {
+public class AuthenticationActivity extends AccountAuthenticatorActivity implements TextWatcher {
     @Inject
     AmahiClient amahiClient;
 
@@ -83,7 +82,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
     }
 
     private EditText getUsernameEdit() {
-        TextInputLayout username_layout = (TextInputLayout) findViewById(R.id.username_layout);
+        TextInputLayout username_layout = findViewById(R.id.username_layout);
         return username_layout.getEditText();
     }
 
@@ -92,17 +91,17 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
     }
 
     private EditText getPasswordEdit() {
-        TextInputLayout password_layout = (TextInputLayout) findViewById(R.id.password_layout);
+        TextInputLayout password_layout = findViewById(R.id.password_layout);
         return password_layout.getEditText();
     }
 
     private ActionProcessButton getAuthenticationButton() {
-        return (ActionProcessButton) findViewById(R.id.button_authentication);
+        return findViewById(R.id.button_authentication);
     }
 
     private void setUpAuthenticationMessages() {
-        TextView authenticationFailureMessage = (TextView) findViewById(R.id.text_message_authentication);
-        TextView authenticationConnectionFailureMessage = (TextView) findViewById(R.id.text_message_authentication_connection);
+        TextView authenticationFailureMessage = findViewById(R.id.text_message_authentication);
+        TextView authenticationConnectionFailureMessage = findViewById(R.id.text_message_authentication_connection);
 
         authenticationFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
         authenticationConnectionFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
@@ -116,16 +115,13 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
     private void setUpAuthenticationTextListener() {
         getUsernameEdit().addTextChangedListener(this);
         getPasswordEdit().addTextChangedListener(this);
-        getPasswordEdit().setOnEditorActionListener(new EditText.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_GO) {
-                    onClick(getAuthenticationButton());
-                    handled = true;
-                }
-                return handled;
+        getPasswordEdit().setOnEditorActionListener((v, actionId, event) -> {
+            boolean handled = false;
+            if (actionId == EditorInfo.IME_ACTION_GO) {
+                onClick(getAuthenticationButton());
+                handled = true;
             }
+            return handled;
         });
     }
 
@@ -147,10 +143,9 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
     }
 
     private void setUpAuthenticationActionListener() {
-        getAuthenticationButton().setOnClickListener(this);
+        getAuthenticationButton().setOnClickListener(this::onClick);
     }
 
-    @Override
     public void onClick(View view) {
         if (getUsername().trim().isEmpty() || getPassword().trim().isEmpty()) {
             ViewDirector.of(this, R.id.animator_message).show(R.id.text_message_authentication_empty);

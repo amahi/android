@@ -20,7 +20,6 @@
 package org.amahi.anywhere.server.response;
 
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.ServerConnectionFailedEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerRouteLoadedEvent;
 import org.amahi.anywhere.server.model.ServerRoute;

@@ -25,9 +25,6 @@ import android.support.annotation.Nullable;
 import android.support.v17.leanback.app.VerticalGridFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
-import android.support.v17.leanback.widget.Presenter;
-import android.support.v17.leanback.widget.Row;
-import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v17.leanback.widget.VerticalGridPresenter;
 
 import com.squareup.otto.Subscribe;
@@ -83,15 +80,12 @@ public class ServerFileTvFragment extends VerticalGridFragment {
     }
 
     protected OnItemViewClickedListener getDefaultItemClickedListener() {
-        return new OnItemViewClickedListener() {
-            @Override
-            public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-                ServerFile serverFile = (ServerFile) item;
-                if (isDirectory(serverFile)) {
-                    setFragment(serverFile, serverFile.getParentShare());
-                } else {
-                    startFileOpening(serverFile);
-                }
+        return (itemViewHolder, item, rowViewHolder, row) -> {
+            ServerFile serverFile = (ServerFile) item;
+            if (isDirectory(serverFile)) {
+                setFragment(serverFile, serverFile.getParentShare());
+            } else {
+                startFileOpening(serverFile);
             }
         };
     }
@@ -150,10 +144,10 @@ public class ServerFileTvFragment extends VerticalGridFragment {
     private Comparator<ServerFile> getFilesComparator() {
         switch (filesSort) {
             case NAME:
-                return new FileNameComparator();
+                return ServerFile::compareByName;
 
             case MODIFICATION_TIME:
-                return new FileModificationTimeComparator();
+                return ServerFile::compareByModificationTime;
 
             default:
                 return null;
@@ -176,19 +170,5 @@ public class ServerFileTvFragment extends VerticalGridFragment {
 
     private enum FilesSort {
         NAME, MODIFICATION_TIME
-    }
-
-    private static final class FileNameComparator implements Comparator<ServerFile> {
-        @Override
-        public int compare(ServerFile firstFile, ServerFile secondFile) {
-            return firstFile.getName().compareTo(secondFile.getName());
-        }
-    }
-
-    private static final class FileModificationTimeComparator implements Comparator<ServerFile> {
-        @Override
-        public int compare(ServerFile firstFile, ServerFile secondFile) {
-            return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
-        }
     }
 }

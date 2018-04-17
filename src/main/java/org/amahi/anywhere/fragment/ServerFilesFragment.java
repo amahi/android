@@ -243,6 +243,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void clearFileChoices() {
+        getRecyclerView().dispatchSetSelected(false);
         getRecyclerView().dispatchSetActivated(false);
     }
 
@@ -345,8 +346,10 @@ public class ServerFilesFragment extends Fragment implements
         if (fileDeleteEvent.isDeleted()) {
             if (!isMetadataAvailable()) {
                 getFilesAdapter().removeFile(deleteFilePosition);
+                getFilesAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
             } else {
                 getFilesMetadataAdapter().removeFile(deleteFilePosition);
+                getFilesMetadataAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
             }
         } else {
             Toast.makeText(getContext(), R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
@@ -748,6 +751,12 @@ public class ServerFilesFragment extends Fragment implements
 
         if (!areFilesActionsAvailable()) {
             clearFileChoices();
+
+            if (!isMetadataAvailable()) {
+                getFilesAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
+            } else {
+                getFilesMetadataAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
+            }
         }
 
         mCastContext.addCastStateListener(this);
@@ -799,12 +808,26 @@ public class ServerFilesFragment extends Fragment implements
         }
     }
 
+    private void setItemSelected(View view, int position) {
+        FilesFilterAdapter adapter;
+
+        if (!isMetadataAvailable()) {
+            adapter = (ServerFilesAdapter) getRecyclerView().getAdapter();
+        } else {
+            adapter = (ServerFilesMetadataAdapter) getRecyclerView().getAdapter();
+        }
+
+        adapter.notifyItemChanged(adapter.getSelectedPosition());
+        adapter.setSelectedPosition(position);
+        adapter.notifyItemChanged(position);
+    }
+
     @Override
     public void onItemClick(View view, int filePosition) {
         clearFileChoices();
 
         if (areFilesActionsAvailable()) {
-            view.setActivated(true);
+            setItemSelected(view, filePosition);
         }
 
         if (!areFilesActionsAvailable()) {
@@ -820,6 +843,7 @@ public class ServerFilesFragment extends Fragment implements
     @Override
     public boolean onLongItemClick(View view, int position) {
         clearFileChoices();
+        setItemSelected(view, position);
 
         if (!areFilesActionsAvailable()) {
             getRecyclerView().startActionMode(this);

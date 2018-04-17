@@ -81,22 +81,25 @@ public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
         fileHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                notifyItemChanged(selectedPosition);
                 selectedPosition = fileHolder.getAdapterPosition();
+                notifyItemChanged(selectedPosition);
                 mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-                fileHolder.itemView.setActivated(true);
             }
         });
 
         fileHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                notifyItemChanged(selectedPosition);
                 selectedPosition = fileHolder.getAdapterPosition();
+                notifyItemChanged(selectedPosition);
                 boolean isHandled = mListener.onLongItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-                fileHolder.itemView.setActivated(true);
                 return isHandled;
             }
         });
 
+        fileHolder.itemView.setSelected(selectedPosition == position);
         fileHolder.itemView.setActivated(selectedPosition == position);
     }
 

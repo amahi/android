@@ -71,7 +71,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final ServerFileViewHolder fileHolder = (ServerFileViewHolder) holder;
         final ServerFile file = getItems().get(position);
 
@@ -107,7 +107,9 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         fileHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                notifyItemChanged(selectedPosition);
                 selectedPosition = fileHolder.getAdapterPosition();
+                notifyItemChanged(selectedPosition);
                 mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
             }
         });
@@ -115,13 +117,15 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         fileHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                notifyItemChanged(selectedPosition);
                 selectedPosition = fileHolder.getAdapterPosition();
+                notifyItemChanged(selectedPosition);
                 boolean isHandled = mListener.onLongItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-                fileHolder.itemView.setActivated(true);
                 return isHandled;
             }
         });
 
+        fileHolder.itemView.setSelected(selectedPosition == position);
         fileHolder.itemView.setActivated(selectedPosition == position);
     }
 

@@ -240,6 +240,12 @@ public class ServerFilesFragment extends Fragment implements
         this.filesActions = null;
 
         clearFileChoices();
+
+        if (!isMetadataAvailable()) {
+            getFilesAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
+        } else {
+            getFilesMetadataAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
+        }
     }
 
     private void clearFileChoices() {

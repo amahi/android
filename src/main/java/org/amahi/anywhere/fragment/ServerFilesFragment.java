@@ -241,9 +241,16 @@ public class ServerFilesFragment extends Fragment implements
         this.filesActions = null;
 
         clearFileChoices();
+
+        if (!isMetadataAvailable()) {
+            getFilesAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
+        } else {
+            getFilesMetadataAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
+        }
     }
 
     private void clearFileChoices() {
+        getRecyclerView().dispatchSetSelected(false);
         getRecyclerView().dispatchSetActivated(false);
     }
 
@@ -346,8 +353,10 @@ public class ServerFilesFragment extends Fragment implements
         if (fileDeleteEvent.isDeleted()) {
             if (!isMetadataAvailable()) {
                 getFilesAdapter().removeFile(deleteFilePosition);
+                getFilesAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
             } else {
                 getFilesMetadataAdapter().removeFile(deleteFilePosition);
+                getFilesMetadataAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
             }
         } else {
             Toast.makeText(getContext(), R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
@@ -757,6 +766,16 @@ public class ServerFilesFragment extends Fragment implements
     public void onResume() {
         super.onResume();
 
+        if (!areFilesActionsAvailable()) {
+            clearFileChoices();
+
+            if (!isMetadataAvailable()) {
+                getFilesAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
+            } else {
+                getFilesMetadataAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
+            }
+        }
+
         mCastContext.addCastStateListener(this);
         BusProvider.getBus().register(this);
     }
@@ -806,9 +825,28 @@ public class ServerFilesFragment extends Fragment implements
         }
     }
 
+    private void setItemSelected(View view, int position) {
+        FilesFilterAdapter adapter;
+
+        if (!isMetadataAvailable()) {
+            adapter = (ServerFilesAdapter) getRecyclerView().getAdapter();
+        } else {
+            adapter = (ServerFilesMetadataAdapter) getRecyclerView().getAdapter();
+        }
+
+        adapter.notifyItemChanged(adapter.getSelectedPosition());
+        adapter.setSelectedPosition(position);
+        adapter.notifyItemChanged(position);
+    }
+
     @Override
     public void onItemClick(View view, int filePosition) {
-        getRecyclerView().dispatchSetActivated(false);
+        clearFileChoices();
+
+        if (areFilesActionsAvailable()) {
+            setItemSelected(view, filePosition);
+        }
+
         if (!areFilesActionsAvailable()) {
             collapseSearchView();
             startFileOpening(getFile(filePosition));
@@ -821,7 +859,9 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public boolean onLongItemClick(View view, int position) {
-        getRecyclerView().dispatchSetActivated(false);
+        clearFileChoices();
+        setItemSelected(view, position);
+
         if (!areFilesActionsAvailable()) {
             getRecyclerView().startActionMode(this);
 

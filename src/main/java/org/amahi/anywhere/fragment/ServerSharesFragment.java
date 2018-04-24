@@ -56,7 +56,8 @@ import javax.inject.Inject;
  * Shares fragment. Shows shares list.
  */
 public class ServerSharesFragment extends Fragment implements
-    SwipeRefreshLayout.OnRefreshListener{
+    SwipeRefreshLayout.OnRefreshListener {
+
     @Inject
     ServerClient serverClient;
     private RecyclerView mRecyclerView;
@@ -75,8 +76,6 @@ public class ServerSharesFragment extends Fragment implements
         View rootView = layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh);
-
-
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
 
@@ -166,7 +165,6 @@ public class ServerSharesFragment extends Fragment implements
 
     private void setUpSharesContent() {
         if (serverClient.isConnected()) {
-            mSwipeRefreshLayout.setRefreshing(true);
             serverClient.getShares();
         }
     }

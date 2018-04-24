@@ -70,6 +70,7 @@ import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.db.FileInfoDbHelper;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.receiver.AudioReceiver;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -80,7 +81,10 @@ import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.Identifier;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.MediaNotificationManager;
+import org.amahi.anywhere.util.Preferences;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -106,6 +110,8 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     private AudioMetadataFormatter audioMetadataFormatter;
     private Bitmap audioAlbumArt;
+
+    private FileInfoDbHelper fileInfoDbHelper;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -276,6 +282,10 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     public ServerFile getAudioFile() {
         return audioFile;
+    }
+
+    public ServerShare getAudioShare() {
+        return audioShare;
     }
 
     public AudioMetadataFormatter getAudioMetadataFormatter() {
@@ -473,9 +483,23 @@ public class AudioService extends MediaBrowserServiceCompat implements
         audioPlayer.setVolume(0.3f);
     }
 
+    private void setAudioFilePlayed() {
+        setUpDbHelper();
+
+        String file_path = Preferences.getServerName(this) + "/" + getAudioShare().getName() + getAudioFile().getPath();
+
+        if (!fileInfoDbHelper.getFilePlayed(file_path)) {
+            fileInfoDbHelper.setFilePlayed(file_path, true);
+        }
+
+        closeDb();
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        checkAudioFilePlayed();
 
         tearDownBus();
 
@@ -483,6 +507,27 @@ public class AudioService extends MediaBrowserServiceCompat implements
         tearDownAudioPlayerRemote();
         tearDownAudioPlayerNotification();
     }
+
+    private void checkAudioFilePlayed() {
+        setUpDbHelper();
+
+        String file_path = Preferences.getServerName(this) + "/" + getAudioShare().getName() + getAudioFile().getPath();
+
+        if (getAudioPlayer().getCurrentPosition() > 10000 && !fileInfoDbHelper.getFilePlayed(file_path)) {
+            fileInfoDbHelper.setFilePlayed(file_path, true);
+        }
+
+        closeDb();
+    }
+
+    private void setUpDbHelper() {
+        fileInfoDbHelper = FileInfoDbHelper.init(this);
+    }
+
+    private void closeDb() {
+        fileInfoDbHelper.closeDataBase();
+    }
+
 
     private void tearDownAudioMetadataFormatter() {
         audioMetadataFormatter = null;
@@ -598,11 +643,17 @@ public class AudioService extends MediaBrowserServiceCompat implements
         @Override
         public void onSkipToNext() {
             BusProvider.getBus().post(new AudioControlNextEvent());
+            checkAudioFilePlayed();
+
+            startNextAudio();
         }
 
         @Override
         public void onSkipToPrevious() {
             BusProvider.getBus().post(new AudioControlPreviousEvent());
+            checkAudioFilePlayed();
+
+            startPreviousAudio();
         }
     }
 }

@@ -30,12 +30,13 @@
     <color name="divider">#BDBDBD</color>
     <color name="error_red">#d32f2f</color>
 
+    <color name="played_file">#999999</color>
+
     <color name="background_primary">#1a1a1a</color>
     <color name="background_secondary">#333333</color>
     <color name="background_transparent_primary">#cc000000</color>
     <color name="background_transparent_secondary">#80000000</color>
     <color name="primary_text_material_light">#deffffff</color>
-
     <!--ATV COLORS-->
     <color name="intro_1">#0277bd</color>
     <color name="intro_2">#3949ab</color>

@@ -21,6 +21,7 @@ import org.amahi.anywhere.bus.FileMetadataRetrievedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
+import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.FileMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.RecyclerViewItemClickListener;

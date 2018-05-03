@@ -48,6 +48,7 @@
     <string name="menu_sort">Sort</string>
     <string name="menu_search">Search</string>
     <string name="menu_file_upload">Upload File</string>
+    <string name="menu_open">OPEN</string>
 
     <string name="media_route_menu_item">cast</string>
 
@@ -88,6 +89,7 @@
     <string name="notification_upload_message">File %1$s</string>
     <string name="message_upload_success">Upload Complete</string>
     <string name="message_upload_error">Upload failed</string>
+    <string name="message_file_download_complete">File downloaded successfully</string>
 
     <string name="share_subject">Check out my Amahi home server!</string>
     <string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>

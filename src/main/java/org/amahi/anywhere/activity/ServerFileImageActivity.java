@@ -241,7 +241,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     }
 
     private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
-        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
+        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file, false);
         fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
     }
 

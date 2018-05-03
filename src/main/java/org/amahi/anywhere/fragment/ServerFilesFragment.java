@@ -23,7 +23,6 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -69,6 +68,7 @@ import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileDeleteEvent;
+import org.amahi.anywhere.bus.ServerFileDownloadingEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
@@ -127,7 +127,7 @@ public class ServerFilesFragment extends Fragment implements
         } else {
             rootView = layoutInflater.inflate(R.layout.fragment_server_files_metadata, container, false);
         }
-        mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
+        mErrorLinearLayout = rootView.findViewById(R.id.error);
         return rootView;
     }
 
@@ -164,23 +164,15 @@ public class ServerFilesFragment extends Fragment implements
             mIntroductoryOverlay.remove();
         }
         if ((mediaRouteMenuItem != null) && mediaRouteMenuItem.isVisible()) {
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    mIntroductoryOverlay = new IntroductoryOverlay
-                        .Builder(getActivity(), mediaRouteMenuItem)
-                        .setTitleText("Introducing Cast")
-                        .setSingleTime()
-                        .setOnOverlayDismissedListener(
-                            new IntroductoryOverlay.OnOverlayDismissedListener() {
-                                @Override
-                                public void onOverlayDismissed() {
-                                    mIntroductoryOverlay = null;
-                                }
-                            })
-                        .build();
-                    mIntroductoryOverlay.show();
-                }
+            new Handler().post(() -> {
+                mIntroductoryOverlay = new IntroductoryOverlay
+                    .Builder(getActivity(), mediaRouteMenuItem)
+                    .setTitleText("Introducing Cast")
+                    .setSingleTime()
+                    .setOnOverlayDismissedListener(
+                        () -> mIntroductoryOverlay = null)
+                    .build();
+                mIntroductoryOverlay.show();
             });
         }
     }
@@ -257,9 +249,17 @@ public class ServerFilesFragment extends Fragment implements
     @Override
     public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
         switch (menuItem.getItemId()) {
+            case R.id.menu_download:
+                if (Android.isPermissionRequired()) {
+                    checkWritePermissions(actionMode, false);
+                } else {
+                    startFileDownloading(getCheckedFile());
+                    actionMode.finish();
+                }
+                break;
             case R.id.menu_share:
                 if (Android.isPermissionRequired()) {
-                    checkSharePermissions(actionMode);
+                    checkWritePermissions(actionMode, true);
                 } else {
                     startFileSharing(getCheckedFile());
                     actionMode.finish();
@@ -276,10 +276,14 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void checkSharePermissions(ActionMode actionMode) {
+    private void checkWritePermissions(ActionMode actionMode, boolean isShared) {
         String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(getContext(), perms)) {
-            startFileSharing(getCheckedFile());
+            if (isShared) {
+                startFileSharing(getCheckedFile());
+            } else {
+                startFileDownloading(getCheckedFile());
+            }
         } else {
             lastCheckedFileIndex = getListAdapter().getSelectedPosition();
             EasyPermissions.requestPermissions(this, getString(R.string.share_permission),
@@ -317,13 +321,12 @@ public class ServerFilesFragment extends Fragment implements
 
     private void showPermissionSnackBar(String message) {
         Snackbar.make(getView(), message, Snackbar.LENGTH_LONG)
-            .setAction(R.string.menu_settings, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new AppSettingsDialog.Builder(ServerFilesFragment.this).build().show();
-                }
-            })
+            .setAction(R.string.menu_settings, v -> new AppSettingsDialog.Builder(ServerFilesFragment.this).build().show())
             .show();
+    }
+
+    private void startFileDownloading(ServerFile file) {
+        BusProvider.getBus().post(new ServerFileDownloadingEvent(getShare(), file));
     }
 
     private void startFileSharing(ServerFile file) {
@@ -335,13 +338,10 @@ public class ServerFilesFragment extends Fragment implements
         new AlertDialog.Builder(getContext())
             .setTitle(R.string.message_delete_file_title)
             .setMessage(R.string.message_delete_file_body)
-            .setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    deleteProgressDialog.show();
-                    serverClient.deleteFile(getShare(), file);
-                    actionMode.finish();
-                }
+            .setPositiveButton(R.string.button_yes, (dialog, which) -> {
+                deleteProgressDialog.show();
+                serverClient.deleteFile(getShare(), file);
+                actionMode.finish();
             })
             .setNegativeButton(R.string.button_no, null)
             .show();
@@ -588,12 +588,9 @@ public class ServerFilesFragment extends Fragment implements
 
     private void showFilesError() {
         ViewDirector.of(this, R.id.animator).show(R.id.error);
-        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-                setUpFilesContent();
-            }
+        mErrorLinearLayout.setOnClickListener(view -> {
+            ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+            setUpFilesContent();
         });
     }
 
@@ -662,7 +659,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setSearchCursor() {
         final int textViewID = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-        final AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(textViewID);
+        final AutoCompleteTextView searchTextView = searchView.findViewById(textViewID);
         try {
             Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
             mCursorDrawableRes.setAccessible(true);

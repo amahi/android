@@ -53,12 +53,13 @@ public class ServerFileDownloadingFragment extends DialogFragment {
     @Inject
     ServerClient serverClient;
 
-    public static ServerFileDownloadingFragment newInstance(ServerShare share, ServerFile file) {
+    public static ServerFileDownloadingFragment newInstance(ServerShare share, ServerFile file, boolean isSavedInExternal) {
         ServerFileDownloadingFragment fragment = new ServerFileDownloadingFragment();
 
         Bundle arguments = new Bundle();
         arguments.putParcelable(Fragments.Arguments.SERVER_SHARE, share);
         arguments.putParcelable(Fragments.Arguments.SERVER_FILE, file);
+        arguments.putBoolean(Fragments.Arguments.SAVED_EXTERNAL, isSavedInExternal);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -88,7 +89,8 @@ public class ServerFileDownloadingFragment extends DialogFragment {
 
     private void startFileDownloading(Bundle state) {
         if (state == null) {
-            downloader.startFileDownloading(getFileUri(), getFile().getName());
+            boolean saveInExternal = getArguments().getBoolean(Fragments.Arguments.SAVED_EXTERNAL, false);
+            downloader.startFileDownloading(getFileUri(), getFile().getName(), saveInExternal);
         }
     }
 

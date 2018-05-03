@@ -51,14 +51,13 @@ public class Downloader extends BroadcastReceiver {
     @Inject
     public Downloader(Context context) {
         this.context = context.getApplicationContext();
-
         this.downloadId = Integer.MIN_VALUE;
     }
 
-    public void startFileDownloading(Uri fileUri, String fileName) {
+    public void startFileDownloading(Uri fileUri, String fileName, boolean saveInExternal) {
         setUpDownloadReceiver();
 
-        startDownloading(fileUri, fileName);
+        startDownloading(fileUri, fileName, saveInExternal);
     }
 
     private void setUpDownloadReceiver() {
@@ -68,19 +67,31 @@ public class Downloader extends BroadcastReceiver {
         context.registerReceiver(this, downloadActionsFilter);
     }
 
-    private void startDownloading(Uri downloadUri, String downloadName) {
+    private void startDownloading(Uri downloadUri, String downloadName, boolean saveInExternal) {
+        File file;
+        DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri);
+        if (saveInExternal) {
+
+            file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName);
+
+            downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, downloadName);
+        } else {
+
+            file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName);
+
+            downloadRequest.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName);
+        }
 
         //code to delete the file if it already exists
-        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName);
         if (file.exists())
             file.delete();
 
-        DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri)
-            .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName)
-            .setVisibleInDownloadsUi(false)
+        downloadRequest.setVisibleInDownloadsUi(false)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
+
         this.downloadId = getDownloadManager(context).enqueue(downloadRequest);
+
     }
 
     private DownloadManager getDownloadManager(Context context) {

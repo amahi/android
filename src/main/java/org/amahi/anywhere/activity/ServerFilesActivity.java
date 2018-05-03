@@ -46,6 +46,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.bus.ServerFileDownloadingEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
 import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
@@ -219,7 +220,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
-        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
+        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file, fileAction == FileAction.DOWNLOAD);
         fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
     }
 
@@ -234,6 +235,10 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
                 startFileOpeningActivity(file, fileUri);
                 break;
 
+            case DOWNLOAD:
+                showFileDownloadedDialog(file, fileUri);
+                break;
+
             case SHARE:
                 startFileSharingActivity(file, fileUri);
                 break;
@@ -241,6 +246,12 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
             default:
                 break;
         }
+    }
+
+    private void showFileDownloadedDialog(ServerFile file, Uri fileUri) {
+        Snackbar.make(getParentView(), R.string.message_file_download_complete, Snackbar.LENGTH_LONG)
+            .setAction(R.string.menu_open, view -> startFileOpeningActivity(file, fileUri))
+            .show();
     }
 
     private void startFileOpeningActivity(ServerFile file, Uri fileUri) {
@@ -474,6 +485,14 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     @Subscribe
+    public void onFileDownloading(ServerFileDownloadingEvent event) {
+        this.file = event.getFile();
+        this.fileAction = FileAction.DOWNLOAD;
+
+        startFileDownloading(event.getShare(), file);
+    }
+
+    @Subscribe
     public void onFileSharing(ServerFileSharingEvent event) {
         this.file = event.getFile();
         this.fileAction = FileAction.SHARE;
@@ -524,7 +543,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     private enum FileAction {
-        OPEN, SHARE;
+        OPEN, SHARE, DOWNLOAD;
     }
 
     private static final class State {

@@ -22,6 +22,7 @@ package org.amahi.anywhere.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -38,11 +39,14 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.db.FileInfoDbHelper;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.RecyclerViewItemClickListener;
+import org.amahi.anywhere.util.Preferences;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -55,6 +59,7 @@ import java.util.Locale;
  */
 public class ServerFilesAdapter extends FilesFilterAdapter {
     private Context context;
+    private FileInfoDbHelper fileInfoDbHelper;
 
     public ServerFilesAdapter(Context context, ServerClient serverClient) {
         this.serverClient = serverClient;
@@ -124,6 +129,32 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         });
 
         fileHolder.itemView.setActivated(selectedPosition == position);
+
+        if (Mimes.match(file.getMime()) == Mimes.Type.AUDIO ||
+            Mimes.match(file.getMime()) == Mimes.Type.VIDEO) {
+
+            setUpDbHelper();
+
+            String file_path = Preferences.getServerName(context) + "/" + serverShare.getName() + file.getPath();
+
+            if (fileInfoDbHelper.getFilePlayed(file_path)) {
+                fileHolder.fileTextView.setTypeface(fileHolder.fileTextView.getTypeface(), Typeface.BOLD);
+                fileHolder.fileTextView.setTextColor(context.getResources().getColor(R.color.played_file));
+            } else {
+                fileHolder.fileTextView.setTextColor(context.getResources().getColor(R.color.primary_text_material_light));
+            }
+
+            closeDb();
+        }
+
+    }
+
+    private void setUpDbHelper() {
+        fileInfoDbHelper = FileInfoDbHelper.init(context);
+    }
+
+    private void closeDb() {
+        fileInfoDbHelper.closeDataBase();
     }
 
     private long getFileSize(ServerFile file) {

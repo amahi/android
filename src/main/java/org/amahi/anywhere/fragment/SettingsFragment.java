@@ -40,6 +40,7 @@ import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
+import org.amahi.anywhere.db.FileInfoDbHelper;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
@@ -58,6 +59,8 @@ public class SettingsFragment extends PreferenceFragment implements
     AccountManagerCallback<Boolean> {
     @Inject
     ServerClient serverClient;
+
+    private FileInfoDbHelper fileInfoDbHelper;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -174,9 +177,29 @@ public class SettingsFragment extends PreferenceFragment implements
             Account account = getAccounts().get(0);
 
             getAccountManager().removeAccount(account, this, null);
+
+            clearFileInfoDb();
         } else {
             tearDownActivity();
+
+            clearFileInfoDb();
         }
+    }
+
+    private void clearFileInfoDb() {
+        setUpDbHelper();
+
+        fileInfoDbHelper.clearDb();
+
+        closeDb();
+    }
+
+    private void setUpDbHelper() {
+        fileInfoDbHelper = FileInfoDbHelper.init(getActivity());
+    }
+
+    private void closeDb() {
+        fileInfoDbHelper.closeDataBase();
     }
 
     private List<Account> getAccounts() {

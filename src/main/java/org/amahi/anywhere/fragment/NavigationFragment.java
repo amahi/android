@@ -427,6 +427,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         Server server = getServersAdapter().getItem(position);
         setUpServerConnection(server);
 
+        storeServerName(server);
+
         //getting Shares of the new Server
         BusProvider.getBus().post(new SharesSelectedEvent());
     }
@@ -458,6 +460,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         } else {
             serverClient.connect(getContext(), server);
         }
+    }
+
+    private void storeServerName(Server server) {
+        Preferences.setServerName(getContext(), server.getName());
     }
 
     @Subscribe

@@ -48,7 +48,7 @@ import java.util.List;
 public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
     protected RecyclerViewItemClickListener mListener;
-    protected int selectedPosition = -1;
+    protected int selectedPosition = RecyclerView.NO_POSITION;
     static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
     static String queryString;
     LayoutInflater layoutInflater;
@@ -162,4 +162,9 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     public int getSelectedPosition() {
         return selectedPosition;
     }
+
+    public void setSelectedPosition(int position) {
+        this.selectedPosition = position;
+    }
+
 }

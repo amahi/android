@@ -1,0 +1,20 @@
+digraph download_states {
+        rankdir=LR;
+        size="8,5"
+        node [shape = doublecircle]; online;
+        node [shape = circle];
+        online -> downloading [ label = "begin-dl" color=blue];
+        downloading -> online [ label = "dl-failed" ];
+        downloading -> downloaded [ label = "dl-completed" ];
+        downloaded -> remote_updated [ label = "hda updated" ];
+        downloaded -> local_updated [ label = "local updated" ];
+        downloaded -> online [ label = "local removed" ];
+        downloaded -> remote_deleted [ label = "remote removed" ];
+        downloading -> online [ label = "delete from downloads" color=blue];
+        downloaded -> online [ label = "delete from downloads" color=blue];
+        remote_deleted -> online [ label = "delete from downloads" color=blue];
+        remote_updated -> online [ label = "delete from downloads" color=blue];
+        local_updated -> online [ label = "delete from downloads" color=blue];
+        remote_updated -> downloading [ label = "update from hda" color=blue];
+        local_updated -> downloading [ label = "re-dl" color=blue];
+}

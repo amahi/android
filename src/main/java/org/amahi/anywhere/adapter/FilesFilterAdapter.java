@@ -35,7 +35,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Mimes;
-import org.amahi.anywhere.util.RecyclerViewItemClickListener;
+import org.amahi.anywhere.util.ServerFileClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ import java.util.List;
  */
 public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
-    protected RecyclerViewItemClickListener mListener;
+    protected ServerFileClickListener mListener;
     protected int selectedPosition = RecyclerView.NO_POSITION;
     static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
     static String queryString;
@@ -63,7 +63,7 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         this.onFilterListChange = t;
     }
 
-    public void setOnClickListener(RecyclerViewItemClickListener mListener) {
+    public void setOnClickListener(ServerFileClickListener mListener) {
         this.mListener = mListener;
     }
 

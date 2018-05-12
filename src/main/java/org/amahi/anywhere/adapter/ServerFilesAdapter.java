@@ -42,7 +42,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
-import org.amahi.anywhere.util.RecyclerViewItemClickListener;
+import org.amahi.anywhere.util.ServerFileClickListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -77,8 +77,10 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
 
         if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
             fileHolder.moreInfo.setVisibility(View.GONE);
+            fileHolder.moreOptions.setVisibility(View.GONE);
 
         } else {
+            fileHolder.moreInfo.setVisibility(View.VISIBLE);
             fileHolder.moreInfo.setVisibility(View.VISIBLE);
 
             fileHolder.fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
@@ -104,29 +106,14 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             fileHolder.fileIconView.setImageResource(Mimes.getFileIcon(file));
         }
 
-        fileHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                notifyItemChanged(selectedPosition);
-                selectedPosition = fileHolder.getAdapterPosition();
-                notifyItemChanged(selectedPosition);
-                mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-            }
+        fileHolder.itemView.setOnClickListener(view -> {
+            mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
         });
 
-        fileHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                notifyItemChanged(selectedPosition);
-                selectedPosition = fileHolder.getAdapterPosition();
-                notifyItemChanged(selectedPosition);
-                boolean isHandled = mListener.onLongItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-                return isHandled;
-            }
+        fileHolder.moreOptions.setOnClickListener(view -> {
+            selectedPosition = fileHolder.getAdapterPosition();
+            mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
         });
-
-        fileHolder.itemView.setSelected(selectedPosition == position);
-        fileHolder.itemView.setActivated(selectedPosition == position);
     }
 
     private long getFileSize(ServerFile file) {
@@ -158,23 +145,24 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         BusProvider.getBus().unregister(this);
     }
 
+    public void setOnClickListener(ServerFileClickListener mListener) {
+        this.mListener = mListener;
+    }
+
     public class ServerFileViewHolder extends RecyclerView.ViewHolder {
-        ImageView fileIconView;
+        ImageView fileIconView, moreOptions;
         TextView fileTextView, fileSize, fileLastModified;
         LinearLayout moreInfo;
 
         ServerFileViewHolder(View itemView) {
             super(itemView);
-            fileIconView = (ImageView) itemView.findViewById(R.id.icon);
-            fileTextView = (TextView) itemView.findViewById(R.id.text);
-            fileSize = (TextView) itemView.findViewById(R.id.file_size);
-            fileLastModified = (TextView) itemView.findViewById(R.id.last_modified);
-            moreInfo = (LinearLayout) itemView.findViewById(R.id.more_info);
+            fileIconView = itemView.findViewById(R.id.icon);
+            fileTextView = itemView.findViewById(R.id.text);
+            fileSize = itemView.findViewById(R.id.file_size);
+            fileLastModified = itemView.findViewById(R.id.last_modified);
+            moreInfo = itemView.findViewById(R.id.more_info);
+            moreOptions = itemView.findViewById(R.id.more_options);
         }
-    }
-
-    public void setOnClickListener(RecyclerViewItemClickListener mListener) {
-        this.mListener = mListener;
     }
 
 }

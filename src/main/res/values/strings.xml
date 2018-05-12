@@ -44,6 +44,7 @@
     <string name="menu_navigation_open">Open navigation</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_share">Share</string>
+    <string name="menu_download">Download</string>
     <string name="menu_delete">Delete</string>
     <string name="menu_sort">Sort</string>
     <string name="menu_search">Search</string>

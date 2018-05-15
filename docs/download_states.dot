@@ -1,20 +1,15 @@
 digraph download_states {
         rankdir=LR;
         size="8,5"
-        node [shape = doublecircle]; online;
         node [shape = circle];
-        online -> downloading [ label = "begin-dl" color=blue];
-        downloading -> online [ label = "dl-failed" ];
-        downloading -> downloaded [ label = "dl-completed" ];
-        downloaded -> remote_updated [ label = "hda updated" ];
-        downloaded -> local_updated [ label = "local updated" ];
-        downloaded -> online [ label = "local removed" ];
-        downloaded -> remote_deleted [ label = "remote removed" ];
-        downloading -> online [ label = "delete from downloads" color=blue];
-        downloaded -> online [ label = "delete from downloads" color=blue];
-        remote_deleted -> online [ label = "delete from downloads" color=blue];
-        remote_updated -> online [ label = "delete from downloads" color=blue];
-        local_updated -> online [ label = "delete from downloads" color=blue];
-        remote_updated -> downloading [ label = "update from hda" color=blue];
-        local_updated -> downloading [ label = "re-dl" color=blue];
+        offline_disabled -> downloading [ label = "offline_toggle_on" color=blue];
+        downloading -> offline_disabled [ label = "dl_failed" ];
+        downloading -> downloaded [ label = "dl_completed" ];
+        downloaded -> out_of_date [ label = "hda_updated" ];
+        downloaded -> offline_disabled [ label = "local_removed" ];
+        downloaded -> downloaded [ label = "remote_removed" ];
+        downloading -> offline_disabled [ label = "offline_toggle_off" color=blue];
+        downloaded -> offline_disabled [ label = "offline_toggle_off" color=blue];
+        out_of_date -> offline_disabled [ label = "offline_toggle_off" color=blue];
+        out_of_date -> downloading [ label = "auto_update" ];
 }

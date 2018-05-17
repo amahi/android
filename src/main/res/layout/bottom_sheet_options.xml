@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:orientation="vertical">
 
@@ -14,8 +15,9 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="32dp"
-            android:src="@drawable/ic_menu_share" />
+            android:layout_marginEnd="32dp"
+            android:src="@drawable/ic_menu_share"
+            tools:ignore="contentDescription"  />
 
         <TextView
             android:layout_width="wrap_content"
@@ -35,7 +37,8 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="32dp"
+            android:layout_marginEnd="32dp"
+            tools:ignore="contentDescription"
             android:src="@drawable/ic_menu_download" />
 
         <TextView
@@ -56,8 +59,9 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="32dp"
-            android:src="@drawable/ic_delete" />
+            android:layout_marginEnd="32dp"
+            android:src="@drawable/ic_delete"
+            tools:ignore="contentDescription" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -65,6 +69,33 @@
             android:text="@string/menu_delete"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/FileActionTheme"
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:src="@drawable/ic_offline"
+            tools:ignore="contentDescription" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_offline"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <android.support.v7.widget.SwitchCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/offline_switch"
+            android:layout_marginEnd="16dp"/>
 
     </LinearLayout>
 

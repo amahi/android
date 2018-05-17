@@ -72,6 +72,8 @@ import org.amahi.anywhere.bus.ServerFileDownloadingEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -117,6 +119,8 @@ public class ServerFilesFragment extends Fragment implements
     private int deleteFilePosition;
     private int lastSelectedFilePosition = -1;
     private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
+
+    private OfflineFileRepository mOfflineFileRepo;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -182,6 +186,7 @@ public class ServerFilesFragment extends Fragment implements
         setUpFilesActions();
         setUpFilesContent(state);
         setUpFilesContentRefreshing();
+        setUpOfflineFileDatabase();
     }
 
     private void setUpProgressDialog() {
@@ -229,6 +234,11 @@ public class ServerFilesFragment extends Fragment implements
             case FileOption.DELETE:
                 deleteFile(getCheckedFile());
                 break;
+            case FileOption.OFFLINE_ENABLED:
+                changeOfflineSTATE(true);
+                break;
+            case FileOption.OFFLINE_DISABLED:
+                changeOfflineSTATE(false);
         }
     }
 
@@ -300,6 +310,25 @@ public class ServerFilesFragment extends Fragment implements
             })
             .setNegativeButton(R.string.button_no, null)
             .show();
+    }
+
+    private void changeOfflineSTATE(boolean enable){
+        OfflineFile file = new OfflineFile();
+        file.name = getCheckedFile().getName();
+        file.path = getCheckedFile().getPath();
+        if(enable){
+            file.state = "downloading";
+            mOfflineFileRepo.insert(file);
+        }else {
+            mOfflineFileRepo.delete(file);
+        }
+
+        updateCurrentFileOfflineState(enable);
+    }
+
+    private void updateCurrentFileOfflineState(boolean enable) {
+        ServerFile serverFile = getCheckedFile();
+        serverFile.setOffline(enable);
     }
 
     @Subscribe
@@ -499,7 +528,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void showFilesContent(List<ServerFile> files) {
-        setUpFilesContent(sortFiles(files));
+        setUpFilesContent(checkOfflineFiles(sortFiles(files)));
 
         showFilesContent();
 
@@ -560,6 +589,21 @@ public class ServerFilesFragment extends Fragment implements
             android.R.color.holo_red_light);
 
         refreshLayout.setOnRefreshListener(this);
+    }
+
+    private void setUpOfflineFileDatabase() {
+        mOfflineFileRepo = new OfflineFileRepository(getContext());
+    }
+
+    private List<ServerFile> checkOfflineFiles(List<ServerFile> serverFiles) {
+        for(ServerFile file: serverFiles) {
+            OfflineFile offlineFile = mOfflineFileRepo.getFileWithPathAndName(file.getPath(), file.getName());
+            if (offlineFile != null) {
+                file.setOffline(!offlineFile.state.equals("offline_disabled"));
+            }
+        }
+
+        return serverFiles;
     }
 
     @Override
@@ -671,9 +715,9 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpFilesContentSort() {
         if (!isMetadataAvailable()) {
-            getFilesAdapter().replaceWith(getShare(), sortFiles(getFiles()));
+            getFilesAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())));
         } else {
-            getFilesMetadataAdapter().replaceWith(getShare(), sortFiles(getFiles()));
+            getFilesMetadataAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())));
         }
     }
 
@@ -787,7 +831,8 @@ public class ServerFilesFragment extends Fragment implements
     @Override
     public void onMoreOptionClick(View view, int position) {
         setItemSelected(position);
-        FileOptionsBottomDialog.newInstance().show(getChildFragmentManager(), "file_options_dialog");
+        Fragments.Builder.buildFileOptionsDialogFragment(getCheckedFile().isOffline())
+            .show(getChildFragmentManager(), "file_options_dialog");
     }
 
     @Override

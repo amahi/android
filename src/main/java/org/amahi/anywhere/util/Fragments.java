@@ -20,10 +20,12 @@
 package org.amahi.anywhere.util;
 
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
+import org.amahi.anywhere.fragment.FileOptionsDialogFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
@@ -49,6 +51,7 @@ public final class Fragments {
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_SHARE = "server_share";
         public static final String SAVED_EXTERNAL = "saved_external";
+        public static final String IS_OFFLINE_ENABLED = "is_offline_enabled";
 
         private Arguments() {
         }
@@ -135,6 +138,15 @@ public final class Fragments {
             bundle.putParcelable(Intents.Extras.SERVER_FILE, serverFile);
             bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, serverFiles);
 
+            fragment.setArguments(bundle);
+            return fragment;
+        }
+
+        public static BottomSheetDialogFragment buildFileOptionsDialogFragment(boolean isOffline) {
+            BottomSheetDialogFragment fragment = new FileOptionsDialogFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Arguments.IS_OFFLINE_ENABLED, isOffline);
             fragment.setArguments(bundle);
             return fragment;
         }

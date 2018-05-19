@@ -34,6 +34,12 @@ import org.amahi.anywhere.bus.FileDownloadFailedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -100,6 +106,7 @@ public class Downloader extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
         if (isDownloadCurrent(intent)) {
             finishDownloading();
 
@@ -109,6 +116,25 @@ public class Downloader extends BroadcastReceiver {
 
     private boolean isDownloadCurrent(Intent intent) {
         return downloadId == intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+    }
+
+    public long startDownloadingForOfflineMode(Uri downloadUri, String downloadName) {
+        File file;
+        DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri);
+
+        file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName);
+
+        downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, downloadName);
+
+        if (file.exists())
+            file.delete();
+
+        downloadRequest.setVisibleInDownloadsUi(false)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+
+
+        this.downloadId = getDownloadManager(context).enqueue(downloadRequest);
+        return downloadId;
     }
 
     private void finishDownloading() {
@@ -152,5 +178,63 @@ public class Downloader extends BroadcastReceiver {
         getDownloadManager(context).remove(downloadId);
 
         tearDownDownloadReceiver();
+    }
+
+    public void finishDownloadingById(long downloadId, String fileName) {
+        DownloadManager.Query downloadQuery = new DownloadManager.Query()
+            .setFilterById(downloadId);
+
+        Cursor downloadInformation = getDownloadManager(context).query(downloadQuery);
+
+        downloadInformation.moveToFirst();
+
+        int downloadStatus = downloadInformation.getInt(
+            downloadInformation.getColumnIndex(DownloadManager.COLUMN_STATUS));
+
+        if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) {
+            String downloadUri = downloadInformation.getString(
+                downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+
+            if (downloadUri.substring(0, 7).matches("file://")) {
+                downloadUri = downloadUri.substring(7);
+            }
+
+            moveFileToInternalStorage(downloadUri, fileName);
+
+        }
+
+        downloadInformation.close();
+    }
+
+    private void moveFileToInternalStorage(String downloadUri, String fileName) {
+        File sourceLocation = new File(downloadUri);
+        File targetLocation = new File(context.getFilesDir(), fileName);
+
+        if (sourceLocation.exists()) {
+
+            InputStream in;
+            try {
+                in = new FileInputStream(sourceLocation);
+                OutputStream out = new FileOutputStream(targetLocation);
+
+                byte[] buf = new byte[1024];
+                int len;
+
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+
+                in.close();
+                out.close();
+
+                if (sourceLocation.exists())
+                    sourceLocation.delete();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 }

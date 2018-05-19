@@ -20,9 +20,11 @@
 package org.amahi.anywhere.fragment;
 
 import android.Manifest;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -80,10 +82,12 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.ServerFileClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -317,13 +321,40 @@ public class ServerFilesFragment extends Fragment implements
         file.name = getCheckedFile().getName();
         file.path = getCheckedFile().getPath();
         if(enable){
-            file.state = "downloading";
+            file.state = OfflineFile.DOWNLOADING;
             mOfflineFileRepo.insert(file);
+            startDownloadService(getContext());
         }else {
             mOfflineFileRepo.delete(file);
+            deleteFileFromOfflineStorage();
         }
 
         updateCurrentFileOfflineState(enable);
+    }
+
+    private void deleteFileFromOfflineStorage() {
+        OfflineFile offlineFile = mOfflineFileRepo.getFileWithPathAndName(getCheckedFile().getPath(), getCheckedFile().getName());
+        if (offlineFile.state == OfflineFile.DOWNLOADING) {
+            stopDownloading(offlineFile.downloadID);
+        }
+        File file = new File(getContext().getFilesDir() + "/" + getCheckedFile().getName());
+        if (file.exists()) {
+            file.delete();
+        }
+        Snackbar.make(getRecyclerView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
+            .show();
+    }
+
+    private void stopDownloading(long downloadID) {
+        DownloadManager dm = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        if (dm != null) {
+            dm.remove(downloadID);
+        }
+    }
+
+    private void startDownloadService(Context context) {
+        Intent downloadService = Intents.Builder.with(context).buildDownloadServiceIntent(getCheckedFile(), getShare());
+        context.startService(downloadService);
     }
 
     private void updateCurrentFileOfflineState(boolean enable) {
@@ -599,7 +630,7 @@ public class ServerFilesFragment extends Fragment implements
         for(ServerFile file: serverFiles) {
             OfflineFile offlineFile = mOfflineFileRepo.getFileWithPathAndName(file.getPath(), file.getName());
             if (offlineFile != null) {
-                file.setOffline(!offlineFile.state.equals("offline_disabled"));
+                file.setOffline(true);
             }
         }
 

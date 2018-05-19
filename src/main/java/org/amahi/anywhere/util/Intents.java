@@ -42,6 +42,7 @@ import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.service.DownloadService;
 import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
@@ -262,6 +263,13 @@ public final class Intents {
         public Intent buildIntroductionIntent() {
             Intent introduction = new Intent(context, IntroductionActivity.class);
             return introduction;
+        }
+
+        public Intent buildDownloadServiceIntent(ServerFile serverFile, ServerShare serverShare) {
+            Intent downloadService = new Intent(context, DownloadService.class);
+            downloadService.putExtra(Extras.SERVER_FILE, serverFile);
+            downloadService.putExtra(Extras.SERVER_SHARE, serverShare);
+            return downloadService;
         }
     }
 }

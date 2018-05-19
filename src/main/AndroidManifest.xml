@@ -147,6 +147,7 @@
         </service>
         <service android:name=".service.VideoService" />
         <service android:name=".service.UploadService" />
+        <service android:name=".service.DownloadService" />
 
         <receiver android:name=".receiver.AudioReceiver">
             <intent-filter>

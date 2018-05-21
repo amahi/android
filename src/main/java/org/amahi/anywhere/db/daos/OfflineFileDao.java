@@ -32,6 +32,9 @@ public interface OfflineFileDao {
     @Delete
     void delete(OfflineFile offlineFile);
 
-    @Query("SELECT * from offline_table where downloadID = :downloadId")
+    @Query("SELECT * from offline_table where downloadId = :downloadId")
     OfflineFile getOfflineFileWithDownloadId(long downloadId);
+
+    @Query("SELECT * from offline_table where state = :state")
+    OfflineFile getOfflineFileWithState(int state);
 }

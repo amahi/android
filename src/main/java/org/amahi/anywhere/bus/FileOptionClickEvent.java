@@ -10,7 +10,7 @@ public class FileOptionClickEvent {
     }
 
     @FileOption.Types
-    public int getUploadOption() {
+    public int getFileOption() {
         return fileOption;
     }
 }

@@ -61,4 +61,9 @@ public class NetworkUtils {
         return PreferenceManager.getDefaultSharedPreferences(context)
             .getBoolean(context.getString(R.string.preference_key_upload_data), false);
     }
+
+    public boolean isNetworkAvailable() {
+        NetworkInfo network = getNetwork();
+        return isNetworkConnected(network);
+    }
 }

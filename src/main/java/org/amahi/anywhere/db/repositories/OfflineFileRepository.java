@@ -1,7 +1,6 @@
 package org.amahi.anywhere.db.repositories;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
 import org.amahi.anywhere.db.AppDatabase;
 import org.amahi.anywhere.db.daos.OfflineFileDao;
@@ -21,63 +20,22 @@ public class OfflineFileRepository {
     }
 
     public void insert (OfflineFile offlineFile) {
-        new insertAsyncTask(mOfflineFileDao).execute(offlineFile);
+        mOfflineFileDao.insert(offlineFile);
     }
 
     public void update(OfflineFile offlineFile) {
-        new updateAsyncTask(mOfflineFileDao).execute(offlineFile);
+        mOfflineFileDao.update(offlineFile);
     }
 
     public void delete (OfflineFile offlineFile) {
-        new deleteAsyncTask(mOfflineFileDao).execute(offlineFile);
+        mOfflineFileDao.delete(offlineFile);
     }
 
     public OfflineFile getFileWithDownloadId(long downloadId) {
         return mOfflineFileDao.getOfflineFileWithDownloadId(downloadId);
     }
 
-    private static class insertAsyncTask extends AsyncTask<OfflineFile, Void, Void> {
-
-        private OfflineFileDao mAsyncTaskDao;
-
-        insertAsyncTask(OfflineFileDao dao) {
-            mAsyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final OfflineFile... params) {
-            mAsyncTaskDao.insert(params[0]);
-            return null;
-        }
-    }
-
-    private static class updateAsyncTask extends AsyncTask<OfflineFile, Void, Void> {
-
-        private OfflineFileDao mAsyncTaskDao;
-
-        updateAsyncTask(OfflineFileDao dao) {
-            mAsyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final OfflineFile... params) {
-            mAsyncTaskDao.update(params[0]);
-            return null;
-        }
-    }
-
-    private static class deleteAsyncTask extends AsyncTask<OfflineFile, Void, Void> {
-
-        private OfflineFileDao mAsyncTaskDao;
-
-        deleteAsyncTask(OfflineFileDao dao) {
-            mAsyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final OfflineFile... params) {
-            mAsyncTaskDao.delete(params[0]);
-            return null;
-        }
+    public OfflineFile getFileWithState(@OfflineFile.Types int state) {
+        return mOfflineFileDao.getOfflineFileWithState(state);
     }
 }

@@ -27,6 +27,8 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.content.FileProvider;
 
 import org.amahi.anywhere.bus.BusProvider;
@@ -53,6 +55,9 @@ public class Downloader extends BroadcastReceiver {
     private final Context context;
 
     private long downloadId;
+    private int lastProgress = 0;
+
+    private DownloadCallbacks downloadCallbacks;
 
     @Inject
     public Downloader(Context context) {
@@ -119,22 +124,53 @@ public class Downloader extends BroadcastReceiver {
     }
 
     public long startDownloadingForOfflineMode(Uri downloadUri, String downloadName) {
-        File file;
-        DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri);
 
-        file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName);
-
-        downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, downloadName);
-
+        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), downloadName);
         if (file.exists())
             file.delete();
 
-        downloadRequest.setVisibleInDownloadsUi(false)
+        DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri);
+        downloadRequest.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName)
+            .setVisibleInDownloadsUi(false)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
-
         this.downloadId = getDownloadManager(context).enqueue(downloadRequest);
+        startProgressCount();
+        downloadCallbacks.downloadStarted((int) downloadId, downloadName);
         return downloadId;
+    }
+
+    private void startProgressCount() {
+
+        new Thread(() -> {
+            boolean downloading = true;
+            while (downloading) {
+                DownloadManager.Query q = new DownloadManager.Query();
+                q.setFilterById(downloadId);
+                Cursor cursor = getDownloadManager(context).query(q);
+                if (cursor != null && cursor.moveToFirst()) {
+                    cursor.moveToFirst();
+                    int bytes_downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    int bytes_total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+
+                    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                        downloading = false;
+                        downloadCallbacks.downloadSuccess((int) downloadId);
+                    } else if (status == DownloadManager.STATUS_FAILED) {
+                        downloading = false;
+                        downloadCallbacks.downloadError((int) downloadId);
+                    }
+                    cursor.close();
+
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    // update progress on UI thread
+                    handler.post(new ProgressUpdater(bytes_downloaded, bytes_total));
+                } else {
+                    downloading = false;
+                }
+            }
+        }).start();
     }
 
     private void finishDownloading() {
@@ -176,38 +212,12 @@ public class Downloader extends BroadcastReceiver {
 
     public void finishFileDownloading() {
         getDownloadManager(context).remove(downloadId);
-
         tearDownDownloadReceiver();
     }
 
-    public void finishDownloadingById(long downloadId, String fileName) {
-        DownloadManager.Query downloadQuery = new DownloadManager.Query()
-            .setFilterById(downloadId);
+    public void moveFileToInternalStorage(String fileName) {
+        File sourceLocation = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + fileName);
 
-        Cursor downloadInformation = getDownloadManager(context).query(downloadQuery);
-
-        downloadInformation.moveToFirst();
-
-        int downloadStatus = downloadInformation.getInt(
-            downloadInformation.getColumnIndex(DownloadManager.COLUMN_STATUS));
-
-        if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) {
-            String downloadUri = downloadInformation.getString(
-                downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-
-            if (downloadUri.substring(0, 7).matches("file://")) {
-                downloadUri = downloadUri.substring(7);
-            }
-
-            moveFileToInternalStorage(downloadUri, fileName);
-
-        }
-
-        downloadInformation.close();
-    }
-
-    private void moveFileToInternalStorage(String downloadUri, String fileName) {
-        File sourceLocation = new File(downloadUri);
         File targetLocation = new File(context.getFilesDir(), fileName);
 
         if (sourceLocation.exists()) {
@@ -235,6 +245,39 @@ public class Downloader extends BroadcastReceiver {
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    public void setDownloadCallbacks(DownloadCallbacks downloadCallbacks) {
+        this.downloadCallbacks = downloadCallbacks;
+    }
+
+    public interface DownloadCallbacks {
+        void downloadStarted(int id, String fileName);
+
+        void downloadProgress(int id, int progress);
+
+        void downloadSuccess(long id);
+
+        void downloadError(long id);
+    }
+
+    private class ProgressUpdater implements Runnable {
+        private long mDownloaded;
+        private long mTotal;
+
+        ProgressUpdater(long downloaded, long total) {
+            mDownloaded = downloaded;
+            mTotal = total;
+        }
+
+        @Override
+        public void run() {
+            int progress = (int) (100 * mDownloaded / mTotal);
+            if (lastProgress != progress) {
+                lastProgress = progress;
+                downloadCallbacks.downloadProgress((int) downloadId, progress);
+            }
         }
     }
 }

@@ -12,14 +12,69 @@ public class OfflineFile {
     public static final int OUT_OF_DATE = 3;
 
     @NonNull
-    public String path;
+    private String path;
     @NonNull
-    public String name;
-    public Long timeStamp;
-
+    private String name;
+    private String fileUri;
+    private long timeStamp;
     @Types
-    public int state;
-    public long downloadID;
+    private int state;
+    private long downloadId;
+
+    public OfflineFile(@NonNull String path, @NonNull String name) {
+        this.path = path;
+        this.name = name;
+    }
+
+    @NonNull
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(@NonNull String path) {
+        this.path = path;
+    }
+
+    @NonNull
+    public String getName() {
+        return name;
+    }
+
+    public void setName(@NonNull String name) {
+        this.name = name;
+    }
+
+    public String getFileUri() {
+        return fileUri;
+    }
+
+    public void setFileUri(String fileUri) {
+        this.fileUri = fileUri;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public long getDownloadId() {
+        return downloadId;
+    }
+
+    public void setDownloadId(long downloadId) {
+        this.downloadId = downloadId;
+    }
 
     @IntDef({DOWNLOADING, DOWNLOADED, OUT_OF_DATE})
     public @interface Types {

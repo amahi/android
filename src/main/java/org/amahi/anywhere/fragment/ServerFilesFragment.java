@@ -110,7 +110,7 @@ public class ServerFilesFragment extends Fragment implements
     FilesFilterAdapter.onFilterListChange,
     EasyPermissions.PermissionCallbacks,
     CastStateListener {
-    private static final int SHARE_PERMISSIONS = 101;
+    public final static int EXTERNAL_STORAGE_PERMISSION = 101;
     @Inject
     ServerClient serverClient;
     private SearchView searchView;
@@ -125,6 +125,8 @@ public class ServerFilesFragment extends Fragment implements
     private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
 
     private OfflineFileRepository mOfflineFileRepo;
+    private @FileOption.Types
+    int selectedFileOption;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -220,17 +222,18 @@ public class ServerFilesFragment extends Fragment implements
 
     @Subscribe
     public void onFileOptionSelected(FileOptionClickEvent event) {
-        switch (event.getUploadOption()) {
+        selectedFileOption = event.getFileOption();
+        switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
                 if (Android.isPermissionRequired()) {
-                    checkWritePermissions(false);
+                    checkWritePermissions();
                 } else {
                     startFileDownloading(getCheckedFile());
                 }
                 break;
             case FileOption.SHARE:
                 if (Android.isPermissionRequired()) {
-                    checkWritePermissions(true);
+                    checkWritePermissions();
                 } else {
                     startFileSharing(getCheckedFile());
                 }
@@ -239,26 +242,38 @@ public class ServerFilesFragment extends Fragment implements
                 deleteFile(getCheckedFile());
                 break;
             case FileOption.OFFLINE_ENABLED:
-                changeOfflineSTATE(true);
+                if (Android.isPermissionRequired()) {
+                    checkWritePermissions();
+                } else {
+                    changeOfflineState(true);
+                }
                 break;
             case FileOption.OFFLINE_DISABLED:
-                changeOfflineSTATE(false);
+                changeOfflineState(false);
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void checkWritePermissions(boolean isShared) {
+    private void checkWritePermissions() {
         String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(getContext(), perms)) {
-            if (isShared) {
-                startFileSharing(getCheckedFile());
-            } else {
-                startFileDownloading(getCheckedFile());
-            }
+            handleFileOptionsWithPermissionGranted();
         } else {
             lastSelectedFilePosition = getListAdapter().getSelectedPosition();
             EasyPermissions.requestPermissions(this, getString(R.string.share_permission),
-                SHARE_PERMISSIONS, perms);
+                EXTERNAL_STORAGE_PERMISSION, perms);
+        }
+    }
+
+    private void handleFileOptionsWithPermissionGranted() {
+        switch (selectedFileOption) {
+            case FileOption.DOWNLOAD:
+                startFileDownloading(getCheckedFile());
+                break;
+            case FileOption.SHARE:
+                startFileSharing(getCheckedFile());
+            case FileOption.OFFLINE_ENABLED:
+                changeOfflineState(true);
         }
     }
 
@@ -272,21 +287,18 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
-        if (requestCode == SHARE_PERMISSIONS) {
-            if (lastSelectedFilePosition != -1) {
-                startFileSharing(getFile(lastSelectedFilePosition));
-            }
+        if (lastSelectedFilePosition != -1) {
+            handleFileOptionsWithPermissionGranted();
         }
     }
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            if (requestCode == SHARE_PERMISSIONS) {
+            if (requestCode == EXTERNAL_STORAGE_PERMISSION) {
                 showPermissionSnackBar(getString(R.string.share_permission_denied));
             }
         }
-
     }
 
     private void showPermissionSnackBar(String message) {
@@ -316,16 +328,10 @@ public class ServerFilesFragment extends Fragment implements
             .show();
     }
 
-    private void changeOfflineSTATE(boolean enable){
-        OfflineFile file = new OfflineFile();
-        file.name = getCheckedFile().getName();
-        file.path = getCheckedFile().getPath();
+    private void changeOfflineState(boolean enable) {
         if(enable){
-            file.state = OfflineFile.DOWNLOADING;
-            mOfflineFileRepo.insert(file);
-            startDownloadService(getContext());
+            startDownloadService();
         }else {
-            mOfflineFileRepo.delete(file);
             deleteFileFromOfflineStorage();
         }
 
@@ -334,10 +340,10 @@ public class ServerFilesFragment extends Fragment implements
 
     private void deleteFileFromOfflineStorage() {
         OfflineFile offlineFile = mOfflineFileRepo.getFileWithPathAndName(getCheckedFile().getPath(), getCheckedFile().getName());
-        if (offlineFile.state == OfflineFile.DOWNLOADING) {
-            stopDownloading(offlineFile.downloadID);
+        if (offlineFile.getState() == OfflineFile.DOWNLOADING) {
+            stopDownloading(offlineFile.getDownloadId());
         }
-        File file = new File(getContext().getFilesDir() + "/" + getCheckedFile().getName());
+        File file = new File(getContext().getFilesDir(), getCheckedFile().getName());
         if (file.exists()) {
             file.delete();
         }
@@ -352,9 +358,9 @@ public class ServerFilesFragment extends Fragment implements
         }
     }
 
-    private void startDownloadService(Context context) {
-        Intent downloadService = Intents.Builder.with(context).buildDownloadServiceIntent(getCheckedFile(), getShare());
-        context.startService(downloadService);
+    private void startDownloadService() {
+        Intent downloadService = Intents.Builder.with(getContext()).buildDownloadServiceIntent(getCheckedFile(), getShare());
+        getContext().startService(downloadService);
     }
 
     private void updateCurrentFileOfflineState(boolean enable) {

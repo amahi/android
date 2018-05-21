@@ -28,6 +28,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
@@ -117,11 +118,15 @@ public class Downloader extends BroadcastReceiver {
             String downloadUri = downloadInformation.getString(
                 downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 
+            if (downloadUri.substring(0, 7).matches("file://")) {
+                downloadUri = downloadUri.substring(7);
+            }
+
             try {
                 URI uri = new URI(downloadUri);
                 downloadUri = uri.getPath();
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                Log.e("Downloader", "Invalid Uri: " + downloadUri);
             }
 
             File file = new File(downloadUri);

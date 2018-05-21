@@ -33,6 +33,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -53,13 +54,13 @@ public class ServerFileDownloadingFragment extends DialogFragment {
     @Inject
     ServerClient serverClient;
 
-    public static ServerFileDownloadingFragment newInstance(ServerShare share, ServerFile file, boolean isSavedInExternal) {
+    public static ServerFileDownloadingFragment newInstance(ServerShare share, ServerFile file, @FileOption.Types int fileAction) {
         ServerFileDownloadingFragment fragment = new ServerFileDownloadingFragment();
 
         Bundle arguments = new Bundle();
         arguments.putParcelable(Fragments.Arguments.SERVER_SHARE, share);
         arguments.putParcelable(Fragments.Arguments.SERVER_FILE, file);
-        arguments.putBoolean(Fragments.Arguments.SAVED_EXTERNAL, isSavedInExternal);
+        arguments.putInt(Fragments.Arguments.FILE_OPTION, fileAction);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -89,8 +90,8 @@ public class ServerFileDownloadingFragment extends DialogFragment {
 
     private void startFileDownloading(Bundle state) {
         if (state == null) {
-            boolean saveInExternal = getArguments().getBoolean(Fragments.Arguments.SAVED_EXTERNAL, false);
-            downloader.startFileDownloading(getFileUri(), getFile().getName(), saveInExternal);
+            int fileOption = getArguments().getInt(Fragments.Arguments.FILE_OPTION, 0);
+            downloader.startFileDownloading(getFileUri(), getFile().getName(), fileOption);
         }
     }
 

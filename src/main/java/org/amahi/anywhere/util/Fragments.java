@@ -50,7 +50,7 @@ public final class Fragments {
     public static final class Arguments {
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_SHARE = "server_share";
-        public static final String SAVED_EXTERNAL = "saved_external";
+        public static final String FILE_OPTION = "file_option";
         public static final String IS_OFFLINE_ENABLED = "is_offline_enabled";
 
         private Arguments() {

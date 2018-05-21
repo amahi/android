@@ -26,11 +26,13 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import org.amahi.anywhere.AmahiApplication.JobIds;
+import org.amahi.anywhere.service.DownloadService;
 import org.amahi.anywhere.service.UploadService;
 
 /**
@@ -75,7 +77,14 @@ public class NetConnectivityJob extends JobService {
         Log.i(TAG, "JOB STARTED!");
         Intent intent = new Intent(this, UploadService.class);
         startService(intent);
+        startDownloadService(this);
         return false;
+    }
+
+    private void startDownloadService(Context context) {
+        Intent downloadService = new Intent(context, DownloadService.class);
+        downloadService.setAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        context.startService(downloadService);
     }
 
     @Override

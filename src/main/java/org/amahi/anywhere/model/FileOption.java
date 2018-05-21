@@ -4,6 +4,7 @@ import android.support.annotation.IntDef;
 
 public class FileOption {
 
+    public static final int OPEN = 0;
     public static final int SHARE = 1;
     public static final int DOWNLOAD = 2;
     public static final int DELETE = 3;
@@ -21,7 +22,7 @@ public class FileOption {
         return type;
     }
 
-    @IntDef({SHARE, DOWNLOAD, DELETE, OFFLINE_DISABLED, OFFLINE_ENABLED})
+    @IntDef({OPEN, SHARE, DOWNLOAD, DELETE, OFFLINE_DISABLED, OFFLINE_ENABLED})
     public @interface Types {
     }
 }

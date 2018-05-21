@@ -56,6 +56,7 @@ import org.amahi.anywhere.fragment.ProgressDialogFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.UploadBottomSheet;
+import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.model.UploadOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -90,7 +91,8 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     @Inject
     ServerClient serverClient;
     private ServerFile file;
-    private FileAction fileAction;
+    @FileOption.Types
+    private int fileOption;
     private ProgressDialogFragment uploadDialogFragment;
     private File cameraImage;
 
@@ -160,7 +162,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     private void setUpFilesState(Bundle state) {
         if (isFilesStateValid(state)) {
             this.file = state.getParcelable(State.FILE);
-            this.fileAction = (FileAction) state.getSerializable(State.FILE_ACTION);
+            this.fileOption = state.getInt(State.FILE_ACTION);
         }
     }
 
@@ -171,7 +173,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     @Subscribe
     public void onFileOpening(FileOpeningEvent event) {
         this.file = event.getFile();
-        this.fileAction = FileAction.OPEN;
+        this.fileOption = FileOption.OPEN;
 
         setUpFile(event.getShare(), event.getFiles(), event.getFile());
     }
@@ -220,7 +222,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
-        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file, fileAction == FileAction.DOWNLOAD);
+        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file, fileOption);
         fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
     }
 
@@ -230,16 +232,16 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     private void finishFileDownloading(Uri fileUri) {
-        switch (fileAction) {
-            case OPEN:
+        switch (fileOption) {
+            case FileOption.OPEN:
                 startFileOpeningActivity(file, fileUri);
                 break;
 
-            case DOWNLOAD:
+            case FileOption.DOWNLOAD:
                 showFileDownloadedDialog(file, fileUri);
                 break;
 
-            case SHARE:
+            case FileOption.SHARE:
                 startFileSharingActivity(file, fileUri);
                 break;
 
@@ -487,7 +489,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     @Subscribe
     public void onFileDownloading(ServerFileDownloadingEvent event) {
         this.file = event.getFile();
-        this.fileAction = FileAction.DOWNLOAD;
+        this.fileOption = FileOption.DOWNLOAD;
 
         startFileDownloading(event.getShare(), file);
     }
@@ -495,7 +497,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     @Subscribe
     public void onFileSharing(ServerFileSharingEvent event) {
         this.file = event.getFile();
-        this.fileAction = FileAction.SHARE;
+        this.fileOption = FileOption.SHARE;
 
         startFileSharingActivity(event.getShare(), event.getFile());
     }
@@ -539,11 +541,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void tearDownFilesState(Bundle state) {
         state.putParcelable(State.FILE, file);
-        state.putSerializable(State.FILE_ACTION, fileAction);
-    }
-
-    private enum FileAction {
-        OPEN, SHARE, DOWNLOAD;
+        state.putInt(State.FILE_ACTION, fileOption);
     }
 
     private static final class State {

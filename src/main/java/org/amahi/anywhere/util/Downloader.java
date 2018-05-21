@@ -34,6 +34,7 @@ import android.support.v4.content.FileProvider;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.model.FileOption;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,6 +59,7 @@ public class Downloader extends BroadcastReceiver {
     private int lastProgress = 0;
 
     private DownloadCallbacks downloadCallbacks;
+    private ProgressTask downloadProgressTask;
 
     @Inject
     public Downloader(Context context) {
@@ -65,10 +67,10 @@ public class Downloader extends BroadcastReceiver {
         this.downloadId = Integer.MIN_VALUE;
     }
 
-    public void startFileDownloading(Uri fileUri, String fileName, boolean saveInExternal) {
+    public void startFileDownloading(Uri fileUri, String fileName, @FileOption.Types int fileOption) {
         setUpDownloadReceiver();
 
-        startDownloading(fileUri, fileName, saveInExternal);
+        startDownloading(fileUri, fileName, fileOption);
     }
 
     private void setUpDownloadReceiver() {
@@ -78,18 +80,17 @@ public class Downloader extends BroadcastReceiver {
         context.registerReceiver(this, downloadActionsFilter);
     }
 
-    private void startDownloading(Uri downloadUri, String downloadName, boolean saveInExternal) {
+    private void startDownloading(Uri downloadUri, String downloadName, @FileOption.Types int fileOption) {
         File file;
         DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri);
-        if (saveInExternal) {
 
-            file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName);
-
+        if (fileOption == FileOption.DOWNLOAD) {
+            // download in public directory
+            file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), downloadName);
             downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, downloadName);
         } else {
-
-            file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) + "/" + downloadName);
-
+            // download in App directory
+            file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), downloadName);
             downloadRequest.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName);
         }
 
@@ -99,7 +100,6 @@ public class Downloader extends BroadcastReceiver {
 
         downloadRequest.setVisibleInDownloadsUi(false)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
-
 
         this.downloadId = getDownloadManager(context).enqueue(downloadRequest);
 
@@ -125,7 +125,7 @@ public class Downloader extends BroadcastReceiver {
 
     public long startDownloadingForOfflineMode(Uri downloadUri, String downloadName) {
 
-        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), downloadName);
+        File file = new File(context.getExternalFilesDir("offline"), downloadName);
         if (file.exists())
             file.delete();
 
@@ -134,43 +134,23 @@ public class Downloader extends BroadcastReceiver {
             .setVisibleInDownloadsUi(false)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
-        this.downloadId = getDownloadManager(context).enqueue(downloadRequest);
-        startProgressCount();
-        downloadCallbacks.downloadStarted((int) downloadId, downloadName);
-        return downloadId;
+        long id = getDownloadManager(context).enqueue(downloadRequest);
+        startProgressCount(id);
+        downloadCallbacks.downloadStarted((int) id, downloadName);
+        return id;
     }
 
-    private void startProgressCount() {
+    private void startProgressCount(long id) {
+        if (downloadProgressTask != null) {
+            downloadProgressTask.shutDown();
+        }
+        downloadProgressTask = new ProgressTask(id);
+        Thread thread = new Thread(downloadProgressTask);
+        thread.start();
+    }
 
-        new Thread(() -> {
-            boolean downloading = true;
-            while (downloading) {
-                DownloadManager.Query q = new DownloadManager.Query();
-                q.setFilterById(downloadId);
-                Cursor cursor = getDownloadManager(context).query(q);
-                if (cursor != null && cursor.moveToFirst()) {
-                    cursor.moveToFirst();
-                    int bytes_downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                    int bytes_total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-
-                    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                        downloading = false;
-                        downloadCallbacks.downloadSuccess((int) downloadId);
-                    } else if (status == DownloadManager.STATUS_FAILED) {
-                        downloading = false;
-                        downloadCallbacks.downloadError((int) downloadId);
-                    }
-                    cursor.close();
-
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    // update progress on UI thread
-                    handler.post(new ProgressUpdater(bytes_downloaded, bytes_total));
-                } else {
-                    downloading = false;
-                }
-            }
-        }).start();
+    public void resumeProgressCount(long id) {
+        startProgressCount(id);
     }
 
     private void finishDownloading() {
@@ -200,6 +180,7 @@ public class Downloader extends BroadcastReceiver {
         }
 
         downloadInformation.close();
+
     }
 
     private void tearDownDownloadReceiver() {
@@ -216,7 +197,7 @@ public class Downloader extends BroadcastReceiver {
     }
 
     public void moveFileToInternalStorage(String fileName) {
-        File sourceLocation = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + fileName);
+        File sourceLocation = new File(context.getExternalFilesDir("offline"), fileName);
 
         File targetLocation = new File(context.getFilesDir(), fileName);
 
@@ -252,6 +233,11 @@ public class Downloader extends BroadcastReceiver {
         this.downloadCallbacks = downloadCallbacks;
     }
 
+    private boolean isNetworkAvailable() {
+        NetworkUtils networkUtils = new NetworkUtils(context);
+        return networkUtils.isNetworkAvailable();
+    }
+
     public interface DownloadCallbacks {
         void downloadStarted(int id, String fileName);
 
@@ -260,15 +246,76 @@ public class Downloader extends BroadcastReceiver {
         void downloadSuccess(long id);
 
         void downloadError(long id);
+
+        void downloadPaused(long id, int progress);
+    }
+
+    private class ProgressTask implements Runnable {
+        private boolean isDownloading;
+        private long id;
+
+        public ProgressTask(long id) {
+            this.id = id;
+        }
+
+        @Override
+        public void run() {
+            isDownloading = true;
+            while (isDownloading) {
+                DownloadManager.Query q = new DownloadManager.Query();
+                q.setFilterById(id);
+                Cursor cursor = getDownloadManager(context).query(q);
+                if (cursor != null && cursor.moveToFirst()) {
+                    cursor.moveToFirst();
+                    int bytes_downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    int bytes_total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    int progress = bytes_total != 0 ? bytes_downloaded / bytes_total : 0;
+
+                    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    switch (status) {
+
+                        case DownloadManager.STATUS_PAUSED:
+                            if (!(isNetworkAvailable())) {
+                                isDownloading = false;
+                                downloadCallbacks.downloadPaused(id, progress);
+                            }
+
+                            break;
+                        case DownloadManager.STATUS_SUCCESSFUL:
+                            isDownloading = false;
+                            downloadCallbacks.downloadSuccess((int) id);
+                            break;
+                        case DownloadManager.STATUS_FAILED:
+                            isDownloading = false;
+                            downloadCallbacks.downloadError((int) id);
+                            break;
+                    }
+
+                    cursor.close();
+
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    // update progress on UI thread
+                    handler.post(new ProgressUpdater(bytes_downloaded, bytes_total, (int) id));
+                } else {
+                    isDownloading = false;
+                }
+            }
+        }
+
+        public void shutDown() {
+            isDownloading = false;
+        }
     }
 
     private class ProgressUpdater implements Runnable {
         private long mDownloaded;
         private long mTotal;
+        private int id;
 
-        ProgressUpdater(long downloaded, long total) {
+        ProgressUpdater(long downloaded, long total, int id) {
             mDownloaded = downloaded;
             mTotal = total;
+            this.id = id;
         }
 
         @Override
@@ -276,8 +323,10 @@ public class Downloader extends BroadcastReceiver {
             int progress = (int) (100 * mDownloaded / mTotal);
             if (lastProgress != progress) {
                 lastProgress = progress;
-                downloadCallbacks.downloadProgress((int) downloadId, progress);
+                downloadCallbacks.downloadProgress(id, progress);
             }
+
         }
     }
+
 }

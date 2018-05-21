@@ -272,6 +272,7 @@ public class ServerFilesFragment extends Fragment implements
                 break;
             case FileOption.SHARE:
                 startFileSharing(getCheckedFile());
+                break;
             case FileOption.OFFLINE_ENABLED:
                 changeOfflineState(true);
         }

@@ -43,6 +43,7 @@ import org.amahi.anywhere.adapter.ServerFilesImagePagerAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
+import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -241,7 +242,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     }
 
     private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
-        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file, false);
+        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file, FileOption.SHARE);
         fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
     }
 

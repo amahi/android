@@ -34,6 +34,8 @@ import org.amahi.anywhere.bus.FileDownloadFailedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -115,12 +117,15 @@ public class Downloader extends BroadcastReceiver {
             String downloadUri = downloadInformation.getString(
                 downloadInformation.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 
-            if (downloadUri.substring(0, 7).matches("file://")) {
-                downloadUri = downloadUri.substring(7);
+            try {
+                URI uri = new URI(downloadUri);
+                downloadUri = uri.getPath();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
             }
+
             File file = new File(downloadUri);
             Uri contentUri = FileProvider.getUriForFile(context, "org.amahi.anywhere.fileprovider", file);
-
             BusProvider.getBus().post(new FileDownloadedEvent(contentUri));
         } else {
             BusProvider.getBus().post(new FileDownloadFailedEvent());

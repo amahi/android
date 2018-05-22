@@ -13,6 +13,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOptionClickEvent;
 import org.amahi.anywhere.model.FileOption;
+import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 
@@ -36,21 +37,30 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
         LinearLayout shareLayout = view.findViewById(R.id.share_layout);
         LinearLayout downloadLayout = view.findViewById(R.id.download_layout);
         LinearLayout deleteLayout = view.findViewById(R.id.delete_layout);
+        LinearLayout offlineLayout = view.findViewById(R.id.offline_layout);
         SwitchCompat offlineSwitch = view.findViewById(R.id.offline_switch);
 
-        offlineSwitch.setChecked(getArguments().getBoolean(Fragments.Arguments.IS_OFFLINE_ENABLED));
+        ServerFile file = getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+        if (Intents.Builder.with(getContext()).isMediaServerFile(file)) {
+            offlineSwitch.setChecked(file.isOffline());
+
+            offlineSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (b) {
+                    setOption(FileOption.OFFLINE_ENABLED);
+                } else {
+                    setOption(FileOption.OFFLINE_DISABLED);
+                }
+                file.setOffline(b);
+                getArguments().putParcelable(Fragments.Arguments.SERVER_FILE, file);
+            });
+        } else {
+            offlineLayout.setVisibility(View.GONE);
+        }
 
         shareLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.SHARE));
         downloadLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DOWNLOAD));
         deleteLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DELETE));
-        offlineSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-            if(b) {
-                setOption(FileOption.OFFLINE_ENABLED);
-            }else {
-                setOption(FileOption.OFFLINE_DISABLED);
-            }
-            getArguments().putBoolean(Fragments.Arguments.IS_OFFLINE_ENABLED, b);
-        });
+
 
     }
 

@@ -55,6 +55,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.squareup.otto.Subscribe;
 
@@ -70,6 +71,8 @@ import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.receiver.AudioReceiver;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -213,9 +216,22 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     private void setUpAudioPlayback() {
-        MediaSource mediaSource = buildMediaSource(getAudioUri());
+        MediaSource mediaSource;
+        if (isFileAvailableOffline(getAudioFile())) {
+            mediaSource = new ExtractorMediaSource.Factory(
+                new DefaultDataSourceFactory(this, Identifier.getUserAgent(this)))
+                .createMediaSource(Uri.parse(getFilesDir() + "/" + audioFile.getName()));
+        } else {
+            mediaSource = buildMediaSource(getAudioUri());
+        }
         audioPlayer.prepare(mediaSource, true, false);
         playAudio();
+    }
+
+    private boolean isFileAvailableOffline(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile file = repository.getOfflineFile(audioShare.getName(), serverFile.getPath(), serverFile.getName());
+        return file != null && file.getState() == OfflineFile.DOWNLOADED;
     }
 
     private Uri getAudioUri() {

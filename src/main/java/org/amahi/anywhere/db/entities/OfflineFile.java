@@ -4,7 +4,7 @@ import android.arch.persistence.room.Entity;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
-@Entity(tableName = "offline_table", primaryKeys = {"path", "name"})
+@Entity(tableName = "offline_table", primaryKeys = {"share", "path", "name"})
 public class OfflineFile {
 
     public static final int DOWNLOADING = 1;
@@ -15,13 +15,16 @@ public class OfflineFile {
     private String path;
     @NonNull
     private String name;
+    @NonNull
+    private String share;
     private String fileUri;
     private long timeStamp;
     @Types
     private int state;
     private long downloadId;
 
-    public OfflineFile(@NonNull String path, @NonNull String name) {
+    public OfflineFile(@NonNull String share, @NonNull String path, @NonNull String name) {
+        this.share = share;
         this.path = path;
         this.name = name;
     }
@@ -42,6 +45,15 @@ public class OfflineFile {
 
     public void setName(@NonNull String name) {
         this.name = name;
+    }
+
+    @NonNull
+    public String getShare() {
+        return share;
+    }
+
+    public void setShare(@NonNull String share) {
+        this.share = share;
     }
 
     public String getFileUri() {

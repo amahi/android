@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.util;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
@@ -51,7 +52,6 @@ public final class Fragments {
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_SHARE = "server_share";
         public static final String FILE_OPTION = "file_option";
-        public static final String IS_OFFLINE_ENABLED = "is_offline_enabled";
 
         private Arguments() {
         }
@@ -142,11 +142,11 @@ public final class Fragments {
             return fragment;
         }
 
-        public static BottomSheetDialogFragment buildFileOptionsDialogFragment(boolean isOffline) {
+        public static BottomSheetDialogFragment buildFileOptionsDialogFragment(Context context, ServerFile file) {
             BottomSheetDialogFragment fragment = new FileOptionsDialogFragment();
 
             Bundle bundle = new Bundle();
-            bundle.putBoolean(Arguments.IS_OFFLINE_ENABLED, isOffline);
+            bundle.putParcelable(Arguments.SERVER_FILE, file);
             fragment.setArguments(bundle);
             return fragment;
         }

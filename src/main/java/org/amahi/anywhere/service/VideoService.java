@@ -30,6 +30,8 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -93,13 +95,28 @@ public class VideoService extends Service {
     }
 
     private void setUpVideoPlayback(boolean isSubtitleEnabled) {
-        Media media = new Media(mLibVLC, getVideoUri());
+        Media media;
+        if (isFileAvailableOffline(videoFile)) {
+            media = new Media(mLibVLC, getVideoPath());
+        } else {
+            media = new Media(mLibVLC, getVideoUri());
+        }
         mMediaPlayer.setMedia(media);
         media.release();
         if (isSubtitleEnabled) {
             searchSubtitleFile();
         }
         mMediaPlayer.play();
+    }
+
+    private boolean isFileAvailableOffline(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile file = repository.getOfflineFile(videoShare.getName(), serverFile.getPath(), serverFile.getName());
+        return file != null && file.getState() == OfflineFile.DOWNLOADED;
+    }
+
+    private String getVideoPath() {
+        return getFilesDir() + "/" + videoFile.getName();
     }
 
     private Uri getVideoUri() {

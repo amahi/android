@@ -15,8 +15,8 @@ public class OfflineFileRepository {
         mOfflineFileDao = db.offlineFileDao();
     }
 
-    public OfflineFile getFileWithPathAndName(String path, String name) {
-        return mOfflineFileDao.getOfflineFileWithPathAndName(path, name);
+    public OfflineFile getOfflineFile(String share, String path, String name) {
+        return mOfflineFileDao.getOfflineFile(share, path, name);
     }
 
     public void insert (OfflineFile offlineFile) {

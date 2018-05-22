@@ -116,6 +116,13 @@ public final class Intents {
             return getServerFileActivity(file) != null;
         }
 
+        public boolean isMediaServerFile(ServerFile file) {
+            String fileFormat = file.getMime();
+            return ServerFileAudioActivity.supports(fileFormat)
+                || ServerFileImageActivity.supports(fileFormat)
+                || ServerFileVideoActivity.supports(fileFormat);
+        }
+
         private Class<? extends Activity> getServerFileActivity(ServerFile file) {
             String fileFormat = file.getMime();
 

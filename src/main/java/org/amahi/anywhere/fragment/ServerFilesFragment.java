@@ -331,7 +331,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void changeOfflineState(boolean enable) {
         if(enable){
-            startDownloadService();
+            startDownloadService(getCheckedFile());
         }else {
             deleteFileFromOfflineStorage();
         }
@@ -340,7 +340,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void deleteFileFromOfflineStorage() {
-        OfflineFile offlineFile = mOfflineFileRepo.getFileWithPathAndName(getCheckedFile().getPath(), getCheckedFile().getName());
+        OfflineFile offlineFile = mOfflineFileRepo.getOfflineFile(getShare().getName(), getCheckedFile().getPath(), getCheckedFile().getName());
         if (offlineFile.getState() == OfflineFile.DOWNLOADING) {
             stopDownloading(offlineFile.getDownloadId());
         }
@@ -348,6 +348,7 @@ public class ServerFilesFragment extends Fragment implements
         if (file.exists()) {
             file.delete();
         }
+        mOfflineFileRepo.delete(offlineFile);
         Snackbar.make(getRecyclerView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
             .show();
     }
@@ -359,8 +360,8 @@ public class ServerFilesFragment extends Fragment implements
         }
     }
 
-    private void startDownloadService() {
-        Intent downloadService = Intents.Builder.with(getContext()).buildDownloadServiceIntent(getCheckedFile(), getShare());
+    private void startDownloadService(ServerFile file) {
+        Intent downloadService = Intents.Builder.with(getContext()).buildDownloadServiceIntent(file, getShare());
         getContext().startService(downloadService);
     }
 
@@ -635,9 +636,14 @@ public class ServerFilesFragment extends Fragment implements
 
     private List<ServerFile> checkOfflineFiles(List<ServerFile> serverFiles) {
         for(ServerFile file: serverFiles) {
-            OfflineFile offlineFile = mOfflineFileRepo.getFileWithPathAndName(file.getPath(), file.getName());
+            OfflineFile offlineFile = mOfflineFileRepo.getOfflineFile(getShare().getName(), file.getPath(), file.getName());
             if (offlineFile != null) {
                 file.setOffline(true);
+                if (offlineFile.getTimeStamp() < file.getModificationTime().getTime()) {
+                    offlineFile.setState(OfflineFile.OUT_OF_DATE);
+                    mOfflineFileRepo.update(offlineFile);
+                    startDownloadService(file);
+                }
             }
         }
 
@@ -869,7 +875,7 @@ public class ServerFilesFragment extends Fragment implements
     @Override
     public void onMoreOptionClick(View view, int position) {
         setItemSelected(position);
-        Fragments.Builder.buildFileOptionsDialogFragment(getCheckedFile().isOffline())
+        Fragments.Builder.buildFileOptionsDialogFragment(getContext(), getCheckedFile())
             .show(getChildFragmentManager(), "file_options_dialog");
     }
 

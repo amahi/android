@@ -33,6 +33,8 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -91,7 +93,11 @@ public class ServerFileDownloadingFragment extends DialogFragment {
     private void startFileDownloading(Bundle state) {
         if (state == null) {
             int fileOption = getArguments().getInt(Fragments.Arguments.FILE_OPTION, 0);
-            downloader.startFileDownloading(getFileUri(), getFile().getName(), fileOption);
+            if(isFileAvailableOffline(getFile())) {
+                downloader.moveFile(getFile().getName(), fileOption);
+            }else {
+                downloader.startFileDownloading(getFileUri(), getFile().getName(), fileOption);
+            }
         }
     }
 
@@ -105,6 +111,12 @@ public class ServerFileDownloadingFragment extends DialogFragment {
 
     private ServerFile getFile() {
         return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+    }
+
+    private boolean isFileAvailableOffline(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(getActivity());
+        OfflineFile file = repository.getOfflineFile(getShare().getName(), serverFile.getPath(), serverFile.getName());
+        return file != null && file.getState() == OfflineFile.DOWNLOADED;
     }
 
     @Subscribe

@@ -30,6 +30,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
@@ -46,6 +47,8 @@ import java.io.OutputStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import io.fabric.sdk.android.services.concurrency.AsyncTask;
 
 /**
  * File downloader. Uses system {@link android.app.DownloadManager}
@@ -130,7 +133,7 @@ public class Downloader extends BroadcastReceiver {
             file.delete();
 
         DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri);
-        downloadRequest.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, downloadName)
+        downloadRequest.setDestinationInExternalFilesDir(context, "offline", downloadName)
             .setVisibleInDownloadsUi(false)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
@@ -238,6 +241,10 @@ public class Downloader extends BroadcastReceiver {
         return networkUtils.isNetworkAvailable();
     }
 
+    public void moveFile(String name, int fileOption) {
+        new FileMoveTask(name, fileOption).execute();
+    }
+
     public interface DownloadCallbacks {
         void downloadStarted(int id, String fileName);
 
@@ -260,6 +267,7 @@ public class Downloader extends BroadcastReceiver {
 
         @Override
         public void run() {
+            Log.i("Downloader", "Progress started " + id);
             isDownloading = true;
             while (isDownloading) {
                 DownloadManager.Query q = new DownloadManager.Query();
@@ -269,7 +277,12 @@ public class Downloader extends BroadcastReceiver {
                     cursor.moveToFirst();
                     int bytes_downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                     int bytes_total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                    int progress = bytes_total != 0 ? bytes_downloaded / bytes_total : 0;
+                    int progress = bytes_total != 0 ? 100 * bytes_downloaded / bytes_total : 0;
+
+
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    // update progress on UI thread
+                    handler.post(new ProgressUpdater(progress, (int) id));
 
                     int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
                     switch (status) {
@@ -292,14 +305,12 @@ public class Downloader extends BroadcastReceiver {
                     }
 
                     cursor.close();
-
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    // update progress on UI thread
-                    handler.post(new ProgressUpdater(bytes_downloaded, bytes_total, (int) id));
                 } else {
                     isDownloading = false;
                 }
             }
+
+            Log.i("Downloader", "Progress end " + id);
         }
 
         public void shutDown() {
@@ -308,24 +319,80 @@ public class Downloader extends BroadcastReceiver {
     }
 
     private class ProgressUpdater implements Runnable {
-        private long mDownloaded;
-        private long mTotal;
+        private int progress;
         private int id;
 
-        ProgressUpdater(long downloaded, long total, int id) {
-            mDownloaded = downloaded;
-            mTotal = total;
+        ProgressUpdater(int progress, int id) {
+            this.progress = progress;
             this.id = id;
         }
 
         @Override
         public void run() {
-            int progress = (int) (100 * mDownloaded / mTotal);
             if (lastProgress != progress) {
                 lastProgress = progress;
                 downloadCallbacks.downloadProgress(id, progress);
             }
 
+        }
+    }
+
+    private class FileMoveTask extends AsyncTask<Void,Void,Uri> {
+        private String fileName;
+        @FileOption.Types
+        private int fileOption;
+
+        public FileMoveTask(String fileName, int fileOption) {
+            this.fileName = fileName;
+            this.fileOption = fileOption;
+        }
+
+        @Override
+        protected Uri doInBackground(Void... voids) {
+            File sourceLocation = new File(context.getFilesDir(), fileName);
+            File targetLocation;
+
+            if(fileOption == FileOption.DOWNLOAD) {
+                targetLocation = new File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                    fileName);
+            }else {
+                targetLocation = new File(
+                    context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+                    fileName);
+            }
+
+            if (sourceLocation.exists()) {
+
+                InputStream in;
+                try {
+                    in = new FileInputStream(sourceLocation);
+                    OutputStream out = new FileOutputStream(targetLocation);
+
+                    byte[] buf = new byte[1024];
+                    int len;
+
+                    while ((len = in.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+
+                    in.close();
+                    out.close();
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            Uri contentUri = FileProvider.getUriForFile(context, "org.amahi.anywhere.fileprovider", targetLocation);
+            return contentUri;
+        }
+
+        @Override
+        protected void onPostExecute(Uri uri) {
+            super.onPostExecute(uri);
+            BusProvider.getBus().post(new FileDownloadedEvent(uri));
         }
     }
 

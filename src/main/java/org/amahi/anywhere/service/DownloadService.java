@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -52,6 +53,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         setUpNetworkUtils();
         setDatabaseRepository();
         downloader.setDownloadCallbacks(this);
+        Log.i("DownloadService", "Download Service created");
     }
 
     private void setUpInjections() {
@@ -73,10 +75,13 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
 
+        Log.i("DownloadService", "Download Service start command");
+
         if (intent != null && intent.hasExtra(Intents.Extras.SERVER_FILE)) {
             ServerFile serverFile = intent.getParcelableExtra(Intents.Extras.SERVER_FILE);
             ServerShare serverShare = intent.getParcelableExtra(Intents.Extras.SERVER_SHARE);
             saveFileInOfflineFileQueue(serverFile, serverShare);
+            Log.i("DownloadService", "New File");
         }
 
         if (intent != null && intent.getAction() != null && intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
@@ -86,17 +91,21 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
             } else {
                 startNextDownload();
             }
-            isDownloading = true;
+            Log.i("DownloadService", "Connectivity");
         }
 
         if (networkUtils.isNetworkAvailable()) {
             if (!isDownloading) {
                 startNextDownload();
-                isDownloading = true;
+
+                Log.i("DownloadService", "Download starts");
             }
+
+        } else {
+            scheduleNetworkConnectivityJob();
         }
 
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     private void startNextDownload() {
@@ -104,13 +113,15 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         if (file != null) {
             long downloadId = downloader.startDownloadingForOfflineMode(Uri.parse(file.getFileUri()), file.getName());
             saveOfflineFileDownloadId(file, downloadId);
+            Log.i("DownloadService", "Download id : " + file.getName() + downloadId);
+            isDownloading = true;
         } else {
             stopDownloading();
         }
     }
 
     private void stopDownloading() {
-        stopSelf();
+        isDownloading = false;
     }
 
     private void saveOfflineFileDownloadId(OfflineFile offlineFile, long downloadId) {
@@ -134,12 +145,16 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private OfflineFile getNextDownloadFile() {
-        return offlineFileRepository.getFileWithState(OfflineFile.DOWNLOADING);
+        OfflineFile file = offlineFileRepository.getFileWithState(OfflineFile.OUT_OF_DATE);
+        if (file == null) {
+            return offlineFileRepository.getFileWithState(OfflineFile.DOWNLOADING);
+        }
+        return file;
     }
 
     private void saveFileInOfflineFileQueue(ServerFile serverFile, ServerShare serverShare) {
         String downloadUri = serverClient.getFileUri(serverShare, serverFile).toString();
-        OfflineFile offlineFile = new OfflineFile(serverFile.getPath(), serverFile.getName());
+        OfflineFile offlineFile = new OfflineFile(serverShare.getName(), serverFile.getPath(), serverFile.getName());
         offlineFile.setFileUri(downloadUri);
         offlineFile.setTimeStamp(serverFile.getModificationTime().getTime());
         offlineFile.setState(OfflineFile.DOWNLOADING);
@@ -197,7 +212,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         notificationBuilder
             .setContentTitle(getString(R.string.notification_offline_download_complete))
             .setOngoing(false)
-            .setProgress(0, 0, false);
+            .setProgress(100, 100, false);
 
         Notification notification = notificationBuilder.build();
         notificationManager.notify((int) id, notification);
@@ -234,15 +249,17 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         Notification notification = notificationBuilder.build();
         notificationManager.notify((int) downloadId, notification);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            NetConnectivityJob.scheduleJob(this);
-        }
-
         stopDownloading();
     }
 
     private void removeOfflineFile(long id) {
         OfflineFile offlineFile = offlineFileRepository.getFileWithDownloadId(id);
         offlineFileRepository.delete(offlineFile);
+    }
+
+    private void scheduleNetworkConnectivityJob() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            NetConnectivityJob.scheduleJob(this);
+        }
     }
 }

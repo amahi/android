@@ -26,8 +26,8 @@ public interface OfflineFileDao {
     @Query("SELECT * from offline_table where path = :path")
     List<OfflineFile> getAllOfflineFilesWithPath(String path);
 
-    @Query("SELECT * from offline_table where path = :path and name = :name")
-    OfflineFile getOfflineFileWithPathAndName(String path, String name);
+    @Query("SELECT * from offline_table where share = :share and path = :path and name = :name")
+    OfflineFile getOfflineFile(String share, String path, String name);
 
     @Delete
     void delete(OfflineFile offlineFile);

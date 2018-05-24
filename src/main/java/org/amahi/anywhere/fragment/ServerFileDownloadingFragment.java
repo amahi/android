@@ -98,21 +98,7 @@ public class ServerFileDownloadingFragment extends DialogFragment {
     private void startFileDownloading(Bundle state) {
         if (state == null) {
             int fileOption = getArguments().getInt(Fragments.Arguments.FILE_OPTION, 0);
-            if(isFileAvailableOffline(getFile())) {
-                File sourceLocation = new File(getActivity().getFilesDir(), Downloader.OFFLINE_PATH + "/" + getFile().getName());
-                if(fileOption == FileOption.SHARE) {
-                    Uri contentUri = FileProvider.getUriForFile(getActivity(), "org.amahi.anywhere.fileprovider", sourceLocation);
-                    BusProvider.getBus().post(new FileDownloadedEvent(contentUri));
-                }else {
-                    FileManager fm = new FileManager(getActivity());
-                    File targetLocation = new File(Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOWNLOADS),
-                        getFile().getName());
-                    fm.copyFile(sourceLocation, targetLocation);
-                }
-            }else {
-                downloader.startFileDownloading(getFileUri(), getFile().getName(), fileOption);
-            }
+            downloader.startFileDownloading(getFileUri(), getFile().getName(), fileOption);
         }
     }
 
@@ -126,12 +112,6 @@ public class ServerFileDownloadingFragment extends DialogFragment {
 
     private ServerFile getFile() {
         return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
-    }
-
-    private boolean isFileAvailableOffline(ServerFile serverFile) {
-        OfflineFileRepository repository = new OfflineFileRepository(getActivity());
-        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
-        return file != null && file.getState() == OfflineFile.DOWNLOADED;
     }
 
     @Subscribe

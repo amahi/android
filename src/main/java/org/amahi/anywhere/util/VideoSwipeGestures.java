@@ -171,9 +171,9 @@ public class VideoSwipeGestures implements View.OnTouchListener {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        /* Check if this is the first ACTION_MOVE event in the current touch event
-        * If true then set the initial direction of the movement
-        * */
+            /* Check if this is the first ACTION_MOVE event in the current touch event
+             * If true then set the initial direction of the movement
+             * */
             try {
                 if (direction == Direction.NONE) {
                     float diffY = e2.getY() - e1.getY();

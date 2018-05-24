@@ -1,6 +1,5 @@
 package org.amahi.anywhere.bus;
 
-import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.server.model.ServerFile;
 
 public class OfflineFileDeleteEvent implements BusEvent {

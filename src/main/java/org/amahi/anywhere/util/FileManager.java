@@ -6,7 +6,7 @@ import android.support.v4.content.FileProvider;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileCopiedEvent;
-import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.bus.FileMovedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,16 +22,26 @@ public class FileManager {
 
     private Context ctx;
 
-    public static FileManager newInstance(Context context) {
-        return new FileManager(context);
-    }
-
     public FileManager(Context context) {
         this.ctx = context;
     }
 
+    public static FileManager newInstance(Context context) {
+        return new FileManager(context);
+    }
+
     public void copyFile(File sourceLocation, File targetLocation) {
         new FileCopyTask(sourceLocation, targetLocation).execute();
+    }
+
+    public void moveFile(File sourceLocation, File targetLocation) {
+        new FileMoveTask(sourceLocation, targetLocation).execute();
+    }
+
+    public void deleteFile(File file) {
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     public Uri getContentUriForOfflineFile(String name) {
@@ -43,13 +53,32 @@ public class FileManager {
         return FileProvider.getUriForFile(ctx, "org.amahi.anywhere.fileprovider", file);
     }
 
-    public void deleteFile(File file) {
-        if(file.exists()) {
-            file.delete();
+    private void startFileCopying(File sourceLocation, File targetLocation) {
+        if (sourceLocation.exists()) {
+            InputStream in;
+            try {
+                in = new FileInputStream(sourceLocation);
+                OutputStream out = new FileOutputStream(targetLocation);
+
+                byte[] buf = new byte[1024];
+                int len;
+
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+
+                in.close();
+                out.close();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private class FileCopyTask extends AsyncTask<Void,Void,Void> {
+    private class FileCopyTask extends AsyncTask<Void, Void, Void> {
 
         private File sourceLocation, targetLocation;
 
@@ -60,30 +89,7 @@ public class FileManager {
 
         @Override
         protected Void doInBackground(Void... voids) {
-
-            if (sourceLocation.exists()) {
-
-                InputStream in;
-                try {
-                    in = new FileInputStream(sourceLocation);
-                    OutputStream out = new FileOutputStream(targetLocation);
-
-                    byte[] buf = new byte[1024];
-                    int len;
-
-                    while ((len = in.read(buf)) > 0) {
-                        out.write(buf, 0, len);
-                    }
-
-                    in.close();
-                    out.close();
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            startFileCopying(sourceLocation, targetLocation);
             return null;
         }
 
@@ -95,4 +101,27 @@ public class FileManager {
         }
     }
 
+    private class FileMoveTask extends AsyncTask<Void,Void,Void>{
+
+        private File sourceLocation, targetLocation;
+
+        FileMoveTask(File sourceLocation, File targetLocation) {
+            this.sourceLocation = sourceLocation;
+            this.targetLocation = targetLocation;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            startFileCopying(sourceLocation, targetLocation);
+            deleteFile(sourceLocation);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            BusProvider.getBus().post(new FileMovedEvent(targetLocation));
+        }
+    }
 }

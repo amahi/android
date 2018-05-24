@@ -52,12 +52,12 @@ public class ServerFileAudioFragment extends Fragment {
     }
 
     private void setUpAudioMetadata() {
-        if(getShare() != null) {
+        if (getShare() != null) {
             AudioMetadataRetrievingTask
                 .newInstance(getActivity(), getAudioUri(), getFile())
                 .setImageView(getImageView())
                 .execute();
-        }else {
+        } else {
             // offline File
 
             new AudioMetadataRetrievingTask(getActivity(), getAudioPath(), getFile())

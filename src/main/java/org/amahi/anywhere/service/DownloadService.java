@@ -12,9 +12,12 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.squareup.otto.Subscribe;
+
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileMovedEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.job.NetConnectivityJob;
@@ -22,10 +25,15 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Downloader;
+import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.NetworkUtils;
 
+import java.io.File;
+
 import javax.inject.Inject;
+
+import static org.amahi.anywhere.util.Downloader.OFFLINE_PATH;
 
 public class DownloadService extends Service implements Downloader.DownloadCallbacks {
 
@@ -206,29 +214,49 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
 
     @Override
     public void downloadSuccess(long id) {
-        stopForeground(false);
-        NotificationManager notificationManager = (NotificationManager) getApplicationContext()
-            .getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationBuilder
-            .setContentTitle(getString(R.string.notification_offline_download_complete))
-            .setOngoing(false)
-            .setProgress(100, 100, false);
-
-        Notification notification = notificationBuilder.build();
-        notificationManager.notify((int) id, notification);
-        updateOfflineFileState(id);
-        startNextDownload();
+        OfflineFile offlineFile = offlineFileRepository.getFileWithDownloadId(id);
+        if (offlineFile != null) {
+            moveFileInOfflineDirectory(offlineFile.getName());
+        } else {
+            stopForeground(true);
+        }
     }
 
-    private void updateOfflineFileState(long id) {
-        OfflineFile offlineFile = offlineFileRepository.getFileWithDownloadId(id);
-        if(offlineFile!=null) {
+    @Subscribe
+    public void onFileMoved(FileMovedEvent event) {
+        OfflineFile offlineFile = offlineFileRepository.getCurrentDownloadingFile();
+        if (offlineFile != null) {
+
+            stopForeground(false);
+            NotificationManager notificationManager = (NotificationManager) getApplicationContext()
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+
+            notificationBuilder
+                .setContentTitle(getString(R.string.notification_offline_download_complete))
+                .setOngoing(false)
+                .setProgress(100, 100, false);
+
+            Notification notification = notificationBuilder.build();
+            notificationManager.notify((int) offlineFile.getDownloadId(), notification);
+
             offlineFile.setState(OfflineFile.DOWNLOADED);
             offlineFile.setDownloadId(-1);
             offlineFileRepository.update(offlineFile);
-            downloader.moveFileToInternalStorage(offlineFile.getName());
+            startNextDownload();
         }
+    }
+
+    private void moveFileInOfflineDirectory(String fileName) {
+        File sourceLocation = new File(getExternalFilesDir(OFFLINE_PATH), fileName);
+        File offlineFilesDirectory = new File(getFilesDir(), OFFLINE_PATH);
+        File targetLocation = new File(getFilesDir(), OFFLINE_PATH + "/" + fileName);
+
+        if (!offlineFilesDirectory.exists()) {
+            offlineFilesDirectory.mkdir();
+        }
+
+        FileManager.newInstance(this).moveFile(sourceLocation, targetLocation);
+
     }
 
     @Override

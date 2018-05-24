@@ -27,10 +27,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
@@ -38,17 +35,9 @@ import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.model.FileOption;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import io.fabric.sdk.android.services.concurrency.AsyncTask;
 
 /**
  * File downloader. Uses system {@link android.app.DownloadManager}
@@ -56,15 +45,11 @@ import io.fabric.sdk.android.services.concurrency.AsyncTask;
  */
 @Singleton
 public class Downloader extends BroadcastReceiver {
+    public static final String OFFLINE_PATH = "offline_files";
     private final Context context;
-
     private long downloadId;
-    private int lastProgress = 0;
-
     private DownloadCallbacks downloadCallbacks;
     private ProgressTask downloadProgressTask;
-
-    public static final String OFFLINE_PATH = "offline_files";
 
     @Inject
     public Downloader(Context context) {
@@ -201,42 +186,6 @@ public class Downloader extends BroadcastReceiver {
         tearDownDownloadReceiver();
     }
 
-    public void moveFileToInternalStorage(String fileName) {
-        File sourceLocation = new File(context.getExternalFilesDir(OFFLINE_PATH), fileName);
-        File offlineFilesDirectory = new File(context.getFilesDir(), OFFLINE_PATH);
-        if(!offlineFilesDirectory.exists()) {
-            offlineFilesDirectory.mkdir();
-        }
-        File targetLocation = new File(context.getFilesDir(), OFFLINE_PATH + "/" + fileName);
-
-        if (sourceLocation.exists()) {
-            InputStream in;
-            try {
-
-                in = new FileInputStream(sourceLocation);
-                OutputStream out = new FileOutputStream(targetLocation);
-
-                byte[] buf = new byte[1024];
-                int len;
-
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-
-                in.close();
-                out.close();
-
-                if (sourceLocation.exists())
-                    sourceLocation.delete();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-
     public void setDownloadCallbacks(DownloadCallbacks downloadCallbacks) {
         this.downloadCallbacks = downloadCallbacks;
     }
@@ -244,10 +193,6 @@ public class Downloader extends BroadcastReceiver {
     private boolean isNetworkAvailable() {
         NetworkUtils networkUtils = new NetworkUtils(context);
         return networkUtils.isNetworkAvailable();
-    }
-
-    public void moveFile(String name, int fileOption) {
-//        new FileMoveTask(name, fileOption).execute();
     }
 
     public interface DownloadCallbacks {
@@ -263,16 +208,16 @@ public class Downloader extends BroadcastReceiver {
     }
 
     private class ProgressTask implements Runnable {
+
         private boolean isDownloading;
         private long id;
 
-        public ProgressTask(long id) {
+        ProgressTask(long id) {
             this.id = id;
         }
 
         @Override
         public void run() {
-            Log.i("Downloader", "Progress started " + id);
             isDownloading = true;
             while (isDownloading) {
                 DownloadManager.Query q = new DownloadManager.Query();
@@ -283,11 +228,7 @@ public class Downloader extends BroadcastReceiver {
                     int bytes_downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                     int bytes_total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                     int progress = bytes_total != 0 ? 100 * bytes_downloaded / bytes_total : 0;
-
-
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    // update progress on UI thread
-                    handler.post(new ProgressUpdater(progress, (int) id));
+                    downloadCallbacks.downloadProgress((int) id, progress);
 
                     int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
                     switch (status) {
@@ -314,31 +255,10 @@ public class Downloader extends BroadcastReceiver {
                     isDownloading = false;
                 }
             }
-
-            Log.i("Downloader", "Progress end " + id);
         }
 
-        public void shutDown() {
+        void shutDown() {
             isDownloading = false;
-        }
-    }
-
-    private class ProgressUpdater implements Runnable {
-        private int progress;
-        private int id;
-
-        ProgressUpdater(int progress, int id) {
-            this.progress = progress;
-            this.id = id;
-        }
-
-        @Override
-        public void run() {
-            if (lastProgress != progress) {
-                lastProgress = progress;
-                downloadCallbacks.downloadProgress(id, progress);
-            }
-
         }
     }
 

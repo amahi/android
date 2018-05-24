@@ -48,10 +48,10 @@ import javax.inject.Inject;
 public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent> {
     private final Uri audioUri;
     private final ServerFile serverFile;
-    private String path;
-    private boolean isOfflineFile;
     @Inject
     CacheManager cacheManager;
+    private String path;
+    private boolean isOfflineFile;
     private MainTVPresenter.ViewHolder viewHolder;
     private WeakReference<ImageView> imageViewWeakReference;
 
@@ -98,7 +98,7 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
             MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
 
             try {
-                if(!isOfflineFile) {
+                if (!isOfflineFile) {
                     audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<>());
                 } else {
                     audioMetadataRetriever.setDataSource(path);

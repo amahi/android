@@ -38,7 +38,6 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
@@ -77,52 +76,52 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final ServerFileViewHolder fileHolder = (ServerFileViewHolder) holder;
 
-            final ServerFile file = filteredFiles.get(position);
+        final ServerFile file = filteredFiles.get(position);
 
-            if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
-                fileHolder.moreInfo.setVisibility(View.GONE);
-                fileHolder.moreOptions.setVisibility(View.GONE);
+        if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
+            fileHolder.moreInfo.setVisibility(View.GONE);
+            fileHolder.moreOptions.setVisibility(View.GONE);
 
+        } else {
+            fileHolder.moreInfo.setVisibility(View.VISIBLE);
+            fileHolder.moreInfo.setVisibility(View.VISIBLE);
+
+            if (!isOfflineMode()) {
+                fileHolder.fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
             } else {
-                fileHolder.moreInfo.setVisibility(View.VISIBLE);
-                fileHolder.moreInfo.setVisibility(View.VISIBLE);
-
-                if(!isOfflineMode()) {
-                    fileHolder.fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
-                } else {
-                    File localFile = new File(context.getFilesDir(), Downloader.OFFLINE_PATH + "/" + file.getName());
-                    fileHolder.fileSize.setText(Formatter.formatFileSize(context, localFile.length()));
-                }
-
-                Date d = getLastModified(file);
-                SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
-                fileHolder.fileLastModified.setText(dt.format(d));
+                File localFile = new File(context.getFilesDir(), Downloader.OFFLINE_PATH + "/" + file.getName());
+                fileHolder.fileSize.setText(Formatter.formatFileSize(context, localFile.length()));
             }
 
-            SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
-            if (queryString != null && !TextUtils.isEmpty(queryString)) {
-                int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
-                if (searchMatchPosition != -1)
-                    sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-            }
-            fileHolder.fileTextView.setText(sb);
+            Date d = getLastModified(file);
+            SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
+            fileHolder.fileLastModified.setText(dt.format(d));
+        }
 
-            if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
-                setUpImageIcon(file, fileHolder.fileIconView);
-            } else if (Mimes.match(file.getMime()) == Mimes.Type.AUDIO) {
-                setUpAudioArt(file, fileHolder.fileIconView);
-            } else {
-                fileHolder.fileIconView.setImageResource(Mimes.getFileIcon(file));
-            }
+        SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
+        if (queryString != null && !TextUtils.isEmpty(queryString)) {
+            int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
+            if (searchMatchPosition != -1)
+                sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+        fileHolder.fileTextView.setText(sb);
 
-            fileHolder.itemView.setOnClickListener(view -> {
-                mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-            });
+        if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
+            setUpImageIcon(file, fileHolder.fileIconView);
+        } else if (Mimes.match(file.getMime()) == Mimes.Type.AUDIO) {
+            setUpAudioArt(file, fileHolder.fileIconView);
+        } else {
+            fileHolder.fileIconView.setImageResource(Mimes.getFileIcon(file));
+        }
 
-            fileHolder.moreOptions.setOnClickListener(view -> {
-                selectedPosition = fileHolder.getAdapterPosition();
-                mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-            });
+        fileHolder.itemView.setOnClickListener(view -> {
+            mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
+        });
+
+        fileHolder.moreOptions.setOnClickListener(view -> {
+            selectedPosition = fileHolder.getAdapterPosition();
+            mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
+        });
     }
 
     private boolean isOfflineMode() {
@@ -138,7 +137,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
     }
 
     private void setUpAudioArt(ServerFile serverFile, ImageView fileIconView) {
-        if(getAdapterMode() != AdapterMode.OFFLINE) {
+        if (getAdapterMode() != AdapterMode.OFFLINE) {
             AudioMetadataRetrievingTask
                 .newInstance(context, serverClient.getFileUri(serverShare, serverFile), serverFile)
                 .setImageView(fileIconView)

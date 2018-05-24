@@ -43,7 +43,7 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
         deleteLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DELETE));
         downloadLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DOWNLOAD));
 
-        if(!isOfflineFragment()) {
+        if (!isOfflineFragment()) {
             SwitchCompat offlineSwitch = view.findViewById(R.id.offline_switch);
 
             ServerFile file = getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
@@ -62,7 +62,7 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
             } else {
                 offlineLayout.setVisibility(View.GONE);
             }
-        }else {
+        } else {
             offlineLayout.setVisibility(View.GONE);
         }
     }

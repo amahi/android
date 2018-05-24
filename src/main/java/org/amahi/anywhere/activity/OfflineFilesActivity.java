@@ -4,11 +4,11 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -26,7 +26,6 @@ import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
-import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.util.Downloader;
@@ -84,7 +83,7 @@ public class OfflineFilesActivity extends AppCompatActivity {
 
     @Subscribe
     public void onFileOpening(FileOpeningEvent event) {
-        if(isFileDownloaded(event.getFile())) {
+        if (isFileDownloaded(event.getFile())) {
             startFileActivity(event.getFile(), event.getFiles());
         } else {
             Snackbar.make(getParentView(), R.string.message_progress_file_downloading, Snackbar.LENGTH_LONG).show();
@@ -94,7 +93,7 @@ public class OfflineFilesActivity extends AppCompatActivity {
     private boolean isFileDownloaded(ServerFile file) {
         OfflineFileRepository offlineFileRepository = new OfflineFileRepository(this);
         OfflineFile offlineFile = offlineFileRepository.getOfflineFile(file.getName(), file.getModificationTime().getTime());
-        if(offlineFile.getState() == OfflineFile.DOWNLOADED) {
+        if (offlineFile.getState() == OfflineFile.DOWNLOADED) {
             return true;
         }
 

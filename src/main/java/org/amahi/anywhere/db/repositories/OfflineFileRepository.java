@@ -25,7 +25,11 @@ public class OfflineFileRepository {
         return mOfflineFileDao.getOfflineFile(name, timeStamp);
     }
 
-    public void insert (OfflineFile offlineFile) {
+    public OfflineFile getCurrentDownloadingFile() {
+        return mOfflineFileDao.getCurrentDownloadingFile();
+    }
+
+    public void insert(OfflineFile offlineFile) {
         mOfflineFileDao.insert(offlineFile);
     }
 
@@ -33,7 +37,7 @@ public class OfflineFileRepository {
         mOfflineFileDao.update(offlineFile);
     }
 
-    public void delete (OfflineFile offlineFile) {
+    public void delete(OfflineFile offlineFile) {
         mOfflineFileDao.delete(offlineFile);
     }
 

@@ -459,8 +459,8 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     @Subscribe
     public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent event) {
 
-        if(uploadDialogFragment.isAdded())
-        uploadDialogFragment.dismiss();
+        if (uploadDialogFragment.isAdded())
+            uploadDialogFragment.dismiss();
         if (event.wasUploadSuccessful()) {
             Fragments.Operator.at(this).replace(buildFilesFragment(getShare(), file), R.id.container_files);
             Snackbar.make(getParentView(), R.string.message_file_upload_complete, Snackbar.LENGTH_LONG).show();
@@ -497,7 +497,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
         this.file = event.getFile();
         this.fileOption = FileOption.DOWNLOAD;
 
-        if(isFileAvailableOffline(event.getFile())) {
+        if (isFileAvailableOffline(event.getFile())) {
             prepareDownloadingFile(file);
         } else {
             startFileDownloading(event.getShare(), file);
@@ -525,7 +525,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void dismissPreparingDialog() {
         PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag("prepare_dialog");
-        if(fragment !=null && fragment.isAdded()) {
+        if (fragment != null && fragment.isAdded()) {
             fragment.dismiss();
         }
     }
@@ -539,7 +539,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     private void startFileSharingActivity(ServerShare share, ServerFile file) {
-        if(isFileAvailableOffline(file)) {
+        if (isFileAvailableOffline(file)) {
             Uri contenUri = FileManager.newInstance(this).getContentUriForOfflineFile(file.getName());
             BusProvider.getBus().post(new FileDownloadedEvent(contenUri));
         } else {

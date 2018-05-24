@@ -49,10 +49,10 @@ public class ApiModule {
 
     /**
      * After enabling the chuck dependencies modify the function definition below to pass ChuckInterceptor:
-     *      provideHttpClient(ApiHeaders headers, HttpLoggingInterceptor logging, ChuckInterceptor chuck)
-     *
+     * provideHttpClient(ApiHeaders headers, HttpLoggingInterceptor logging, ChuckInterceptor chuck)
+     * <p>
      * Add the Chuck interceptor when building OkHttpClient, using:
-     *      clientBuilder.addInterceptor(chuck);
+     * clientBuilder.addInterceptor(chuck);
      */
 
     @Provides
@@ -83,7 +83,6 @@ public class ApiModule {
         return new ChuckInterceptor(context);
     }
 */
-
     @Provides
     @Singleton
     Converter.Factory provideJsonConverterFactory(Gson json) {

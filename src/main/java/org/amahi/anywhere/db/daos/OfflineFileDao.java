@@ -26,6 +26,9 @@ public interface OfflineFileDao {
     @Query("SELECT * from offline_table where share = :share and path = :path and name = :name")
     OfflineFile getOfflineFile(String share, String path, String name);
 
+    @Query("SELECT * from offline_table where downloadId != -1")
+    OfflineFile getCurrentDownloadingFile();
+
     @Delete
     void delete(OfflineFile offlineFile);
 

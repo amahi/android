@@ -244,7 +244,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     private void setUpAudioMetadata() {
-        if(audioShare != null) {
+        if (audioShare != null) {
             // Clear any previous metadata
             tearDownAudioMetadataFormatter();
             // Start fetching new metadata in the background

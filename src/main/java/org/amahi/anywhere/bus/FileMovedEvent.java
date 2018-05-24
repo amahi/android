@@ -2,10 +2,10 @@ package org.amahi.anywhere.bus;
 
 import java.io.File;
 
-public class FileCopiedEvent implements BusEvent {
+public class FileMovedEvent implements BusEvent{
     private File targetLocation;
 
-    public FileCopiedEvent(File targetLocation) {
+    public FileMovedEvent(File targetLocation) {
         this.targetLocation = targetLocation;
     }
 

@@ -32,7 +32,6 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -51,10 +50,10 @@ import java.util.List;
  */
 public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
-    protected ServerFileClickListener mListener;
-    protected int selectedPosition = RecyclerView.NO_POSITION;
     static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
     static String queryString;
+    protected ServerFileClickListener mListener;
+    protected int selectedPosition = RecyclerView.NO_POSITION;
     LayoutInflater layoutInflater;
     ServerClient serverClient;
     ServerShare serverShare;
@@ -138,6 +137,30 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         return serverClient.getFileUri(serverShare, file);
     }
 
+    public boolean isEmpty() {
+        return (filteredFiles.isEmpty());
+    }
+
+    public int getSelectedPosition() {
+        return selectedPosition;
+    }
+
+    public void setSelectedPosition(int position) {
+        this.selectedPosition = position;
+    }
+
+    public AdapterMode getAdapterMode() {
+        return adapterMode;
+    }
+
+    public void setAdapterMode(AdapterMode adapterMode) {
+        this.adapterMode = adapterMode;
+    }
+
+    public static enum AdapterMode {
+        SERVER, OFFLINE
+    }
+
     public interface onFilterListChange {
         void isListEmpty(boolean empty);
     }
@@ -172,30 +195,6 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
             filteredFiles = (List<ServerFile>) filterResults.values;
             notifyDataSetChanged();
         }
-    }
-
-    public boolean isEmpty() {
-        return (filteredFiles.isEmpty());
-    }
-
-    public int getSelectedPosition() {
-        return selectedPosition;
-    }
-
-    public void setSelectedPosition(int position) {
-        this.selectedPosition = position;
-    }
-
-    public AdapterMode getAdapterMode() {
-        return adapterMode;
-    }
-
-    public void setAdapterMode(AdapterMode adapterMode) {
-        this.adapterMode = adapterMode;
-    }
-
-    public static enum AdapterMode {
-        SERVER ,OFFLINE
     }
 
 }

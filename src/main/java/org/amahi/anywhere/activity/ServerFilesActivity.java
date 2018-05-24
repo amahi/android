@@ -44,6 +44,7 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileCopiedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.ServerFileDownloadingEvent;
@@ -51,7 +52,10 @@ import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
 import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
+import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ProgressDialogFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
@@ -62,6 +66,8 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Downloader;
+import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -491,7 +497,37 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
         this.file = event.getFile();
         this.fileOption = FileOption.DOWNLOAD;
 
-        startFileDownloading(event.getShare(), file);
+        if(isFileAvailableOffline(event.getFile())) {
+            prepareDownloadingFile(file);
+        } else {
+            startFileDownloading(event.getShare(), file);
+        }
+    }
+
+    private void prepareDownloadingFile(ServerFile file) {
+        PrepareDialogFragment fragment = new PrepareDialogFragment();
+        fragment.show(getSupportFragmentManager(), "prepare_dialog");
+
+        File sourceLocation = new File(getFilesDir(), Downloader.OFFLINE_PATH + "/" + file.getName());
+        File downloadLocation = new File(Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS),
+            file.getName());
+        FileManager.newInstance(this).copyFile(sourceLocation, downloadLocation);
+    }
+
+    @Subscribe
+    public void onFileCopied(FileCopiedEvent event) {
+        Uri contentUri = FileManager.newInstance(this).getContentUri(event.getTargetLocation());
+
+        dismissPreparingDialog();
+        BusProvider.getBus().post(new FileDownloadedEvent(contentUri));
+    }
+
+    private void dismissPreparingDialog() {
+        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag("prepare_dialog");
+        if(fragment !=null && fragment.isAdded()) {
+            fragment.dismiss();
+        }
     }
 
     @Subscribe
@@ -503,7 +539,18 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     private void startFileSharingActivity(ServerShare share, ServerFile file) {
-        startFileDownloading(share, file);
+        if(isFileAvailableOffline(file)) {
+            Uri contenUri = FileManager.newInstance(this).getContentUriForOfflineFile(file.getName());
+            BusProvider.getBus().post(new FileDownloadedEvent(contenUri));
+        } else {
+            startFileDownloading(share, file);
+        }
+    }
+
+    private boolean isFileAvailableOffline(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+        return file != null && file.getState() == OfflineFile.DOWNLOADED;
     }
 
     @Override

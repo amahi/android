@@ -48,6 +48,8 @@ import javax.inject.Inject;
 public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent> {
     private final Uri audioUri;
     private final ServerFile serverFile;
+    private String path;
+    private boolean isOfflineFile;
     @Inject
     CacheManager cacheManager;
     private MainTVPresenter.ViewHolder viewHolder;
@@ -55,6 +57,14 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 
     private AudioMetadataRetrievingTask(Context context, Uri audioUri, ServerFile serverFile) {
         this.audioUri = audioUri;
+        this.serverFile = serverFile;
+        setUpInjections(context);
+    }
+
+    public AudioMetadataRetrievingTask(Context context, String path, ServerFile serverFile) {
+        this.path = path;
+        this.isOfflineFile = true;
+        audioUri = null;
         this.serverFile = serverFile;
         setUpInjections(context);
     }
@@ -88,7 +98,11 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
             MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
 
             try {
-                audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<>());
+                if(!isOfflineFile) {
+                    audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<>());
+                } else {
+                    audioMetadataRetriever.setDataSource(path);
+                }
 
                 metadata.setAudioTitle(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
                 metadata.setAudioArtist(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));

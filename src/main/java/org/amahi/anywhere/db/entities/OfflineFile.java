@@ -17,6 +17,7 @@ public class OfflineFile {
     private String name;
     @NonNull
     private String share;
+    private String mime;
     private String fileUri;
     private long timeStamp;
     @Types
@@ -54,6 +55,14 @@ public class OfflineFile {
 
     public void setShare(@NonNull String share) {
         this.share = share;
+    }
+
+    public String getMime() {
+        return mime;
+    }
+
+    public void setMime(String mime) {
+        this.mime = mime;
     }
 
     public String getFileUri() {

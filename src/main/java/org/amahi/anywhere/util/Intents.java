@@ -28,9 +28,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.IntroductionActivity;
+import org.amahi.anywhere.activity.OfflineFilesActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -104,6 +106,10 @@ public final class Intents {
             return intent;
         }
 
+        public Intent buildServerFilesActivityForOfflineFiles() {
+            return new Intent(context, OfflineFilesActivity.class);
+        }
+
         public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file) {
             Intent intent = new Intent(context, ServerFileTvActivity.class);
             intent.putExtra(Extras.SERVER_FILE, file);
@@ -158,7 +164,7 @@ public final class Intents {
             return null;
         }
 
-        public Intent buildServerFileIntent(ServerShare share, List<ServerFile> files, ServerFile file) {
+        public Intent buildServerFileIntent(ServerShare share, @NonNull List<ServerFile> files, ServerFile file) {
             Intent intent = new Intent(context, getServerFileActivity(file));
             intent.putExtra(Extras.SERVER_SHARE, share);
             intent.putParcelableArrayListExtra(Extras.SERVER_FILES, new ArrayList<Parcelable>(files));

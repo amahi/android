@@ -35,33 +35,40 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
     private void setUpViews(View view) {
 
         LinearLayout shareLayout = view.findViewById(R.id.share_layout);
-        LinearLayout downloadLayout = view.findViewById(R.id.download_layout);
         LinearLayout deleteLayout = view.findViewById(R.id.delete_layout);
+        LinearLayout downloadLayout = view.findViewById(R.id.download_layout);
         LinearLayout offlineLayout = view.findViewById(R.id.offline_layout);
-        SwitchCompat offlineSwitch = view.findViewById(R.id.offline_switch);
-
-        ServerFile file = getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
-        if (Intents.Builder.with(getContext()).isMediaServerFile(file)) {
-            offlineSwitch.setChecked(file.isOffline());
-
-            offlineSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-                if (b) {
-                    setOption(FileOption.OFFLINE_ENABLED);
-                } else {
-                    setOption(FileOption.OFFLINE_DISABLED);
-                }
-                file.setOffline(b);
-                getArguments().putParcelable(Fragments.Arguments.SERVER_FILE, file);
-            });
-        } else {
-            offlineLayout.setVisibility(View.GONE);
-        }
 
         shareLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.SHARE));
-        downloadLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DOWNLOAD));
         deleteLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DELETE));
+        downloadLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DOWNLOAD));
 
+        if(!isOfflineFragment()) {
+            SwitchCompat offlineSwitch = view.findViewById(R.id.offline_switch);
 
+            ServerFile file = getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+            if (Intents.Builder.with(getContext()).isMediaServerFile(file)) {
+                offlineSwitch.setChecked(file.isOffline());
+
+                offlineSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+                    if (b) {
+                        setOption(FileOption.OFFLINE_ENABLED);
+                    } else {
+                        setOption(FileOption.OFFLINE_DISABLED);
+                    }
+                    file.setOffline(b);
+                    getArguments().putParcelable(Fragments.Arguments.SERVER_FILE, file);
+                });
+            } else {
+                offlineLayout.setVisibility(View.GONE);
+            }
+        }else {
+            offlineLayout.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isOfflineFragment() {
+        return getArguments().getBoolean(Fragments.Arguments.IS_OFFLINE_FRAGMENT);
     }
 
     public void setOption(@FileOption.Types int type) {

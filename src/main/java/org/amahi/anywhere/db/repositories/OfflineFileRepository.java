@@ -6,6 +6,8 @@ import org.amahi.anywhere.db.AppDatabase;
 import org.amahi.anywhere.db.daos.OfflineFileDao;
 import org.amahi.anywhere.db.entities.OfflineFile;
 
+import java.util.List;
+
 public class OfflineFileRepository {
 
     private OfflineFileDao mOfflineFileDao;
@@ -17,6 +19,10 @@ public class OfflineFileRepository {
 
     public OfflineFile getOfflineFile(String share, String path, String name) {
         return mOfflineFileDao.getOfflineFile(share, path, name);
+    }
+
+    public OfflineFile getOfflineFile(String name, long timeStamp) {
+        return mOfflineFileDao.getOfflineFile(name, timeStamp);
     }
 
     public void insert (OfflineFile offlineFile) {
@@ -37,5 +43,9 @@ public class OfflineFileRepository {
 
     public OfflineFile getFileWithState(@OfflineFile.Types int state) {
         return mOfflineFileDao.getOfflineFileWithState(state);
+    }
+
+    public List<OfflineFile> getAllOfflineFiles() {
+        return mOfflineFileDao.getAllOfflineFiles();
     }
 }

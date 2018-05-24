@@ -64,6 +64,8 @@ public class Downloader extends BroadcastReceiver {
     private DownloadCallbacks downloadCallbacks;
     private ProgressTask downloadProgressTask;
 
+    public static final String OFFLINE_PATH = "offline_files";
+
     @Inject
     public Downloader(Context context) {
         this.context = context.getApplicationContext();
@@ -128,12 +130,12 @@ public class Downloader extends BroadcastReceiver {
 
     public long startDownloadingForOfflineMode(Uri downloadUri, String downloadName) {
 
-        File file = new File(context.getExternalFilesDir("offline"), downloadName);
+        File file = new File(context.getExternalFilesDir(OFFLINE_PATH), downloadName);
         if (file.exists())
             file.delete();
 
         DownloadManager.Request downloadRequest = new DownloadManager.Request(downloadUri);
-        downloadRequest.setDestinationInExternalFilesDir(context, "offline", downloadName)
+        downloadRequest.setDestinationInExternalFilesDir(context, OFFLINE_PATH, downloadName)
             .setVisibleInDownloadsUi(false)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
@@ -200,14 +202,17 @@ public class Downloader extends BroadcastReceiver {
     }
 
     public void moveFileToInternalStorage(String fileName) {
-        File sourceLocation = new File(context.getExternalFilesDir("offline"), fileName);
-
-        File targetLocation = new File(context.getFilesDir(), fileName);
+        File sourceLocation = new File(context.getExternalFilesDir(OFFLINE_PATH), fileName);
+        File offlineFilesDirectory = new File(context.getFilesDir(), OFFLINE_PATH);
+        if(!offlineFilesDirectory.exists()) {
+            offlineFilesDirectory.mkdir();
+        }
+        File targetLocation = new File(context.getFilesDir(), OFFLINE_PATH + "/" + fileName);
 
         if (sourceLocation.exists()) {
-
             InputStream in;
             try {
+
                 in = new FileInputStream(sourceLocation);
                 OutputStream out = new FileOutputStream(targetLocation);
 
@@ -242,7 +247,7 @@ public class Downloader extends BroadcastReceiver {
     }
 
     public void moveFile(String name, int fileOption) {
-        new FileMoveTask(name, fileOption).execute();
+//        new FileMoveTask(name, fileOption).execute();
     }
 
     public interface DownloadCallbacks {
@@ -334,65 +339,6 @@ public class Downloader extends BroadcastReceiver {
                 downloadCallbacks.downloadProgress(id, progress);
             }
 
-        }
-    }
-
-    private class FileMoveTask extends AsyncTask<Void,Void,Uri> {
-        private String fileName;
-        @FileOption.Types
-        private int fileOption;
-
-        public FileMoveTask(String fileName, int fileOption) {
-            this.fileName = fileName;
-            this.fileOption = fileOption;
-        }
-
-        @Override
-        protected Uri doInBackground(Void... voids) {
-            File sourceLocation = new File(context.getFilesDir(), fileName);
-            File targetLocation;
-
-            if(fileOption == FileOption.DOWNLOAD) {
-                targetLocation = new File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                    fileName);
-            }else {
-                targetLocation = new File(
-                    context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-                    fileName);
-            }
-
-            if (sourceLocation.exists()) {
-
-                InputStream in;
-                try {
-                    in = new FileInputStream(sourceLocation);
-                    OutputStream out = new FileOutputStream(targetLocation);
-
-                    byte[] buf = new byte[1024];
-                    int len;
-
-                    while ((len = in.read(buf)) > 0) {
-                        out.write(buf, 0, len);
-                    }
-
-                    in.close();
-                    out.close();
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            Uri contentUri = FileProvider.getUriForFile(context, "org.amahi.anywhere.fileprovider", targetLocation);
-            return contentUri;
-        }
-
-        @Override
-        protected void onPostExecute(Uri uri) {
-            super.onPostExecute(uri);
-            BusProvider.getBus().post(new FileDownloadedEvent(uri));
         }
     }
 

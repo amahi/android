@@ -35,6 +35,7 @@ import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
@@ -97,7 +98,7 @@ public class VideoService extends Service {
     private void setUpVideoPlayback(boolean isSubtitleEnabled) {
         Media media;
         if (isFileAvailableOffline(videoFile)) {
-            media = new Media(mLibVLC, getVideoPath());
+            media = new Media(mLibVLC, getOfflineFileUri(videoFile.getName()));
         } else {
             media = new Media(mLibVLC, getVideoUri());
         }
@@ -111,12 +112,12 @@ public class VideoService extends Service {
 
     private boolean isFileAvailableOffline(ServerFile serverFile) {
         OfflineFileRepository repository = new OfflineFileRepository(this);
-        OfflineFile file = repository.getOfflineFile(videoShare.getName(), serverFile.getPath(), serverFile.getName());
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
         return file != null && file.getState() == OfflineFile.DOWNLOADED;
     }
 
-    private String getVideoPath() {
-        return getFilesDir() + "/" + videoFile.getName();
+    private String getOfflineFileUri(String name) {
+        return (getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + name);
     }
 
     private Uri getVideoUri() {

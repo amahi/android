@@ -23,9 +23,6 @@ public interface OfflineFileDao {
     @Query("DELETE FROM offline_table")
     void deleteAll();
 
-    @Query("SELECT * from offline_table where path = :path")
-    List<OfflineFile> getAllOfflineFilesWithPath(String path);
-
     @Query("SELECT * from offline_table where share = :share and path = :path and name = :name")
     OfflineFile getOfflineFile(String share, String path, String name);
 
@@ -37,4 +34,10 @@ public interface OfflineFileDao {
 
     @Query("SELECT * from offline_table where state = :state")
     OfflineFile getOfflineFileWithState(int state);
+
+    @Query("SELECT * from offline_table")
+    List<OfflineFile> getAllOfflineFiles();
+
+    @Query("SELECT * from offline_table where name = :name and timeStamp = :timeStamp")
+    OfflineFile getOfflineFile(String name, long timeStamp);
 }

@@ -52,6 +52,7 @@ public final class Fragments {
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_SHARE = "server_share";
         public static final String FILE_OPTION = "file_option";
+        public static final String IS_OFFLINE_FRAGMENT = "is_offline_fragment";
 
         private Arguments() {
         }
@@ -79,6 +80,17 @@ public final class Fragments {
             Bundle arguments = new Bundle();
             arguments.putParcelable(Arguments.SERVER_SHARE, share);
             arguments.putParcelable(Arguments.SERVER_FILE, directory);
+
+            filesFragment.setArguments(arguments);
+
+            return filesFragment;
+        }
+
+        public static Fragment buildServerFilesFragmentForOfflineFiles() {
+            Fragment filesFragment = new ServerFilesFragment();
+
+            Bundle arguments = new Bundle();
+            arguments.putBoolean(Arguments.IS_OFFLINE_FRAGMENT, true);
 
             filesFragment.setArguments(arguments);
 
@@ -147,6 +159,15 @@ public final class Fragments {
 
             Bundle bundle = new Bundle();
             bundle.putParcelable(Arguments.SERVER_FILE, file);
+            fragment.setArguments(bundle);
+            return fragment;
+        }
+
+        public static BottomSheetDialogFragment buildOfflineFileOptionsDialogFragment() {
+            BottomSheetDialogFragment fragment = new FileOptionsDialogFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Arguments.IS_OFFLINE_FRAGMENT, true);
             fragment.setArguments(bundle);
             return fragment;
         }

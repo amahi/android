@@ -20,6 +20,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Fragments;
 
 import javax.inject.Inject;
@@ -51,15 +52,26 @@ public class ServerFileAudioFragment extends Fragment {
     }
 
     private void setUpAudioMetadata() {
-        AudioMetadataRetrievingTask
-            .newInstance(getActivity(), getAudioUri(), getFile())
-            .setImageView(getImageView())
-            .execute();
-        ;
+        if(getShare() != null) {
+            AudioMetadataRetrievingTask
+                .newInstance(getActivity(), getAudioUri(), getFile())
+                .setImageView(getImageView())
+                .execute();
+        }else {
+            // offline File
+
+            new AudioMetadataRetrievingTask(getActivity(), getAudioPath(), getFile())
+                .setImageView(getImageView())
+                .execute();
+        }
     }
 
     private Uri getAudioUri() {
         return serverClient.getFileUri(getShare(), getFile());
+    }
+
+    private String getAudioPath() {
+        return getActivity().getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + getFile().getName();
     }
 
     @Subscribe

@@ -28,6 +28,7 @@
     <string name="title_selected_server">Server</string>
     <string name="server_name">Server Name</string>
     <string name="title_upload_list">Upload</string>
+    <string name="title_offline_files">Offline Files</string>
 
     <string name="button_search_application">Search Google Play</string>
     <string name="button_sign_in">Sign in</string>
@@ -73,6 +74,7 @@
     <string name="message_notice_create_some">Create some and try again</string>
 
     <string name="message_progress_file_downloading">Downloading file…</string>
+    <string name="message_progress_file_preparing">Preparing file…</string>
     <string name="message_no_files">No Files</string>
     <string name="message_create_and_try_again">Create some and try again</string>
     <string name="message_connection_error">Connection Error</string>

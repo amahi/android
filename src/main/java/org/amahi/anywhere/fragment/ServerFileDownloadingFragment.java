@@ -25,6 +25,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.content.FileProvider;
 
 import com.squareup.otto.Subscribe;
 
@@ -40,7 +42,10 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Downloader;
+import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -94,7 +99,17 @@ public class ServerFileDownloadingFragment extends DialogFragment {
         if (state == null) {
             int fileOption = getArguments().getInt(Fragments.Arguments.FILE_OPTION, 0);
             if(isFileAvailableOffline(getFile())) {
-                downloader.moveFile(getFile().getName(), fileOption);
+                File sourceLocation = new File(getActivity().getFilesDir(), Downloader.OFFLINE_PATH + "/" + getFile().getName());
+                if(fileOption == FileOption.SHARE) {
+                    Uri contentUri = FileProvider.getUriForFile(getActivity(), "org.amahi.anywhere.fileprovider", sourceLocation);
+                    BusProvider.getBus().post(new FileDownloadedEvent(contentUri));
+                }else {
+                    FileManager fm = new FileManager(getActivity());
+                    File targetLocation = new File(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOWNLOADS),
+                        getFile().getName());
+                    fm.copyFile(sourceLocation, targetLocation);
+                }
             }else {
                 downloader.startFileDownloading(getFileUri(), getFile().getName(), fileOption);
             }
@@ -115,7 +130,7 @@ public class ServerFileDownloadingFragment extends DialogFragment {
 
     private boolean isFileAvailableOffline(ServerFile serverFile) {
         OfflineFileRepository repository = new OfflineFileRepository(getActivity());
-        OfflineFile file = repository.getOfflineFile(getShare().getName(), serverFile.getPath(), serverFile.getName());
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
         return file != null && file.getState() == OfflineFile.DOWNLOADED;
     }
 

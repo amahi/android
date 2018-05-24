@@ -25,6 +25,7 @@ import android.content.Context;
 import org.amahi.anywhere.activity.AuthenticationActivity;
 import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.NavigationActivity;
+import org.amahi.anywhere.activity.OfflineFilesActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -74,6 +75,7 @@ import dagger.Provides;
         AuthenticationActivity.class,
         NavigationActivity.class,
         ServerAppActivity.class,
+        OfflineFilesActivity.class,
         ServerFilesActivity.class,
         ServerFileAudioActivity.class,
         ServerFileImageActivity.class,

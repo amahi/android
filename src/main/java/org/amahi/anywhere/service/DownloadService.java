@@ -157,6 +157,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         OfflineFile offlineFile = new OfflineFile(serverShare.getName(), serverFile.getPath(), serverFile.getName());
         offlineFile.setFileUri(downloadUri);
         offlineFile.setTimeStamp(serverFile.getModificationTime().getTime());
+        offlineFile.setMime(serverFile.getMime());
         offlineFile.setState(OfflineFile.DOWNLOADING);
         offlineFile.setDownloadId(-1);
         offlineFileRepository.insert(offlineFile);

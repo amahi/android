@@ -31,12 +31,12 @@
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
     <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
@@ -52,7 +52,6 @@
         android:label="@string/application_name"
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi">
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="org.amahi.anywhere.fileprovider"
@@ -68,22 +67,23 @@
             android:theme="@style/Theme.Leanback.Browse">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.max_aspect"
                 android:value="2.1" />
         </activity>
-
         <activity android:name=".activity.NavigationActivity" />
         <activity android:name=".activity.ServerAppActivity" />
         <activity android:name=".activity.ServerFilesActivity">
@@ -166,13 +166,14 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".receiver.CameraReceiver"
             android:enabled="true">
             <intent-filter>
-                <!--<action android:name="com.android.camera.NEW_PICTURE" />-->
+
+                <!-- <action android:name="com.android.camera.NEW_PICTURE" /> -->
                 <action android:name="android.hardware.action.NEW_PICTURE" />
+
                 <data android:mimeType="image/*" />
             </intent-filter>
         </receiver>
@@ -180,7 +181,6 @@
         <service
             android:name=".job.PhotosContentJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <service
             android:name=".job.NetConnectivityJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
@@ -192,27 +192,21 @@
         <activity
             android:name=".activity.WebViewActivity"
             android:label="@string/title_version_settings" />
-
         <activity
             android:name=".tv.activity.IntroActivity"
             android:theme="@style/Theme.Leanback.Onboarding" />
-
         <activity
             android:name=".tv.activity.SettingsActivity"
             android:theme="@style/Theme.Leanback.GuidedStep" />
-
         <activity
             android:name=".tv.activity.ServerFileTvActivity"
             android:theme="@style/Theme.Leanback.VerticalGrid" />
-
         <activity
             android:name=".tv.activity.TVWebViewActivity"
             android:theme="@style/Theme.Design.NoActionBar" />
-
         <activity
             android:name=".tv.activity.TvPlaybackVideoActivity"
             android:theme="@style/Theme.Leanback" />
-
         <activity
             android:name=".tv.activity.TvPlaybackAudioActivity"
             android:theme="@style/Theme.Leanback" />
@@ -220,6 +214,8 @@
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="org.amahi.anywhere.util.CastOptionsProvider" />
+
+        <activity android:name=".activity.OfflineFilesActivity"></activity>
     </application>
 
 </manifest>

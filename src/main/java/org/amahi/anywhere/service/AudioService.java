@@ -80,6 +80,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Identifier;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.MediaNotificationManager;
@@ -220,7 +221,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
         if (isFileAvailableOffline(getAudioFile())) {
             mediaSource = new ExtractorMediaSource.Factory(
                 new DefaultDataSourceFactory(this, Identifier.getUserAgent(this)))
-                .createMediaSource(Uri.parse(getFilesDir() + "/" + audioFile.getName()));
+                .createMediaSource(getOfflineFileUri(audioFile.getName()));
         } else {
             mediaSource = buildMediaSource(getAudioUri());
         }
@@ -230,8 +231,12 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     private boolean isFileAvailableOffline(ServerFile serverFile) {
         OfflineFileRepository repository = new OfflineFileRepository(this);
-        OfflineFile file = repository.getOfflineFile(audioShare.getName(), serverFile.getPath(), serverFile.getName());
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
         return file != null && file.getState() == OfflineFile.DOWNLOADED;
+    }
+
+    private Uri getOfflineFileUri(String name) {
+        return Uri.parse(getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + name);
     }
 
     private Uri getAudioUri() {
@@ -239,12 +244,14 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     private void setUpAudioMetadata() {
-        // Clear any previous metadata
-        tearDownAudioMetadataFormatter();
-        // Start fetching new metadata in the background
-        AudioMetadataRetrievingTask
-            .newInstance(this, getAudioUri(), audioFile)
-            .execute();
+        if(audioShare != null) {
+            // Clear any previous metadata
+            tearDownAudioMetadataFormatter();
+            // Start fetching new metadata in the background
+            AudioMetadataRetrievingTask
+                .newInstance(this, getAudioUri(), audioFile)
+                .execute();
+        }
     }
 
     @Subscribe

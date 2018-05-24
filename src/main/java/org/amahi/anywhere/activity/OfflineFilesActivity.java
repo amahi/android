@@ -84,7 +84,21 @@ public class OfflineFilesActivity extends AppCompatActivity {
 
     @Subscribe
     public void onFileOpening(FileOpeningEvent event) {
-        startFileActivity(event.getFile(), event.getFiles());
+        if(isFileDownloaded(event.getFile())) {
+            startFileActivity(event.getFile(), event.getFiles());
+        } else {
+            Snackbar.make(getParentView(), R.string.message_progress_file_downloading, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean isFileDownloaded(ServerFile file) {
+        OfflineFileRepository offlineFileRepository = new OfflineFileRepository(this);
+        OfflineFile offlineFile = offlineFileRepository.getOfflineFile(file.getName(), file.getModificationTime().getTime());
+        if(offlineFile.getState() == OfflineFile.DOWNLOADED) {
+            return true;
+        }
+
+        return false;
     }
 
     private void startFileActivity(ServerFile file, List<ServerFile> serverFiles) {

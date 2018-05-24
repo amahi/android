@@ -608,7 +608,7 @@ public class ServerFilesFragment extends Fragment implements
             serverFiles.add(serverFile);
         }
 
-        return serverFiles;
+        return sortFiles(serverFiles);
     }
 
     @Subscribe

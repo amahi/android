@@ -204,7 +204,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     public boolean isAudioStarted() {
-        return (audioShare != null) && (audioFiles != null) && (audioFile != null);
+        return (audioFiles != null) && (audioFile != null);
     }
 
     public void startAudio(ServerShare audioShare, List<ServerFile> audioFiles, ServerFile audioFile) {
@@ -256,7 +256,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-        if (audioFile != null && audioFile == event.getServerFile()) {
+        if (audioFile != null && audioFile.getUniqueKey().equals(event.getServerFile().getUniqueKey())) {
             final AudioMetadata metadata = event.getAudioMetadata();
             this.audioMetadataFormatter = new AudioMetadataFormatter(
                 metadata.getAudioTitle(), metadata.getAudioArtist(), metadata.getAudioAlbum());

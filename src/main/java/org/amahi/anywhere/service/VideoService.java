@@ -85,7 +85,7 @@ public class VideoService extends Service {
     }
 
     public boolean isVideoStarted() {
-        return (videoShare != null) && (videoFile != null);
+        return (videoFile != null);
     }
 
     public void startVideo(ServerShare videoShare, ServerFile videoFile, boolean isSubtitleEnabled) {

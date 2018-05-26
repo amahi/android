@@ -73,10 +73,10 @@
     <string name="message_notice_check_settings">Check your settings and try again</string>
     <string name="message_notice_create_some">Create some and try again</string>
 
-    <string name="message_progress_file_downloading">Downloading file…</string>
-    <string name="message_progress_file_preparing">Preparing file…</string>
-    <string name="message_no_files">No Files</string>
-    <string name="message_create_and_try_again">Create some and try again</string>
+    <string name="message_progress_file_downloading">Downloading file …</string>
+    <string name="message_progress_file_preparing">Preparing file …</string>
+    <string name="message_no_files">Files downloaded appear here</string>
+    <string name="message_create_and_try_again">Find files to download</string>
     <string name="message_connection_error">Connection Error</string>
 
     <string name="message_delete_file_title">Confirm File Delete?</string>

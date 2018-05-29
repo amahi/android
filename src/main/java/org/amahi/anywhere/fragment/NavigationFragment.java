@@ -228,6 +228,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (isServersStateValid(state)) {
             setUpServersState(state);
             setUpNavigation();
+
+            List<Server> servers = state.getParcelableArrayList(State.SERVERS);
+            selectSavedServer(servers);
         } else {
             setUpAuthentication();
         }
@@ -323,6 +326,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         setUpNavigation();
 
+        selectSavedServer(event.getServers());
+
         showContent();
 
         tvIntent = new Intent(getContext(), MainTVActivity.class);
@@ -410,6 +415,28 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         }
     }
 
+    private void selectSavedServer(List<Server> servers) {
+        String session = getServerSession();
+        if(session != null) {
+            List<Server> activeServers = filterActiveServers(servers);
+            for (int i = 0; i < activeServers.size(); i++) {
+                if (activeServers.get(i).getSession().equals(session)) {
+
+                    getServerNameTextView().setText(getServersAdapter().getItem(i).getName());
+
+                    setServerTitleClicked(false);
+
+                    getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.nav_arrow_down, 0);
+
+                    changeNavigationAdapter();
+
+                    setUpServerConnection(getServersAdapter().getItem(i));
+                    break;
+                }
+            }
+        }
+    }
+
     private void selectServerListener(int position) {
 
         //Changing the Title Server Name
@@ -424,6 +451,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         changeNavigationAdapter();
 
         setupServer(position);
+
+        storeServerSession(getServersAdapter().getItem(position));
     }
 
     public void changeNavigationAdapter() {
@@ -467,6 +496,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         } else {
             serverClient.connect(getContext(), server);
         }
+    }
+
+    private void storeServerSession(Server server) {
+        Preferences.setServerSession(getContext(), server.getSession());
+    }
+
+    private String getServerSession() {
+        return Preferences.getServerSession(getContext());
     }
 
     @Subscribe

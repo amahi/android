@@ -68,6 +68,7 @@
     <string name="message_tap_to_retry">Tap to retry</string>
     <string name="message_error_video">Error playing the video</string>
     <string name="message_error_amahi_anywhere_app">The Amahi Anywhere app in your server is not reachable. Please ensure that Amahi Anywhere app is installed, running and reachable in your network.</string>
+    <string name="message_resume_last_position">Do you wish to resume from where you stopped</string>
 
 
     <string name="message_notice_check_settings">Check your settings and try again</string>

@@ -31,7 +31,9 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.entities.PlayedFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.db.repositories.PlayedFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -54,6 +56,10 @@ public class VideoService extends Service {
     ServerClient serverClient;
     private ServerShare videoShare;
     private ServerFile videoFile;
+
+    private long pauseTime;
+    private long length;
+
     private LibVLC mLibVLC;
     private MediaPlayer mMediaPlayer = null;
 
@@ -107,7 +113,6 @@ public class VideoService extends Service {
         if (isSubtitleEnabled) {
             searchSubtitleFile();
         }
-        mMediaPlayer.play();
     }
 
     private boolean isFileAvailableOffline(ServerFile serverFile) {
@@ -175,16 +180,40 @@ public class VideoService extends Service {
 
     public void pauseVideo() {
         mMediaPlayer.pause();
+
+        updatePauseTime();
+    }
+
+    private void updatePauseTime() {
+        pauseTime = getMediaPlayer().getTime();
+        length = getMediaPlayer().getLength();
+    }
+
+    public ServerFile getVideoFile() {
+        return videoFile;
+    }
+
+    public ServerShare getVideoShare() {
+        return videoShare;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
+        savePlayPosition();
+
         tearDownVideoPlayback();
         BusProvider.getBus().unregister(this);
     }
 
+    private void savePlayPosition() {
+        if (pauseTime >= 1000 && (length - pauseTime) >= 1000) {
+            PlayedFileRepository repository = new PlayedFileRepository(this);
+            PlayedFile playedFile = new PlayedFile(getVideoFile().getUniqueKey(), pauseTime);
+            repository.insert(playedFile);
+        }
+    }
 
     private void tearDownVideoPlayback() {
         mMediaPlayer.stop();

@@ -20,10 +20,11 @@
 package org.amahi.anywhere.fragment;
 
 import android.Manifest;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,7 +42,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.DisplayMetrics;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -68,19 +68,27 @@ import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.bus.FileOptionClickEvent;
+import org.amahi.anywhere.bus.OfflineFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileDeleteEvent;
+import org.amahi.anywhere.bus.ServerFileDownloadingEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
-import org.amahi.anywhere.util.RecyclerViewItemClickListener;
+import org.amahi.anywhere.util.ServerFileClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,13 +106,12 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class ServerFilesFragment extends Fragment implements
     SwipeRefreshLayout.OnRefreshListener,
-    RecyclerViewItemClickListener,
-    ActionMode.Callback,
+    ServerFileClickListener,
     SearchView.OnQueryTextListener,
     FilesFilterAdapter.onFilterListChange,
     EasyPermissions.PermissionCallbacks,
     CastStateListener {
-    private static final int SHARE_PERMISSIONS = 101;
+    public final static int EXTERNAL_STORAGE_PERMISSION = 101;
     @Inject
     ServerClient serverClient;
     private SearchView searchView;
@@ -115,9 +122,12 @@ public class ServerFilesFragment extends Fragment implements
     private MenuItem mediaRouteMenuItem;
     private ProgressDialog deleteProgressDialog;
     private int deleteFilePosition;
-    private int lastCheckedFileIndex = -1;
+    private int lastSelectedFilePosition = -1;
     private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
-    private ActionMode filesActions;
+
+    private OfflineFileRepository mOfflineFileRepo;
+    private @FileOption.Types
+    int selectedFileOption;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -127,7 +137,7 @@ public class ServerFilesFragment extends Fragment implements
         } else {
             rootView = layoutInflater.inflate(R.layout.fragment_server_files_metadata, container, false);
         }
-        mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
+        mErrorLinearLayout = rootView.findViewById(R.id.error);
         return rootView;
     }
 
@@ -164,23 +174,15 @@ public class ServerFilesFragment extends Fragment implements
             mIntroductoryOverlay.remove();
         }
         if ((mediaRouteMenuItem != null) && mediaRouteMenuItem.isVisible()) {
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    mIntroductoryOverlay = new IntroductoryOverlay
-                        .Builder(getActivity(), mediaRouteMenuItem)
-                        .setTitleText("Introducing Cast")
-                        .setSingleTime()
-                        .setOnOverlayDismissedListener(
-                            new IntroductoryOverlay.OnOverlayDismissedListener() {
-                                @Override
-                                public void onOverlayDismissed() {
-                                    mIntroductoryOverlay = null;
-                                }
-                            })
-                        .build();
-                    mIntroductoryOverlay.show();
-                }
+            new Handler().post(() -> {
+                mIntroductoryOverlay = new IntroductoryOverlay
+                    .Builder(getActivity(), mediaRouteMenuItem)
+                    .setTitleText("Introducing Cast")
+                    .setSingleTime()
+                    .setOnOverlayDismissedListener(
+                        () -> mIntroductoryOverlay = null)
+                    .build();
+                mIntroductoryOverlay.show();
             });
         }
     }
@@ -189,6 +191,7 @@ public class ServerFilesFragment extends Fragment implements
         setUpFilesMenu();
         setUpFilesAdapter();
         setUpFilesActions();
+        setUpOfflineFileDatabase();
         setUpFilesContent(state);
         setUpFilesContentRefreshing();
     }
@@ -205,87 +208,70 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void setUpFilesActions() {
-        FilesFilterAdapter adapter;
-        if (!isMetadataAvailable()) {
-            adapter = (ServerFilesAdapter) getRecyclerView().getAdapter();
-        } else {
-            adapter = (ServerFilesMetadataAdapter) getRecyclerView().getAdapter();
-        }
-        adapter.setOnClickListener(this);
+        getListAdapter().setOnClickListener(this);
     }
 
     private RecyclerView getRecyclerView() {
         return (RecyclerView) getView().findViewById(android.R.id.list);
     }
 
-    private boolean areFilesActionsAvailable() {
-        return filesActions != null;
-    }
-
-    @Override
-    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-        this.filesActions = actionMode;
-
-        actionMode.getMenuInflater().inflate(R.menu.action_mode_server_files, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-        return false;
-    }
-
-    @Override
-    public void onDestroyActionMode(ActionMode actionMode) {
-        this.filesActions = null;
-
-        clearFileChoices();
-
-        if (!isMetadataAvailable()) {
-            getFilesAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
-        } else {
-            getFilesMetadataAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
-        }
-    }
-
-    private void clearFileChoices() {
-        getRecyclerView().dispatchSetSelected(false);
-        getRecyclerView().dispatchSetActivated(false);
-    }
-
-    @Override
-    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.menu_share:
+    @Subscribe
+    public void onFileOptionSelected(FileOptionClickEvent event) {
+        selectedFileOption = event.getFileOption();
+        switch (selectedFileOption) {
+            case FileOption.DOWNLOAD:
                 if (Android.isPermissionRequired()) {
-                    checkSharePermissions(actionMode);
+                    checkWritePermissions();
                 } else {
-                    startFileSharing(getCheckedFile());
-                    actionMode.finish();
+                    startFileDownloading();
                 }
                 break;
-            case R.id.menu_delete:
-                deleteFile(getCheckedFile(), actionMode);
+            case FileOption.SHARE:
+                if (Android.isPermissionRequired()) {
+                    checkWritePermissions();
+                } else {
+                    startFileSharing();
+                }
                 break;
-            default:
-                return false;
+            case FileOption.DELETE:
+                deleteFile();
+                break;
+            case FileOption.OFFLINE_ENABLED:
+                if (Android.isPermissionRequired()) {
+                    checkWritePermissions();
+                } else {
+                    changeOfflineState(true);
+                }
+                break;
+            case FileOption.OFFLINE_DISABLED:
+                changeOfflineState(false);
         }
-
-        return true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void checkSharePermissions(ActionMode actionMode) {
+    private void checkWritePermissions() {
         String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(getContext(), perms)) {
-            startFileSharing(getCheckedFile());
+            handleFileOptionsWithPermissionGranted();
         } else {
-            lastCheckedFileIndex = getListAdapter().getSelectedPosition();
+            lastSelectedFilePosition = getListAdapter().getSelectedPosition();
             EasyPermissions.requestPermissions(this, getString(R.string.share_permission),
-                SHARE_PERMISSIONS, perms);
+                EXTERNAL_STORAGE_PERMISSION, perms);
         }
-        actionMode.finish();
+    }
+
+    private void handleFileOptionsWithPermissionGranted() {
+
+        switch (selectedFileOption) {
+            case FileOption.DOWNLOAD:
+                startFileDownloading();
+                break;
+            case FileOption.SHARE:
+                startFileSharing();
+                break;
+            case FileOption.OFFLINE_ENABLED:
+                changeOfflineState(true);
+        }
     }
 
     @Override
@@ -298,61 +284,108 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
-        if (requestCode == SHARE_PERMISSIONS) {
-            if (lastCheckedFileIndex != -1) {
-                startFileSharing(getFile(lastCheckedFileIndex));
-            }
+        if (lastSelectedFilePosition != -1) {
+            handleFileOptionsWithPermissionGranted();
         }
     }
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            if (requestCode == SHARE_PERMISSIONS) {
+            if (requestCode == EXTERNAL_STORAGE_PERMISSION) {
                 showPermissionSnackBar(getString(R.string.share_permission_denied));
             }
         }
-
     }
 
     private void showPermissionSnackBar(String message) {
         Snackbar.make(getView(), message, Snackbar.LENGTH_LONG)
-            .setAction(R.string.menu_settings, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new AppSettingsDialog.Builder(ServerFilesFragment.this).build().show();
-                }
-            })
+            .setAction(R.string.menu_settings, v -> new AppSettingsDialog.Builder(ServerFilesFragment.this).build().show())
             .show();
     }
 
-    private void startFileSharing(ServerFile file) {
-        BusProvider.getBus().post(new ServerFileSharingEvent(getShare(), file));
+    private void startFileDownloading() {
+        BusProvider.getBus().post(new ServerFileDownloadingEvent(getShare(), getCheckedFile()));
     }
 
-    private void deleteFile(final ServerFile file, final ActionMode actionMode) {
-        deleteFilePosition = getListAdapter().getSelectedPosition();
-        new AlertDialog.Builder(getContext())
-            .setTitle(R.string.message_delete_file_title)
-            .setMessage(R.string.message_delete_file_body)
-            .setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+    private void startFileSharing() {
+        BusProvider.getBus().post(new ServerFileSharingEvent(getShare(), getCheckedFile()));
+    }
+
+    private ServerFile getOfflineServerFile(OfflineFile offlineFile) {
+        return new ServerFile(offlineFile.getName(), offlineFile.getTimeStamp(), offlineFile.getMime());
+    }
+
+    private void deleteFile() {
+        if (!isOfflineFragment()) {
+            deleteFilePosition = getListAdapter().getSelectedPosition();
+            new AlertDialog.Builder(getContext())
+                .setTitle(R.string.message_delete_file_title)
+                .setMessage(R.string.message_delete_file_body)
+                .setPositiveButton(R.string.button_yes, (dialog, which) -> {
                     deleteProgressDialog.show();
-                    serverClient.deleteFile(getShare(), file);
-                    actionMode.finish();
-                }
-            })
-            .setNegativeButton(R.string.button_no, null)
+                    serverClient.deleteFile(getShare(), getCheckedFile());
+                })
+                .setNegativeButton(R.string.button_no, null)
+                .show();
+        } else {
+            BusProvider.getBus().post(new OfflineFileDeleteEvent(getCheckedFile()));
+        }
+    }
+
+    private void changeOfflineState(boolean enable) {
+        if (enable) {
+            startDownloadService(getCheckedFile());
+        } else {
+            deleteFileFromOfflineStorage();
+        }
+
+        updateCurrentFileOfflineState(enable);
+    }
+
+    private void deleteFileFromOfflineStorage() {
+        OfflineFile offlineFile = mOfflineFileRepo.getOfflineFile(getShare().getName(), getCheckedFile().getPath(), getCheckedFile().getName());
+        if (offlineFile.getState() == OfflineFile.DOWNLOADING) {
+            stopDownloading(offlineFile.getDownloadId());
+        }
+        File file = new File(getContext().getFilesDir(), getCheckedFile().getName());
+        if (file.exists()) {
+            file.delete();
+        }
+        mOfflineFileRepo.delete(offlineFile);
+        Snackbar.make(getRecyclerView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
             .show();
+    }
+
+    private void stopDownloading(long downloadID) {
+        DownloadManager dm = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        if (dm != null) {
+            dm.remove(downloadID);
+        }
+    }
+
+    private void startDownloadService(ServerFile file) {
+        Intent downloadService = Intents.Builder.with(getContext()).buildDownloadServiceIntent(file, getShare());
+        getContext().startService(downloadService);
+    }
+
+    private void updateCurrentFileOfflineState(boolean enable) {
+        ServerFile serverFile = getCheckedFile();
+        serverFile.setOffline(enable);
     }
 
     @Subscribe
     public void onFileDeleteEvent(ServerFileDeleteEvent fileDeleteEvent) {
-        deleteProgressDialog.dismiss();
+        if (deleteProgressDialog != null) {
+            deleteProgressDialog.dismiss();
+        }
         if (fileDeleteEvent.isDeleted()) {
             if (!isMetadataAvailable()) {
-                getFilesAdapter().removeFile(deleteFilePosition);
+                if (!isOfflineFragment()) {
+                    getFilesAdapter().removeFile(deleteFilePosition);
+                } else {
+                    getListAdapter().removeFile(getListAdapter().getSelectedPosition());
+                }
                 getFilesAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
             } else {
                 getFilesMetadataAdapter().removeFile(deleteFilePosition);
@@ -364,7 +397,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private ServerFile getCheckedFile() {
-        return getFile(getListAdapter().getSelectedPosition());
+        return getListAdapter().getItem(getListAdapter().getSelectedPosition());
     }
 
     private ServerFile getFile(int position) {
@@ -376,7 +409,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private boolean isMetadataAvailable() {
-        return ServerShare.Tag.MOVIES.equals(getShare().getTag());
+        return getShare() != null && ServerShare.Tag.MOVIES.equals(getShare().getTag());
     }
 
     private ServerFilesAdapter getFilesAdapter() {
@@ -440,11 +473,21 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void setUpFilesContent(Bundle state) {
-        if (isFilesStateValid(state)) {
-            setUpFilesState(state);
+
+        if (!isOfflineFragment()) {
+            if (isFilesStateValid(state)) {
+                setUpFilesState(state);
+            } else {
+                setUpFilesContent();
+            }
         } else {
-            setUpFilesContent();
+            getListAdapter().setAdapterMode(FilesFilterAdapter.AdapterMode.OFFLINE);
+            showOfflineFiles();
         }
+    }
+
+    private boolean isOfflineFragment() {
+        return getArguments().getBoolean(Fragments.Arguments.IS_OFFLINE_FRAGMENT);
     }
 
     private boolean isFilesStateValid(Bundle state) {
@@ -458,8 +501,10 @@ public class ServerFilesFragment extends Fragment implements
 
         setUpFilesContent(files);
         setUpFilesContentSort(filesSort);
+        getListAdapter().setSelectedPosition(state.getInt(State.SELECTED_ITEM, -1));
 
         showFilesContent();
+
     }
 
     private void setUpFilesContent(List<ServerFile> files) {
@@ -504,11 +549,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private boolean areFilesAvailable() {
-        if (!isMetadataAvailable()) {
-            return !getFilesAdapter().isEmpty();
-        } else {
-            return !getFilesMetadataAdapter().isEmpty();
-        }
+        return !getListAdapter().isEmpty();
     }
 
     private void setUpFilesContent() {
@@ -537,13 +578,31 @@ public class ServerFilesFragment extends Fragment implements
         return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
     }
 
+    private void showOfflineFiles() {
+        List<ServerFile> serverFiles = prepareServerFilesFrom(mOfflineFileRepo.getAllOfflineFiles());
+        getListAdapter().replaceWith(null, serverFiles);
+        showFilesContent();
+        hideFilesContentRefreshing();
+    }
+
+    private List<ServerFile> prepareServerFilesFrom(List<OfflineFile> files) {
+        List<ServerFile> serverFiles = new ArrayList<>();
+
+        for (OfflineFile offlineFile : files) {
+            ServerFile serverFile = new ServerFile(offlineFile.getName(), offlineFile.getTimeStamp(), offlineFile.getMime());
+            serverFiles.add(serverFile);
+        }
+
+        return sortFiles(serverFiles);
+    }
+
     @Subscribe
     public void onFilesLoaded(ServerFilesLoadedEvent event) {
         showFilesContent(event.getServerFiles());
     }
 
     private void showFilesContent(List<ServerFile> files) {
-        setUpFilesContent(sortFiles(files));
+        setUpFilesContent(checkOfflineFiles(sortFiles(files)));
 
         showFilesContent();
 
@@ -588,12 +647,9 @@ public class ServerFilesFragment extends Fragment implements
 
     private void showFilesError() {
         ViewDirector.of(this, R.id.animator).show(R.id.error);
-        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-                setUpFilesContent();
-            }
+        mErrorLinearLayout.setOnClickListener(view -> {
+            ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+            setUpFilesContent();
         });
     }
 
@@ -609,13 +665,44 @@ public class ServerFilesFragment extends Fragment implements
         refreshLayout.setOnRefreshListener(this);
     }
 
-    @Override
-    public void onRefresh() {
-        setUpFilesContent();
+    private void setUpOfflineFileDatabase() {
+        mOfflineFileRepo = new OfflineFileRepository(getContext());
     }
 
-    private void startFileOpening(ServerFile file) {
-        BusProvider.getBus().post(new FileOpeningEvent(getShare(), getFiles(), file));
+    private List<ServerFile> checkOfflineFiles(List<ServerFile> serverFiles) {
+        for (ServerFile file : serverFiles) {
+            OfflineFile offlineFile = mOfflineFileRepo.getOfflineFile(file.getName(), file.getModificationTime().getTime());
+            if (offlineFile != null) {
+                file.setOffline(true);
+                if (offlineFile.getTimeStamp() < file.getModificationTime().getTime()) {
+                    offlineFile.setState(OfflineFile.OUT_OF_DATE);
+                    mOfflineFileRepo.update(offlineFile);
+                    startDownloadService(file);
+                }
+            }
+        }
+
+        return serverFiles;
+    }
+
+    @Override
+    public void onRefresh() {
+        if (!isOfflineFragment()) {
+            setUpFilesContent();
+        } else {
+            showOfflineFiles();
+        }
+    }
+
+    private void startFileOpening(int position) {
+        if (!isOfflineFragment()) {
+            BusProvider.getBus().post(new FileOpeningEvent(getShare(), getFiles(), getFile(position)));
+        } else {
+            ServerFile offlineServerFile = getListAdapter().getItem(position);
+            ArrayList<ServerFile> serverFiles = new ArrayList<>();
+            serverFiles.add(offlineServerFile);
+            BusProvider.getBus().post(new FileOpeningEvent(null, serverFiles, offlineServerFile));
+        }
     }
 
     private void setUpTitle(String title) {
@@ -662,7 +749,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setSearchCursor() {
         final int textViewID = searchView.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
-        final AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(textViewID);
+        final AutoCompleteTextView searchTextView = searchView.findViewById(textViewID);
         try {
             Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
             mCursorDrawableRes.setAccessible(true);
@@ -718,9 +805,9 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpFilesContentSort() {
         if (!isMetadataAvailable()) {
-            getFilesAdapter().replaceWith(getShare(), sortFiles(getFiles()));
+            getFilesAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())));
         } else {
-            getFilesMetadataAdapter().replaceWith(getShare(), sortFiles(getFiles()));
+            getFilesMetadataAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())));
         }
     }
 
@@ -766,16 +853,6 @@ public class ServerFilesFragment extends Fragment implements
     public void onResume() {
         super.onResume();
 
-        if (!areFilesActionsAvailable()) {
-            clearFileChoices();
-
-            if (!isMetadataAvailable()) {
-                getFilesAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
-            } else {
-                getFilesMetadataAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
-            }
-        }
-
         mCastContext.addCastStateListener(this);
         BusProvider.getBus().register(this);
     }
@@ -803,6 +880,7 @@ public class ServerFilesFragment extends Fragment implements
         super.onSaveInstanceState(outState);
 
         tearDownFilesState(outState);
+        outState.putInt(State.SELECTED_ITEM, lastSelectedFilePosition);
     }
 
     private void tearDownFilesState(Bundle state) {
@@ -825,49 +903,30 @@ public class ServerFilesFragment extends Fragment implements
         }
     }
 
-    private void setItemSelected(View view, int position) {
-        FilesFilterAdapter adapter;
-
-        if (!isMetadataAvailable()) {
-            adapter = (ServerFilesAdapter) getRecyclerView().getAdapter();
-        } else {
-            adapter = (ServerFilesMetadataAdapter) getRecyclerView().getAdapter();
-        }
-
-        adapter.notifyItemChanged(adapter.getSelectedPosition());
-        adapter.setSelectedPosition(position);
-        adapter.notifyItemChanged(position);
+    private void setItemSelected(int position) {
+        lastSelectedFilePosition = position;
+        getListAdapter().setSelectedPosition(position);
     }
 
     @Override
     public void onItemClick(View view, int filePosition) {
-        clearFileChoices();
+        collapseSearchView();
+        startFileOpening(filePosition);
 
-        if (areFilesActionsAvailable()) {
-            setItemSelected(view, filePosition);
-        }
-
-        if (!areFilesActionsAvailable()) {
-            collapseSearchView();
-            startFileOpening(getFile(filePosition));
-
-            if (isDirectory(getFile(filePosition))) {
-                setUpTitle(getFile(filePosition).getName());
-            }
+        if (!isOfflineFragment() && isDirectory(getFile(filePosition))) {
+            setUpTitle(getFile(filePosition).getName());
         }
     }
 
     @Override
-    public boolean onLongItemClick(View view, int position) {
-        clearFileChoices();
-        setItemSelected(view, position);
-
-        if (!areFilesActionsAvailable()) {
-            getRecyclerView().startActionMode(this);
-
-            return true;
+    public void onMoreOptionClick(View view, int position) {
+        setItemSelected(position);
+        if (getListAdapter().getAdapterMode() != FilesFilterAdapter.AdapterMode.OFFLINE) {
+            Fragments.Builder.buildFileOptionsDialogFragment(getContext(), getCheckedFile())
+                .show(getChildFragmentManager(), "file_options_dialog");
         } else {
-            return false;
+            Fragments.Builder.buildOfflineFileOptionsDialogFragment()
+                .show(getChildFragmentManager(), "file_options_dialog");
         }
     }
 
@@ -884,6 +943,7 @@ public class ServerFilesFragment extends Fragment implements
     private static final class State {
         public static final String FILES = "files";
         public static final String FILES_SORT = "files_sort";
+        public static final String SELECTED_ITEM = "selected_item";
 
         private State() {
         }

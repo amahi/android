@@ -25,6 +25,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.content.FileProvider;
 
 import com.squareup.otto.Subscribe;
 
@@ -33,11 +35,17 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadFailedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Downloader;
+import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -53,12 +61,13 @@ public class ServerFileDownloadingFragment extends DialogFragment {
     @Inject
     ServerClient serverClient;
 
-    public static ServerFileDownloadingFragment newInstance(ServerShare share, ServerFile file) {
+    public static ServerFileDownloadingFragment newInstance(ServerShare share, ServerFile file, @FileOption.Types int fileAction) {
         ServerFileDownloadingFragment fragment = new ServerFileDownloadingFragment();
 
         Bundle arguments = new Bundle();
         arguments.putParcelable(Fragments.Arguments.SERVER_SHARE, share);
         arguments.putParcelable(Fragments.Arguments.SERVER_FILE, file);
+        arguments.putInt(Fragments.Arguments.FILE_OPTION, fileAction);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -88,7 +97,8 @@ public class ServerFileDownloadingFragment extends DialogFragment {
 
     private void startFileDownloading(Bundle state) {
         if (state == null) {
-            downloader.startFileDownloading(getFileUri(), getFile().getName());
+            int fileOption = getArguments().getInt(Fragments.Arguments.FILE_OPTION, 0);
+            downloader.startFileDownloading(getFileUri(), getFile().getName(), fileOption);
         }
     }
 

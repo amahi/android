@@ -6,4 +6,10 @@
     <external-path
         name="user_downloads"
         path="Android/data/org.amahi.anywhere/files/Download" />
+    <external-path
+        name="user_external_downloads"
+        path="Download" />
+    <files-path
+        name="my_offline_files"
+        path="offline_files" />
 </paths>

@@ -44,22 +44,30 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileCopiedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.bus.ServerFileDownloadingEvent;
 import org.amahi.anywhere.bus.ServerFileSharingEvent;
 import org.amahi.anywhere.bus.ServerFileUploadCompleteEvent;
 import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
+import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ProgressDialogFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.fragment.ServerFilesFragment;
 import org.amahi.anywhere.fragment.UploadBottomSheet;
+import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.model.UploadOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Downloader;
+import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -89,7 +97,8 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     @Inject
     ServerClient serverClient;
     private ServerFile file;
-    private FileAction fileAction;
+    @FileOption.Types
+    private int fileOption;
     private ProgressDialogFragment uploadDialogFragment;
     private File cameraImage;
 
@@ -159,7 +168,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     private void setUpFilesState(Bundle state) {
         if (isFilesStateValid(state)) {
             this.file = state.getParcelable(State.FILE);
-            this.fileAction = (FileAction) state.getSerializable(State.FILE_ACTION);
+            this.fileOption = state.getInt(State.FILE_ACTION);
         }
     }
 
@@ -170,7 +179,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     @Subscribe
     public void onFileOpening(FileOpeningEvent event) {
         this.file = event.getFile();
-        this.fileAction = FileAction.OPEN;
+        this.fileOption = FileOption.OPEN;
 
         setUpFile(event.getShare(), event.getFiles(), event.getFile());
     }
@@ -219,7 +228,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     private void showFileDownloadingFragment(ServerShare share, ServerFile file) {
-        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file);
+        DialogFragment fragment = ServerFileDownloadingFragment.newInstance(share, file, fileOption);
         fragment.show(getFragmentManager(), ServerFileDownloadingFragment.TAG);
     }
 
@@ -229,18 +238,28 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     private void finishFileDownloading(Uri fileUri) {
-        switch (fileAction) {
-            case OPEN:
+        switch (fileOption) {
+            case FileOption.OPEN:
                 startFileOpeningActivity(file, fileUri);
                 break;
 
-            case SHARE:
+            case FileOption.DOWNLOAD:
+                showFileDownloadedDialog(file, fileUri);
+                break;
+
+            case FileOption.SHARE:
                 startFileSharingActivity(file, fileUri);
                 break;
 
             default:
                 break;
         }
+    }
+
+    private void showFileDownloadedDialog(ServerFile file, Uri fileUri) {
+        Snackbar.make(getParentView(), R.string.message_file_download_complete, Snackbar.LENGTH_LONG)
+            .setAction(R.string.menu_open, view -> startFileOpeningActivity(file, fileUri))
+            .show();
     }
 
     private void startFileOpeningActivity(ServerFile file, Uri fileUri) {
@@ -440,8 +459,8 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     @Subscribe
     public void onFileUploadCompleteEvent(ServerFileUploadCompleteEvent event) {
 
-        if(uploadDialogFragment.isAdded())
-        uploadDialogFragment.dismiss();
+        if (uploadDialogFragment.isAdded())
+            uploadDialogFragment.dismiss();
         if (event.wasUploadSuccessful()) {
             Fragments.Operator.at(this).replace(buildFilesFragment(getShare(), file), R.id.container_files);
             Snackbar.make(getParentView(), R.string.message_file_upload_complete, Snackbar.LENGTH_LONG).show();
@@ -474,15 +493,64 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     }
 
     @Subscribe
+    public void onFileDownloading(ServerFileDownloadingEvent event) {
+        this.file = event.getFile();
+        this.fileOption = FileOption.DOWNLOAD;
+
+        if (isFileAvailableOffline(event.getFile())) {
+            prepareDownloadingFile(file);
+        } else {
+            startFileDownloading(event.getShare(), file);
+        }
+    }
+
+    private void prepareDownloadingFile(ServerFile file) {
+        PrepareDialogFragment fragment = new PrepareDialogFragment();
+        fragment.show(getSupportFragmentManager(), "prepare_dialog");
+
+        File sourceLocation = new File(getFilesDir(), Downloader.OFFLINE_PATH + "/" + file.getName());
+        File downloadLocation = new File(Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS),
+            file.getName());
+        FileManager.newInstance(this).copyFile(sourceLocation, downloadLocation);
+    }
+
+    @Subscribe
+    public void onFileCopied(FileCopiedEvent event) {
+        Uri contentUri = FileManager.newInstance(this).getContentUri(event.getTargetLocation());
+
+        dismissPreparingDialog();
+        BusProvider.getBus().post(new FileDownloadedEvent(contentUri));
+    }
+
+    private void dismissPreparingDialog() {
+        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag("prepare_dialog");
+        if (fragment != null && fragment.isAdded()) {
+            fragment.dismiss();
+        }
+    }
+
+    @Subscribe
     public void onFileSharing(ServerFileSharingEvent event) {
         this.file = event.getFile();
-        this.fileAction = FileAction.SHARE;
+        this.fileOption = FileOption.SHARE;
 
         startFileSharingActivity(event.getShare(), event.getFile());
     }
 
     private void startFileSharingActivity(ServerShare share, ServerFile file) {
-        startFileDownloading(share, file);
+        if (isFileAvailableOffline(file)) {
+            Uri contenUri = FileManager.newInstance(this).getContentUriForOfflineFile(file.getName());
+            BusProvider.getBus().post(new FileDownloadedEvent(contenUri));
+        } else {
+            startFileDownloading(share, file);
+        }
+    }
+
+    private boolean isFileAvailableOffline(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+        return file != null && file.getState() == OfflineFile.DOWNLOADED;
     }
 
     @Override
@@ -520,11 +588,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void tearDownFilesState(Bundle state) {
         state.putParcelable(State.FILE, file);
-        state.putSerializable(State.FILE_ACTION, fileAction);
-    }
-
-    private enum FileAction {
-        OPEN, SHARE;
+        state.putInt(State.FILE_ACTION, fileOption);
     }
 
     private static final class State {

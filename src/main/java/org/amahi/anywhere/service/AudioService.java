@@ -55,6 +55,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.squareup.otto.Subscribe;
 
@@ -70,6 +71,8 @@ import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.receiver.AudioReceiver;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -77,6 +80,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Identifier;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.MediaNotificationManager;
@@ -200,7 +204,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     public boolean isAudioStarted() {
-        return (audioShare != null) && (audioFiles != null) && (audioFile != null);
+        return (audioFiles != null) && (audioFile != null);
     }
 
     public void startAudio(ServerShare audioShare, List<ServerFile> audioFiles, ServerFile audioFile) {
@@ -213,9 +217,26 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     private void setUpAudioPlayback() {
-        MediaSource mediaSource = buildMediaSource(getAudioUri());
+        MediaSource mediaSource;
+        if (isFileAvailableOffline(getAudioFile())) {
+            mediaSource = new ExtractorMediaSource.Factory(
+                new DefaultDataSourceFactory(this, Identifier.getUserAgent(this)))
+                .createMediaSource(getOfflineFileUri(audioFile.getName()));
+        } else {
+            mediaSource = buildMediaSource(getAudioUri());
+        }
         audioPlayer.prepare(mediaSource, true, false);
         playAudio();
+    }
+
+    private boolean isFileAvailableOffline(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+        return file != null && file.getState() == OfflineFile.DOWNLOADED;
+    }
+
+    private Uri getOfflineFileUri(String name) {
+        return Uri.parse(getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + name);
     }
 
     private Uri getAudioUri() {
@@ -223,17 +244,19 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     private void setUpAudioMetadata() {
-        // Clear any previous metadata
-        tearDownAudioMetadataFormatter();
-        // Start fetching new metadata in the background
-        AudioMetadataRetrievingTask
-            .newInstance(this, getAudioUri(), audioFile)
-            .execute();
+        if (audioShare != null) {
+            // Clear any previous metadata
+            tearDownAudioMetadataFormatter();
+            // Start fetching new metadata in the background
+            AudioMetadataRetrievingTask
+                .newInstance(this, getAudioUri(), audioFile)
+                .execute();
+        }
     }
 
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-        if (audioFile != null && audioFile == event.getServerFile()) {
+        if (audioFile != null && audioFile.getUniqueKey().equals(event.getServerFile().getUniqueKey())) {
             final AudioMetadata metadata = event.getAudioMetadata();
             this.audioMetadataFormatter = new AudioMetadataFormatter(
                 metadata.getAudioTitle(), metadata.getAudioArtist(), metadata.getAudioAlbum());

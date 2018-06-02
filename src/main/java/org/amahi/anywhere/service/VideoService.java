@@ -30,9 +30,12 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
@@ -82,7 +85,7 @@ public class VideoService extends Service {
     }
 
     public boolean isVideoStarted() {
-        return (videoShare != null) && (videoFile != null);
+        return (videoFile != null);
     }
 
     public void startVideo(ServerShare videoShare, ServerFile videoFile, boolean isSubtitleEnabled) {
@@ -93,13 +96,28 @@ public class VideoService extends Service {
     }
 
     private void setUpVideoPlayback(boolean isSubtitleEnabled) {
-        Media media = new Media(mLibVLC, getVideoUri());
+        Media media;
+        if (isFileAvailableOffline(videoFile)) {
+            media = new Media(mLibVLC, getOfflineFileUri(videoFile.getName()));
+        } else {
+            media = new Media(mLibVLC, getVideoUri());
+        }
         mMediaPlayer.setMedia(media);
         media.release();
         if (isSubtitleEnabled) {
             searchSubtitleFile();
         }
         mMediaPlayer.play();
+    }
+
+    private boolean isFileAvailableOffline(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+        return file != null && file.getState() == OfflineFile.DOWNLOADED;
+    }
+
+    private String getOfflineFileUri(String name) {
+        return (getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + name);
     }
 
     private Uri getVideoUri() {

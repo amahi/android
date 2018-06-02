@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.adapter;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -34,9 +35,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
-import org.amahi.anywhere.util.RecyclerViewItemClickListener;
+import org.amahi.anywhere.util.ServerFileClickListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,10 +50,10 @@ import java.util.List;
  */
 public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
 
-    protected RecyclerViewItemClickListener mListener;
-    protected int selectedPosition = RecyclerView.NO_POSITION;
     static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
     static String queryString;
+    protected ServerFileClickListener mListener;
+    protected int selectedPosition = RecyclerView.NO_POSITION;
     LayoutInflater layoutInflater;
     ServerClient serverClient;
     ServerShare serverShare;
@@ -58,12 +61,13 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     List<ServerFile> filteredFiles;
     private FilesFilter filesFilter;
     private onFilterListChange onFilterListChange;
+    private AdapterMode adapterMode = AdapterMode.SERVER;
 
     public <T extends onFilterListChange> void setFilterListChangeListener(T t) {
         this.onFilterListChange = t;
     }
 
-    public void setOnClickListener(RecyclerViewItemClickListener mListener) {
+    public void setOnClickListener(ServerFileClickListener mListener) {
         this.mListener = mListener;
     }
 
@@ -107,16 +111,54 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     void setUpImageIcon(ServerFile file, ImageView fileIconView) {
-        Glide.with(fileIconView.getContext())
-            .load(getImageUri(file))
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .centerCrop()
-            .placeholder(Mimes.getFileIcon(file))
-            .into(fileIconView);
+        if (adapterMode == AdapterMode.OFFLINE) {
+            Glide
+                .with(fileIconView.getContext())
+                .load(getOfflineFilePath(file.getName(), fileIconView.getContext()))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
+                .placeholder(Mimes.getFileIcon(file))
+                .into(fileIconView);
+        } else {
+            Glide.with(fileIconView.getContext())
+                .load(getImageUri(file))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
+                .placeholder(Mimes.getFileIcon(file))
+                .into(fileIconView);
+        }
+    }
+
+    private File getOfflineFilePath(String name, Context context) {
+        return new File(context.getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + name);
     }
 
     private Uri getImageUri(ServerFile file) {
         return serverClient.getFileUri(serverShare, file);
+    }
+
+    public boolean isEmpty() {
+        return (filteredFiles.isEmpty());
+    }
+
+    public int getSelectedPosition() {
+        return selectedPosition;
+    }
+
+    public void setSelectedPosition(int position) {
+        this.selectedPosition = position;
+    }
+
+    public AdapterMode getAdapterMode() {
+        return adapterMode;
+    }
+
+    public void setAdapterMode(AdapterMode adapterMode) {
+        this.adapterMode = adapterMode;
+    }
+
+    public static enum AdapterMode {
+        SERVER, OFFLINE
     }
 
     public interface onFilterListChange {
@@ -153,18 +195,6 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
             filteredFiles = (List<ServerFile>) filterResults.values;
             notifyDataSetChanged();
         }
-    }
-
-    public boolean isEmpty() {
-        return (filteredFiles.isEmpty());
-    }
-
-    public int getSelectedPosition() {
-        return selectedPosition;
-    }
-
-    public void setSelectedPosition(int position) {
-        this.selectedPosition = position;
     }
 
 }

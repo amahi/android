@@ -35,11 +35,16 @@ import com.bumptech.glide.request.target.Target;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.view.TouchImageView;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -73,12 +78,32 @@ public class ServerFileImageFragment extends Fragment implements RequestListener
     }
 
     private void setUpImageContent() {
-        Glide
-            .with(getActivity())
-            .load(getImageUri())
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .listener(this)
-            .into(getImageView());
+        ServerFile file = getFile();
+        if (isFileAvailableOffline(file)) {
+            Glide
+                .with(getActivity())
+                .load(getOfflineFilePath(getFile().getName()))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(getImageView());
+            showImageContent();
+        } else {
+            Glide
+                .with(getActivity())
+                .load(getImageUri())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .listener(this)
+                .into(getImageView());
+        }
+    }
+
+    private boolean isFileAvailableOffline(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(getContext());
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+        return file != null && file.getState() == OfflineFile.DOWNLOADED;
+    }
+
+    private File getOfflineFilePath(String name) {
+        return new File(getActivity().getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + name);
     }
 
     private Uri getImageUri() {

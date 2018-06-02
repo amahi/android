@@ -57,6 +57,13 @@ public class ServerFile implements Parcelable {
     private long size;
     private ServerFileMetadata fileMetadata;
     private boolean isMetaDataFetched;
+    private boolean isOffline;
+
+    public ServerFile(String name, long timeStamp, String mime) {
+        this.name = name;
+        this.modificationTime = new Date(timeStamp);
+        this.mime = mime;
+    }
 
     private ServerFile(Parcel parcel) {
         this.parentFile = parcel.readParcelable(ServerFile.class.getClassLoader());
@@ -116,6 +123,14 @@ public class ServerFile implements Parcelable {
 
     public void setFileMetadata(ServerFileMetadata fileMetadata) {
         this.fileMetadata = fileMetadata;
+    }
+
+    public boolean isOffline() {
+        return isOffline;
+    }
+
+    public void setOffline(boolean offline) {
+        isOffline = offline;
     }
 
     @Nullable

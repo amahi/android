@@ -28,10 +28,9 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
     //for selected server options
     private final List<Integer> mNavigationItems;
-    private Context mContext;
-
     //for server list
     private final ArrayList<String> mServerName;
+    private Context mContext;
 
     //for selected server options
     private NavigationDrawerAdapter(Context context, List<Integer> navigationItems) {

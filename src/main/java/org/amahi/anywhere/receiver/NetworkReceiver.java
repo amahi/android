@@ -27,6 +27,7 @@ import android.net.NetworkInfo;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.NetworkChangedEvent;
+import org.amahi.anywhere.service.DownloadService;
 import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.util.NetworkUtils;
 
@@ -47,6 +48,7 @@ public class NetworkReceiver extends BroadcastReceiver {
         NetworkInfo network = networkUtils.getNetwork();
         if (networkUtils.isNetworkConnected(network)) {
             BusProvider.getBus().post(new NetworkChangedEvent(network.getType()));
+            startDownloadService(context);
         }
 
         if (networkUtils.isUploadAllowed()) {
@@ -66,5 +68,10 @@ public class NetworkReceiver extends BroadcastReceiver {
         context.stopService(uploadService);
     }
 
+    private void startDownloadService(Context context) {
+        Intent downloadService = new Intent(context, DownloadService.class);
+        downloadService.setAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        context.startService(downloadService);
+    }
 
 }

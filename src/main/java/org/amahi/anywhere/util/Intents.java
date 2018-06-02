@@ -28,9 +28,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.IntroductionActivity;
+import org.amahi.anywhere.activity.OfflineFilesActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -42,6 +44,7 @@ import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.service.DownloadService;
 import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
@@ -103,6 +106,10 @@ public final class Intents {
             return intent;
         }
 
+        public Intent buildServerFilesActivityForOfflineFiles() {
+            return new Intent(context, OfflineFilesActivity.class);
+        }
+
         public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file) {
             Intent intent = new Intent(context, ServerFileTvActivity.class);
             intent.putExtra(Extras.SERVER_FILE, file);
@@ -113,6 +120,13 @@ public final class Intents {
 
         public boolean isServerFileSupported(ServerFile file) {
             return getServerFileActivity(file) != null;
+        }
+
+        public boolean isMediaServerFile(ServerFile file) {
+            String fileFormat = file.getMime();
+            return ServerFileAudioActivity.supports(fileFormat)
+                || ServerFileImageActivity.supports(fileFormat)
+                || ServerFileVideoActivity.supports(fileFormat);
         }
 
         private Class<? extends Activity> getServerFileActivity(ServerFile file) {
@@ -150,7 +164,7 @@ public final class Intents {
             return null;
         }
 
-        public Intent buildServerFileIntent(ServerShare share, List<ServerFile> files, ServerFile file) {
+        public Intent buildServerFileIntent(ServerShare share, @NonNull List<ServerFile> files, ServerFile file) {
             Intent intent = new Intent(context, getServerFileActivity(file));
             intent.putExtra(Extras.SERVER_SHARE, share);
             intent.putParcelableArrayListExtra(Extras.SERVER_FILES, new ArrayList<Parcelable>(files));
@@ -262,6 +276,13 @@ public final class Intents {
         public Intent buildIntroductionIntent() {
             Intent introduction = new Intent(context, IntroductionActivity.class);
             return introduction;
+        }
+
+        public Intent buildDownloadServiceIntent(ServerFile serverFile, ServerShare serverShare) {
+            Intent downloadService = new Intent(context, DownloadService.class);
+            downloadService.putExtra(Extras.SERVER_FILE, serverFile);
+            downloadService.putExtra(Extras.SERVER_SHARE, serverShare);
+            return downloadService;
         }
     }
 }

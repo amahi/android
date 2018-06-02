@@ -50,11 +50,21 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
     private final ServerFile serverFile;
     @Inject
     CacheManager cacheManager;
+    private String path;
+    private boolean isOfflineFile;
     private MainTVPresenter.ViewHolder viewHolder;
     private WeakReference<ImageView> imageViewWeakReference;
 
     private AudioMetadataRetrievingTask(Context context, Uri audioUri, ServerFile serverFile) {
         this.audioUri = audioUri;
+        this.serverFile = serverFile;
+        setUpInjections(context);
+    }
+
+    public AudioMetadataRetrievingTask(Context context, String path, ServerFile serverFile) {
+        this.path = path;
+        this.isOfflineFile = true;
+        audioUri = null;
         this.serverFile = serverFile;
         setUpInjections(context);
     }
@@ -88,7 +98,11 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
             MediaMetadataRetriever audioMetadataRetriever = new MediaMetadataRetriever();
 
             try {
-                audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<>());
+                if (!isOfflineFile) {
+                    audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<>());
+                } else {
+                    audioMetadataRetriever.setDataSource(path);
+                }
 
                 metadata.setAudioTitle(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
                 metadata.setAudioArtist(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));

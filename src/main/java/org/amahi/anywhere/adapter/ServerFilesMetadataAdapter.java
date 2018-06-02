@@ -23,7 +23,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.task.FileMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
-import org.amahi.anywhere.util.RecyclerViewItemClickListener;
+import org.amahi.anywhere.util.ServerFileClickListener;
 
 import java.util.Collections;
 
@@ -45,7 +45,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
         BusProvider.getBus().register(this);
     }
 
-    public void setOnClickListener(RecyclerViewItemClickListener mListener) {
+    public void setOnClickListener(ServerFileClickListener mListener) {
         this.mListener = mListener;
     }
 
@@ -77,30 +77,20 @@ public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
         if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
             setUpImageIcon(file, fileHolder.fileIcon);
         }
+        if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
+            fileHolder.moreOptions.setVisibility(View.GONE);
+        } else {
+            fileHolder.moreOptions.setVisibility(View.VISIBLE);
+        }
 
-        fileHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                notifyItemChanged(selectedPosition);
-                selectedPosition = fileHolder.getAdapterPosition();
-                notifyItemChanged(selectedPosition);
-                mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-            }
+        fileHolder.itemView.setOnClickListener(view -> {
+            mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
         });
 
-        fileHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                notifyItemChanged(selectedPosition);
-                selectedPosition = fileHolder.getAdapterPosition();
-                notifyItemChanged(selectedPosition);
-                boolean isHandled = mListener.onLongItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-                return isHandled;
-            }
+        fileHolder.moreOptions.setOnClickListener(view -> {
+            selectedPosition = fileHolder.getAdapterPosition();
+            mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
         });
-
-        fileHolder.itemView.setSelected(selectedPosition == position);
-        fileHolder.itemView.setActivated(selectedPosition == position);
     }
 
     private void unbindFileView(ServerFile file, ServerFileMetadataViewHolder holder) {
@@ -177,13 +167,14 @@ public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
 
     public class ServerFileMetadataViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView fileIcon;
+        ImageView fileIcon, moreOptions;
         TextView fileTitle;
 
         ServerFileMetadataViewHolder(View itemView) {
             super(itemView);
             fileIcon = (ImageView) itemView.getTag(Tags.FILE_ICON);
             fileTitle = (TextView) itemView.getTag(Tags.FILE_TITLE);
+            moreOptions = itemView.findViewById(R.id.more_options);
         }
     }
 }

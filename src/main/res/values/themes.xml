@@ -71,4 +71,12 @@
     <style name="Theme.CastVideosDark" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimaryDark">@android:color/black</item>
     </style>
+
+    <style name="FileActionTheme">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:clickable">true</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">?android:attr/activatedBackgroundIndicator</item>
+    </style>
 </resources>

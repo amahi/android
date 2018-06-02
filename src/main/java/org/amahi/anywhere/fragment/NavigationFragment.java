@@ -54,6 +54,7 @@ import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
@@ -363,6 +364,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         return (RecyclerView) getView().findViewById(R.id.list_navigation);
     }
 
+    private LinearLayout getOfflineFilesLayout() {
+        return getView().findViewById(R.id.offline_files_layout);
+    }
+
     private LinearLayout getLinearLayoutSelectedServer() {
         return (LinearLayout) getView().findViewById(R.id.server_select_LinearLayout);
     }
@@ -383,6 +388,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
                 selectServerListener(position);
             }
         }));
+
+        getOfflineFilesLayout().setOnClickListener(view -> {
+            showOfflineFiles();
+        });
     }
 
     private void selectedServerListener(int position) {
@@ -507,6 +516,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void setUpServerNavigation() {
         setUpNavigationAdapter();
+    }
+
+    private void showOfflineFiles() {
+        BusProvider.getBus().post(new OfflineFilesSelectedEvent());
     }
 
     @Subscribe

@@ -41,9 +41,11 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
-import org.amahi.anywhere.util.RecyclerViewItemClickListener;
+import org.amahi.anywhere.util.ServerFileClickListener;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -73,15 +75,23 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final ServerFileViewHolder fileHolder = (ServerFileViewHolder) holder;
-        final ServerFile file = getItems().get(position);
+
+        final ServerFile file = filteredFiles.get(position);
 
         if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
             fileHolder.moreInfo.setVisibility(View.GONE);
+            fileHolder.moreOptions.setVisibility(View.GONE);
 
         } else {
             fileHolder.moreInfo.setVisibility(View.VISIBLE);
+            fileHolder.moreInfo.setVisibility(View.VISIBLE);
 
-            fileHolder.fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
+            if (!isOfflineMode()) {
+                fileHolder.fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
+            } else {
+                File localFile = new File(context.getFilesDir(), Downloader.OFFLINE_PATH + "/" + file.getName());
+                fileHolder.fileSize.setText(Formatter.formatFileSize(context, localFile.length()));
+            }
 
             Date d = getLastModified(file);
             SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
@@ -104,29 +114,18 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             fileHolder.fileIconView.setImageResource(Mimes.getFileIcon(file));
         }
 
-        fileHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                notifyItemChanged(selectedPosition);
-                selectedPosition = fileHolder.getAdapterPosition();
-                notifyItemChanged(selectedPosition);
-                mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-            }
+        fileHolder.itemView.setOnClickListener(view -> {
+            mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
         });
 
-        fileHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                notifyItemChanged(selectedPosition);
-                selectedPosition = fileHolder.getAdapterPosition();
-                notifyItemChanged(selectedPosition);
-                boolean isHandled = mListener.onLongItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-                return isHandled;
-            }
+        fileHolder.moreOptions.setOnClickListener(view -> {
+            selectedPosition = fileHolder.getAdapterPosition();
+            mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
         });
+    }
 
-        fileHolder.itemView.setSelected(selectedPosition == position);
-        fileHolder.itemView.setActivated(selectedPosition == position);
+    private boolean isOfflineMode() {
+        return getAdapterMode() == AdapterMode.OFFLINE;
     }
 
     private long getFileSize(ServerFile file) {
@@ -138,10 +137,20 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
     }
 
     private void setUpAudioArt(ServerFile serverFile, ImageView fileIconView) {
-        AudioMetadataRetrievingTask
-            .newInstance(context, serverClient.getFileUri(serverShare, serverFile), serverFile)
-            .setImageView(fileIconView)
-            .execute();
+        if (getAdapterMode() != AdapterMode.OFFLINE) {
+            AudioMetadataRetrievingTask
+                .newInstance(context, serverClient.getFileUri(serverShare, serverFile), serverFile)
+                .setImageView(fileIconView)
+                .execute();
+        } else {
+            new AudioMetadataRetrievingTask(context, getAudioPath(serverFile), serverFile)
+                .setImageView(fileIconView)
+                .execute();
+        }
+    }
+
+    private String getAudioPath(ServerFile serverFile) {
+        return context.getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + serverFile.getName();
     }
 
     @Subscribe
@@ -158,23 +167,24 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         BusProvider.getBus().unregister(this);
     }
 
+    public void setOnClickListener(ServerFileClickListener mListener) {
+        this.mListener = mListener;
+    }
+
     public class ServerFileViewHolder extends RecyclerView.ViewHolder {
-        ImageView fileIconView;
+        ImageView fileIconView, moreOptions;
         TextView fileTextView, fileSize, fileLastModified;
         LinearLayout moreInfo;
 
         ServerFileViewHolder(View itemView) {
             super(itemView);
-            fileIconView = (ImageView) itemView.findViewById(R.id.icon);
-            fileTextView = (TextView) itemView.findViewById(R.id.text);
-            fileSize = (TextView) itemView.findViewById(R.id.file_size);
-            fileLastModified = (TextView) itemView.findViewById(R.id.last_modified);
-            moreInfo = (LinearLayout) itemView.findViewById(R.id.more_info);
+            fileIconView = itemView.findViewById(R.id.icon);
+            fileTextView = itemView.findViewById(R.id.text);
+            fileSize = itemView.findViewById(R.id.file_size);
+            fileLastModified = itemView.findViewById(R.id.last_modified);
+            moreInfo = itemView.findViewById(R.id.more_info);
+            moreOptions = itemView.findViewById(R.id.more_options);
         }
-    }
-
-    public void setOnClickListener(RecyclerViewItemClickListener mListener) {
-        this.mListener = mListener;
     }
 
 }

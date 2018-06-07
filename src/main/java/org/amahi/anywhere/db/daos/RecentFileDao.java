@@ -28,12 +28,12 @@ public interface RecentFileDao {
     @Query("SELECT * from recent_file_table where uniqueKey = :uniqueKey")
     RecentFile getRecentFile(String uniqueKey);
 
-    @Query("SELECT * from recent_file_table where uri like :serverName")
+    @Query("SELECT * from recent_file_table where uri like :serverName ORDER BY visitTime DESC")
     List<RecentFile> getRecentFiles(String serverName);
 
-    @Query("SELECT * FROM recent_file_table WHERE uniqueKey = LAST_INSERT_ID()")
+    @Query("SELECT * FROM recent_file_table ORDER BY visitTime DESC LIMIT 1")
     RecentFile getLastInsertFile();
 
-    @Query("DELETE FROM recent_file_table ORDER BY visitTime ASC LIMIT 1")
-    void deleteOldestFile();
+    @Query("SELECT * FROM recent_file_table ORDER BY visitTime ASC LIMIT 1")
+    RecentFile getOldestFile();
 }

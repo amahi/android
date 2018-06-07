@@ -14,11 +14,13 @@ public class RecentFile {
     private String uri;
 
     private long visitTime;
+    private long size;
 
-    public RecentFile(@NonNull String uniqueKey, String uri, long visitTime) {
+    public RecentFile(@NonNull String uniqueKey, String uri, long visitTime, long size) {
         this.uniqueKey = uniqueKey;
         this.uri = uri;
         this.visitTime = visitTime;
+        this.size = size;
     }
 
     @NonNull
@@ -44,5 +46,13 @@ public class RecentFile {
 
     public void setVisitTime(long visitTime) {
         this.visitTime = visitTime;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 }

@@ -33,6 +33,7 @@ import android.support.annotation.NonNull;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
+import org.amahi.anywhere.activity.RecentFilesActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -108,6 +109,10 @@ public final class Intents {
 
         public Intent buildServerFilesActivityForOfflineFiles() {
             return new Intent(context, OfflineFilesActivity.class);
+        }
+
+        public Intent buildRecentFilesActivity() {
+            return new Intent(context, RecentFilesActivity.class);
         }
 
         public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file) {

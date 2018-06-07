@@ -72,7 +72,9 @@ import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.receiver.AudioReceiver;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -85,6 +87,7 @@ import org.amahi.anywhere.util.Identifier;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.MediaNotificationManager;
 
+import java.io.File;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -217,6 +220,8 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     private void setUpAudioPlayback() {
+        setUpRecentFiles();
+
         MediaSource mediaSource;
         if (isFileAvailableOffline(getAudioFile())) {
             mediaSource = new ExtractorMediaSource.Factory(
@@ -227,6 +232,22 @@ public class AudioService extends MediaBrowserServiceCompat implements
         }
         audioPlayer.prepare(mediaSource, true, false);
         playAudio();
+    }
+
+    private void setUpRecentFiles() {
+        String uri;
+        long size;
+        if (isFileAvailableOffline(getAudioFile())) {
+            uri = getOfflineFileUri(audioFile.getName()).toString();
+            size = new File(uri).length();
+        } else {
+            uri = getAudioUri().toString();
+            size = audioFile.getSize();
+        }
+
+        RecentFile recentFile = new RecentFile(audioFile.getUniqueKey(), uri, System.currentTimeMillis(), size);
+        RecentFileRepository recentFileRepository = new RecentFileRepository(this);
+        recentFileRepository.insert(recentFile);
     }
 
     private boolean isFileAvailableOffline(ServerFile serverFile) {

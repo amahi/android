@@ -216,6 +216,7 @@
             android:value="org.amahi.anywhere.util.CastOptionsProvider" />
 
         <activity android:name=".activity.OfflineFilesActivity" />
+        <activity android:name=".activity.RecentFilesActivity"></activity>
     </application>
 
 </manifest>

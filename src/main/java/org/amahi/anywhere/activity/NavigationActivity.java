@@ -41,6 +41,7 @@ import org.amahi.anywhere.bus.AppSelectedEvent;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
+import org.amahi.anywhere.bus.RecentFilesSelectedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.bus.SharesSelectedEvent;
@@ -314,6 +315,21 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
     private void showOfflineFiles() {
         Intent intent = Intents.Builder.with(this).buildServerFilesActivityForOfflineFiles();
+        startActivity(intent);
+    }
+
+    @Subscribe
+    public void onRecentFilesSelected(RecentFilesSelectedEvent event) {
+
+        showRecentFiles();
+
+        if (isNavigationDrawerAvailable()) {
+            hideNavigationDrawer();
+        }
+    }
+
+    private void showRecentFiles() {
+        Intent intent = Intents.Builder.with(this).buildRecentFilesActivity();
         startActivity(intent);
     }
 

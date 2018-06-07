@@ -55,6 +55,7 @@ import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
+import org.amahi.anywhere.bus.RecentFilesSelectedEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
@@ -368,6 +369,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         return getView().findViewById(R.id.offline_files_layout);
     }
 
+    private LinearLayout getRecentFilesLayout() {
+        return getView().findViewById(R.id.recent_files_layout);
+    }
+
     private LinearLayout getLinearLayoutSelectedServer() {
         return (LinearLayout) getView().findViewById(R.id.server_select_LinearLayout);
     }
@@ -391,6 +396,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         getOfflineFilesLayout().setOnClickListener(view -> {
             showOfflineFiles();
+        });
+
+        getRecentFilesLayout().setOnClickListener(view -> {
+            showRecentFiles();
         });
     }
 
@@ -424,6 +433,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         changeNavigationAdapter();
 
         setupServer(position);
+
+        storeServerSession(getServersAdapter().getItem(position));
     }
 
     public void changeNavigationAdapter() {
@@ -459,6 +470,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     private void showError() {
         getRefreshLayout().setRefreshing(false);
         ViewDirector.of(this, R.id.animator_content).show(R.id.layout_error);
+    }
+
+    private void storeServerSession(Server server) {
+        Preferences.setServerSession(getContext(), server.getSession());
     }
 
     private void setUpServerConnection(Server server) {
@@ -520,6 +535,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void showOfflineFiles() {
         BusProvider.getBus().post(new OfflineFilesSelectedEvent());
+    }
+
+    private void showRecentFiles() {
+        BusProvider.getBus().post(new RecentFilesSelectedEvent());
     }
 
     @Subscribe

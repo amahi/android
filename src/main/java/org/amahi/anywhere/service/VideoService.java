@@ -31,7 +31,9 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -41,6 +43,7 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,6 +99,8 @@ public class VideoService extends Service {
     }
 
     private void setUpVideoPlayback(boolean isSubtitleEnabled) {
+        setUpRecentFiles();
+
         Media media;
         if (isFileAvailableOffline(videoFile)) {
             media = new Media(mLibVLC, getOfflineFileUri(videoFile.getName()));
@@ -108,6 +113,22 @@ public class VideoService extends Service {
             searchSubtitleFile();
         }
         mMediaPlayer.play();
+    }
+
+    private void setUpRecentFiles() {
+        String uri;
+        long size;
+        if (isFileAvailableOffline(videoFile)) {
+            uri = getOfflineFileUri(videoFile.getName());
+            size = new File(uri).length();
+        } else {
+            uri = getVideoUri().toString();
+            size = videoFile.getSize();
+        }
+
+        RecentFile recentFile = new RecentFile(videoFile.getUniqueKey(), uri, System.currentTimeMillis(), size);
+        RecentFileRepository recentFileRepository = new RecentFileRepository(this);
+        recentFileRepository.insert(recentFile);
     }
 
     private boolean isFileAvailableOffline(ServerFile serverFile) {

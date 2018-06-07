@@ -42,15 +42,21 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerFilesImagePagerAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.view.ClickableViewPager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -123,8 +129,8 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     private void setUpImage() {
         setUpImageTitle();
         setUpImageAdapter();
-        setUpImagePosition();
         setUpImageListener();
+        setUpImagePosition();
     }
 
     private boolean isCastConnected() {
@@ -203,6 +209,34 @@ public class ServerFileImageActivity extends AppCompatActivity implements
         if (isCastConnected()) {
             loadRemoteMedia();
         }
+
+        setUpRecentFiles(getFiles().get(position));
+    }
+
+    private void setUpRecentFiles(ServerFile serverFile) {
+        String uri;
+        long size;
+        if (isFileAvailableOffline(serverFile)) {
+            uri = getOfflineFileUri(serverFile.getName());
+            size = new File(uri).length();
+        } else {
+            uri = serverClient.getFileUri(getShare(), serverFile).toString();
+            size = serverFile.getSize();
+        }
+
+        RecentFile recentFile = new RecentFile(serverFile.getUniqueKey(), uri, System.currentTimeMillis(), size);
+        RecentFileRepository recentFileRepository = new RecentFileRepository(this);
+        recentFileRepository.insert(recentFile);
+    }
+
+    private boolean isFileAvailableOffline(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+        return file != null && file.getState() == OfflineFile.DOWNLOADED;
+    }
+
+    private String getOfflineFileUri(String name) {
+        return (getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + name);
     }
 
     @Override

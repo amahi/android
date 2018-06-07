@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -85,6 +86,7 @@ import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.ServerFileClickListener;
 import org.amahi.anywhere.util.ViewDirector;
 
@@ -112,6 +114,10 @@ public class ServerFilesFragment extends Fragment implements
     EasyPermissions.PermissionCallbacks,
     CastStateListener {
     public final static int EXTERNAL_STORAGE_PERMISSION = 101;
+
+    public static final int SORT_MODIFICATION_TIME = 0;
+    public static final int SORT_NAME = 1;
+
     @Inject
     ServerClient serverClient;
     private SearchView searchView;
@@ -123,7 +129,9 @@ public class ServerFilesFragment extends Fragment implements
     private ProgressDialog deleteProgressDialog;
     private int deleteFilePosition;
     private int lastSelectedFilePosition = -1;
-    private FilesSort filesSort = FilesSort.MODIFICATION_TIME;
+
+    @Types
+    private int filesSort = SORT_MODIFICATION_TIME;
 
     private OfflineFileRepository mOfflineFileRepo;
     private @FileOption.Types
@@ -191,9 +199,14 @@ public class ServerFilesFragment extends Fragment implements
         setUpFilesMenu();
         setUpFilesAdapter();
         setUpFilesActions();
+        setUpDefaults();
         setUpOfflineFileDatabase();
         setUpFilesContent(state);
         setUpFilesContentRefreshing();
+    }
+
+    private void setUpDefaults() {
+        filesSort = Preferences.getSortOption(getContext());
     }
 
     private void setUpProgressDialog() {
@@ -491,13 +504,11 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private boolean isFilesStateValid(Bundle state) {
-        return (state != null) && state.containsKey(State.FILES) && state.containsKey(State.FILES_SORT);
+        return (state != null) && state.containsKey(State.FILES);
     }
 
     private void setUpFilesState(Bundle state) {
         List<ServerFile> files = state.getParcelableArrayList(State.FILES);
-
-        FilesSort filesSort = (FilesSort) state.getSerializable(State.FILES_SORT);
 
         setUpFilesContent(files);
         setUpFilesContentSort(filesSort);
@@ -530,7 +541,7 @@ public class ServerFilesFragment extends Fragment implements
         return metadataFiles;
     }
 
-    private void setUpFilesContentSort(FilesSort filesSort) {
+    private void setUpFilesContentSort(@Types int filesSort) {
         this.filesSort = filesSort;
 
         getActivity().invalidateOptionsMenu();
@@ -619,10 +630,10 @@ public class ServerFilesFragment extends Fragment implements
 
     private Comparator<ServerFile> getFilesComparator() {
         switch (filesSort) {
-            case NAME:
+            case SORT_NAME:
                 return new FileNameComparator();
 
-            case MODIFICATION_TIME:
+            case SORT_MODIFICATION_TIME:
                 return new FileModificationTimeComparator();
 
             default:
@@ -760,11 +771,11 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpFilesContentSortIcon(MenuItem menuItem) {
         switch (filesSort) {
-            case NAME:
+            case SORT_NAME:
                 menuItem.setIcon(R.drawable.ic_menu_sort_name);
                 break;
 
-            case MODIFICATION_TIME:
+            case SORT_MODIFICATION_TIME:
                 menuItem.setIcon(R.drawable.ic_menu_sort_modification_time);
                 break;
 
@@ -788,19 +799,25 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpFilesContentSortSwitched() {
         switch (filesSort) {
-            case NAME:
-                filesSort = FilesSort.MODIFICATION_TIME;
+            case SORT_NAME:
+                filesSort = SORT_MODIFICATION_TIME;
                 break;
 
-            case MODIFICATION_TIME:
-                filesSort = FilesSort.NAME;
+            case SORT_MODIFICATION_TIME:
+                filesSort = SORT_NAME;
                 break;
 
             default:
                 break;
         }
 
+        saveSortOption();
+
         setUpFilesContentSort();
+    }
+
+    private void saveSortOption() {
+        Preferences.setSortOption(getContext(), filesSort);
     }
 
     private void setUpFilesContentSort() {
@@ -887,8 +904,6 @@ public class ServerFilesFragment extends Fragment implements
         if (areFilesLoaded()) {
             state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFiles()));
         }
-
-        state.putSerializable(State.FILES_SORT, filesSort);
     }
 
     private boolean areFilesLoaded() {
@@ -936,13 +951,12 @@ public class ServerFilesFragment extends Fragment implements
             getView().findViewById(R.id.none_text).setVisibility(empty ? View.VISIBLE : View.GONE);
     }
 
-    private enum FilesSort {
-        NAME, MODIFICATION_TIME
+    @IntDef({SORT_MODIFICATION_TIME, SORT_NAME})
+    public @interface Types {
     }
 
     private static final class State {
         public static final String FILES = "files";
-        public static final String FILES_SORT = "files_sort";
         public static final String SELECTED_ITEM = "selected_item";
 
         private State() {

@@ -2,7 +2,9 @@ package org.amahi.anywhere.db.entities;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.webkit.MimeTypeMap;
 
 @Entity(tableName = "recent_file_table")
 public class RecentFile {
@@ -54,5 +56,31 @@ public class RecentFile {
 
     public void setSize(long size) {
         this.size = size;
+    }
+
+    public String getName() {
+        Uri uri = Uri.parse(getUri());
+        return Uri.parse(uri.getQueryParameter("p")).getLastPathSegment();
+    }
+
+    public String getMime() {
+        Uri uri = Uri.parse(getUri());
+        String name = Uri.parse(uri.getQueryParameter("p")).getLastPathSegment();
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(name.lastIndexOf(".") + 1));
+    }
+
+    public long getModificationTime() {
+        Uri uri = Uri.parse(getUri());
+        return Long.parseLong(uri.getQueryParameter("mtime"));
+    }
+
+    public String getShareName() {
+        Uri uri = Uri.parse(getUri());
+        return uri.getQueryParameter("s");
+    }
+
+    public String getPath() {
+        Uri uri = Uri.parse(getUri());
+        return uri.getQueryParameter("p");
     }
 }

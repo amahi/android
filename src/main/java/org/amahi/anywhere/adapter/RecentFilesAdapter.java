@@ -19,6 +19,7 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
+import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
@@ -39,6 +40,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         this.context = context;
         this.recentFiles = recentFiles;
         this.mListener = (ServerFileClickListener) context;
+        BusProvider.getBus().register(this);
     }
 
     @Override
@@ -102,6 +104,12 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
             .execute();
     }
 
+    public void replaceWith(List<RecentFile> files) {
+        this.recentFiles = files;
+
+        notifyDataSetChanged();
+    }
+
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
         ImageView imageView = event.getImageView();
@@ -111,9 +119,19 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         }
     }
 
+    public void tearDownCallbacks() {
+        BusProvider.getBus().unregister(this);
+    }
+
     @Override
     public int getItemCount() {
         return recentFiles.size();
+    }
+
+    public void removeFile(int selectedPosition) {
+        recentFiles.remove(selectedPosition);
+
+        notifyDataSetChanged();
     }
 
     class RecentFilesViewHolder extends RecyclerView.ViewHolder {

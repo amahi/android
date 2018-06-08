@@ -34,7 +34,7 @@ public class RecentFileRepository {
         mRecentFileDao.insert(recentFile);
     }
 
-    private RecentFile getRecentFile(String uniqueKey) {
+    public RecentFile getRecentFile(String uniqueKey) {
         return mRecentFileDao.getRecentFile(uniqueKey);
     }
 
@@ -43,7 +43,7 @@ public class RecentFileRepository {
         mRecentFileDao.delete(file.getUniqueKey());
     }
 
-    private void deleteFile(String uniqueKey) {
+    public void deleteFile(String uniqueKey) {
         mRecentFileDao.delete(uniqueKey);
     }
 

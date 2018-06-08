@@ -88,6 +88,7 @@ import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.MediaNotificationManager;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -226,7 +227,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
         if (isFileAvailableOffline(getAudioFile())) {
             mediaSource = new ExtractorMediaSource.Factory(
                 new DefaultDataSourceFactory(this, Identifier.getUserAgent(this)))
-                .createMediaSource(getOfflineFileUri(audioFile.getName()));
+                .createMediaSource(getOfflineFileUri(getAudioFile().getName()));
         } else {
             mediaSource = buildMediaSource(getAudioUri());
         }
@@ -238,16 +239,22 @@ public class AudioService extends MediaBrowserServiceCompat implements
         String uri;
         long size;
         if (isFileAvailableOffline(getAudioFile())) {
-            uri = getOfflineFileUri(audioFile.getName()).toString();
-            size = new File(uri).length();
+            uri = getUriFrom(getAudioFile().getName(), getAudioFile().getModificationTime());
+            size = new File(getOfflineFileUri(getAudioFile().getName()).toString()).length();
         } else {
             uri = getAudioUri().toString();
-            size = audioFile.getSize();
+            size = getAudioFile().getSize();
         }
 
         RecentFile recentFile = new RecentFile(audioFile.getUniqueKey(), uri, System.currentTimeMillis(), size);
         RecentFileRepository recentFileRepository = new RecentFileRepository(this);
         recentFileRepository.insert(recentFile);
+    }
+
+    private String getUriFrom(String name, Date modificationTime) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile offlineFile = repository.getOfflineFile(name, modificationTime.getTime());
+        return offlineFile.getFileUri();
     }
 
     private boolean isFileAvailableOffline(ServerFile serverFile) {
@@ -261,7 +268,16 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     private Uri getAudioUri() {
-        return serverClient.getFileUri(audioShare, audioFile);
+        if (audioShare != null) {
+            return serverClient.getFileUri(audioShare, getAudioFile());
+        } else {
+            return getRecentFileUri();
+        }
+    }
+
+    private Uri getRecentFileUri() {
+        RecentFileRepository repository = new RecentFileRepository(this);
+        return Uri.parse(repository.getRecentFile(getAudioFile().getUniqueKey()).getUri());
     }
 
     private void setUpAudioMetadata() {
@@ -277,7 +293,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-        if (audioFile != null && audioFile.getUniqueKey().equals(event.getServerFile().getUniqueKey())) {
+        if (audioFile != null && event.getServerFile() != null && audioFile.getUniqueKey().equals(event.getServerFile().getUniqueKey())) {
             final AudioMetadata metadata = event.getAudioMetadata();
             this.audioMetadataFormatter = new AudioMetadataFormatter(
                 metadata.getAudioTitle(), metadata.getAudioArtist(), metadata.getAudioAlbum());

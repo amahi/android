@@ -31,6 +31,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -55,10 +56,13 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
+import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.VideoSwipeGestures;
@@ -66,6 +70,9 @@ import org.amahi.anywhere.view.MediaControls;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -121,6 +128,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
         setUpCast();
 
+        prepareFiles();
+
         setUpVideoTitle();
 
         setUpVideo();
@@ -138,6 +147,21 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     private void setUpCast() {
         mCastContext = CastContext.getSharedInstance(this);
         mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
+    }
+
+    private void prepareFiles() {
+        int fileType = getIntent().getIntExtra(Intents.Extras.FILE_TYPE, FileManager.SERVER_FILE);
+        if (fileType == FileManager.RECENT_FILE) {
+            RecentFileRepository repository = new RecentFileRepository(this);
+            RecentFile recentFile = repository.getRecentFile(getIntent().getStringExtra(Intents.Extras.UNIQUE_KEY));
+            ServerFile serverFile = new ServerFile(recentFile.getName(), recentFile.getModificationTime(), recentFile.getMime());
+            serverFile.setSize(recentFile.getSize());
+            serverFile.setMime(recentFile.getMime());
+            getIntent().putExtra(Intents.Extras.SERVER_FILE, serverFile);
+            List<ServerFile> serverFiles = new ArrayList<>();
+            serverFiles.add(serverFile);
+            getIntent().putExtra(Intents.Extras.SERVER_FILES, new ArrayList<Parcelable>(serverFiles));
+        }
     }
 
     private void setUpVideo() {
@@ -736,7 +760,18 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     }
 
     private Uri getVideoUri() {
+        int fileType = getIntent().getIntExtra(Intents.Extras.FILE_TYPE, FileManager.SERVER_FILE);
+
+        if (fileType == FileManager.RECENT_FILE) {
+            return getRecentFileUri();
+        }
+
         return serverClient.getFileUri(getVideoShare(), getVideoFile());
+    }
+
+    private Uri getRecentFileUri() {
+        RecentFileRepository repository = new RecentFileRepository(this);
+        return Uri.parse(repository.getRecentFile(getVideoFile().getUniqueKey()).getUri());
     }
 
     private MediaInfo buildMediaInfo() {

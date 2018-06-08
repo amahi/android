@@ -45,6 +45,7 @@ import org.videolan.libvlc.MediaPlayer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -119,8 +120,8 @@ public class VideoService extends Service {
         String uri;
         long size;
         if (isFileAvailableOffline(videoFile)) {
-            uri = getOfflineFileUri(videoFile.getName());
-            size = new File(uri).length();
+            uri = getUriFrom(videoFile.getName(), videoFile.getModificationTime());
+            size = new File(getOfflineFileUri(videoFile.getName())).length();
         } else {
             uri = getVideoUri().toString();
             size = videoFile.getSize();
@@ -137,12 +138,27 @@ public class VideoService extends Service {
         return file != null && file.getState() == OfflineFile.DOWNLOADED;
     }
 
+    private String getUriFrom(String name, Date modificationTime) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile offlineFile = repository.getOfflineFile(name, modificationTime.getTime());
+        return offlineFile.getFileUri();
+    }
+
     private String getOfflineFileUri(String name) {
         return (getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + name);
     }
 
     private Uri getVideoUri() {
+        if (videoShare == null) {
+            return getRecentFileUri();
+        }
+
         return serverClient.getFileUri(videoShare, videoFile);
+    }
+
+    private Uri getRecentFileUri() {
+        RecentFileRepository repository = new RecentFileRepository(this);
+        return Uri.parse(repository.getRecentFile(videoFile.getUniqueKey()).getUri());
     }
 
     private void searchSubtitleFile() {

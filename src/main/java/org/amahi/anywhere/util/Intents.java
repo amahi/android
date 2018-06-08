@@ -42,6 +42,7 @@ import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.activity.SettingsActivity;
 import org.amahi.anywhere.activity.WebViewActivity;
+import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -68,6 +69,8 @@ public final class Intents {
         public static final String SERVER_FILES = "server_files";
         public static final String SERVER_SHARE = "server_share";
         public static final String IMAGE_URIS = "image_uris";
+        public static final String UNIQUE_KEY = "unique_key";
+        public static final String FILE_TYPE = "file_type";
 
         private Extras() {
         }
@@ -124,7 +127,7 @@ public final class Intents {
         }
 
         public boolean isServerFileSupported(ServerFile file) {
-            return getServerFileActivity(file) != null;
+            return getServerFileActivity(file.getMime()) != null;
         }
 
         public boolean isMediaServerFile(ServerFile file) {
@@ -134,8 +137,7 @@ public final class Intents {
                 || ServerFileVideoActivity.supports(fileFormat);
         }
 
-        private Class<? extends Activity> getServerFileActivity(ServerFile file) {
-            String fileFormat = file.getMime();
+        private Class<? extends Activity> getServerFileActivity(String fileFormat) {
 
             if (ServerFileAudioActivity.supports(fileFormat)) {
                 if (CheckTV.isATV(context))
@@ -170,10 +172,18 @@ public final class Intents {
         }
 
         public Intent buildServerFileIntent(ServerShare share, @NonNull List<ServerFile> files, ServerFile file) {
-            Intent intent = new Intent(context, getServerFileActivity(file));
+            Intent intent = new Intent(context, getServerFileActivity(file.getMime()));
             intent.putExtra(Extras.SERVER_SHARE, share);
             intent.putParcelableArrayListExtra(Extras.SERVER_FILES, new ArrayList<Parcelable>(files));
             intent.putExtra(Extras.SERVER_FILE, file);
+
+            return intent;
+        }
+
+        public Intent buildRecentFileIntent(RecentFile file) {
+            Intent intent = new Intent(context, getServerFileActivity(file.getMime()));
+            intent.putExtra(Extras.UNIQUE_KEY, file.getUniqueKey());
+            intent.putExtra(Extras.FILE_TYPE, FileManager.RECENT_FILE);
 
             return intent;
         }

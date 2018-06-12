@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,6 +30,8 @@ import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.util.CheckTV;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.SampleSlide;
 
 public class IntroductionActivity extends AppIntro {
@@ -57,6 +60,15 @@ public class IntroductionActivity extends AppIntro {
     }
 
     private void launchTv() {
+        if(!CheckTV.isATV(this) && Preferences.getFirstRun(this)) {
+            Preferences.setFirstRun(this);
+            launchNavigation();
+        }
+
         finish();
+    }
+
+    private void launchNavigation() {
+        startActivity(new Intent(this, NavigationActivity.class));
     }
 }

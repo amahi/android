@@ -102,8 +102,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        launchIntro();
-
         setUpInjections();
 
         setUpSettingsMenu();
@@ -116,14 +114,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         setServerTitleClicked(false);
 
-
-    }
-
-    private void launchIntro() {
-        if (Preferences.getFirstRun(getContext()) && !CheckTV.isATV(getContext())) {
-            Preferences.setFirstRun(getContext());
-            startActivity(new Intent(getContext(), IntroductionActivity.class));
-        }
     }
 
     private void setUpInjections() {

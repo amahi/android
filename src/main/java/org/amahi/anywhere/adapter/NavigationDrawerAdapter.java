@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
 
 import org.amahi.anywhere.R;
 
@@ -40,9 +39,10 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
     }
 
     //For Server Name List With Alphabets Bubbles
-    public NavigationDrawerAdapter(ArrayList<String> serverName) {
+    public NavigationDrawerAdapter(Context context, ArrayList<String> serverName) {
         this.mServerName = serverName;
         mNavigationItems = null;
+        mContext = context;
     }
 
     public static NavigationDrawerAdapter newLocalAdapter(Context context) {
@@ -63,10 +63,9 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
         String firstLetter = String.valueOf(serverList.get(position).charAt(0));
 
         //generate color bubble based on Server Name
-        TextDrawable drawable = TextDrawable.builder()
-            .buildRound(firstLetter, ColorGenerator.MATERIAL.getColor(serverList.get(position)));
 
-        return drawable;
+        return TextDrawable.builder()
+            .buildRound(firstLetter, mContext.getResources().getColor(R.color.primary));
     }
 
     @Override
@@ -84,8 +83,25 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
     }
 
     private void setServerList(NavigationDrawerViewHolder holder, int position) {
-        getTitleShare(holder).setText(getNavigationName(mContext, position));
-        getServerBubble(holder).setImageResource(R.drawable.ic_app_logo_shadowless);
+        String name;
+        int imageId;
+        switch (position) {
+            case NavigationDrawerAdapter.NavigationItems.SHARES:
+                name = mContext.getString(R.string.title_shares);
+                imageId = R.drawable.ic_shares_white;
+                break;
+
+            case NavigationDrawerAdapter.NavigationItems.APPS:
+                name = mContext.getString(R.string.title_apps);
+                imageId = R.drawable.ic_apps_white;
+                break;
+
+            default:
+                return;
+        }
+
+        getTitleShare(holder).setText(name);
+        getServerBubble(holder).setImageResource(imageId);
         getServerBubble(holder).setScaleType(ImageView.ScaleType.CENTER_CROP);
     }
 
@@ -100,19 +116,6 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
     @Override
     public int getItemCount() {
         return mNavigationItems != null ? mNavigationItems.size() : mServerName.size();
-    }
-
-    private String getNavigationName(Context context, int navigationItem) {
-        switch (navigationItem) {
-            case NavigationDrawerAdapter.NavigationItems.SHARES:
-                return context.getString(R.string.title_shares);
-
-            case NavigationDrawerAdapter.NavigationItems.APPS:
-                return context.getString(R.string.title_apps);
-
-            default:
-                return null;
-        }
     }
 
     public static final class NavigationItems {

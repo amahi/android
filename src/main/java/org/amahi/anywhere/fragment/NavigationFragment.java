@@ -26,6 +26,7 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -33,14 +34,17 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -55,6 +59,7 @@ import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
+import org.amahi.anywhere.bus.ServerAuthenticationStartEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
@@ -63,6 +68,7 @@ import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.HdaAuthBody;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.util.CheckTV;
@@ -417,7 +423,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void selectSavedServer(List<Server> servers) {
         String session = getServerSession();
-        if(session != null) {
+        if (session != null) {
             List<Server> activeServers = filterActiveServers(servers);
             for (int i = 0; i < activeServers.size(); i++) {
                 if (activeServers.get(i).getSession().equals(session)) {
@@ -504,6 +510,28 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private String getServerSession() {
         return Preferences.getServerSession(getContext());
+    }
+
+    @Subscribe
+    public void onAuthenticationStart(ServerAuthenticationStartEvent event) {
+        authenticateHdaUser();
+    }
+
+    private void authenticateHdaUser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Enter your PIN");
+
+        final EditText input = new EditText(getContext());
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        builder.setView(input);
+
+        builder.setPositiveButton("Ok", (dialog, which) -> {
+            HdaAuthBody authBody = new HdaAuthBody(input.getText().toString());
+            serverClient.authenticateHdaUser(authBody);
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 
     @Subscribe

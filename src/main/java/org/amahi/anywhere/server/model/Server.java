@@ -48,6 +48,8 @@ public class Server implements Parcelable {
     private String session;
     @SerializedName("active")
     private boolean active;
+
+    private String authToken;
     private boolean debug = false;
     private int index;
 
@@ -89,6 +91,14 @@ public class Server implements Parcelable {
 
     public int getIndex() {
         return index;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
+    public String getAuthToken() {
+        return authToken;
     }
 
     public boolean isActive() {

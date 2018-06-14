@@ -26,6 +26,8 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.NetworkChangedEvent;
+import org.amahi.anywhere.bus.ServerAuthenticationCompleteEvent;
+import org.amahi.anywhere.bus.ServerAuthenticationStartEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerConnectionDetectedEvent;
@@ -38,12 +40,14 @@ import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
+import org.amahi.anywhere.server.model.HdaAuthBody;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.server.response.ServerAppsResponse;
+import org.amahi.anywhere.server.response.ServerAuthenticationResponse;
 import org.amahi.anywhere.server.response.ServerFileDeleteResponse;
 import org.amahi.anywhere.server.response.ServerFileUploadResponse;
 import org.amahi.anywhere.server.response.ServerFilesResponse;
@@ -144,7 +148,7 @@ public class ServerClient {
         this.serverAddress = event.getServerAddress();
         this.serverApi = buildServerApi();
 
-        finishServerConnectionDetection();
+        initServerAuthentication();
     }
 
     private void finishServerConnectionDetection() {
@@ -156,7 +160,9 @@ public class ServerClient {
     }
 
     public boolean isConnected(Server server) {
-        return (this.server != null) && (this.serverRoute != null) && (this.server.getSession().equals(server.getSession()));
+        return (this.server != null) && (this.serverRoute != null)
+            && (this.server.getSession().equals(server.getSession())
+            && server.getAuthToken() != null);
     }
 
     public boolean isConnectedLocal() {
@@ -222,7 +228,7 @@ public class ServerClient {
         }
         this.serverAddress = serverRoute.getLocalAddress();
         this.serverApi = buildServerApi();
-        finishServerConnectionDetection();
+        initServerAuthentication();
     }
 
     public void connectRemote() {
@@ -232,15 +238,29 @@ public class ServerClient {
         }
         this.serverAddress = serverRoute.getRemoteAddress();
         this.serverApi = buildServerApi();
-        finishServerConnectionDetection();
+        initServerAuthentication();
     }
 
     public String getServerAddress() {
         return serverAddress;
     }
 
+    private void initServerAuthentication() {
+        BusProvider.getBus().post(new ServerAuthenticationStartEvent());
+    }
+
+    public void authenticateHdaUser(HdaAuthBody authBody) {
+        serverApi.authenticate(server.getSession(), authBody).enqueue(new ServerAuthenticationResponse());
+    }
+
+    @Subscribe
+    public void onHdaAuthenticated(ServerAuthenticationCompleteEvent event) {
+        server.setAuthToken(event.getAuthToken());
+        finishServerConnectionDetection();
+    }
+
     public void getShares() {
-        serverApi.getShares(server.getSession()).enqueue(new ServerSharesResponse());
+        serverApi.getShares(server.getSession(), server.getAuthToken()).enqueue(new ServerSharesResponse());
     }
 
     public void getFiles(ServerShare share) {
@@ -248,15 +268,15 @@ public class ServerClient {
             return;
         }
 
-        serverApi.getFiles(server.getSession(), share.getName(), null).enqueue(new ServerFilesResponse(share));
+        serverApi.getFiles(server.getSession(), server.getAuthToken(), share.getName(), null).enqueue(new ServerFilesResponse(share));
     }
 
     public void getFiles(ServerShare share, ServerFile directory) {
-        serverApi.getFiles(server.getSession(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
+        serverApi.getFiles(server.getSession(), server.getAuthToken(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
     }
 
     public void deleteFile(ServerShare share, ServerFile serverFile) {
-        serverApi.deleteFile(server.getSession(), share.getName(), serverFile.getPath())
+        serverApi.deleteFile(server.getSession(), server.getAuthToken(), share.getName(), serverFile.getPath())
             .enqueue(new ServerFileDeleteResponse());
     }
 
@@ -280,14 +300,14 @@ public class ServerClient {
     }
 
     private void uploadFileAsync(int id, MultipartBody.Part filePart, String shareName, String path) {
-        serverApi.uploadFile(server.getSession(), shareName, path, filePart)
+        serverApi.uploadFile(server.getSession(), server.getAuthToken(), shareName, path, filePart)
             .enqueue(new ServerFileUploadResponse(id));
     }
 
     private void uploadFileSync(int id, MultipartBody.Part filePart, String shareName, String path) {
         try {
             Response<ResponseBody> response = serverApi
-                .uploadFile(server.getSession(), shareName, path, filePart)
+                .uploadFile(server.getSession(), server.getAuthToken(), shareName, path, filePart)
                 .execute();
             if (response.isSuccessful()) {
                 BusProvider.getBus().post(

@@ -237,15 +237,15 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (!CheckTV.isATV(getContext())) {
             replaceServersList(filterActiveServers(servers));
         } else {
-            List<Server> serverList = filterActiveServers(servers);
-            String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), servers.get(0).getName());
+            serversList = filterActiveServers(servers);
+            String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), serversList.get(0).getName());
 
-            if (serverList.get(0).getName().matches(serverName))
-                replaceServersList(serverList);
+            if (serversList.get(0).getName().matches(serverName))
+                replaceServersList(serversList);
 
             else {
-                int index = findTheServer(serverList);
-                replaceServersList(swappedServers(index, serverList));
+                int index = findTheServer(serversList);
+                replaceServersList(swappedServers(index, serversList));
             }
         }
     }
@@ -347,8 +347,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
             showNavigationItems();
         } else {
             showServers();
+            hideOfflineLayout();
         }
 
+    }
+
+    private void hideOfflineLayout() {
+        getOfflineFilesLayout().setVisibility(View.GONE);
     }
 
     private void setUpNavigationAdapter() {
@@ -416,14 +421,12 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void selectSavedServer(List<Server> servers) {
         String session = getServerSession();
-        String serverName;
+
         List<Server> activeServers = filterActiveServers(servers);
         if (session != null) {
             for (int i = 0; i < activeServers.size(); i++) {
                 if (activeServers.get(i).getSession().equals(session)) {
-                    serverName = activeServers.get(i).getName();
-
-                    getServerNameTextView().setText(serverName);
+                    getServerNameTextView().setText(activeServers.get(i).getName());
                     setUpServerConnection(activeServers.get(i));
                     return;
                 }
@@ -434,20 +437,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void selectFirstServer(List<Server> activeServers) {
-        String serverName;
-        Server server;
-        if (activeServers.size() > 1) {
-            storeServerSession(activeServers.get(1));
-            serverName = activeServers.get(1).getName();
-            server = activeServers.get(1);
-        } else {
-            storeServerSession(activeServers.get(0));
-            serverName = activeServers.get(0).getName();
-            server = activeServers.get(0);
-        }
-
-        getServerNameTextView().setText(serverName);
-        setUpServerConnection(server);
+        getServerNameTextView().setText(activeServers.get(0).getName());
+        setUpServerConnection(activeServers.get(0));
     }
 
     private void serverClicked(int position) {
@@ -475,12 +466,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         getLinearLayoutSelectedServer().setOnClickListener(view -> {
             if (areServersVisible) {
                 showNavigationItems();
-                getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
-                    0, 0, R.drawable.nav_arrow_down, 0);
             } else {
                 showServers();
-                getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
-                    0, 0, R.drawable.nav_arrow_up, 0);
+                hideOfflineLayout();
             }
         });
     }
@@ -490,6 +478,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         setUpNavigationAdapter();
 
         setUpNavigationListener();
+        getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
+            0, 0, R.drawable.nav_arrow_down, 0);
+
+        getOfflineFilesLayout().setVisibility(View.VISIBLE);
     }
 
     @Subscribe
@@ -639,6 +631,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         areServersVisible = true;
         getNavigationListView().setAdapter(null);
         getNavigationListView().setAdapter(new NavigationDrawerAdapter(getContext(), getServerNames()));
+        getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
+            0, 0, R.drawable.nav_arrow_up, 0);
     }
 
     public ArrayList<String> getServerNames() {

@@ -102,7 +102,6 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
         getTitleShare(holder).setText(name);
         getServerBubble(holder).setImageResource(imageId);
-        getServerBubble(holder).setScaleType(ImageView.ScaleType.CENTER_CROP);
     }
 
     private ImageView getServerBubble(NavigationDrawerViewHolder holder) {
@@ -132,8 +131,8 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
         NavigationDrawerViewHolder(View itemView) {
             super(itemView);
-            titleShare = itemView.findViewById(R.id.text_share_server_title);
-            server_bubble = itemView.findViewById(R.id.server_bubble_image);
+            titleShare = itemView.findViewById(R.id.nav_name);
+            server_bubble = itemView.findViewById(R.id.nav_icon);
         }
     }
 

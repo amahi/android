@@ -53,7 +53,6 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
-import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -150,18 +149,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     @Override
     public void onAccountsUpdated(Account[] accounts) {
 
-        if (Preferences.getFirstRun(mContext)) {
-            launchIntro();
-        }
-
         if (getAccounts().isEmpty()) {
             setUpAccount();
         }
-    }
-
-    private void launchIntro() {
-        startActivity(new Intent(mContext, IntroductionActivity.class));
-        mActivity.finishAffinity();
     }
 
     private void setUpContentRefreshing() {
@@ -323,9 +313,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (getAccounts().isEmpty()) {
             setUpAccount();
         } else {
-            if (Preferences.getFirstRun(mActivity) && !CheckTV.isATV(mActivity)) {
-                launchIntro();
-            }
             setUpAuthenticationToken();
         }
     }

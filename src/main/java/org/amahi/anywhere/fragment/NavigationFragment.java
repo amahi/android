@@ -49,7 +49,6 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
-import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -101,8 +100,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        launchIntro();
-
         setUpInjections();
 
         setUpSettingsMenu();
@@ -113,13 +110,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         setUpServers(savedInstanceState);
 
-    }
-
-    private void launchIntro() {
-        if (Preferences.getFirstRun(getContext()) && !CheckTV.isATV(getContext())) {
-            Preferences.setFirstRun(getContext());
-            startActivity(new Intent(getContext(), IntroductionActivity.class));
-        }
     }
 
     private void setUpInjections() {

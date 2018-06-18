@@ -89,7 +89,7 @@
                         android:textColor="@android:color/white"
                         android:paddingEnd="16dp"
                         android:paddingStart="16dp"
-                        android:text="@string/server_name"
+                        android:text="@string/title_no_server"
                         android:textSize="@dimen/text_small"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -129,33 +129,6 @@
                     android:textSize="@dimen/text_small"
                     android:textStyle="bold" />
             </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_error"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/message_error_connection"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="8dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/message_notice_check_settings" />
 
         </LinearLayout>
 

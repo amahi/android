@@ -43,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -55,6 +56,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
+import org.amahi.anywhere.bus.ServerConnectionFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadFailedEvent;
 import org.amahi.anywhere.bus.ServersLoadedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
@@ -195,6 +197,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         getRefreshLayout().setRefreshing(true);
         setUpNavigationState(state);
         setUpServersContent(state);
+
+        setUpNavigationListener();
     }
 
     private void setUpServersContent(Bundle state) {
@@ -331,6 +335,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpNavigationList() {
+        getNavigationListView().setVisibility(View.VISIBLE);
         getNavigationListView().setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         if (!areServersVisible) {
@@ -410,13 +415,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void selectSavedServer(List<Server> servers) {
-        String session = getServerSession();
+        String serverName = getServerName();
 
         List<Server> activeServers = filterActiveServers(servers);
-        if (session != null) {
+        if (serverName != null) {
             for (int i = 0; i < activeServers.size(); i++) {
-                if (activeServers.get(i).getSession().equals(session)) {
-                    getServerNameTextView().setText(activeServers.get(i).getName());
+                if (activeServers.get(i).getName().equals(serverName)) {
+                    getServerNameTextView().setText(serverName);
                     setUpServerConnection(activeServers.get(i));
                     return;
                 }
@@ -432,24 +437,21 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void serverClicked(int position) {
+        areServersVisible = false;
+        setupServer(position);
 
         //Changing the Title Server Name
         getServerNameTextView().setText(getServersList().get(position).getName());
 
-        showNavigationItems();
+        storeServerName(getServersList().get(position));
 
-        setupServer(position);
-
-        storeServerSession(getServersList().get(position));
+        BusProvider.getBus().post(new SharesSelectedEvent());
     }
 
     public void setupServer(int position) {
         //Setting up server
         Server server = getServersList().get(position);
         setUpServerConnection(server);
-
-        //getting Shares of the new Server
-        BusProvider.getBus().post(new SharesSelectedEvent());
     }
 
     private void setUpServerSelectListener() {
@@ -467,7 +469,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         areServersVisible = false;
         setUpNavigationAdapter();
 
-        setUpNavigationListener();
         getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
             0, 0, R.drawable.nav_arrow_down, 0);
 
@@ -476,12 +477,31 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Subscribe
     public void onServersLoadFailed(ServersLoadFailedEvent event) {
-        showError();
+        showOfflineNavigation();
     }
 
-    private void showError() {
+    private void showOfflineNavigation() {
         getRefreshLayout().setRefreshing(false);
-        ViewDirector.of(this, R.id.animator_content).show(R.id.layout_error);
+
+        String serverName = getServerName();
+        if (serverName != null) {
+            getServerNameTextView().setText(serverName);
+        }
+
+        getOfflineFilesLayout().setVisibility(View.VISIBLE);
+
+        getOfflineFilesLayout().setOnClickListener(
+            view ->
+                showOfflineFiles()
+        );
+
+        showContent();
+        Toast.makeText(getContext(), R.string.message_connection_error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void onServerConnectionFailed(ServerConnectionFailedEvent event) {
+        showOfflineNavigation();
     }
 
     private void setUpServerConnection(Server server) {
@@ -492,18 +512,20 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         }
     }
 
-    private void storeServerSession(Server server) {
-        Preferences.setServerSession(getContext(), server.getSession());
+    private void storeServerName(Server server) {
+        Preferences.setServerName(getContext(), server.getName());
     }
 
-    private String getServerSession() {
-        return Preferences.getServerSession(getContext());
+    private String getServerName() {
+        return Preferences.getServerName(getContext());
     }
 
     @Subscribe
     public void onServerConnected(ServerConnectedEvent event) {
         setUpServerConnection();
         setUpNavigationList();
+        showContent();
+
         if (CheckTV.isATV(getContext())) launchTV();
     }
 

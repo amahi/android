@@ -15,48 +15,31 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
-  --><!--
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/text_share_title"
-    android:layout_width="match_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
-    android:background="?android:attr/activatedBackgroundIndicator"
-    android:foreground="?android:attr/selectableItemBackgroundBorderless"
-    android:gravity="center_vertical"
-    android:maxLines="1"
-    android:padding="16dp"
-    android:textSize="@dimen/text_medium" />-->
+  -->
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/server_bubble_list"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center_vertical"
     android:background="?android:attr/activatedBackgroundIndicator"
-    android:orientation="horizontal">
+    android:id="@+id/offline_files_layout"
+    android:layout_height="48dp">
 
     <ImageView
-        android:id="@+id/server_bubble_image"
-        android:layout_width="0dp"
-        android:layout_height="26dp"
-        android:layout_marginBottom="11dp"
-        android:layout_marginEnd="16dp"
+        android:id="@+id/nav_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="32dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="11dp"
-        android:layout_weight="7"
-        android:scaleType="fitStart" />
+        android:src="@drawable/ic_shares_white"
+        tools:ignore="contentDescription" />
 
     <TextView
-        android:id="@+id/text_share_server_title"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_weight="50"
-        android:ellipsize="end"
-        android:gravity="center_vertical"
-        android:maxLines="1"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:text=""
+        android:id="@+id/nav_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Navigation Menu"
         android:textSize="@dimen/text_small"
         android:textStyle="bold" />
-
-
 </LinearLayout>

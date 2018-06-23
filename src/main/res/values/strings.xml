@@ -26,7 +26,7 @@
     <string name="title_settings">Settings</string>
     <string name="title_shares">Shares</string>
     <string name="title_selected_server">Server</string>
-    <string name="server_name">Server Name</string>
+    <string name="title_no_server">No Server</string>
     <string name="title_upload_list">Upload</string>
     <string name="title_offline_files">Offline Files</string>
     <string name="title_recent_files">Recent Files</string>
@@ -69,6 +69,7 @@
     <string name="message_tap_to_retry">Tap to retry</string>
     <string name="message_error_video">Error playing the video</string>
     <string name="message_error_amahi_anywhere_app">The Amahi Anywhere app in your server is not reachable. Please ensure that Amahi Anywhere app is installed, running and reachable in your network.</string>
+    <string name="message_resume_last_position">Do you wish to resume from where you stopped</string>
 
 
     <string name="message_notice_check_settings">Check your settings and try again</string>

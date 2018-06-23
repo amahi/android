@@ -14,13 +14,15 @@ public class RecentFile {
     private String uniqueKey;
 
     private String uri;
+    private String serverName;
 
     private long visitTime;
     private long size;
 
-    public RecentFile(@NonNull String uniqueKey, String uri, long visitTime, long size) {
+    public RecentFile(@NonNull String uniqueKey, String uri, String serverName, long visitTime, long size) {
         this.uniqueKey = uniqueKey;
         this.uri = uri;
+        this.serverName = serverName;
         this.visitTime = visitTime;
         this.size = size;
     }
@@ -61,6 +63,14 @@ public class RecentFile {
     public String getName() {
         Uri uri = Uri.parse(getUri());
         return Uri.parse(uri.getQueryParameter("p")).getLastPathSegment();
+    }
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
     }
 
     public String getMime() {

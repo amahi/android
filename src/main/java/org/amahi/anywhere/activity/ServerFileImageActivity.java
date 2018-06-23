@@ -56,6 +56,7 @@ import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.view.ClickableViewPager;
 
 import java.io.File;
@@ -246,7 +247,13 @@ public class ServerFileImageActivity extends AppCompatActivity implements
             size = serverFile.getSize();
         }
 
-        RecentFile recentFile = new RecentFile(serverFile.getUniqueKey(), uri, System.currentTimeMillis(), size);
+        String serverName = Preferences.getServerName(this);
+
+        RecentFile recentFile = new RecentFile(serverFile.getUniqueKey(),
+            uri,
+            serverName,
+            System.currentTimeMillis(),
+            size);
         RecentFileRepository recentFileRepository = new RecentFileRepository(this);
         recentFileRepository.insert(recentFile);
     }

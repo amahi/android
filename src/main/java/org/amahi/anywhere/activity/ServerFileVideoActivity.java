@@ -53,11 +53,17 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.DialogButtonClickedEvent;
+import org.amahi.anywhere.db.entities.PlayedFile;
 import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.db.repositories.PlayedFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
+import org.amahi.anywhere.fragment.ResumeDialogFragment;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -311,6 +317,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         } else {
             videoService.startVideo(getVideoShare(), getVideoFile(), ENABLE_SUBTITLES);
             addLayoutChangeListener();
+            setUpPlayPosition();
         }
     }
 
@@ -320,6 +327,42 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
             fullScreen.delayedHide();
             videoControls.show();
         }
+    }
+
+    private void setUpPlayPosition() {
+        long lastPlayedPosition = getLastPlayedPosition(getVideoFile());
+
+        if (lastPlayedPosition != 0) {
+            new ResumeDialogFragment().show(getSupportFragmentManager(), "resume_dialog");
+        } else {
+            getMediaPlayer().setTime(0);
+            getMediaPlayer().play();
+        }
+    }
+
+    private long getLastPlayedPosition(ServerFile serverFile) {
+        PlayedFileRepository repository = new PlayedFileRepository(this);
+        PlayedFile playedFile = repository.getPlayedFile(serverFile.getUniqueKey());
+        if (playedFile != null) {
+            return playedFile.getPosition();
+        }
+        return 0;
+    }
+
+    @Subscribe
+    public void onDialogButtonClicked(DialogButtonClickedEvent event) {
+        getMediaPlayer().play();
+        if (event.getButtonId() == DialogButtonClickedEvent.YES) {
+            getMediaPlayer().setTime(getLastPlayedPosition(getVideoFile()));
+        } else {
+            deletePlayedFileFromDatabase(getVideoFile());
+            getMediaPlayer().setTime(0);
+        }
+    }
+
+    private void deletePlayedFileFromDatabase(ServerFile serverFile) {
+        PlayedFileRepository repository = new PlayedFileRepository(this);
+        repository.delete(serverFile.getUniqueKey());
     }
 
     private ProgressBar getProgressBar() {
@@ -586,6 +629,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
                 showThenAutoHideControls();
                 break;
             case MediaPlayer.Event.EndReached:
+                deletePlayedFileFromDatabase(getVideoFile());
                 finish();
                 break;
             case MediaPlayer.Event.Buffering:
@@ -623,6 +667,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     protected void onResume() {
         mCastContext.getSessionManager().addSessionManagerListener(this, CastSession.class);
         super.onResume();
+
+        BusProvider.getBus().register(this);
     }
 
     @Override
@@ -642,6 +688,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         if (isFinishing()) {
             tearDownVideoPlayback();
         }
+
+        BusProvider.getBus().unregister(this);
     }
 
     private void tearDownVideoPlayback() {

@@ -48,8 +48,8 @@ public class RecentFileRepository {
     }
 
     public List<RecentFile> getAllRecentFiles() {
-        String session = Preferences.getServerSession(context);
-        return mRecentFileDao.getRecentFiles("%" + session + "%");
+        String serverName = Preferences.getServerName(context);
+        return mRecentFileDao.getRecentFiles(serverName);
     }
 
 }

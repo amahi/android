@@ -72,8 +72,10 @@ import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.entities.PlayedFile;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.db.repositories.PlayedFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.receiver.AudioReceiver;
@@ -86,6 +88,7 @@ import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Identifier;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.MediaNotificationManager;
+import org.amahi.anywhere.util.Preferences;
 
 import java.io.File;
 import java.util.Date;
@@ -216,6 +219,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
         this.audioFiles = audioFiles;
         this.audioFile = audioFile;
 
+        pauseAudio();
         setUpAudioPlayback();
         setUpAudioMetadata();
     }
@@ -232,7 +236,6 @@ public class AudioService extends MediaBrowserServiceCompat implements
             mediaSource = buildMediaSource(getAudioUri());
         }
         audioPlayer.prepare(mediaSource, true, false);
-        playAudio();
     }
 
     private void setUpRecentFiles() {
@@ -246,7 +249,13 @@ public class AudioService extends MediaBrowserServiceCompat implements
             size = getAudioFile().getSize();
         }
 
-        RecentFile recentFile = new RecentFile(audioFile.getUniqueKey(), uri, System.currentTimeMillis(), size);
+        String serverName = Preferences.getServerName(this);
+
+        RecentFile recentFile = new RecentFile(audioFile.getUniqueKey(),
+            uri,
+            serverName,
+            System.currentTimeMillis(),
+            size);
         RecentFileRepository recentFileRepository = new RecentFileRepository(this);
         recentFileRepository.insert(recentFile);
     }
@@ -329,6 +338,11 @@ public class AudioService extends MediaBrowserServiceCompat implements
         return audioAlbumArt.copy(artworkConfig, false);
     }
 
+    public void setPlayPosition(long playPosition) {
+        playAudio();
+        getAudioPlayer().seekTo(playPosition);
+    }
+
     public PendingIntent createContentIntent() {
         Intent audioIntent = Intents.Builder.with(this).buildServerFileIntent(audioShare, audioFiles, audioFile);
         return PendingIntent.getActivity(this, 0, audioIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -389,6 +403,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private void startNextAudio() {
         this.audioFile = getNextAudioFile();
         setUpAudioPlayback();
+        playAudio();
         setUpAudioMetadata();
     }
 
@@ -405,6 +420,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
         this.audioFile = getPreviousAudioFile();
 
         setUpAudioPlayback();
+        playAudio();
         setUpAudioMetadata();
     }
 
@@ -419,7 +435,13 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Subscribe
     public void onAudioCompleted(AudioCompletedEvent event) {
+        deletePlayedFileFromDatabase();
         startNextAudio();
+    }
+
+    private void deletePlayedFileFromDatabase() {
+        PlayedFileRepository repository = new PlayedFileRepository(this);
+        repository.delete(getAudioFile().getUniqueKey());
     }
 
     public void playAudio() {
@@ -429,7 +451,6 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     public void pauseAudio() {
-        mediaSession.setActive(false);
         audioPlayer.setPlayWhenReady(false);
         setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
     }
@@ -464,6 +485,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
         tearDownAudioPlayback();
 
         setUpAudioPlayback();
+        playAudio();
         setUpAudioMetadata();
     }
 
@@ -537,11 +559,22 @@ public class AudioService extends MediaBrowserServiceCompat implements
     public void onDestroy() {
         super.onDestroy();
 
+        savePlayPosition();
+
         tearDownBus();
 
         tearDownAudioPlayer();
         tearDownAudioPlayerRemote();
         tearDownAudioPlayerNotification();
+    }
+
+    private void savePlayPosition() {
+        PlayedFileRepository repository = new PlayedFileRepository(this);
+
+        if (getAudioPlayer().getCurrentPosition() >= 1000 && getAudioPlayer().getDuration() != getAudioPlayer().getCurrentPosition()) {
+            PlayedFile playedFile = new PlayedFile(getAudioFile().getUniqueKey(), getAudioPlayer().getCurrentPosition());
+            repository.insert(playedFile);
+        }
     }
 
     private void tearDownAudioMetadataFormatter() {

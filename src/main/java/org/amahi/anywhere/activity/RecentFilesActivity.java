@@ -115,12 +115,8 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void setUpListAdapter() {
         recentFiles = getRecentFilesList();
-        if (!recentFiles.isEmpty()) {
-            getRecentFileRView().setAdapter(new RecentFilesAdapter(this, recentFiles));
-            showList(true);
-        } else {
-            showList(false);
-        }
+        getRecentFileRView().setAdapter(new RecentFilesAdapter(this, recentFiles));
+        showList(!recentFiles.isEmpty());
     }
 
     private List<RecentFile> getRecentFilesList() {

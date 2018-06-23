@@ -26,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -145,6 +146,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void setUpHomeNavigation() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(isNavigationDrawerAvailable());
         getSupportActionBar().setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
     }

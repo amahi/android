@@ -28,7 +28,7 @@ public interface RecentFileDao {
     @Query("SELECT * from recent_file_table where uniqueKey = :uniqueKey")
     RecentFile getRecentFile(String uniqueKey);
 
-    @Query("SELECT * from recent_file_table where uri like :serverName ORDER BY visitTime DESC")
+    @Query("SELECT * from recent_file_table where serverName = :serverName ORDER BY visitTime DESC")
     List<RecentFile> getRecentFiles(String serverName);
 
     @Query("SELECT * FROM recent_file_table ORDER BY visitTime DESC LIMIT 1")

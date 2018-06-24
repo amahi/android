@@ -91,7 +91,7 @@ public class Downloader extends BroadcastReceiver {
         if (file.exists())
             file.delete();
 
-        downloadRequest.setVisibleInDownloadsUi(false)
+        downloadRequest.setVisibleInDownloadsUi(true)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
         this.downloadId = getDownloadManager(context).enqueue(downloadRequest);
@@ -128,8 +128,8 @@ public class Downloader extends BroadcastReceiver {
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
         long id = getDownloadManager(context).enqueue(downloadRequest);
-        startProgressCount(id);
         downloadCallbacks.downloadStarted((int) id, downloadName);
+        startProgressCount(id);
         return id;
     }
 
@@ -247,6 +247,9 @@ public class Downloader extends BroadcastReceiver {
                             if (!(isNetworkAvailable())) {
                                 isDownloading = false;
                                 downloadCallbacks.downloadPaused(id, progress);
+                            } else {
+                                downloadCallbacks.downloadError(id);
+                                isDownloading = false;
                             }
 
                             break;

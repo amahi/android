@@ -97,8 +97,10 @@
     <string name="message_file_download_complete">File downloaded successfully</string>
     <string name="message_offline_file_deleted">Offline file removed successfully</string>
     <string name="notification_download_title">Downloading File</string>
-    <string name="notification_offline_download_complete">File Available Offline</string>
+    <string name="notification_download_offline_title">Making available offline</string>
+    <string name="notification_offline_download_complete">File available offline</string>
     <string name="notification_offline_download_paused">Waiting for internet</string>
+    <string name="notification_offline_download_error">Error while making file available offline</string>
 
     <string name="share_subject">Check out my Amahi home server!</string>
     <string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>

@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -131,6 +132,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
             isDownloading = true;
         } else {
             stopDownloading();
+            stopForeground(true);
         }
     }
 
@@ -223,9 +225,24 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         OfflineFile offlineFile = offlineFileRepository.getFileWithDownloadId(id);
         if (offlineFile != null) {
             moveFileInOfflineDirectory(offlineFile.getName());
+            showDownloadedNotification(offlineFile);
         } else {
             stopForeground(true);
         }
+    }
+
+    private void showDownloadedNotification(@NonNull OfflineFile offlineFile) {
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext()
+            .getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationBuilder
+            .setContentTitle(getString(R.string.notification_offline_download_complete))
+            .setContentText(getString(R.string.notification_upload_message, offlineFile.getName()))
+            .setOngoing(false);
+
+        Notification notification = notificationBuilder.build();
+        notificationManager.cancel(NOTIFICATION_OFFLINE_ID);
+        notificationManager.notify((int) offlineFile.getTimeStamp(), notification);
     }
 
     @Subscribe

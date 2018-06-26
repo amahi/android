@@ -94,9 +94,7 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     public void removeFile(int position) {
-        ServerFile serverFile = filteredFiles.get(position);
-        this.filteredFiles.remove(serverFile);
-        this.files.remove(serverFile);
+        this.files.remove(position);
         notifyDataSetChanged();
     }
 

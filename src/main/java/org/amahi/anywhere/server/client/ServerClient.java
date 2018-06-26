@@ -260,6 +260,11 @@ public class ServerClient {
             .enqueue(new ServerFileDeleteResponse());
     }
 
+    public void deleteFile(String shareName, ServerFile serverFile) {
+        serverApi.deleteFile(server.getSession(), shareName, serverFile.getPath())
+            .enqueue(new ServerFileDeleteResponse());
+    }
+
     private MultipartBody.Part createFilePart(int id, File file) {
         return MultipartBody.Part.createFormData("file",
             file.getName(),

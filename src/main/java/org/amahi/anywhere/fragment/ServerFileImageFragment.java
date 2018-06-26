@@ -36,7 +36,9 @@ import com.bumptech.glide.request.target.Target;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -107,7 +109,17 @@ public class ServerFileImageFragment extends Fragment implements RequestListener
     }
 
     private Uri getImageUri() {
-        return serverClient.getFileUri(getShare(), getFile());
+        if (getShare() != null) {
+            return serverClient.getFileUri(getShare(), getFile());
+        } else {
+            return getRecentFileUri();
+        }
+    }
+
+    private Uri getRecentFileUri() {
+        RecentFileRepository repository = new RecentFileRepository(getContext());
+        RecentFile recentFile = repository.getRecentFile(getFile().getUniqueKey());
+        return Uri.parse(recentFile.getUri());
     }
 
     private ServerShare getShare() {

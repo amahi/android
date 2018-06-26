@@ -29,6 +29,7 @@
     <string name="title_no_server">No Server</string>
     <string name="title_upload_list">Upload</string>
     <string name="title_offline_files">Offline Files</string>
+    <string name="title_recent_files">Recent Files</string>
 
     <string name="button_search_application">Search Google Play</string>
     <string name="button_sign_in">Sign in</string>

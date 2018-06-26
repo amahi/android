@@ -53,6 +53,7 @@ public final class Fragments {
         public static final String SERVER_SHARE = "server_share";
         public static final String FILE_OPTION = "file_option";
         public static final String IS_OFFLINE_FRAGMENT = "is_offline_fragment";
+        public static final String DIALOG_TYPE = "dialog_type";
 
         private Arguments() {
         }

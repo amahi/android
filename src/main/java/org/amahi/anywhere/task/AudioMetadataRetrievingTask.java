@@ -48,9 +48,11 @@ import javax.inject.Inject;
 public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent> {
     private final Uri audioUri;
     private final ServerFile serverFile;
+
     @Inject
     CacheManager cacheManager;
     private String path;
+    private String uniqueKey;
     private boolean isOfflineFile;
     private MainTVPresenter.ViewHolder viewHolder;
     private WeakReference<ImageView> imageViewWeakReference;
@@ -58,6 +60,13 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
     private AudioMetadataRetrievingTask(Context context, Uri audioUri, ServerFile serverFile) {
         this.audioUri = audioUri;
         this.serverFile = serverFile;
+        setUpInjections(context);
+    }
+
+    public AudioMetadataRetrievingTask(Context context, Uri audioUri, String uniqueKey) {
+        this.audioUri = audioUri;
+        this.serverFile = null;
+        this.uniqueKey = uniqueKey;
         setUpInjections(context);
     }
 
@@ -91,7 +100,9 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
     @Override
     protected BusEvent doInBackground(Void... parameters) {
         AudioMetadata metadata;
-        String uniqueKey = serverFile.getUniqueKey();
+        if (serverFile != null) {
+            uniqueKey = serverFile.getUniqueKey();
+        }
         metadata = cacheManager.getMetadataFromCache(uniqueKey);
         if (metadata == null) {
             metadata = new AudioMetadata();

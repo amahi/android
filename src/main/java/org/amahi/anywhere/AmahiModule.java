@@ -26,6 +26,7 @@ import org.amahi.anywhere.activity.AuthenticationActivity;
 import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
+import org.amahi.anywhere.activity.RecentFilesActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -81,6 +82,7 @@ import dagger.Provides;
         ServerFileImageActivity.class,
         ServerFileVideoActivity.class,
         NativeVideoActivity.class,
+        RecentFilesActivity.class,
         ServerFileWebActivity.class,
         NavigationFragment.class,
         ServerSharesFragment.class,

@@ -23,6 +23,7 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -42,17 +43,26 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerFilesImagePagerAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Downloader;
+import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.view.ClickableViewPager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -97,11 +107,30 @@ public class ServerFileImageActivity extends AppCompatActivity implements
 
         setUpHomeNavigation();
 
+        prepareFiles();
+
         setUpImage();
+
+        setUpRecentFiles(getFile());
 
         setUpCast();
 
         setUpFullScreen();
+    }
+
+    private void prepareFiles() {
+        int fileType = getIntent().getIntExtra(Intents.Extras.FILE_TYPE, FileManager.SERVER_FILE);
+        if (fileType == FileManager.RECENT_FILE) {
+            RecentFileRepository repository = new RecentFileRepository(this);
+            RecentFile recentFile = repository.getRecentFile(getIntent().getStringExtra(Intents.Extras.UNIQUE_KEY));
+            ServerFile serverFile = new ServerFile(recentFile.getName(), recentFile.getModificationTime(), recentFile.getMime());
+            serverFile.setSize(recentFile.getSize());
+            serverFile.setMime(recentFile.getMime());
+            getIntent().putExtra(Intents.Extras.SERVER_FILE, serverFile);
+            List<ServerFile> serverFiles = new ArrayList<>();
+            serverFiles.add(serverFile);
+            getIntent().putExtra(Intents.Extras.SERVER_FILES, new ArrayList<Parcelable>(serverFiles));
+        }
     }
 
     private void setUpInjections() {
@@ -123,8 +152,8 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     private void setUpImage() {
         setUpImageTitle();
         setUpImageAdapter();
-        setUpImagePosition();
         setUpImageListener();
+        setUpImagePosition();
     }
 
     private boolean isCastConnected() {
@@ -203,6 +232,46 @@ public class ServerFileImageActivity extends AppCompatActivity implements
         if (isCastConnected()) {
             loadRemoteMedia();
         }
+
+        setUpRecentFiles(getFiles().get(position));
+    }
+
+    private void setUpRecentFiles(ServerFile serverFile) {
+        String uri;
+        long size;
+        if (isFileAvailableOffline(serverFile)) {
+            uri = getUriFrom(serverFile.getName(), serverFile.getModificationTime());
+            size = new File(getOfflineFileUri(serverFile.getName())).length();
+        } else {
+            uri = serverClient.getFileUri(getShare(), serverFile).toString();
+            size = serverFile.getSize();
+        }
+
+        String serverName = Preferences.getServerName(this);
+
+        RecentFile recentFile = new RecentFile(serverFile.getUniqueKey(),
+            uri,
+            serverName,
+            System.currentTimeMillis(),
+            size);
+        RecentFileRepository recentFileRepository = new RecentFileRepository(this);
+        recentFileRepository.insert(recentFile);
+    }
+
+    private boolean isFileAvailableOffline(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+        return file != null && file.getState() == OfflineFile.DOWNLOADED;
+    }
+
+    private String getUriFrom(String name, Date modificationTime) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile offlineFile = repository.getOfflineFile(name, modificationTime.getTime());
+        return offlineFile.getFileUri();
+    }
+
+    private String getOfflineFileUri(String name) {
+        return (getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + name);
     }
 
     @Override
@@ -339,11 +408,25 @@ public class ServerFileImageActivity extends AppCompatActivity implements
         ServerFile file = getImageFiles().get(imagePosition);
         MediaMetadata imageMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_PHOTO);
         imageMetadata.putString(MediaMetadata.KEY_TITLE, file.getNameOnly());
-        String imageUrl = serverClient.getFileUri(getShare(), file).toString();
+        String imageUrl = getImageUri();
         return new MediaInfo.Builder(imageUrl)
             .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
             .setContentType(file.getMime())
             .setMetadata(imageMetadata)
             .build();
+    }
+
+    private String getImageUri() {
+        int fileType = getIntent().getIntExtra(Intents.Extras.FILE_TYPE, FileManager.SERVER_FILE);
+
+        if (fileType == FileManager.RECENT_FILE) {
+            return getRecentFileUri();
+        }
+        return serverClient.getFileUri(getShare(), getCurrentFile()).toString();
+    }
+
+    private String getRecentFileUri() {
+        RecentFileRepository repository = new RecentFileRepository(this);
+        return repository.getRecentFile(getCurrentFile().getUniqueKey()).getUri();
     }
 }

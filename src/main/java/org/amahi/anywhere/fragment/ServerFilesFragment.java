@@ -499,6 +499,7 @@ public class ServerFilesFragment extends Fragment implements
             }
         } else {
             getListAdapter().setAdapterMode(FilesFilterAdapter.AdapterMode.OFFLINE);
+            getFilesAdapter().setUpDownloadReceiver();
             showOfflineFiles();
         }
     }

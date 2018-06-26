@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.squareup.otto.Subscribe;
@@ -128,6 +129,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         if (file != null) {
             long downloadId = downloader.startDownloadingForOfflineMode(Uri.parse(file.getFileUri()), file.getName());
             saveOfflineFileDownloadId(file, downloadId);
+            notifyDownloadStart();
             Log.i("DownloadService", "Download id : " + file.getName() + downloadId);
             isDownloading = true;
         } else {
@@ -210,6 +212,11 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         startForeground(NOTIFICATION_OFFLINE_ID, notification);
     }
 
+    private void notifyDownloadStart() {
+        Intent intent = new Intent("DownloadStarted");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
     @Override
     public void downloadProgress(int id, int progress) {
         NotificationManager notificationManager = (NotificationManager) getApplicationContext()
@@ -218,6 +225,13 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
             .setProgress(100, progress, false);
         Notification notification = notificationBuilder.build();
         notificationManager.notify(NOTIFICATION_OFFLINE_ID, notification);
+        updateOfflineActivityUI(progress);
+    }
+
+    private void updateOfflineActivityUI(int progress) {
+        Intent intent = new Intent("DownloadProgress");
+        intent.putExtra("progress", progress);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     @Override
@@ -225,7 +239,6 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         OfflineFile offlineFile = offlineFileRepository.getFileWithDownloadId(id);
         if (offlineFile != null) {
             moveFileInOfflineDirectory(offlineFile.getName());
-            showDownloadedNotification(offlineFile);
         } else {
             stopForeground(true);
         }
@@ -245,26 +258,24 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         notificationManager.notify((int) offlineFile.getTimeStamp(), notification);
     }
 
+    private void notifyDownloadFinish(boolean isSuccess) {
+        Intent intent = new Intent("DownloadFinished");
+        intent.putExtra("success", isSuccess);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
     @Subscribe
     public void onFileMoved(FileMovedEvent event) {
         OfflineFile offlineFile = offlineFileRepository.getCurrentDownloadingFile();
         if (offlineFile != null) {
-
-            stopForeground(false);
-            NotificationManager notificationManager = (NotificationManager) getApplicationContext()
-                .getSystemService(Context.NOTIFICATION_SERVICE);
-
-            notificationBuilder
-                .setContentTitle(getString(R.string.notification_offline_download_complete))
-                .setOngoing(false)
-                .setProgress(100, 100, false);
-
-            Notification notification = notificationBuilder.build();
-            notificationManager.notify(NOTIFICATION_OFFLINE_ID, notification);
-
             offlineFile.setState(OfflineFile.DOWNLOADED);
             offlineFile.setDownloadId(-1);
             offlineFileRepository.update(offlineFile);
+
+            stopForeground(true);
+
+            showDownloadedNotification(offlineFile);
+            notifyDownloadFinish(true);
             startNextDownload();
         }
     }
@@ -287,6 +298,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         removeFromDownloader(id);
         stopNotification();
         showErrorNotification(id);
+        notifyDownloadFinish(false);
         removeOfflineFile(id);
         startNextDownload();
     }

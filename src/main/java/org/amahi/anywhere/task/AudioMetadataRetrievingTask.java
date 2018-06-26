@@ -73,7 +73,6 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
         return new AudioMetadataRetrievingTask(context, audioUri, serverFile);
     }
 
-
     private void setUpInjections(Context context) {
         AmahiApplication.from(context).inject(this);
     }

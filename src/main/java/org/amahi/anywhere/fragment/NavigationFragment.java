@@ -50,6 +50,7 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -132,13 +133,18 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Override
     public void onAccountsUpdated(Account[] accounts) {
-        if (isVisible()) {
-            return;
+
+        if (Preferences.getFirstRun(getContext())) {
+            launchIntro();
         }
 
         if (getAccounts().isEmpty()) {
             setUpAccount();
         }
+    }
+
+    private void launchIntro() {
+        startActivity(new Intent(getContext(), IntroductionActivity.class));
     }
 
     private void setUpContentRefreshing() {

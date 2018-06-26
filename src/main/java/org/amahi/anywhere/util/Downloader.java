@@ -91,7 +91,7 @@ public class Downloader extends BroadcastReceiver {
         if (file.exists())
             file.delete();
 
-        downloadRequest.setVisibleInDownloadsUi(true)
+        downloadRequest.setVisibleInDownloadsUi(false)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
         this.downloadId = getDownloadManager(context).enqueue(downloadRequest);
@@ -128,8 +128,8 @@ public class Downloader extends BroadcastReceiver {
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
 
         long id = getDownloadManager(context).enqueue(downloadRequest);
-        downloadCallbacks.downloadStarted((int) id, downloadName);
         startProgressCount(id);
+        downloadCallbacks.downloadStarted((int) id, downloadName);
         return id;
     }
 
@@ -235,10 +235,10 @@ public class Downloader extends BroadcastReceiver {
                 Cursor cursor = getDownloadManager(context).query(q);
                 if (cursor != null && cursor.moveToFirst()) {
                     cursor.moveToFirst();
-                    long bytes_downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                    long bytes_total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                    long progress = bytes_total != 0 ? (100 * bytes_downloaded) / bytes_total : 0;
-                    downloadCallbacks.downloadProgress((int) id, (int) progress);
+                    int bytes_downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    int bytes_total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    int progress = bytes_total != 0 ? 100 * bytes_downloaded / bytes_total : 0;
+                    downloadCallbacks.downloadProgress((int) id, progress);
 
                     int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
                     switch (status) {
@@ -246,10 +246,7 @@ public class Downloader extends BroadcastReceiver {
                         case DownloadManager.STATUS_PAUSED:
                             if (!(isNetworkAvailable())) {
                                 isDownloading = false;
-                                downloadCallbacks.downloadPaused(id, (int) progress);
-                            } else {
-                                downloadCallbacks.downloadError(id);
-                                isDownloading = false;
+                                downloadCallbacks.downloadPaused(id, progress);
                             }
 
                             break;

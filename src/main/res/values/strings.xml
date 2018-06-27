@@ -29,6 +29,7 @@
     <string name="title_no_server">No Server</string>
     <string name="title_upload_list">Upload</string>
     <string name="title_offline_files">Offline Files</string>
+    <string name="title_recent_files">Recent Files</string>
 
     <string name="button_search_application">Search Google Play</string>
     <string name="button_sign_in">Sign in</string>
@@ -58,6 +59,7 @@
     <string name="message_empty_apps">No Apps</string>
     <string name="message_empty_files">No Files</string>
     <string name="message_empty_shares">No Shares</string>
+    <string name="message_empty_recent_files">No Recent Files</string>
 
     <string name="message_error_account_exists">Account already exists.</string>
     <string name="message_error_search_application">We haven’t found any supported apps for this file.</string>
@@ -73,6 +75,7 @@
 
     <string name="message_notice_check_settings">Check your settings and try again</string>
     <string name="message_notice_create_some">Create some and try again</string>
+    <string name="message_notice_visit_some">Visit some and try again</string>
 
     <string name="message_progress_file_downloading">Downloading file …</string>
     <string name="message_progress_file_preparing">Preparing file …</string>

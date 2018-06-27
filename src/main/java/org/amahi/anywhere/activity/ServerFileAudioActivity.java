@@ -26,6 +26,7 @@ import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -56,7 +57,9 @@ import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.DialogButtonClickedEvent;
 import org.amahi.anywhere.db.entities.PlayedFile;
+import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.PlayedFileRepository;
+import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.fragment.ResumeDialogFragment;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -65,6 +68,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
+import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.ViewDirector;
 import org.amahi.anywhere.view.AudioControls;
@@ -123,6 +127,8 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
         setUpCast();
 
+        prepareFiles();
+
         setUpAudio();
     }
 
@@ -140,6 +146,21 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
         if (isCastConnected()) {
             mLocation = PlaybackLocation.REMOTE;
+        }
+    }
+
+    private void prepareFiles() {
+        int fileType = getIntent().getIntExtra(Intents.Extras.FILE_TYPE, FileManager.SERVER_FILE);
+        if (fileType == FileManager.RECENT_FILE) {
+            RecentFileRepository repository = new RecentFileRepository(this);
+            RecentFile recentFile = repository.getRecentFile(getIntent().getStringExtra(Intents.Extras.UNIQUE_KEY));
+            ServerFile serverFile = new ServerFile(recentFile.getName(), recentFile.getModificationTime(), recentFile.getMime());
+            serverFile.setSize(recentFile.getSize());
+            serverFile.setMime(recentFile.getMime());
+            getIntent().putExtra(Intents.Extras.SERVER_FILE, serverFile);
+            List<ServerFile> serverFiles = new ArrayList<>();
+            serverFiles.add(serverFile);
+            getIntent().putExtra(Intents.Extras.SERVER_FILES, new ArrayList<Parcelable>(serverFiles));
         }
     }
 
@@ -253,7 +274,16 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private Uri getAudioUri() {
-        return serverClient.getFileUri(getShare(), getFile());
+        if (getShare() != null) {
+            return serverClient.getFileUri(getShare(), getFile());
+        } else {
+            return getRecentFileUri();
+        }
+    }
+
+    private Uri getRecentFileUri() {
+        RecentFileRepository repository = new RecentFileRepository(this);
+        return Uri.parse(repository.getRecentFile(getFile().getUniqueKey()).getUri());
     }
 
     @Override
@@ -375,7 +405,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     @Subscribe
     public void onAudioPrepared(AudioPreparedEvent event) {
         audioControls.setMediaPlayer(this);
-        hideAudioControls();
         showAudio();
     }
 
@@ -426,28 +455,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         }
         changeAudio = false;
         getAudioPager().setCurrentItem(audioPosition);
-    }
-
-    private void tearDownAudioTitle() {
-        getSupportActionBar().setTitle(null);
-    }
-
-    private void tearDownAudioMetadata() {
-        metadataFormatter = null;
-    }
-
-    private void hideAudio() {
-        hideAudioControls();
-    }
-
-    private void hideAudioMetadata() {
-        ViewDirector.of(this, R.id.animator).show(android.R.id.progress);
-    }
-
-    private void hideAudioControls() {
-        if (areAudioControlsAvailable() && audioControls.isShowing()) {
-            audioControls.hideControls();
-        }
     }
 
     @Override

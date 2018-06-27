@@ -84,6 +84,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -363,7 +364,7 @@ public class ServerFilesFragment extends Fragment implements
             if (offlineFile.getState() == OfflineFile.DOWNLOADING) {
                 stopDownloading(offlineFile.getDownloadId());
             }
-            File file = new File(getContext().getFilesDir(), getCheckedFile().getName());
+            File file = new File(getContext().getFilesDir(), Downloader.OFFLINE_PATH + "/" + getCheckedFile().getName());
             if (file.exists()) {
                 file.delete();
             }
@@ -408,6 +409,7 @@ public class ServerFilesFragment extends Fragment implements
                 getFilesMetadataAdapter().removeFile(deleteFilePosition);
                 getFilesMetadataAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
             }
+            showFilesContent();
         } else {
             Toast.makeText(getContext(), R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
         }

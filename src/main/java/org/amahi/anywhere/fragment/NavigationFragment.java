@@ -55,6 +55,7 @@ import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
+import org.amahi.anywhere.bus.RecentFilesSelectedEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerConnectionFailedEvent;
@@ -145,6 +146,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void launchIntro() {
         startActivity(new Intent(getContext(), IntroductionActivity.class));
+        getActivity().finishAffinity();
     }
 
     private void setUpContentRefreshing() {
@@ -297,6 +299,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (getAccounts().isEmpty()) {
             setUpAccount();
         } else {
+            if (Preferences.getFirstRun(getActivity()) && !CheckTV.isATV(getActivity())) {
+                launchIntro();
+            }
             setUpAuthenticationToken();
         }
     }
@@ -349,12 +354,17 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         } else {
             showServers();
             hideOfflineLayout();
+            hideRecentLayout();
         }
 
     }
 
     private void hideOfflineLayout() {
         getOfflineFilesLayout().setVisibility(View.GONE);
+    }
+
+    private void hideRecentLayout() {
+        getRecentFilesLayout().setVisibility(View.GONE);
     }
 
     private void setUpNavigationAdapter() {
@@ -380,6 +390,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         return getView().findViewById(R.id.offline_files_layout);
     }
 
+    private LinearLayout getRecentFilesLayout() {
+        return getView().findViewById(R.id.recent_files_layout);
+    }
+
     private LinearLayout getLinearLayoutSelectedServer() {
         return getView().findViewById(R.id.server_select_LinearLayout);
     }
@@ -402,6 +416,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         }));
 
         getOfflineFilesLayout().setOnClickListener(view -> showOfflineFiles());
+
+        getRecentFilesLayout().setOnClickListener(view -> showRecentFiles());
     }
 
     private void selectedServerListener(int position) {
@@ -438,12 +454,18 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void selectFirstServer(List<Server> activeServers) {
-        getServerNameTextView().setText(activeServers.get(0).getName());
-        setUpServerConnection(activeServers.get(0));
+        if (!activeServers.isEmpty()) {
+            getServerNameTextView().setText(activeServers.get(0).getName());
+            setUpServerConnection(activeServers.get(0));
+        } else {
+            String serverName = getServerName();
+            if (serverName != null) {
+                getServerNameTextView().setText(serverName);
+            }
+        }
     }
 
     private void serverClicked(int position) {
-        areServersVisible = false;
         setupServer(position);
 
         //Changing the Title Server Name
@@ -467,6 +489,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
             } else {
                 showServers();
                 hideOfflineLayout();
+                hideRecentLayout();
             }
         });
     }
@@ -479,6 +502,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
             0, 0, R.drawable.nav_arrow_down, 0);
 
         getOfflineFilesLayout().setVisibility(View.VISIBLE);
+        getRecentFilesLayout().setVisibility(View.VISIBLE);
     }
 
     @Subscribe
@@ -495,11 +519,18 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         }
 
         getOfflineFilesLayout().setVisibility(View.VISIBLE);
+        getRecentFilesLayout().setVisibility(View.VISIBLE);
 
         getOfflineFilesLayout().setOnClickListener(
             view ->
                 showOfflineFiles()
         );
+
+        areServersVisible = false;
+        setUpNavigationList();
+        getLinearLayoutSelectedServer().setOnClickListener((v) -> {
+            Toast.makeText(getContext(), R.string.message_connection_error, Toast.LENGTH_SHORT).show();
+        });
 
         showContent();
         Toast.makeText(getContext(), R.string.message_connection_error, Toast.LENGTH_SHORT).show();
@@ -576,8 +607,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         BusProvider.getBus().post(new OfflineFilesSelectedEvent());
     }
 
+    private void showRecentFiles() {
+        BusProvider.getBus().post(new RecentFilesSelectedEvent());
+    }
+
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        areServersVisible = false;
         setUpNavigationList();
     }
 

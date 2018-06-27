@@ -24,10 +24,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import org.amahi.anywhere.tv.activity.IntroActivity;
-import org.amahi.anywhere.util.CheckTV;
-import org.amahi.anywhere.util.Preferences;
-
 public class SplashActivity extends AppCompatActivity {
 
     @Override
@@ -40,18 +36,10 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void setUpActivity() {
-        if(Preferences.getFirstRun(this) && !CheckTV.isATV(this)) {
-            launchIntro();
-        } else {
-            launchNavigation();
-        }
+        launchNavigation();
     }
 
     private void launchNavigation() {
         startActivity(new Intent(this, NavigationActivity.class));
-    }
-
-    private void launchIntro() {
-        startActivity(new Intent(this, IntroductionActivity.class));
     }
 }

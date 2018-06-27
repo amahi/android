@@ -23,7 +23,9 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileMovedEvent;
 import org.amahi.anywhere.bus.OfflineCanceledEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -171,14 +173,35 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void saveFileInOfflineFileQueue(ServerFile serverFile, ServerShare serverShare) {
-        String downloadUri = serverClient.getFileUri(serverShare, serverFile).toString();
-        OfflineFile offlineFile = new OfflineFile(serverShare.getName(), serverFile.getPath(), serverFile.getName());
+
+        String downloadUri;
+        String shareName, path;
+        if (serverShare == null) {
+            // Request is from recent Files
+            downloadUri = getDownloadUriFrom(getRecentFile(serverFile.getUniqueKey()));
+            shareName = getRecentFile(serverFile.getUniqueKey()).getShareName();
+            path = getRecentFile(serverFile.getUniqueKey()).getPath();
+        } else {
+            downloadUri = serverClient.getFileUri(serverShare, serverFile).toString();
+            shareName = serverShare.getName();
+            path = serverFile.getPath();
+        }
+        OfflineFile offlineFile = new OfflineFile(shareName, path, serverFile.getName());
         offlineFile.setFileUri(downloadUri);
         offlineFile.setTimeStamp(serverFile.getModificationTime().getTime());
         offlineFile.setMime(serverFile.getMime());
         offlineFile.setState(OfflineFile.DOWNLOADING);
         offlineFile.setDownloadId(-1);
         offlineFileRepository.insert(offlineFile);
+    }
+
+    private RecentFile getRecentFile(String uniqueKey) {
+        RecentFileRepository repository = new RecentFileRepository(this);
+        return repository.getRecentFile(uniqueKey);
+    }
+
+    private String getDownloadUriFrom(RecentFile recentFile) {
+        return recentFile.getUri();
     }
 
     @Override

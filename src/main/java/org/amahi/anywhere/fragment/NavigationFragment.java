@@ -445,6 +445,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
                 if (activeServers.get(i).getName().equals(serverName)) {
                     getServerNameTextView().setText(serverName);
                     setUpServerConnection(activeServers.get(i));
+                    storeServerName(activeServers.get(i));
                     return;
                 }
             }
@@ -457,6 +458,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (!activeServers.isEmpty()) {
             getServerNameTextView().setText(activeServers.get(0).getName());
             setUpServerConnection(activeServers.get(0));
+            storeServerName(activeServers.get(0));
         } else {
             String serverName = getServerName();
             if (serverName != null) {

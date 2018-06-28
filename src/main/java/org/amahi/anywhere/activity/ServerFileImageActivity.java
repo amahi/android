@@ -30,12 +30,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaLoadOptions;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.images.WebImage;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -237,20 +239,17 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     }
 
     private void setUpRecentFiles(ServerFile serverFile) {
-        String uri;
         long size;
         if (isFileAvailableOffline(serverFile)) {
-            uri = getUriFrom(serverFile.getName(), serverFile.getModificationTime());
             size = new File(getOfflineFileUri(serverFile.getName())).length();
         } else {
-            uri = serverClient.getFileUri(getShare(), serverFile).toString();
             size = serverFile.getSize();
         }
 
         String serverName = Preferences.getServerName(this);
 
         RecentFile recentFile = new RecentFile(serverFile.getUniqueKey(),
-            uri,
+            getImageUri(serverFile),
             serverName,
             System.currentTimeMillis(),
             size);
@@ -400,7 +399,9 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     private void loadRemoteMedia() {
         final RemoteMediaClient remoteMediaClient = mCastSession.getRemoteMediaClient();
         if (remoteMediaClient != null) {
-            remoteMediaClient.load(buildMediaInfo());
+
+            MediaLoadOptions mediaLoadOptions = new MediaLoadOptions.Builder().build();
+            remoteMediaClient.load(buildMediaInfo(), mediaLoadOptions);
         }
     }
 
@@ -408,7 +409,9 @@ public class ServerFileImageActivity extends AppCompatActivity implements
         ServerFile file = getImageFiles().get(imagePosition);
         MediaMetadata imageMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_PHOTO);
         imageMetadata.putString(MediaMetadata.KEY_TITLE, file.getNameOnly());
-        String imageUrl = getImageUri();
+        String imageUrl = getImageUri(getCurrentFile());
+        imageMetadata.addImage(new WebImage(Uri.parse(imageUrl)));
+        imageMetadata.addImage(new WebImage(Uri.parse(imageUrl)));
         return new MediaInfo.Builder(imageUrl)
             .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
             .setContentType(file.getMime())
@@ -416,11 +419,18 @@ public class ServerFileImageActivity extends AppCompatActivity implements
             .build();
     }
 
-    private String getImageUri() {
+    private String getImageUri(ServerFile serverFile) {
         int fileType = getIntent().getIntExtra(Intents.Extras.FILE_TYPE, FileManager.SERVER_FILE);
 
         if (fileType == FileManager.RECENT_FILE) {
             return getRecentFileUri();
+        }
+        if (getShare() == null) {
+            OfflineFileRepository repository = new OfflineFileRepository(this);
+            OfflineFile offlineFile = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+            if (offlineFile != null) {
+                return offlineFile.getFileUri();
+            }
         }
         return serverClient.getFileUri(getShare(), getCurrentFile()).toString();
     }

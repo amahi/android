@@ -25,7 +25,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -78,6 +77,7 @@ import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.PathUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -112,6 +112,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private File cameraImage;
 
     private AudioService audioService;
+    private boolean isControllerShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +181,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
         if (isFilesStateValid(state)) {
             this.file = state.getParcelable(State.FILE);
             this.fileOption = state.getInt(State.FILE_ACTION);
+            this.isControllerShown = state.getBoolean(State.AUDIO_CONTROLLER);
         }
     }
 
@@ -191,6 +193,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     public void onFileOpening(FileOpeningEvent event) {
         this.file = event.getFile();
         this.fileOption = FileOption.OPEN;
+        this.isControllerShown = false;
 
         setUpFile(event.getShare(), event.getFiles(), event.getFile());
     }
@@ -403,7 +406,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
                 case REQUEST_UPLOAD_IMAGE:
                     if (data != null) {
                         Uri selectedImageUri = data.getData();
-                        String filePath = querySelectedImagePath(selectedImageUri);
+                        String filePath = PathUtil.getPath(this, selectedImageUri);
                         if (filePath != null) {
                             File file = new File(filePath);
                             if (file.exists()) {
@@ -426,24 +429,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     break;
             }
         }
-    }
-
-    private String querySelectedImagePath(Uri selectedImageUri) {
-        String filePath = null;
-        if ("content".equals(selectedImageUri.getScheme())) {
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = this.getContentResolver()
-                .query(selectedImageUri, filePathColumn, null, null, null);
-            if (cursor != null) {
-                cursor.moveToFirst();
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                filePath = cursor.getString(columnIndex);
-                cursor.close();
-            }
-        } else {
-            filePath = selectedImageUri.toString();
-        }
-        return filePath;
     }
 
     private void showDuplicateFileUploadDialog(final File file) {
@@ -593,7 +578,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         setUpAudioServiceBind(service);
-        if (audioService.getAudioFile() != null && audioService.getAudioPlayer().getPlayWhenReady()) {
+        if (audioService.getAudioFile() != null && (audioService.getAudioPlayer().getPlayWhenReady() || isControllerShown)) {
             showAudioControls();
         } else {
             hideAudioControls();
@@ -620,10 +605,12 @@ public class ServerFilesActivity extends AppCompatActivity implements
         getSupportFragmentManager().beginTransaction()
             .show(getAudioController())
             .commit();
+        isControllerShown = true;
         getAudioController().connect(audioService);
     }
 
     private void hideAudioControls() {
+        isControllerShown = false;
         getSupportFragmentManager().beginTransaction()
             .hide(getAudioController())
             .commit();
@@ -675,12 +662,14 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private void tearDownFilesState(Bundle state) {
         state.putParcelable(State.FILE, file);
         state.putInt(State.FILE_ACTION, fileOption);
+        state.putBoolean(State.AUDIO_CONTROLLER, isControllerShown);
     }
 
     private static final class State {
 
         public static final String FILE = "file";
         public static final String FILE_ACTION = "file_action";
+        public static final String AUDIO_CONTROLLER = "audio_controller";
 
         private State() {
         }

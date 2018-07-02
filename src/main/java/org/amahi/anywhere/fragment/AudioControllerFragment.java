@@ -95,6 +95,8 @@ public class AudioControllerFragment extends Fragment {
         if (formatter != null) {
             setUpAudioMetadata(formatter.getAudioTitle(audioService.getAudioFile()),
                 formatter.getAudioSubtitle(audioService.getAudioShare()), audioService.getAudioAlbumArt());
+        } else {
+            audioTitleText.setText(audioService.getAudioFile().getName());
         }
 
         new Handler().postDelayed(progressTask, 1000);

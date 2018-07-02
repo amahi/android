@@ -206,6 +206,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
             BusProvider.getBus().post(new AudioControlChangeEvent(position));
         }
         changeAudio = true;
+        saveAudioFileState(getFiles().get(position));
     }
 
     private boolean isCastConnected() {
@@ -405,6 +406,11 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         }
         changeAudio = false;
         getAudioPager().setCurrentItem(audioPosition);
+        saveAudioFileState(getFiles().get(audioPosition));
+    }
+
+    private void saveAudioFileState(ServerFile file) {
+        getIntent().putExtra(Intents.Extras.SERVER_FILE, file);
     }
 
     @Subscribe
@@ -416,6 +422,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         }
         changeAudio = false;
         getAudioPager().setCurrentItem(audioPosition);
+        saveAudioFileState(getFiles().get(audioPosition));
     }
 
     @Subscribe
@@ -576,6 +583,21 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     private void tearDownAudioServiceBind() {
         unbindService(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (audioService != null &&
+            (!audioService.getAudioPlayer().getPlayWhenReady() || getShare() == null)) {
+            tearDownAudioService();
+        }
+    }
+
+    private void tearDownAudioService() {
+        Intent intent = new Intent(this, AudioService.class);
+        stopService(intent);
     }
 
     @Override

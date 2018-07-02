@@ -21,12 +21,16 @@ package org.amahi.anywhere.activity;
 
 import android.Manifest;
 import android.app.DialogFragment;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -43,6 +47,7 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.bus.AudioStopEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileCopiedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
@@ -54,6 +59,7 @@ import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ProgressDialogFragment;
@@ -65,6 +71,7 @@ import org.amahi.anywhere.model.UploadOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
@@ -88,7 +95,9 @@ import timber.log.Timber;
  * such as opening and sharing.
  * The files navigation itself is done via {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
-public class ServerFilesActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+public class ServerFilesActivity extends AppCompatActivity implements
+    EasyPermissions.PermissionCallbacks,
+    ServiceConnection {
 
     private static final int FILE_UPLOAD_PERMISSION = 102;
     private static final int CAMERA_PERMISSION = 103;
@@ -101,6 +110,8 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
     private int fileOption;
     private ProgressDialogFragment uploadDialogFragment;
     private File cameraImage;
+
+    private AudioService audioService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -570,13 +581,88 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
         super.onResume();
 
         BusProvider.getBus().register(this);
+
+        setUpAudioServiceBind();
+    }
+
+    private void setUpAudioServiceBind() {
+        Intent intent = new Intent(this, AudioService.class);
+        bindService(intent, this, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        setUpAudioServiceBind(service);
+        if (audioService.getAudioFile() != null && audioService.getAudioPlayer().getPlayWhenReady()) {
+            showAudioControls();
+        } else {
+            hideAudioControls();
+            unbindService(this);
+            stopService(new Intent(this, AudioService.class));
+            audioService = null;
+        }
+    }
+
+    private void setUpAudioServiceBind(IBinder serviceBinder) {
+        AudioService.AudioServiceBinder audioServiceBinder = (AudioService.AudioServiceBinder) serviceBinder;
+        audioService = audioServiceBinder.getAudioService();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+    }
+
+    private AudioControllerFragment getAudioController() {
+        return (AudioControllerFragment) getSupportFragmentManager().findFragmentById(R.id.audio_controller_fragment);
+    }
+
+    private void showAudioControls() {
+        getSupportFragmentManager().beginTransaction()
+            .show(getAudioController())
+            .commit();
+        getAudioController().connect(audioService);
+    }
+
+    private void hideAudioControls() {
+        getSupportFragmentManager().beginTransaction()
+            .hide(getAudioController())
+            .commit();
+    }
+
+    @Subscribe
+    public void onAudioStopping(AudioStopEvent event) {
+        hideAudioControls();
+        if (audioService != null) {
+            audioService.pauseAudio();
+            unbindService(this);
+            stopService(new Intent(this, AudioService.class));
+            audioService = null;
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
+        if (audioService != null) {
+            unbindService(this);
+        }
+
         BusProvider.getBus().unregister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (audioService != null && isFinishing()) {
+            tearDownAudioService();
+        }
+    }
+
+    private void tearDownAudioService() {
+        Intent intent = new Intent(this, AudioService.class);
+        stopService(intent);
     }
 
     @Override

@@ -55,12 +55,8 @@ import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.bus.DialogButtonClickedEvent;
-import org.amahi.anywhere.db.entities.PlayedFile;
 import org.amahi.anywhere.db.entities.RecentFile;
-import org.amahi.anywhere.db.repositories.PlayedFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
-import org.amahi.anywhere.fragment.ResumeDialogFragment;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -316,12 +312,21 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     public void onServiceConnected(ComponentName serviceName, IBinder serviceBinder) {
         setUpAudioServiceBind(serviceBinder);
 
-        setUpAudioControls();
         setUpAudioPlayback();
 
         changeAudio = false;
         getAudioPager().setCurrentItem(audioService.getAudioPosition(), false);
         changeAudio = true;
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        setUpAudioControls();
+        if (isAudioServiceAvailable()) {
+            audioControls.setMediaPlayer(this);
+            showAudio();
+        }
     }
 
     private void setUpAudioServiceBind(IBinder serviceBinder) {
@@ -345,45 +350,15 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     private void setUpAudioPlayback() {
         if (audioService.isAudioStarted()) {
-            setUpAudioMetadata();
-        } else {
-            audioService.startAudio(getShare(), getAudioFiles(), getFile());
-            setUpPlayPosition();
+            if (getFile().getUniqueKey().equals(audioService.getAudioFile().getUniqueKey())) {
+                setUpAudioMetadata();
+                showAudio();
+                return;
+            }
         }
-    }
 
-    private void setUpPlayPosition() {
-        long lastPlayedPosition = getLastPlayedPosition(getFile());
-
-        if (lastPlayedPosition != 0) {
-            new ResumeDialogFragment().show(getSupportFragmentManager(), "resume_dialog");
-        } else {
-            audioService.setPlayPosition(0);
-        }
-    }
-
-    private long getLastPlayedPosition(ServerFile serverFile) {
-        PlayedFileRepository repository = new PlayedFileRepository(this);
-        PlayedFile playedFile = repository.getPlayedFile(serverFile.getUniqueKey());
-        if (playedFile != null) {
-            return playedFile.getPosition();
-        }
-        return 0;
-    }
-
-    @Subscribe
-    public void onDialogButtonClicked(DialogButtonClickedEvent event) {
-        if (event.getButtonId() == DialogButtonClickedEvent.YES) {
-            audioService.setPlayPosition(getLastPlayedPosition(getFile()));
-        } else {
-            deletePlayedFileFromDatabase(getFile());
-            audioService.setPlayPosition(0);
-        }
-    }
-
-    private void deletePlayedFileFromDatabase(ServerFile serverFile) {
-        PlayedFileRepository repository = new PlayedFileRepository(this);
-        repository.delete(serverFile.getUniqueKey());
+        audioService.startAudio(getShare(), getAudioFiles(), getFile());
+        audioService.setPlayPosition(0);
     }
 
     private List<ServerFile> getAudioFiles() {
@@ -404,8 +379,10 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     @Subscribe
     public void onAudioPrepared(AudioPreparedEvent event) {
-        audioControls.setMediaPlayer(this);
-        showAudio();
+        if (areAudioControlsAvailable()) {
+            audioControls.setMediaPlayer(this);
+            showAudio();
+        }
     }
 
     private void showAudio() {
@@ -580,20 +557,12 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         hideAudioControlsForced();
 
         BusProvider.getBus().unregister(this);
-
-        if (isAudioServiceAvailable() && isFinishing()) {
-            tearDownAudioPlayback();
-        }
     }
 
     private void hideAudioControlsForced() {
         if (areAudioControlsAvailable() && audioControls.isShowing()) {
             audioControls.hideControls();
         }
-    }
-
-    private void tearDownAudioPlayback() {
-        audioService.pauseAudio();
     }
 
     @Override
@@ -607,20 +576,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     private void tearDownAudioServiceBind() {
         unbindService(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (isAudioServiceAvailable() && isFinishing()) {
-            tearDownAudioService();
-        }
-    }
-
-    private void tearDownAudioService() {
-        Intent intent = new Intent(this, AudioService.class);
-        stopService(intent);
     }
 
     @Override

@@ -50,6 +50,7 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -133,13 +134,19 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Override
     public void onAccountsUpdated(Account[] accounts) {
-        if (isVisible()) {
-            return;
+
+        if (Preferences.getFirstRun(getContext())) {
+            launchIntro();
         }
 
         if (getAccounts().isEmpty()) {
             setUpAccount();
         }
+    }
+
+    private void launchIntro() {
+        startActivity(new Intent(getContext(), IntroductionActivity.class));
+        getActivity().finishAffinity();
     }
 
     private void setUpContentRefreshing() {
@@ -292,6 +299,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (getAccounts().isEmpty()) {
             setUpAccount();
         } else {
+            if (Preferences.getFirstRun(getActivity()) && !CheckTV.isATV(getActivity())) {
+                launchIntro();
+            }
             setUpAuthenticationToken();
         }
     }
@@ -435,6 +445,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
                 if (activeServers.get(i).getName().equals(serverName)) {
                     getServerNameTextView().setText(serverName);
                     setUpServerConnection(activeServers.get(i));
+                    storeServerName(activeServers.get(i));
                     return;
                 }
             }
@@ -447,6 +458,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (!activeServers.isEmpty()) {
             getServerNameTextView().setText(activeServers.get(0).getName());
             setUpServerConnection(activeServers.get(0));
+            storeServerName(activeServers.get(0));
         } else {
             String serverName = getServerName();
             if (serverName != null) {

@@ -46,7 +46,7 @@
     <string name="menu_navigation_open">Open navigation</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_share">Share</string>
-    <string name="menu_download">Download</string>
+    <string name="menu_save">Save to Device</string>
     <string name="menu_delete">Delete</string>
     <string name="menu_offline">Offline</string>
     <string name="menu_sort">Sort</string>
@@ -59,6 +59,7 @@
     <string name="message_empty_apps">No Apps</string>
     <string name="message_empty_files">No Files</string>
     <string name="message_empty_shares">No Shares</string>
+    <string name="message_empty_recent_files">No Recent Files</string>
 
     <string name="message_error_account_exists">Account already exists.</string>
     <string name="message_error_search_application">We haven’t found any supported apps for this file.</string>
@@ -74,6 +75,7 @@
 
     <string name="message_notice_check_settings">Check your settings and try again</string>
     <string name="message_notice_create_some">Create some and try again</string>
+    <string name="message_notice_visit_some">Visit some and try again</string>
 
     <string name="message_progress_file_downloading">Downloading file …</string>
     <string name="message_progress_file_preparing">Preparing file …</string>
@@ -98,8 +100,10 @@
     <string name="message_file_download_complete">File downloaded successfully</string>
     <string name="message_offline_file_deleted">Offline file removed successfully</string>
     <string name="notification_download_title">Downloading File</string>
-    <string name="notification_offline_download_complete">File Available Offline</string>
+    <string name="notification_download_offline_title">Making available offline</string>
+    <string name="notification_offline_download_complete">File available offline</string>
     <string name="notification_offline_download_paused">Waiting for internet</string>
+    <string name="notification_offline_download_error">Error while making file available offline</string>
 
     <string name="share_subject">Check out my Amahi home server!</string>
     <string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>

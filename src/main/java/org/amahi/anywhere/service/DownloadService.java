@@ -1,5 +1,6 @@
 package org.amahi.anywhere.service;
 
+import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -9,7 +10,9 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.squareup.otto.Subscribe;
@@ -18,6 +21,7 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileMovedEvent;
+import org.amahi.anywhere.bus.OfflineCanceledEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
@@ -32,12 +36,16 @@ import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.NetworkUtils;
 
 import java.io.File;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import static org.amahi.anywhere.util.Downloader.OFFLINE_PATH;
 
 public class DownloadService extends Service implements Downloader.DownloadCallbacks {
+
+    private static final int NOTIFICATION_OFFLINE_ID = 101;
+    private static final int NOTIFICATION_ERROR_ID = 101;
 
     @Inject
     ServerClient serverClient;
@@ -115,7 +123,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
             scheduleNetworkConnectivityJob();
         }
 
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     private void startNextDownload() {
@@ -123,10 +131,12 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         if (file != null) {
             long downloadId = downloader.startDownloadingForOfflineMode(Uri.parse(file.getFileUri()), file.getName());
             saveOfflineFileDownloadId(file, downloadId);
+            notifyDownloadStart();
             Log.i("DownloadService", "Download id : " + file.getName() + downloadId);
             isDownloading = true;
         } else {
             stopDownloading();
+            stopForeground(true);
         }
     }
 
@@ -144,12 +154,12 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)
-            .setContentTitle(getString(R.string.notification_download_title))
+            .setContentTitle(getString(R.string.notification_download_offline_title))
             .setContentText(getString(R.string.notification_upload_message, fileName))
             .setProgress(100, 0, false)
             .build();
         Notification notification = notificationBuilder.build();
-        startForeground((int) downloadId, notification);
+        startForeground(NOTIFICATION_OFFLINE_ID, notification);
         downloader.setDownloadCallbacks(this);
         downloader.resumeProgressCount(downloadId);
     }
@@ -217,12 +227,17 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)
-            .setContentTitle(getString(R.string.notification_download_title))
+            .setContentTitle(getString(R.string.notification_download_offline_title))
             .setContentText(getString(R.string.notification_upload_message, fileName))
             .setProgress(100, 0, false)
             .build();
         Notification notification = notificationBuilder.build();
-        startForeground(id, notification);
+        startForeground(NOTIFICATION_OFFLINE_ID, notification);
+    }
+
+    private void notifyDownloadStart() {
+        Intent intent = new Intent("DownloadStarted");
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     @Override
@@ -232,7 +247,14 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         notificationBuilder
             .setProgress(100, progress, false);
         Notification notification = notificationBuilder.build();
-        notificationManager.notify(id, notification);
+        notificationManager.notify(NOTIFICATION_OFFLINE_ID, notification);
+        updateOfflineActivityUI(progress);
+    }
+
+    private void updateOfflineActivityUI(int progress) {
+        Intent intent = new Intent("DownloadProgress");
+        intent.putExtra("progress", progress);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     @Override
@@ -245,26 +267,38 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         }
     }
 
+    private void showDownloadedNotification(@NonNull OfflineFile offlineFile) {
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext()
+            .getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationBuilder
+            .setContentTitle(getString(R.string.notification_offline_download_complete))
+            .setContentText(getString(R.string.notification_upload_message, offlineFile.getName()))
+            .setOngoing(false);
+
+        Notification notification = notificationBuilder.build();
+        notificationManager.cancel(NOTIFICATION_OFFLINE_ID);
+        notificationManager.notify((int) offlineFile.getTimeStamp(), notification);
+    }
+
+    private void notifyDownloadFinish(boolean isSuccess) {
+        Intent intent = new Intent("DownloadFinished");
+        intent.putExtra("success", isSuccess);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
     @Subscribe
     public void onFileMoved(FileMovedEvent event) {
         OfflineFile offlineFile = offlineFileRepository.getCurrentDownloadingFile();
         if (offlineFile != null) {
-
-            stopForeground(false);
-            NotificationManager notificationManager = (NotificationManager) getApplicationContext()
-                .getSystemService(Context.NOTIFICATION_SERVICE);
-
-            notificationBuilder
-                .setContentTitle(getString(R.string.notification_offline_download_complete))
-                .setOngoing(false)
-                .setProgress(100, 100, false);
-
-            Notification notification = notificationBuilder.build();
-            notificationManager.notify((int) offlineFile.getDownloadId(), notification);
-
             offlineFile.setState(OfflineFile.DOWNLOADED);
             offlineFile.setDownloadId(-1);
             offlineFileRepository.update(offlineFile);
+
+            stopForeground(true);
+
+            showDownloadedNotification(offlineFile);
+            notifyDownloadFinish(true);
             startNextDownload();
         }
     }
@@ -284,7 +318,39 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
 
     @Override
     public void downloadError(long id) {
+        removeFromDownloader(id);
+        stopNotification();
+        showErrorNotification(id);
+        notifyDownloadFinish(false);
         removeOfflineFile(id);
+        startNextDownload();
+    }
+
+    private void removeFromDownloader(long id) {
+        DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        if (dm != null) {
+            dm.remove(id);
+        }
+    }
+
+    private void showErrorNotification(long id) {
+        OfflineFile offlineFile = offlineFileRepository.getFileWithDownloadId(id);
+        if (offlineFile != null) {
+            NotificationManager notificationManager = (NotificationManager) getApplicationContext()
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+
+            notificationBuilder
+                .setContentTitle(getString(R.string.notification_offline_download_error))
+                .setContentText(getString(R.string.notification_upload_message, offlineFile.getName()))
+                .setOngoing(false);
+
+            Notification notification = notificationBuilder.build();
+            notificationManager.notify((int) offlineFile.getTimeStamp(), notification);
+        }
+    }
+
+    private void stopNotification() {
+        stopForeground(true);
     }
 
     @Override
@@ -299,19 +365,32 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
             .setProgress(100, progress, false);
 
         Notification notification = notificationBuilder.build();
-        notificationManager.notify((int) downloadId, notification);
+        notificationManager.notify(NOTIFICATION_OFFLINE_ID, notification);
 
         stopDownloading();
     }
 
     private void removeOfflineFile(long id) {
         OfflineFile offlineFile = offlineFileRepository.getFileWithDownloadId(id);
-        offlineFileRepository.delete(offlineFile);
+        if (offlineFile != null) {
+            offlineFileRepository.delete(offlineFile);
+        }
     }
 
     private void scheduleNetworkConnectivityJob() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             NetConnectivityJob.scheduleJob(this);
+        }
+    }
+
+    @Subscribe
+    public void onDownloadCanceled(OfflineCanceledEvent event) {
+        stopForeground(true);
+        List<OfflineFile> offlineFiles = offlineFileRepository.getAllOfflineFiles();
+        if (offlineFiles.isEmpty()) {
+            stopDownloading();
+        } else if (event.getDownloadId() != -1) {
+            startNextDownload();
         }
     }
 }

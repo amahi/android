@@ -19,8 +19,12 @@
 
 package org.amahi.anywhere.adapter;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -31,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
@@ -38,6 +43,8 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
@@ -57,6 +64,8 @@ import java.util.Locale;
  */
 public class ServerFilesAdapter extends FilesFilterAdapter {
     private Context context;
+    private int currentDownloadPosition = RecyclerView.NO_POSITION;
+    private int progress;
 
     public ServerFilesAdapter(Context context, ServerClient serverClient) {
         this.serverClient = serverClient;
@@ -65,6 +74,42 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         this.files = Collections.emptyList();
         this.filteredFiles = Collections.emptyList();
         BusProvider.getBus().register(this);
+    }
+    private BroadcastReceiver mDownloadReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() != null) {
+                switch (intent.getAction()) {
+                    case "DownloadProgress":
+                        progress = intent.getIntExtra("progress", 0);
+                        notifyItemChanged(currentDownloadPosition);
+                        break;
+                    case "DownloadFinished":
+                        boolean isSuccess = intent.getBooleanExtra("success", false);
+                        if (isSuccess) {
+                            notifyItemChanged(currentDownloadPosition);
+                        } else {
+                            removeFile(currentDownloadPosition);
+                        }
+                        currentDownloadPosition = RecyclerView.NO_POSITION;
+                        break;
+                    case "DownloadStarted":
+                        notifyDataSetChanged();
+                        break;
+                }
+            }
+        }
+    };
+
+    public void setUpDownloadReceiver() {
+        if (isOfflineMode()) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction("DownloadProgress");
+            intentFilter.addAction("DownloadFinished");
+            intentFilter.addAction("DownloadStarted");
+            LocalBroadcastManager.getInstance(context).registerReceiver(
+                mDownloadReceiver, intentFilter);
+        }
     }
 
     @Override
@@ -84,13 +129,20 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
 
         } else {
             fileHolder.moreInfo.setVisibility(View.VISIBLE);
-            fileHolder.moreInfo.setVisibility(View.VISIBLE);
+            fileHolder.moreOptions.setVisibility(View.VISIBLE);
 
             if (!isOfflineMode()) {
                 fileHolder.fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
             } else {
-                File localFile = new File(context.getFilesDir(), Downloader.OFFLINE_PATH + "/" + file.getName());
-                fileHolder.fileSize.setText(Formatter.formatFileSize(context, localFile.length()));
+                if (isFileDownloading(fileHolder, file, position)) {
+                    fileHolder.moreInfo.setVisibility(View.GONE);
+                    fileHolder.progressBar.setVisibility(View.VISIBLE);
+                } else {
+                    fileHolder.moreInfo.setVisibility(View.VISIBLE);
+                    fileHolder.progressBar.setVisibility(View.GONE);
+                    File localFile = new File(context.getFilesDir(), Downloader.OFFLINE_PATH + "/" + file.getName());
+                    fileHolder.fileSize.setText(Formatter.formatFileSize(context, localFile.length()));
+                }
             }
 
             Date d = getLastModified(file);
@@ -122,6 +174,22 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             selectedPosition = fileHolder.getAdapterPosition();
             mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
         });
+    }
+
+    private boolean isFileDownloading(ServerFileViewHolder holder, ServerFile file, int position) {
+        OfflineFileRepository repository = new OfflineFileRepository(context);
+        OfflineFile offlineFile = repository.getOfflineFile(file.getName(), file.getModificationTime().getTime());
+        if (offlineFile != null) {
+            boolean isDownloading = offlineFile.getState() == OfflineFile.DOWNLOADING;
+            if (isDownloading) {
+                if (offlineFile.getDownloadId() != -1) {
+                    currentDownloadPosition = position;
+                    holder.progressBar.setProgress(progress);
+                }
+            }
+            return isDownloading;
+        }
+        return false;
     }
 
     private boolean isOfflineMode() {
@@ -157,14 +225,20 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
         ImageView imageView = event.getImageView();
         Bitmap bitmap = event.getAudioMetadata().getAudioAlbumArt();
-        if (bitmap != null && imageView != null) {
-            imageView.setImageBitmap(bitmap);
+        if (imageView != null) {
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap);
+            } else {
+                imageView.setImageResource(R.drawable.ic_file_audio);
+            }
         }
     }
 
-
     public void tearDownCallbacks() {
         BusProvider.getBus().unregister(this);
+        if (isOfflineMode()) {
+            LocalBroadcastManager.getInstance(context).unregisterReceiver(mDownloadReceiver);
+        }
     }
 
     public void setOnClickListener(ServerFileClickListener mListener) {
@@ -175,6 +249,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         ImageView fileIconView, moreOptions;
         TextView fileTextView, fileSize, fileLastModified;
         LinearLayout moreInfo;
+        ProgressBar progressBar;
 
         ServerFileViewHolder(View itemView) {
             super(itemView);
@@ -184,6 +259,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             fileLastModified = itemView.findViewById(R.id.last_modified);
             moreInfo = itemView.findViewById(R.id.more_info);
             moreOptions = itemView.findViewById(R.id.more_options);
+            progressBar = itemView.findViewById(R.id.download_progress_bar);
         }
     }
 

@@ -44,6 +44,7 @@ import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Preferences;
 
 import java.util.Arrays;
 import java.util.List;
@@ -161,6 +162,7 @@ public class SettingsFragment extends PreferenceFragment implements
     }
 
     private void setUpApplicationIntro() {
+        Preferences.setFirstRun(getActivity());
         Intent intent = Intents.Builder.with(getActivity()).buildIntroductionIntent();
         startActivity(intent);
     }

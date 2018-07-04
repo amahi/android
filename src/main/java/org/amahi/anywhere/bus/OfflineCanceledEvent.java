@@ -17,29 +17,17 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.activity;
+package org.amahi.anywhere.bus;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+public class OfflineCanceledEvent implements BusEvent {
 
-public class SplashActivity extends AppCompatActivity {
+    private long downloadId;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setUpActivity();
-
-        finish();
+    public OfflineCanceledEvent(long downloadId) {
+        this.downloadId = downloadId;
     }
 
-    private void setUpActivity() {
-        launchNavigation();
-    }
-
-    private void launchNavigation() {
-        startActivity(new Intent(this, NavigationActivity.class));
+    public long getDownloadId() {
+        return downloadId;
     }
 }

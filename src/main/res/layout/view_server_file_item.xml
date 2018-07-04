@@ -20,6 +20,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="?android:attr/activatedBackgroundIndicator"
     android:clickable="true"
     android:focusable="true"
@@ -40,8 +41,8 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp">
+        android:paddingEnd="0dp"
+        android:paddingStart="8dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -52,14 +53,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
+                android:paddingEnd="8dp"
+                android:paddingStart="0dp"
                 android:ellipsize="end"
                 android:maxLines="1"
+                tools:text="File Name"
                 android:textSize="@dimen/text_medium" />
 
             <ImageView
                 android:id="@+id/more_options"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
                 android:layout_alignParentEnd="true"
                 android:src="@drawable/ic_more_vert" />
 
@@ -94,6 +100,16 @@
                 android:textSize="@dimen/text_micro" />
 
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/download_progress_bar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:indeterminate="false"
+            android:paddingEnd="8dp"
+            android:paddingStart="0dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

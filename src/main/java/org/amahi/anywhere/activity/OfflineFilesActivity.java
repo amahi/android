@@ -19,6 +19,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileCopiedEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
+import org.amahi.anywhere.bus.OfflineCanceledEvent;
 import org.amahi.anywhere.bus.OfflineFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileDownloadingEvent;
@@ -86,18 +87,14 @@ public class OfflineFilesActivity extends AppCompatActivity {
         if (isFileDownloaded(event.getFile())) {
             startFileActivity(event.getFile(), event.getFiles());
         } else {
-            Snackbar.make(getParentView(), R.string.message_progress_file_downloading, Snackbar.LENGTH_LONG).show();
+            showDownloadingMessage();
         }
     }
 
     private boolean isFileDownloaded(ServerFile file) {
         OfflineFileRepository offlineFileRepository = new OfflineFileRepository(this);
         OfflineFile offlineFile = offlineFileRepository.getOfflineFile(file.getName(), file.getModificationTime().getTime());
-        if (offlineFile.getState() == OfflineFile.DOWNLOADED) {
-            return true;
-        }
-
-        return false;
+        return offlineFile.getState() == OfflineFile.DOWNLOADED;
     }
 
     private void startFileActivity(ServerFile file, List<ServerFile> serverFiles) {
@@ -107,8 +104,12 @@ public class OfflineFilesActivity extends AppCompatActivity {
 
     @Subscribe
     public void onFileSharing(ServerFileSharingEvent event) {
-        Uri contentUri = getContentUri(event.getFile());
-        startFileSharingActivity(event.getFile(), contentUri);
+        if (isFileDownloaded(event.getFile())) {
+            Uri contentUri = getContentUri(event.getFile());
+            startFileSharingActivity(event.getFile(), contentUri);
+        } else {
+            Snackbar.make(getParentView(), R.string.message_progress_file_downloading, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private Uri getContentUri(ServerFile serverFile) {
@@ -122,7 +123,11 @@ public class OfflineFilesActivity extends AppCompatActivity {
 
     @Subscribe
     public void onFileDownloading(ServerFileDownloadingEvent event) {
-        startFileDownloading(event.getFile());
+        if (isFileDownloaded(event.getFile())) {
+            startFileDownloading(event.getFile());
+        } else {
+            showDownloadingMessage();
+        }
     }
 
     private void startFileDownloading(ServerFile file) {
@@ -145,6 +150,10 @@ public class OfflineFilesActivity extends AppCompatActivity {
         return new File(Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS),
             name);
+    }
+
+    private void showDownloadingMessage() {
+        Snackbar.make(getParentView(), R.string.message_progress_file_downloading, Snackbar.LENGTH_LONG).show();
     }
 
     @Subscribe
@@ -177,26 +186,28 @@ public class OfflineFilesActivity extends AppCompatActivity {
     private void deleteFileFromOfflineStorage(ServerFile serverFile) {
         OfflineFileRepository offlineFileRepository = new OfflineFileRepository(this);
         OfflineFile offlineFile = offlineFileRepository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+        if (offlineFile != null) {
+            if (offlineFile.getState() == OfflineFile.DOWNLOADING) {
+                stopDownloading(offlineFile.getDownloadId());
+            }
 
-        if (offlineFile.getState() == OfflineFile.DOWNLOADING) {
-            stopDownloading(offlineFile.getDownloadId());
+            File file = getOfflineFileLocation(offlineFile.getName());
+            FileManager.newInstance(this).deleteFile(file);
+
+            offlineFileRepository.delete(offlineFile);
+
+            BusProvider.getBus().post(new ServerFileDeleteEvent(true));
+
+            Snackbar.make(getParentView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
+                .show();
         }
-
-        File file = getOfflineFileLocation(offlineFile.getName());
-        FileManager.newInstance(this).deleteFile(file);
-
-        offlineFileRepository.delete(offlineFile);
-
-        BusProvider.getBus().post(new ServerFileDeleteEvent(true));
-
-        Snackbar.make(getParentView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
-            .show();
     }
 
     private void stopDownloading(long downloadId) {
         DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         if (dm != null) {
             dm.remove(downloadId);
+            BusProvider.getBus().post(new OfflineCanceledEvent(downloadId));
         }
     }
 

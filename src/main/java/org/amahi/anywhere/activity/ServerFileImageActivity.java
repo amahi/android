@@ -243,7 +243,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements
             uri = getUriFrom(serverFile.getName(), serverFile.getModificationTime());
             size = new File(getOfflineFileUri(serverFile.getName())).length();
         } else {
-            uri = serverClient.getFileUri(getShare(), serverFile).toString();
+            uri = getImageUri();
             size = serverFile.getSize();
         }
 

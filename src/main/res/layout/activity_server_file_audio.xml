@@ -17,69 +17,61 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/animator"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:inAnimation="@android:anim/fade_in"
-    android:outAnimation="@android:anim/fade_out">
+    android:orientation="vertical">
 
-    <ProgressBar
-        android:id="@android:id/progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager_audio"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <FrameLayout
-        android:id="@+id/layout_content"
+        android:id="@+id/audio_list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_marginTop="?attr/actionBarSize" />
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager_audio"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="88dp"
+        android:background="#80000000"
+        android:orientation="vertical"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/text_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="88dp"
-            android:background="#80000000"
-            android:orientation="vertical"
-            android:paddingBottom="12dp"
-            android:paddingTop="12dp">
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_medium"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/text_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:maxLines="1"
-                android:paddingLeft="32dp"
-                android:paddingRight="32dp"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/text_medium"
-                android:textStyle="bold" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="4dp" />
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="4dp" />
+        <TextView
+            android:id="@+id/text_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_small" />
 
-            <TextView
-                android:id="@+id/text_subtitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:maxLines="1"
-                android:paddingLeft="32dp"
-                android:paddingRight="32dp"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/text_small" />
+    </LinearLayout>
 
-        </LinearLayout>
+</FrameLayout>
 
-    </FrameLayout>
-
-</ViewAnimator>

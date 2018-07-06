@@ -34,7 +34,7 @@ import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.cache.CacheModule;
-import org.amahi.anywhere.fragment.AudioControllerFragment;
+import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
@@ -94,7 +94,7 @@ import dagger.Provides;
         ServerFileDownloadingFragment.class,
         SettingsFragment.class,
         UploadSettingsFragment.class,
-        AudioControllerFragment.class,
+        AudioListFragment.class,
         AudioService.class,
         VideoService.class,
         MainTVFragment.class,

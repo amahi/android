@@ -57,6 +57,7 @@ import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
+import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -65,8 +66,8 @@ import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.FileManager;
+import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.util.ViewDirector;
 import org.amahi.anywhere.view.AudioControls;
 
 import java.util.ArrayList;
@@ -237,33 +238,26 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         return (ServerFilesAudioPageAdapter) getAudioPager().getAdapter();
     }
 
-    private void showAudioMetadata() {
-        ViewDirector.of(this, R.id.animator).show(R.id.layout_content);
-    }
-
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-        if (audioService != null) {
-            ServerFile audioFile = audioService.getAudioFile();
-            if (audioFile != null && audioFile == event.getServerFile()) {
-                final AudioMetadata metadata = event.getAudioMetadata();
-                this.metadataFormatter = new AudioMetadataFormatter(
-                    metadata.getAudioTitle(), metadata.getAudioArtist(), metadata.getAudioAlbum());
-                this.metadataFormatter.setDuration(metadata.getDuration());
-                if (mLocation == PlaybackLocation.LOCAL) {
-                    setUpAudioMetadata(metadataFormatter);
-                } else if (mLocation == PlaybackLocation.REMOTE) {
-                    loadRemoteMedia(0, true);
-                    finish();
-                }
+        ServerFile audioFile = getFile();
+        if (audioFile != null && audioFile == event.getServerFile()) {
+            final AudioMetadata metadata = event.getAudioMetadata();
+            this.metadataFormatter = new AudioMetadataFormatter(
+                metadata.getAudioTitle(), metadata.getAudioArtist(), metadata.getAudioAlbum());
+            this.metadataFormatter.setDuration(metadata.getDuration());
+            if (mLocation == PlaybackLocation.LOCAL) {
+                setUpAudioMetadata(metadataFormatter);
+            } else if (mLocation == PlaybackLocation.REMOTE) {
+                loadRemoteMedia(0, true);
+                finish();
             }
         }
     }
 
     private void setUpAudioMetadata(AudioMetadataFormatter audioMetadataFormatter) {
-        getAudioTitleView().setText(audioMetadataFormatter.getAudioTitle(audioService.getAudioFile()));
+        getAudioTitleView().setText(audioMetadataFormatter.getAudioTitle(getFile()));
         getAudioSubtitleView().setText(audioMetadataFormatter.getAudioSubtitle(getShare()));
-        showAudioMetadata();
     }
 
     private ServerShare getShare() {
@@ -341,7 +335,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
             audioControls.setMediaPlayer(this);
             audioControls.setPrevNextListeners(new AudioControlsNextListener(), new AudioControlsPreviousListener());
-            audioControls.setAnchorView(findViewById(R.id.animator));
+            audioControls.setAnchorView(findViewById(R.id.layout_content));
         }
     }
 
@@ -387,7 +381,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void showAudio() {
-        showAudioMetadata();
         showAudioControls();
     }
 
@@ -427,6 +420,8 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     @Subscribe
     public void onChangeAudio(AudioControlChangeEvent event) {
+        changeAudio = false;
+        getAudioPager().setCurrentItem(event.getPosition());
         setUpAudioMetadata();
     }
 
@@ -499,7 +494,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.action_bar_cast_button, menu);
+        getMenuInflater().inflate(R.menu.action_bar_audio_files, menu);
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
             R.id.media_route_menu_item);
         return true;
@@ -511,10 +506,52 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.menu_audio_list:
+                toggleAudioList();
+                return true;
 
             default:
                 return super.onOptionsItemSelected(menuItem);
         }
+    }
+
+    private void toggleAudioList() {
+        if (isAudioListVisible()) {
+            hideAudioList();
+        } else {
+            showAudioList();
+        }
+
+    }
+
+    private boolean isAudioListVisible() {
+        AudioListFragment fragment = (AudioListFragment) getSupportFragmentManager().findFragmentByTag(AudioListFragment.TAG);
+        return fragment != null;
+    }
+
+    private void hideAudioList() {
+        AudioListFragment fragment = (AudioListFragment) getSupportFragmentManager().findFragmentByTag(AudioListFragment.TAG);
+
+        getSupportFragmentManager().beginTransaction()
+            .remove(fragment)
+            .commit();
+    }
+
+    private void showAudioList() {
+        AudioListFragment fragment = (AudioListFragment) getSupportFragmentManager().findFragmentByTag(AudioListFragment.TAG);
+        if (fragment == null) {
+            addAudioList();
+        }
+    }
+
+    private void addAudioList() {
+        AudioListFragment fragment = Fragments.Builder.buildAudioListFragment(getFile(),
+            getShare(),
+            (ArrayList<ServerFile>) getFiles());
+
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.audio_list_container, fragment, AudioListFragment.TAG)
+            .commit();
     }
 
     @Override

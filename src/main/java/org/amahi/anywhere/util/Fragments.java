@@ -26,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
+import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.FileOptionsDialogFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
@@ -50,6 +51,7 @@ public final class Fragments {
 
     public static final class Arguments {
         public static final String SERVER_FILE = "server_file";
+        public static final String SERVER_FILES = "server_files";
         public static final String SERVER_SHARE = "server_share";
         public static final String FILE_OPTION = "file_option";
         public static final String IS_OFFLINE_FRAGMENT = "is_offline_fragment";
@@ -152,6 +154,18 @@ public final class Fragments {
             bundle.putParcelableArrayList(Intents.Extras.SERVER_FILES, serverFiles);
 
             fragment.setArguments(bundle);
+            return fragment;
+        }
+
+        public static AudioListFragment buildAudioListFragment(ServerFile serverFile, ServerShare serverShare, ArrayList<ServerFile> serverFiles) {
+            AudioListFragment fragment = new AudioListFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Arguments.SERVER_SHARE, serverShare);
+            bundle.putParcelable(Arguments.SERVER_FILE, serverFile);
+            bundle.putParcelableArrayList(Arguments.SERVER_FILES, serverFiles);
+            fragment.setArguments(bundle);
+
             return fragment;
         }
 

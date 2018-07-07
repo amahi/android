@@ -53,6 +53,7 @@
     <string name="menu_search">Search</string>
     <string name="menu_file_upload">Upload File</string>
     <string name="menu_open">OPEN</string>
+    <string name="menu_audio_files">Files</string>
 
     <string name="media_route_menu_item">cast</string>
 

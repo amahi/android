@@ -28,13 +28,17 @@ import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import org.amahi.anywhere.AmahiApplication;
+import org.amahi.anywhere.adapter.AudioFilesAdapter;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.cache.CacheManager;
+import org.amahi.anywhere.db.entities.OfflineFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
+import org.amahi.anywhere.util.FileManager;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -51,14 +55,26 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
 
     @Inject
     CacheManager cacheManager;
-    private String path;
+    private String audioPath;
     private String uniqueKey;
     private boolean isOfflineFile;
     private MainTVPresenter.ViewHolder viewHolder;
     private WeakReference<ImageView> imageViewWeakReference;
+    private AudioFilesAdapter.AudioFileViewHolder audioFileHolder;
 
     private AudioMetadataRetrievingTask(Context context, Uri audioUri, ServerFile serverFile) {
         this.audioUri = audioUri;
+        this.serverFile = serverFile;
+        this.uniqueKey = serverFile.getUniqueKey();
+        setUpInjections(context);
+
+        setUpOfflineTask(context, serverFile);
+    }
+
+    public AudioMetadataRetrievingTask(Context context, String path, ServerFile serverFile) {
+        this.audioPath = path;
+        this.isOfflineFile = true;
+        audioUri = null;
         this.serverFile = serverFile;
         setUpInjections(context);
     }
@@ -70,12 +86,14 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
         setUpInjections(context);
     }
 
-    public AudioMetadataRetrievingTask(Context context, String path, ServerFile serverFile) {
-        this.path = path;
-        this.isOfflineFile = true;
-        audioUri = null;
-        this.serverFile = serverFile;
-        setUpInjections(context);
+    private void setUpOfflineTask(Context context, ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(context);
+        OfflineFile offlineFile = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+
+        if (offlineFile != null && offlineFile.getState() == OfflineFile.DOWNLOADED) {
+            isOfflineFile = true;
+            audioPath = FileManager.newInstance(context).getContentUriForOfflineFile(serverFile.getName()).toString();
+        }
     }
 
     public static AudioMetadataRetrievingTask newInstance(Context context, Uri audioUri, ServerFile serverFile) {
@@ -96,6 +114,12 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
         return this;
     }
 
+    public AudioMetadataRetrievingTask setAudioFileHolder(AudioFilesAdapter.AudioFileViewHolder audioFileHolder) {
+        this.audioFileHolder = audioFileHolder;
+
+        return this;
+    }
+
     @Override
     protected BusEvent doInBackground(Void... parameters) {
         AudioMetadata metadata;
@@ -111,7 +135,7 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
                 if (!isOfflineFile) {
                     audioMetadataRetriever.setDataSource(audioUri.toString(), new HashMap<>());
                 } else {
-                    audioMetadataRetriever.setDataSource(path);
+                    audioMetadataRetriever.setDataSource(audioPath);
                 }
 
                 metadata.setAudioTitle(audioMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
@@ -127,8 +151,12 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
                 audioMetadataRetriever.release();
             }
         }
-
-        AudioMetadataRetrievedEvent event = new AudioMetadataRetrievedEvent(metadata, serverFile, viewHolder);
+        AudioMetadataRetrievedEvent event;
+        if (audioFileHolder != null) {
+            event = new AudioMetadataRetrievedEvent(metadata, serverFile, audioFileHolder);
+        } else {
+            event = new AudioMetadataRetrievedEvent(metadata, serverFile, viewHolder);
+        }
         if (imageViewWeakReference != null && imageViewWeakReference.get() != null) {
             event.setImageView(imageViewWeakReference.get());
         }

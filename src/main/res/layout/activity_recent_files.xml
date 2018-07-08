@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:text="@string/message_empty_files"
+                android:text="@string/message_empty_recent_files"
                 android:textSize="@dimen/text_large"
                 android:textStyle="bold" />
 
@@ -58,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:text="@string/message_notice_create_some"
+                android:text="@string/message_notice_visit_some"
                 android:textSize="@dimen/text_small" />
 
         </LinearLayout>

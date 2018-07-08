@@ -44,7 +44,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/menu_download"
+            android:text="@string/menu_save"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
@@ -82,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
-            android:src="@drawable/ic_offline"
+            android:src="@drawable/ic_offline_black_24dp"
             tools:ignore="contentDescription" />
 
         <TextView

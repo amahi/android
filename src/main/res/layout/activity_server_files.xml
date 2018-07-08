@@ -20,21 +20,37 @@
   -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/castMiniController"
-        class="com.google.android.gms.cast.framework.media.widget.MiniControllerFragment"
+    <FrameLayout
+        android:id="@+id/controller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone" />
+        android:layout_alignParentBottom="true">
+
+        <fragment
+            android:id="@+id/audio_controller_fragment"
+            class="org.amahi.anywhere.fragment.AudioControllerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:layout="@layout/fragment_audio_controller" />
+
+        <fragment
+            android:id="@+id/castMiniController"
+            class="com.google.android.gms.cast.framework.media.widget.MiniControllerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinator_files"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/castMiniController">
+        android:layout_above="@id/controller">
 
         <FrameLayout
             android:id="@+id/container_files"

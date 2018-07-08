@@ -72,10 +72,8 @@ import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.OfflineFile;
-import org.amahi.anywhere.db.entities.PlayedFile;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
-import org.amahi.anywhere.db.repositories.PlayedFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.receiver.AudioReceiver;
@@ -117,6 +115,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private boolean isPreparing = false;
 
     private AudioMetadataFormatter audioMetadataFormatter;
+    private Bitmap audioAlbumArt;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -308,7 +307,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
             this.audioMetadataFormatter = new AudioMetadataFormatter(
                 metadata.getAudioTitle(), metadata.getAudioArtist(), metadata.getAudioAlbum());
             this.audioMetadataFormatter.setDuration(metadata.getDuration());
-            Bitmap audioAlbumArt = metadata.getAudioAlbumArt();
+            this.audioAlbumArt = metadata.getAudioAlbumArt();
             setUpAudioPlayerRemote(audioMetadataFormatter, audioAlbumArt);
 
             mMediaNotificationManager.startNotification();
@@ -354,8 +353,20 @@ public class AudioService extends MediaBrowserServiceCompat implements
         return audioFile;
     }
 
+    public ServerShare getAudioShare() {
+        return audioShare;
+    }
+
+    public List<ServerFile> getAudioFiles() {
+        return audioFiles;
+    }
+
     public AudioMetadataFormatter getAudioMetadataFormatter() {
         return audioMetadataFormatter;
+    }
+
+    public Bitmap getAudioAlbumArt() {
+        return audioAlbumArt;
     }
 
     public ExoPlayer getAudioPlayer() {
@@ -433,13 +444,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Subscribe
     public void onAudioCompleted(AudioCompletedEvent event) {
-        deletePlayedFileFromDatabase();
         startNextAudio();
-    }
-
-    private void deletePlayedFileFromDatabase() {
-        PlayedFileRepository repository = new PlayedFileRepository(this);
-        repository.delete(getAudioFile().getUniqueKey());
     }
 
     public void playAudio() {
@@ -558,22 +563,11 @@ public class AudioService extends MediaBrowserServiceCompat implements
     public void onDestroy() {
         super.onDestroy();
 
-        savePlayPosition();
-
         tearDownBus();
 
         tearDownAudioPlayer();
         tearDownAudioPlayerRemote();
         tearDownAudioPlayerNotification();
-    }
-
-    private void savePlayPosition() {
-        PlayedFileRepository repository = new PlayedFileRepository(this);
-
-        if (getAudioPlayer().getCurrentPosition() >= 1000 && getAudioPlayer().getDuration() != getAudioPlayer().getCurrentPosition()) {
-            PlayedFile playedFile = new PlayedFile(getAudioFile().getUniqueKey(), getAudioPlayer().getCurrentPosition());
-            repository.insert(playedFile);
-        }
     }
 
     private void tearDownAudioMetadataFormatter() {

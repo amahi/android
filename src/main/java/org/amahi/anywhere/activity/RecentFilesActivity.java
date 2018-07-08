@@ -39,6 +39,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileCopiedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.bus.FileOptionClickEvent;
+import org.amahi.anywhere.bus.OfflineCanceledEvent;
 import org.amahi.anywhere.bus.ServerFileDeleteEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.entities.RecentFile;
@@ -226,8 +227,14 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private ServerFile prepareServerFile(RecentFile recentFile) {
         ServerFile serverFile = new ServerFile(recentFile.getName(), recentFile.getModificationTime(), recentFile.getMime());
-        serverFile.setOffline(isFileAvailableOffline(serverFile));
+        serverFile.setOffline(isFileDownloading(serverFile));
         return serverFile;
+    }
+
+    private boolean isFileDownloading(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+        return file != null;
     }
 
     private boolean isFileAvailableOffline(ServerFile serverFile) {
@@ -468,6 +475,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
         } else {
             Toast.makeText(this, R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
         }
+        showList(!recentFiles.isEmpty());
     }
 
     private void removeFileFromDatabase(RecentFile recentFile) {
@@ -484,25 +492,33 @@ public class RecentFilesActivity extends AppCompatActivity implements
     }
 
     private void deleteFileFromOfflineStorage() {
-        OfflineFileRepository repository = new OfflineFileRepository(this);
-        OfflineFile offlineFile = repository.getOfflineFile(getSelectedRecentFile().getName(), getSelectedRecentFile().getModificationTime());
-        if (offlineFile.getState() == OfflineFile.DOWNLOADING) {
-            stopDownloading(offlineFile.getDownloadId());
+        OfflineFileRepository offlineFileRepository = new OfflineFileRepository(this);
+        OfflineFile offlineFile = offlineFileRepository.getOfflineFile(getSelectedRecentFile().getName(), getSelectedRecentFile().getModificationTime());
+        if (offlineFile != null) {
+            if (offlineFile.getState() == OfflineFile.DOWNLOADING) {
+                stopDownloading(offlineFile.getDownloadId());
+            }
+
+            File file = getOfflineFileLocation(offlineFile.getName());
+            FileManager.newInstance(this).deleteFile(file);
+
+            offlineFileRepository.delete(offlineFile);
+
+            Snackbar.make(getRecentFileRView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
+                .show();
         }
-        File file = new File(getFilesDir(), Downloader.OFFLINE_PATH + "/" + getSelectedRecentFile().getName());
-        if (file.exists()) {
-            file.delete();
-        }
-        repository.delete(offlineFile);
-        Snackbar.make(getRecentFileRView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
-            .show();
     }
 
-    private void stopDownloading(long downloadID) {
+    private void stopDownloading(long downloadId) {
         DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         if (dm != null) {
-            dm.remove(downloadID);
+            dm.remove(downloadId);
+            BusProvider.getBus().post(new OfflineCanceledEvent(downloadId));
         }
+    }
+
+    private File getOfflineFileLocation(String name) {
+        return new File(getFilesDir(), Downloader.OFFLINE_PATH + "/" + name);
     }
 
     private void startDownloadService(ServerFile file) {

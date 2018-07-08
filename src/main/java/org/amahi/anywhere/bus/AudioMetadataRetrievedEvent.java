@@ -22,6 +22,7 @@ package org.amahi.anywhere.bus;
 import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
+import org.amahi.anywhere.adapter.AudioFilesAdapter;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
@@ -31,6 +32,7 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
     private final ServerFile serverFile;
 
     private MainTVPresenter.ViewHolder viewHolder;
+    private AudioFilesAdapter.AudioFileViewHolder audioFileHolder;
     private ImageView imageView;
 
     public AudioMetadataRetrievedEvent(AudioMetadata metadata,
@@ -39,6 +41,18 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
         this.metadata = metadata;
         this.serverFile = serverFile;
         this.viewHolder = viewHolder;
+    }
+
+    public AudioMetadataRetrievedEvent(AudioMetadata metadata,
+                                       ServerFile serverFile,
+                                       AudioFilesAdapter.AudioFileViewHolder viewHolder) {
+        this.metadata = metadata;
+        this.serverFile = serverFile;
+        this.audioFileHolder = viewHolder;
+    }
+
+    public AudioFilesAdapter.AudioFileViewHolder getAudioFileHolder() {
+        return audioFileHolder;
     }
 
     @Nullable

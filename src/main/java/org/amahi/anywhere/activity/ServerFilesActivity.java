@@ -42,6 +42,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastState;
+import com.google.android.gms.cast.framework.CastStateListener;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -97,7 +100,8 @@ import timber.log.Timber;
  */
 public class ServerFilesActivity extends AppCompatActivity implements
     EasyPermissions.PermissionCallbacks,
-    ServiceConnection {
+    ServiceConnection,
+    CastStateListener {
 
     private static final int FILE_UPLOAD_PERMISSION = 102;
     private static final int CAMERA_PERMISSION = 103;
@@ -114,12 +118,16 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private AudioService audioService;
     private boolean isControllerShown = false;
 
+    private CastContext mCastContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_files);
 
         setUpInjections();
+
+        setUpCast();
 
         setUpHomeNavigation();
 
@@ -128,6 +136,10 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     private void setUpInjections() {
         AmahiApplication.from(this).inject(this);
+    }
+
+    private void setUpCast() {
+        mCastContext = CastContext.getSharedInstance(this);
     }
 
     private void setUpHomeNavigation() {
@@ -565,9 +577,14 @@ public class ServerFilesActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
+
+        mCastContext.addCastStateListener(this);
+
         BusProvider.getBus().register(this);
 
-        setUpAudioServiceBind();
+        if (mCastContext.getCastState() != CastState.CONNECTED) {
+            setUpAudioServiceBind();
+        }
     }
 
     private void setUpAudioServiceBind() {
@@ -619,6 +636,10 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @Subscribe
     public void onAudioStopping(AudioStopEvent event) {
         hideAudioControls();
+        stopAudioPlayback();
+    }
+
+    private void stopAudioPlayback() {
         if (audioService != null) {
             audioService.pauseAudio();
             unbindService(this);
@@ -630,6 +651,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
+
+        mCastContext.removeCastStateListener(this);
 
         if (audioService != null) {
             unbindService(this);
@@ -663,6 +686,14 @@ public class ServerFilesActivity extends AppCompatActivity implements
         state.putParcelable(State.FILE, file);
         state.putInt(State.FILE_ACTION, fileOption);
         state.putBoolean(State.AUDIO_CONTROLLER, isControllerShown);
+    }
+
+    @Override
+    public void onCastStateChanged(int newState) {
+        if (newState != CastState.CONNECTED) {
+            hideAudioControls();
+            stopAudioPlayback();
+        }
     }
 
     private static final class State {

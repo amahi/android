@@ -112,6 +112,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private ServerShare audioShare;
     private List<ServerFile> audioFiles;
     private ServerFile audioFile;
+    private boolean isPreparing = false;
 
     private AudioMetadataFormatter audioMetadataFormatter;
     private Bitmap audioAlbumArt;
@@ -233,7 +234,8 @@ public class AudioService extends MediaBrowserServiceCompat implements
         } else {
             mediaSource = buildMediaSource(getAudioUri());
         }
-        audioPlayer.prepare(mediaSource, true, false);
+        audioPlayer.prepare(mediaSource, true, true);
+        isPreparing = true;
     }
 
     private void setUpRecentFiles() {
@@ -337,8 +339,9 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     public void setPlayPosition(long playPosition) {
-        playAudio();
         getAudioPlayer().seekTo(playPosition);
+        playAudio();
+        BusProvider.getBus().post(new AudioPreparedEvent());
     }
 
     public PendingIntent createContentIntent() {
@@ -451,6 +454,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     public void pauseAudio() {
+        mediaSession.setActive(false);
         audioPlayer.setPlayWhenReady(false);
         setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
     }
@@ -467,9 +471,9 @@ public class AudioService extends MediaBrowserServiceCompat implements
             PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
             PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
         if (audioPlayer.getPlayWhenReady()) {
-            actions |= PlaybackStateCompat.ACTION_PAUSE;
-        } else {
             actions |= PlaybackStateCompat.ACTION_PLAY;
+        } else {
+            actions |= PlaybackStateCompat.ACTION_PAUSE;
         }
         return actions;
     }
@@ -610,7 +614,8 @@ public class AudioService extends MediaBrowserServiceCompat implements
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if (playbackState == Player.STATE_ENDED) {
             BusProvider.getBus().post(new AudioCompletedEvent());
-        } else if (playbackState == Player.STATE_READY) {
+        } else if (playbackState == Player.STATE_READY && isPreparing) {
+            isPreparing = false;
             BusProvider.getBus().post(new AudioPreparedEvent());
         }
     }

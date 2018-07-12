@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -18,11 +19,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastState;
+import com.google.android.gms.cast.framework.CastStateListener;
+import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -63,7 +70,8 @@ import static org.amahi.anywhere.fragment.ServerFilesFragment.EXTERNAL_STORAGE_P
 public class RecentFilesActivity extends AppCompatActivity implements
     ServerFileClickListener,
     SwipeRefreshLayout.OnRefreshListener,
-    EasyPermissions.PermissionCallbacks {
+    EasyPermissions.PermissionCallbacks,
+    CastStateListener {
 
     @Inject
     ServerClient serverClient;
@@ -71,6 +79,9 @@ public class RecentFilesActivity extends AppCompatActivity implements
     @FileOption.Types
     private int selectedFileOption;
     private int selectedPosition = -1;
+    private CastContext mCastContext;
+    private MenuItem mediaRouteMenuItem;
+    private IntroductoryOverlay mIntroductoryOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,12 +89,42 @@ public class RecentFilesActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_recent_files);
 
         setUpInjections();
+        setUpCast();
         setUpHomeNavigation();
         setUpFilesContentRefreshing();
     }
 
     private void setUpInjections() {
         AmahiApplication.from(this).inject(this);
+    }
+
+    private void setUpCast() {
+        mCastContext = CastContext.getSharedInstance(this);
+    }
+
+    @Override
+    public void onCastStateChanged(int newState) {
+        if (newState != CastState.NO_DEVICES_AVAILABLE) {
+            showIntroductoryOverlay();
+        }
+    }
+
+    private void showIntroductoryOverlay() {
+        if (mIntroductoryOverlay != null) {
+            mIntroductoryOverlay.remove();
+        }
+        if ((mediaRouteMenuItem != null) && mediaRouteMenuItem.isVisible()) {
+            new Handler().post(() -> {
+                mIntroductoryOverlay = new IntroductoryOverlay
+                    .Builder(this, mediaRouteMenuItem)
+                    .setTitleText("Introducing Cast")
+                    .setSingleTime()
+                    .setOnOverlayDismissedListener(
+                        () -> mIntroductoryOverlay = null)
+                    .build();
+                mIntroductoryOverlay.show();
+            });
+        }
     }
 
     private void setUpHomeNavigation() {
@@ -427,8 +468,9 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
         if (fileDeleteEvent.isDeleted()) {
             removeFileFromDatabase(getSelectedRecentFile());
-            recentFiles.remove(getSelectedRecentFile());
+            RecentFile recentFile = getSelectedRecentFile();
             getListAdapter().removeFile(selectedPosition);
+            recentFiles.remove(recentFile);
             selectedPosition = -1;
         } else {
             Toast.makeText(this, R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
@@ -488,6 +530,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
+        mCastContext.addCastStateListener(this);
         BusProvider.getBus().register(this);
 
         setUpRecentFileList();
@@ -497,8 +540,21 @@ public class RecentFilesActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
+        mCastContext.removeCastStateListener(this);
         BusProvider.getBus().unregister(this);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.action_bar_cast_button, menu);
+
+        mediaRouteMenuItem = CastButtonFactory.setUpMediaRouteButton(
+            this.getApplicationContext(),
+            menu, R.id.media_route_menu_item);
+
+        return true;
     }
 
     @Override

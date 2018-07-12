@@ -55,7 +55,9 @@ import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.model.AudioMetadata;
@@ -162,10 +164,14 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void setUpAudio() {
-        setUpAudioAdapter();
-        setUpAudioPosition();
-        setUpAudioTitle();
-        setUpAudioListener();
+        if (mCastSession != null && mCastSession.isConnected()) {
+            loadRemoteMedia(0, true);
+        } else {
+            setUpAudioAdapter();
+            setUpAudioPosition();
+            setUpAudioTitle();
+            setUpAudioListener();
+        }
     }
 
     private void setUpAudioAdapter() {
@@ -241,7 +247,8 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
         ServerFile audioFile = getFile();
-        if (audioFile != null && audioFile == event.getServerFile()) {
+        if (audioFile != null && event.getServerFile() != null &&
+            audioFile.getUniqueKey().equals(event.getServerFile().getUniqueKey())) {
             final AudioMetadata metadata = event.getAudioMetadata();
             this.metadataFormatter = new AudioMetadataFormatter(
                 metadata.getAudioTitle(), metadata.getAudioArtist(), metadata.getAudioAlbum());
@@ -376,6 +383,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     public void onAudioPrepared(AudioPreparedEvent event) {
         if (areAudioControlsAvailable()) {
             audioControls.setMediaPlayer(this);
+            hideAudioControlsForced();
             showAudio();
         }
     }
@@ -626,9 +634,11 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
 
-        if (audioService != null &&
-            (!audioService.getAudioPlayer().getPlayWhenReady() || getShare() == null)) {
-            tearDownAudioService();
+        if(isFinishing()) {
+            if (audioService != null &&
+                (!audioService.getAudioPlayer().getPlayWhenReady() || getShare() == null)) {
+                tearDownAudioService();
+            }
         }
     }
 
@@ -717,6 +727,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
                 Intent intent = new Intent(ServerFileAudioActivity.this, ExpandedControlsActivity.class);
                 startActivity(intent);
                 remoteMediaClient.removeListener(this);
+                finish();
             }
 
             @Override
@@ -755,9 +766,11 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
             audioMetadata.putString(MediaMetadata.KEY_ALBUM_TITLE, metadataFormatter.getAudioAlbum());
         } else {
             audioMetadata.putString(MediaMetadata.KEY_TITLE, getFile().getNameOnly());
+            audioMetadata.putString(MediaMetadata.KEY_ARTIST, "");
+            audioMetadata.putString(MediaMetadata.KEY_ALBUM_TITLE, "");
         }
 
-        String audioSource = serverClient.getFileUri(getShare(), getFile()).toString();
+        String audioSource = getRemoteUri(getFile());
         MediaInfo.Builder builder = new MediaInfo.Builder(audioSource)
             .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
             .setContentType(getFile().getMime())
@@ -766,6 +779,16 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
             builder.setStreamDuration(metadataFormatter.getDuration());
         }
         return builder.build();
+    }
+
+    private String getRemoteUri(ServerFile serverFile) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile offlineFile = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+        if (offlineFile != null) {
+            return offlineFile.getFileUri();
+        } else {
+            return getAudioUri().toString();
+        }
     }
 
     private enum PlaybackLocation {

@@ -23,6 +23,7 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -30,23 +31,27 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaLoadOptions;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.images.WebImage;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.ServerFilesImagePagerAdapter;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileCopiedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
+import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -237,20 +242,17 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     }
 
     private void setUpRecentFiles(ServerFile serverFile) {
-        String uri;
         long size;
         if (isFileAvailableOffline(serverFile)) {
-            uri = getUriFrom(serverFile.getName(), serverFile.getModificationTime());
             size = new File(getOfflineFileUri(serverFile.getName())).length();
         } else {
-            uri = getImageUri();
             size = serverFile.getSize();
         }
 
         String serverName = Preferences.getServerName(this);
 
         RecentFile recentFile = new RecentFile(serverFile.getUniqueKey(),
-            uri,
+            getImageUri(serverFile),
             serverName,
             System.currentTimeMillis(),
             size);
@@ -290,7 +292,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements
                 return true;
 
             case R.id.menu_share:
-                startFileSharingActivity();
+                prepareDownload();
                 return true;
 
             default:
@@ -300,6 +302,28 @@ public class ServerFileImageActivity extends AppCompatActivity implements
 
     private void startFileSharingActivity() {
         startFileDownloading(getShare(), getCurrentFile());
+    }
+
+    private void prepareDownload() {
+
+        ServerFile serverFile = getCurrentFile();
+
+        if (isFileAvailableOffline(serverFile)) {
+            prepareDownloadingFile(serverFile);
+        } else {
+            startFileDownloading(getShare(), getCurrentFile());
+        }
+    }
+
+    private void prepareDownloadingFile(ServerFile file) {
+        PrepareDialogFragment fragment = new PrepareDialogFragment();
+        fragment.show(getSupportFragmentManager(), "prepare_dialog");
+        FileManager fm = FileManager.newInstance(this);
+        Uri offlinePath = fm.getContentUriForOfflineFile(file.getName());
+        File sourceLocation = new File(offlinePath.toString());
+        File downloadLocation = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), file.getName());
+
+        fm.copyFile(sourceLocation, downloadLocation);
     }
 
     private ServerFile getCurrentFile() {
@@ -327,6 +351,21 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     private void startFileSharingActivity(ServerFile file, Uri fileUri) {
         Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
         startActivity(intent);
+    }
+
+    @Subscribe
+    public void onFileCopied(FileCopiedEvent event) {
+        Uri contentUri = FileManager.newInstance(this).getContentUri(event.getTargetLocation());
+
+        dismissPreparingDialog();
+        finishFileDownloading(contentUri);
+    }
+
+    private void dismissPreparingDialog() {
+        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag("prepare_dialog");
+        if (fragment != null && fragment.isAdded()) {
+            fragment.dismiss();
+        }
     }
 
     @Override
@@ -400,7 +439,9 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     private void loadRemoteMedia() {
         final RemoteMediaClient remoteMediaClient = mCastSession.getRemoteMediaClient();
         if (remoteMediaClient != null) {
-            remoteMediaClient.load(buildMediaInfo());
+
+            MediaLoadOptions mediaLoadOptions = new MediaLoadOptions.Builder().build();
+            remoteMediaClient.load(buildMediaInfo(), mediaLoadOptions);
         }
     }
 
@@ -408,7 +449,11 @@ public class ServerFileImageActivity extends AppCompatActivity implements
         ServerFile file = getImageFiles().get(imagePosition);
         MediaMetadata imageMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_PHOTO);
         imageMetadata.putString(MediaMetadata.KEY_TITLE, file.getNameOnly());
-        String imageUrl = getImageUri();
+        imageMetadata.putString(MediaMetadata.KEY_ARTIST, "");
+        imageMetadata.putString(MediaMetadata.KEY_ALBUM_TITLE, "");
+        String imageUrl = getImageUri(getCurrentFile());
+        imageMetadata.addImage(new WebImage(Uri.parse(imageUrl)));
+        imageMetadata.addImage(new WebImage(Uri.parse(imageUrl)));
         return new MediaInfo.Builder(imageUrl)
             .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
             .setContentType(file.getMime())
@@ -416,11 +461,18 @@ public class ServerFileImageActivity extends AppCompatActivity implements
             .build();
     }
 
-    private String getImageUri() {
+    private String getImageUri(ServerFile serverFile) {
         int fileType = getIntent().getIntExtra(Intents.Extras.FILE_TYPE, FileManager.SERVER_FILE);
 
         if (fileType == FileManager.RECENT_FILE) {
             return getRecentFileUri();
+        }
+        if (getShare() == null) {
+            OfflineFileRepository repository = new OfflineFileRepository(this);
+            OfflineFile offlineFile = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
+            if (offlineFile != null) {
+                return offlineFile.getFileUri();
+            }
         }
         return serverClient.getFileUri(getShare(), getCurrentFile()).toString();
     }

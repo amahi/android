@@ -75,6 +75,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         this.filteredFiles = Collections.emptyList();
         BusProvider.getBus().register(this);
     }
+
     private BroadcastReceiver mDownloadReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

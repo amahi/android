@@ -26,7 +26,6 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -200,11 +199,20 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
         try {
             Bundle accountManagerResult = accountManagerFuture.getResult();
+            Account account = getAccountManager().getAccounts()[0];
+
+            String isLocalUser = getAccountManager().getUserData(account, "is_local");
+            String ip = getAccountManager().getUserData(account, "ip");
 
             String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
 
             if (authenticationToken != null) {
-                setUpServers(authenticationToken);
+                if (isLocalUser.equals("F")) {
+                    setUpServers(authenticationToken);
+                } else {
+                    BusProvider.getBus().post(new SharesSelectedEvent());
+                    setUpLocalServerApi(authenticationToken, ip);
+                }
             } else {
                 setUpAuthenticationToken();
             }
@@ -554,7 +562,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         }
     }
 
-
     private void launchTV() {
         startActivity(tvIntent);
     }
@@ -585,6 +592,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void showOfflineFiles() {
         BusProvider.getBus().post(new OfflineFilesSelectedEvent());
+    }
+
+    private void setUpLocalServerApi(String auth, String ip) {
+        serverClient.connectLocalServer(auth, ip);
     }
 
     @Subscribe

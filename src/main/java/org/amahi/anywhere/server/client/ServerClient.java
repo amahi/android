@@ -55,7 +55,6 @@ import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 import org.amahi.anywhere.util.ProgressRequestBody;
-import org.amahi.anywhere.util.Time;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -327,8 +326,6 @@ public class ServerClient {
             .path("files")
             .appendQueryParameter("s", share.getName())
             .appendQueryParameter("p", file.getPath())
-            .appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
-            .appendQueryParameter("session", server.getSession())
             .build();
     }
 
@@ -341,5 +338,18 @@ public class ServerClient {
 
     public void getApps() {
         serverApi.getApps(server.getSession()).enqueue(new ServerAppsResponse());
+    }
+
+    public void connectLocalServer(String auth, String ip) {
+        serverRoute = new ServerRoute();
+        serverRoute.setLocalAddress(getLocalAddress(ip));
+        serverAddress = serverRoute.getLocalAddress();
+        server = new Server(auth);
+        server.setAuthToken(auth);
+        serverApi = buildServerApi();
+    }
+
+    private String getLocalAddress(String ip) {
+        return "http://" + ip + ":4563/";
     }
 }

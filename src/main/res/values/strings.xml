@@ -32,12 +32,14 @@
 
     <string name="button_search_application">Search Google Play</string>
     <string name="button_sign_in">Sign in</string>
+    <string name="button_pin_access">PIN Access</string>
     <string name="button_yes">Yes</string>
     <string name="button_no">No</string>
     <string name="button_retry">Retry</string>
 
     <string name="hint_password">Password</string>
     <string name="hint_username">Username</string>
+    <string name="hint_pin">PIN</string>
 
     <string name="menu_back">Back</string>
     <string name="menu_forward">Forward</string>
@@ -64,6 +66,9 @@
     <string name="message_error_authentication">The username or password are not correct. Please try again. <a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
     <string name="message_error_authentication_connection">Connection error. Check your settings and try again.</string>
     <string name="message_error_authentication_field_empty">Username or Password field cannot be left empty</string>
+    <string name="message_error_pin_field_empty">PIN field cannot be left empty</string>
+    <string name="message_error_pin">PIN is not correct. Please try again.</string>
+    <string name="message_error_local_connection">It seems that you are not connected to the same Wifi as your server.</string>
     <string name="message_error_connection">Connection Error</string>
     <string name="message_tap_to_retry">Tap to retry</string>
     <string name="message_error_video">Error playing the video</string>
@@ -132,6 +137,7 @@
     <string name="preference">PREFERENCE</string>
     <string name="is_first_run">isFirstRun</string>
     <string name="selected_server_session">SERVER_SESSION</string>
+    <string name="local_server_ip">SERVER_IP</string>
     <string name="exit_title">Exit</string>
     <string name="exit_message">Are you sure you want to quit?</string>
     <string name="yes">Yes</string>
@@ -164,5 +170,8 @@
 
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

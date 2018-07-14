@@ -133,6 +133,14 @@
 
         </ViewAnimator>
 
+        <Button
+            android:id="@+id/button_pin_access"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/holo_orange_light"
+            android:text="@string/button_pin_access"
+            android:textColor="@android:color/white" />
+
     </LinearLayout>
 
 </LinearLayout>

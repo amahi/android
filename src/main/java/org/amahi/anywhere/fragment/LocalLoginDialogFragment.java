@@ -17,20 +17,28 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.account;
+package org.amahi.anywhere.fragment;
 
-import android.accounts.Account;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.ProgressDialog;
+import android.os.Bundle;
 
-/**
- * Amahi account declaration.
- */
-public class AmahiAccount extends Account {
-    public static final String TYPE = "org.amahi";
-    public static final String TYPE_LOCAL = "org.amahi.local";
+public class LocalLoginDialogFragment extends DialogFragment {
 
-    public static final String TYPE_TOKEN = String.format("%s.FULL", TYPE);
+    private ProgressDialog dialog;
 
-    public AmahiAccount(String name) {
-        super(name, TYPE);
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        dialog = new ProgressDialog(getActivity());
+        dialog.setTitle("Logging In");
+        dialog.setCancelable(false);
+        dialog.setIndeterminate(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        return dialog;
+    }
+
+    public void setProgress(int progress) {
+        dialog.setProgress(progress);
     }
 }

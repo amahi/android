@@ -28,7 +28,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.FileOptionsDialogFragment;
+import org.amahi.anywhere.fragment.MainLoginFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.PINAccessFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
@@ -63,6 +65,14 @@ public final class Fragments {
 
     public static final class Builder {
         private Builder() {
+        }
+
+        public static android.app.Fragment buildMainLoginFragment() {
+            return new MainLoginFragment();
+        }
+
+        public static android.app.Fragment buildPINFragment() {
+            return new PINAccessFragment();
         }
 
         public static Fragment buildNavigationFragment() {

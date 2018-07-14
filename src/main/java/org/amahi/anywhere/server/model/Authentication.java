@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
  * Authentication API resource.
  */
 public class Authentication {
-    @SerializedName("access_token")
+    @SerializedName(value = "access_token", alternate = "auth_token")
     private String token;
 
     public String getToken() {

@@ -33,10 +33,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,6 +42,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.squareup.otto.Subscribe;
 
@@ -196,11 +197,20 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
         try {
             Bundle accountManagerResult = accountManagerFuture.getResult();
+            Account account = getAccountManager().getAccounts()[0];
+
+            String isLocalUser = getAccountManager().getUserData(account, "is_local");
+            String ip = getAccountManager().getUserData(account, "ip");
 
             String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
 
             if (authenticationToken != null) {
-                setUpServers(authenticationToken);
+                if (isLocalUser.equals("F")) {
+                    setUpServers(authenticationToken);
+                } else {
+                    BusProvider.getBus().post(new SharesSelectedEvent());
+                    setUpLocalServerApi(authenticationToken, ip);
+                }
             } else {
                 setUpAuthenticationToken();
             }
@@ -627,6 +637,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void showRecentFiles() {
         BusProvider.getBus().post(new RecentFilesSelectedEvent());
+    }
+
+    private void setUpLocalServerApi(String auth, String ip) {
+        serverClient.connectLocalServer(auth, ip);
     }
 
     @Subscribe

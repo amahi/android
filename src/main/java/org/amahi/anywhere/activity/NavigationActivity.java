@@ -64,6 +64,9 @@ import javax.inject.Inject;
  * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
 public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
+
+    public static final int PIN_REQUEST_CODE = 102;
+
     @Inject
     ServerClient serverClient;
     private ActionBarDrawerToggle navigationDrawerToggle;
@@ -388,6 +391,14 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
     private boolean isNavigationDrawerOpen() {
         return getDrawer().isDrawerOpen(findViewById(R.id.container_navigation));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PIN_REQUEST_CODE && resultCode == RESULT_OK) {
+            onSharesSelected(new SharesSelectedEvent());
+        }
     }
 
     @Override

@@ -33,17 +33,14 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -58,6 +55,7 @@ import org.amahi.anywhere.adapter.ServersAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
+import org.amahi.anywhere.bus.ServerAuthenticationCompleteEvent;
 import org.amahi.anywhere.bus.ServerAuthenticationStartEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
@@ -67,10 +65,10 @@ import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.SharesSelectedEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
-import org.amahi.anywhere.server.model.HdaAuthBody;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.util.CheckTV;
+import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.RecyclerItemClickListener;
 import org.amahi.anywhere.util.ViewDirector;
@@ -81,6 +79,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static org.amahi.anywhere.activity.NavigationActivity.PIN_REQUEST_CODE;
 
 /**
  * Navigation fragments. Shows main application sections and servers list as well.
@@ -95,6 +95,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     ServersAdapter serversAdapter;
     boolean mServerTitleClicked;
     private Intent tvIntent;
+    private Server server;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -190,28 +191,31 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpAuthenticationToken() {
-        Account account = getAccounts().get(0);
-
-        getAccountManager().getAuthToken(account, AmahiAccount.TYPE, null, getActivity(), this, null);
+        if (!getAccounts().isEmpty()) {
+            Account account = getAccounts().get(0);
+            getAccountManager().getAuthToken(account, AmahiAccount.TYPE, null, getActivity(), this, null);
+        }
     }
 
     @Override
     public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
         try {
             Bundle accountManagerResult = accountManagerFuture.getResult();
-            Account account = getAccountManager().getAccounts()[0];
-
-            String isLocalUser = getAccountManager().getUserData(account, "is_local");
-            String ip = getAccountManager().getUserData(account, "ip");
 
             String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
 
             if (authenticationToken != null) {
+                Account[] accounts = getAccountManager().getAccounts();
+                Account account = accounts[0];
+
+                String isLocalUser = getAccountManager().getUserData(account, "is_local");
+                String ip = getAccountManager().getUserData(account, "ip");
                 if (isLocalUser.equals("F")) {
                     setUpServers(authenticationToken);
                 } else {
-                    BusProvider.getBus().post(new SharesSelectedEvent());
                     setUpLocalServerApi(authenticationToken, ip);
+                    BusProvider.getBus().post(new SharesSelectedEvent());
+                    setUpLocalNavigation();
                 }
             } else {
                 setUpAuthenticationToken();
@@ -221,6 +225,12 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         } catch (IOException | AuthenticatorException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void setUpLocalNavigation() {
+        setUpNavigation();
+        getRefreshLayout().setRefreshing(false);
+        showContent();
     }
 
     private void tearDownActivity() {
@@ -430,6 +440,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void selectSavedServer(List<Server> servers) {
+
         String session = getServerSession();
         if (session != null) {
             List<Server> activeServers = filterActiveServers(servers);
@@ -452,7 +463,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void selectServerListener(int position) {
-
         //Changing the Title Server Name
         getServerNameTextView().setText(getServersAdapter().getItem(position).getName());
 
@@ -465,8 +475,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         changeNavigationAdapter();
 
         setupServer(position);
-
-        storeServerSession(getServersAdapter().getItem(position));
     }
 
     public void changeNavigationAdapter() {
@@ -476,22 +484,21 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     public void setupServer(int position) {
         //Setting up server
-        Server server = getServersAdapter().getItem(position);
+        server = getServersAdapter().getItem(position);
         setUpServerConnection(server);
-
-        //getting Shares of the new Server
-        BusProvider.getBus().post(new SharesSelectedEvent());
     }
 
     private void setUpServerSelectListener() {
-        getLinearLayoutSelectedServer().setOnClickListener(view -> {
-            setServerTitleClicked(true);
+        if (!getServersAdapter().isEmpty()) {
+            getLinearLayoutSelectedServer().setOnClickListener(view -> {
+                setServerTitleClicked(true);
 
-            getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
-                0, 0, R.drawable.nav_arrow_up, 0);
+                getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
+                    0, 0, R.drawable.nav_arrow_up, 0);
 
-            showServers();
-        });
+                showServers();
+            });
+        }
     }
 
     @Subscribe
@@ -505,6 +512,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpServerConnection(Server server) {
+        this.server = server;
         if (serverClient.isConnected(server)) {
             setUpServerConnection();
         } else {
@@ -522,24 +530,26 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Subscribe
     public void onAuthenticationStart(ServerAuthenticationStartEvent event) {
+        String authToken = Preferences.getServerToken(getActivity());
+        String session = Preferences.getServerSession(getContext());
+
+        if (server.getName().equals(getString(R.string.demo_server_name))
+            || (authToken != null && server.getSession().equals(session))) {
+
+            serverClient.onHdaAuthenticated(new ServerAuthenticationCompleteEvent(authToken));
+            BusProvider.getBus().post(new SharesSelectedEvent());
+            return;
+        }
+
         authenticateHdaUser();
     }
 
     private void authenticateHdaUser() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Enter your PIN");
+        startAuthenticationActivity();
+    }
 
-        final EditText input = new EditText(getContext());
-        input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        builder.setView(input);
-
-        builder.setPositiveButton("Ok", (dialog, which) -> {
-            HdaAuthBody authBody = new HdaAuthBody(input.getText().toString());
-            serverClient.authenticateHdaUser(authBody);
-        });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-        builder.show();
+    private void startAuthenticationActivity() {
+        getActivity().startActivityForResult(Intents.Builder.with(getActivity()).buildPINAuthenticationIntent(), PIN_REQUEST_CODE);
     }
 
     @Subscribe
@@ -600,6 +610,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        Preferences.setServerSession(getContext(), server.getSession());
         setUpServerNavigation();
     }
 

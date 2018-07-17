@@ -32,10 +32,15 @@ import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.bus.AuthenticationSucceedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.PINAccessEvent;
+import org.amahi.anywhere.bus.ServerAuthenticationCompleteEvent;
 import org.amahi.anywhere.fragment.MainLoginFragment;
 import org.amahi.anywhere.fragment.PINAccessFragment;
 import org.amahi.anywhere.util.Fragments;
+import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Preferences;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Authentication activity. Allows user authentication. If operation succeed
@@ -59,15 +64,24 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
     }
 
     private void setUpAuthenticationFragment() {
-        if (accountType.equals(AmahiAccount.TYPE)) {
-            MainLoginFragment f = (MainLoginFragment) getFragmentManager().findFragmentByTag(MainLoginFragment.TAG);
-            if (f == null) {
-                showMainLoginFragment();
-            }
-        } else {
+
+        accountType = getIntent().getStringExtra(Intents.Extras.ACCOUNT_TYPE);
+        if (accountType != null && (accountType.equals(AmahiAccount.TYPE_ADMIN)
+            || accountType.equals(AmahiAccount.TYPE_USER))) {
+
             PINAccessFragment f = (PINAccessFragment) getFragmentManager().findFragmentByTag(PINAccessFragment.TAG);
             if (f == null) {
                 showPINAccessFragment();
+            }
+        } else {
+            try {
+                accountType = AmahiAccount.TYPE;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            MainLoginFragment f = (MainLoginFragment) getFragmentManager().findFragmentByTag(MainLoginFragment.TAG);
+            if (f == null) {
+                showMainLoginFragment();
             }
         }
     }
@@ -86,7 +100,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
             MainLoginFragment fragment = (MainLoginFragment) getFragmentManager().findFragmentByTag(MainLoginFragment.TAG);
 
             finishAuthentication(event.getAuthentication().getToken(), fragment.getUsername(), fragment.getPassword());
-        } else {
+        } else if (accountType.equals(AmahiAccount.TYPE_USER)) {
             PINAccessFragment fragment = (PINAccessFragment) getFragmentManager().findFragmentByTag(PINAccessFragment.TAG);
 
             finishAuthentication(event.getAuthentication().getToken(), "Server", fragment.getPIN());
@@ -99,11 +113,12 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
         Bundle authenticationBundle = new Bundle();
 
         Account account = new AmahiAccount(username);
-        if (accountType.equals(AmahiAccount.TYPE_LOCAL)) {
+        if (accountType.equals(AmahiAccount.TYPE_USER)) {
             authenticationBundle.putString("ip", Preferences.getLocalServerIP(this));
             authenticationBundle.putString("is_local", "T");
         } else {
             authenticationBundle.putString("is_local", "F");
+            authenticationBundle.putString(Intents.Extras.ACCOUNT_TYPE, getIntent().getStringExtra(Intents.Extras.ACCOUNT_TYPE));
         }
 
         if (accountManager.addAccountExplicitly(account, password, authenticationBundle)) {
@@ -122,8 +137,23 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
     }
 
     @Subscribe
+    public void onServerAuthenticationComplete(ServerAuthenticationCompleteEvent event) {
+        storeAuthToken(event.getAuthToken());
+    }
+
+    private void storeAuthToken(String authToken) {
+        Preferences.setServerToken(this, authToken);
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    private List<Account> getAccounts() {
+        return Arrays.asList(AccountManager.get(this).getAccountsByType(AmahiAccount.TYPE));
+    }
+
+    @Subscribe
     public void onPINAccess(PINAccessEvent event) {
-        accountType = AmahiAccount.TYPE_LOCAL;
+        accountType = AmahiAccount.TYPE_USER;
         showPINAccessFragment();
     }
 

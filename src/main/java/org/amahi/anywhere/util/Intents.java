@@ -31,6 +31,8 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.activity.AuthenticationActivity;
 import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
@@ -67,6 +69,7 @@ public final class Intents {
         public static final String SERVER_FILES = "server_files";
         public static final String SERVER_SHARE = "server_share";
         public static final String IMAGE_URIS = "image_uris";
+        public static final String ACCOUNT_TYPE = "account_type";
 
         private Extras() {
         }
@@ -283,6 +286,12 @@ public final class Intents {
             downloadService.putExtra(Extras.SERVER_FILE, serverFile);
             downloadService.putExtra(Extras.SERVER_SHARE, serverShare);
             return downloadService;
+        }
+
+        public Intent buildPINAuthenticationIntent() {
+            Intent intent = new Intent(context, AuthenticationActivity.class);
+            intent.putExtra(Extras.ACCOUNT_TYPE, AmahiAccount.TYPE_ADMIN);
+            return intent;
         }
     }
 }

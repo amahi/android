@@ -46,7 +46,6 @@ import retrofit2.http.Query;
 public interface ServerApi {
     @POST("/auth")
     Call<HdaAuthResponse> authenticate(
-        @Header("Session") String session,
         @Body HdaAuthBody authBody);
 
     @GET("/shares")

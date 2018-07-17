@@ -94,6 +94,14 @@ public final class Preferences {
         return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.selected_server_session), null);
     }
 
+    public static void setServerToken(Context context, String serverSession) {
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.selected_server_auth), serverSession).apply();
+    }
+
+    public static String getServerToken(Context context) {
+        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.selected_server_auth), null);
+    }
+
     public static void setLocalServerIP(Context context, String ip) {
         context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.local_server_ip), ip).apply();
     }

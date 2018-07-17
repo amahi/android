@@ -44,6 +44,7 @@ import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Preferences;
 
 import java.util.Arrays;
 import java.util.List;
@@ -131,6 +132,7 @@ public class SettingsFragment extends PreferenceFragment implements
 
         accountSignOut.setOnPreferenceClickListener(preference -> {
             tearDownAccount();
+            tearDownPreferences();
             return true;
         });
         applicationIntro.setOnPreferenceClickListener(preference -> {
@@ -158,6 +160,11 @@ public class SettingsFragment extends PreferenceFragment implements
             return true;
         });
 
+    }
+
+    private void tearDownPreferences() {
+        Preferences.getPreference(getActivity()).edit().remove(getString(R.string.selected_server_auth)).apply();
+        Preferences.getPreference(getActivity()).edit().remove(getString(R.string.selected_server_session)).apply();
     }
 
     private void setUpApplicationIntro() {

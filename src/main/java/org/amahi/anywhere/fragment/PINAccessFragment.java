@@ -19,6 +19,8 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -35,16 +37,28 @@ import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.bus.AuthenticationConnectionFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationFailedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.HdaAuthBody;
 import org.amahi.anywhere.task.LocalServerProbingTask;
 import org.amahi.anywhere.util.ViewDirector;
+
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Inject;
 
 public class PINAccessFragment extends Fragment {
 
     public static final String TAG = "PINAccessFragment";
+
+    @Inject
+    public ServerClient serverClient;
 
     private EditText pinEditText;
     private Button pinLoginButton;
@@ -58,7 +72,12 @@ public class PINAccessFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setUpInjections();
         setUpPINAuthentication(view);
+    }
+
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
     }
 
     private void setUpPINAuthentication(View view) {
@@ -122,7 +141,22 @@ public class PINAccessFragment extends Fragment {
     }
 
     private void startAuthentication(String pin) {
-        new LocalServerProbingTask(getActivity(), pin).execute();
+        if (getAccounts().isEmpty()) {
+            // secondary user access
+            new LocalServerProbingTask(getActivity(), pin).execute();
+        } else {
+            // admin user access
+            HdaAuthBody authBody = new HdaAuthBody(pin);
+            serverClient.authenticateHdaUser(authBody);
+        }
+    }
+
+    private AccountManager getAccountManager() {
+        return AccountManager.get(getActivity());
+    }
+
+    private List<Account> getAccounts() {
+        return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
     }
 
     @Subscribe

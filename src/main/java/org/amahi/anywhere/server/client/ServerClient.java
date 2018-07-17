@@ -249,7 +249,7 @@ public class ServerClient {
     }
 
     public void authenticateHdaUser(HdaAuthBody authBody) {
-        serverApi.authenticate(server.getSession(), authBody).enqueue(new ServerAuthenticationResponse());
+        serverApi.authenticate(authBody).enqueue(new ServerAuthenticationResponse());
     }
 
     @Subscribe
@@ -326,6 +326,7 @@ public class ServerClient {
             .path("files")
             .appendQueryParameter("s", share.getName())
             .appendQueryParameter("p", file.getPath())
+            .appendQueryParameter("auth", server.getAuthToken())
             .build();
     }
 

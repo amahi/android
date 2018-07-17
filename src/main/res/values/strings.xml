@@ -137,6 +137,7 @@
     <string name="preference">PREFERENCE</string>
     <string name="is_first_run">isFirstRun</string>
     <string name="selected_server_session">SERVER_SESSION</string>
+    <string name="selected_server_auth">SERVER_AUTH</string>
     <string name="local_server_ip">SERVER_IP</string>
     <string name="exit_title">Exit</string>
     <string name="exit_message">Are you sure you want to quit?</string>
@@ -171,7 +172,6 @@
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="demo_server_name">Welcome to Amahi</string>
 
 </resources>

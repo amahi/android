@@ -31,6 +31,7 @@ import android.text.TextUtils;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.AuthenticationActivity;
+import org.amahi.anywhere.util.Intents;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,14 +54,27 @@ class AmahiAuthenticator extends AbstractAccountAuthenticator {
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         Bundle accountBundle = new Bundle();
 
-        if (getAccounts().isEmpty()) {
-            Intent accountIntent = new Intent(context, AuthenticationActivity.class);
-            accountIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+        if (options == null || options.get(Intents.Extras.ACCOUNT_TYPE) == null) {
 
-            accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);
+            if (getAccounts().isEmpty()) {
+                Intent accountIntent = new Intent(context, AuthenticationActivity.class);
+                accountIntent.putExtra(Intents.Extras.ACCOUNT_TYPE, AmahiAccount.TYPE);
+                accountIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+
+                accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);
+            } else {
+                accountBundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_CANCELED);
+                accountBundle.putString(AccountManager.KEY_ERROR_MESSAGE, context.getString(R.string.message_error_account_exists));
+            }
+
+            return accountBundle;
         } else {
-            accountBundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_CANCELED);
-            accountBundle.putString(AccountManager.KEY_ERROR_MESSAGE, context.getString(R.string.message_error_account_exists));
+            if (options.get(Intents.Extras.ACCOUNT_TYPE).equals(AmahiAccount.TYPE_ADMIN)) {
+                Intent intent = Intents.Builder.with(context).buildPINAuthenticationIntent();
+                intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+
+                accountBundle.putParcelable(AccountManager.KEY_INTENT, intent);
+            }
         }
 
         return accountBundle;

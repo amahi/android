@@ -83,7 +83,6 @@ public class MainLoginFragment extends Fragment implements TextWatcher,
         AmahiApplication.from(getActivity()).inject(this);
     }
 
-
     private void setUpLayout(View view) {
         username_layout = view.findViewById(R.id.username_layout);
         password_layout = view.findViewById(R.id.password_layout);

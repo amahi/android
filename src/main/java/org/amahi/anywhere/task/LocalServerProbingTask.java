@@ -32,12 +32,15 @@ import org.amahi.anywhere.bus.AuthenticationFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationSucceedEvent;
 import org.amahi.anywhere.bus.BusEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.db.entities.HDA;
+import org.amahi.anywhere.db.repositories.HDARepository;
 import org.amahi.anywhere.server.model.Authentication;
 import org.amahi.anywhere.util.Preferences;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.InetAddress;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
@@ -53,6 +56,8 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
     private WeakReference<Context> context;
     private OkHttpClient httpClient;
     private RequestBody body;
+    private BusEvent event;
+    private boolean isUnauthorized;
 
     public LocalServerProbingTask(Context context, @NonNull String pin) {
         this.context = new WeakReference<>(context);
@@ -74,7 +79,76 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
 
     @Override
     protected BusEvent doInBackground(Void... voids) {
-//        String ipString = "192.168.54.129";
+        String authToken = authenticateIPsFromHDACache();
+        if (authToken == null) {
+            // start IPs probing
+            authToken = authenticateSubnetIPs();
+
+            if (event instanceof AuthenticationConnectionFailedEvent) {
+                // wrong ip
+                return event;
+            }
+
+            if (authToken == null) {
+                // no server ip found
+                event = new AuthenticationConnectionFailedEvent();
+            }
+        }
+
+        // successful authentication
+        return event;
+    }
+
+    private String authenticateIPsFromHDACache() {
+        HDARepository repository = new HDARepository(context.get().getApplicationContext());
+        List<HDA> hdaList = repository.getAllHDAs();
+        for (HDA hda : hdaList) {
+            String authToken = authenticate(hda.getIp());
+            if (authToken != null) {
+                return authToken;
+            }
+        }
+        return null;
+    }
+
+    private String authenticate(String ip) {
+        try {
+            InetAddress ipAddress = InetAddress.getByName(ip);
+            String hostName = ipAddress.getCanonicalHostName();
+            if (ipAddress.isReachable(200)) {
+                Request httpRequest = new Request.Builder()
+                    .url(getConnectionUrl(hostName))
+                    .post(body)
+                    .build();
+
+                Response response = httpClient
+                    .newCall(httpRequest)
+                    .execute();
+
+                if (response.code() == 200) {
+                    Gson gson = new Gson();
+                    String json = response.body().string();
+                    Authentication authentication = gson.fromJson(json, Authentication.class);
+                    Preferences.setLocalServerIP(context.get().getApplicationContext(), ip);
+                    saveIP(ip);
+                    event = new AuthenticationSucceedEvent(authentication);
+                    return authentication.getToken();
+                } else if (response.code() == 403) {
+                    event = new AuthenticationFailedEvent();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void saveIP(String ip) {
+        HDARepository repository = new HDARepository(context.get().getApplicationContext());
+        repository.insert(new HDA(ip));
+    }
+
+    private String authenticateSubnetIPs() {
         WifiManager wm = (WifiManager) context.get().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (wm != null) {
             DhcpInfo d = wm.getDhcpInfo();
@@ -83,35 +157,13 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
             for (int i = 0; i < 255; i++) {
                 String testIp = prefix + String.valueOf(i);
 //                testIp = "192.168.54.129";
-                try {
-                    InetAddress ipAddress = InetAddress.getByName(testIp);
-                    String hostName = ipAddress.getCanonicalHostName();
-                    if (ipAddress.isReachable(200)) {
-                        Request httpRequest = new Request.Builder()
-                            .url(getConnectionUrl(hostName))
-                            .post(body)
-                            .build();
-
-                        Response response = httpClient
-                            .newCall(httpRequest)
-                            .execute();
-
-                        if (response.code() == 200) {
-                            Gson gson = new Gson();
-                            String json = response.body().string();
-                            Authentication authentication = gson.fromJson(json, Authentication.class);
-                            Preferences.setLocalServerIP(context.get().getApplicationContext(), testIp);
-                            return new AuthenticationSucceedEvent(authentication);
-                        } else if (response.code() == 403) {
-                            return new AuthenticationFailedEvent();
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                String authToken = authenticate(testIp);
+                if (authToken != null) {
+                    return authToken;
                 }
             }
         }
-        return new AuthenticationConnectionFailedEvent();
+        return null;
     }
 
     private String intToIp(int i) {

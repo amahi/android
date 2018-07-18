@@ -133,6 +133,7 @@ public class SettingsFragment extends PreferenceFragment implements
         accountSignOut.setOnPreferenceClickListener(preference -> {
             tearDownAccount();
             tearDownPreferences();
+            tearDownServerClient();
             return true;
         });
         applicationIntro.setOnPreferenceClickListener(preference -> {
@@ -165,6 +166,10 @@ public class SettingsFragment extends PreferenceFragment implements
     private void tearDownPreferences() {
         Preferences.getPreference(getActivity()).edit().remove(getString(R.string.selected_server_auth)).apply();
         Preferences.getPreference(getActivity()).edit().remove(getString(R.string.selected_server_session)).apply();
+    }
+
+    private void tearDownServerClient() {
+        serverClient.tearDownServerApi();
     }
 
     private void setUpApplicationIntro() {

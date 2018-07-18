@@ -138,7 +138,12 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
 
     @Subscribe
     public void onServerAuthenticationComplete(ServerAuthenticationCompleteEvent event) {
+        Preferences.setServerSession(this, getServerSession());
         storeAuthToken(event.getAuthToken());
+    }
+
+    private String getServerSession() {
+        return getIntent().getStringExtra(Intents.Extras.SERVER_SESSION);
     }
 
     private void storeAuthToken(String authToken) {

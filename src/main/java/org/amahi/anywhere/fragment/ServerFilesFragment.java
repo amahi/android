@@ -937,7 +937,7 @@ public class ServerFilesFragment extends Fragment implements
     public void onMoreOptionClick(View view, int position) {
         setItemSelected(position);
         if (getListAdapter().getAdapterMode() != FilesFilterAdapter.AdapterMode.OFFLINE) {
-            Fragments.Builder.buildFileOptionsDialogFragment(getContext(), getCheckedFile())
+            Fragments.Builder.buildFileOptionsDialogFragment(getCheckedFile(), getShare())
                 .show(getChildFragmentManager(), "file_options_dialog");
         } else {
             Fragments.Builder.buildOfflineFileOptionsDialogFragment()

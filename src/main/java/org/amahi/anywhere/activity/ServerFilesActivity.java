@@ -137,7 +137,11 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void setUpUploadFAB() {
         final FloatingActionButton fab = findViewById(R.id.fab_upload);
-        fab.setOnClickListener(view -> new UploadBottomSheet().show(getSupportFragmentManager(), "upload_dialog"));
+        if (getShare().isWritable()) {
+            fab.setOnClickListener(view -> new UploadBottomSheet().show(getSupportFragmentManager(), ProgressDialogFragment.UPLOAD_DIALOG_TAG));
+        } else {
+            fab.setVisibility(View.GONE);
+        }
     }
 
     private void setUpUploadDialog() {
@@ -446,7 +450,7 @@ public class ServerFilesActivity extends AppCompatActivity implements EasyPermis
 
     private void uploadFile(File uploadFile) {
         serverClient.uploadFile(0, uploadFile, getShare(), file);
-        uploadDialogFragment.show(getFragmentManager(), "progress_dialog");
+        uploadDialogFragment.show(getFragmentManager(), ProgressDialogFragment.UPLOAD_DIALOG_TAG);
     }
 
     @Subscribe

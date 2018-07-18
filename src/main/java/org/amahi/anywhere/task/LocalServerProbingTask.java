@@ -32,6 +32,7 @@ import org.amahi.anywhere.bus.AuthenticationFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationSucceedEvent;
 import org.amahi.anywhere.bus.BusEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ProbingProgressEvent;
 import org.amahi.anywhere.db.entities.HDA;
 import org.amahi.anywhere.db.repositories.HDARepository;
 import org.amahi.anywhere.server.model.Authentication;
@@ -49,7 +50,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
+public class LocalServerProbingTask extends AsyncTask<Void, Integer, BusEvent> {
 
     private static final String TAG = "LocalServerProbingTask";
 
@@ -84,7 +85,7 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
             // start IPs probing
             authToken = authenticateSubnetIPs();
 
-            if (event instanceof AuthenticationConnectionFailedEvent) {
+            if (event instanceof AuthenticationFailedEvent) {
                 // wrong ip
                 return event;
             }
@@ -133,7 +134,7 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
                     saveIP(ip);
                     event = new AuthenticationSucceedEvent(authentication);
                     return authentication.getToken();
-                } else if (response.code() == 403) {
+                } else if (response.code() == 401 || response.code() == 403) {
                     event = new AuthenticationFailedEvent();
                 }
             }
@@ -154,9 +155,13 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
             DhcpInfo d = wm.getDhcpInfo();
             String ip = intToIp(d.dns1);
             String prefix = ip.substring(0, ip.lastIndexOf(".") + 1);
+//            prefix = "192.168.54.";
             for (int i = 0; i < 255; i++) {
+                if (isCancelled()) {
+                    break;
+                }
+                publishProgress((i * 100) / 255);
                 String testIp = prefix + String.valueOf(i);
-//                testIp = "192.168.54.129";
                 String authToken = authenticate(testIp);
                 if (authToken != null) {
                     return authToken;
@@ -173,6 +178,13 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
             ((i >> 24) & 0xFF);
     }
 
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+
+        BusProvider.getBus().post(new ProbingProgressEvent(values[0]));
+    }
+
     private String getConnectionUrl(String hostName) {
         return "http://" + hostName + ":4563/auth";
     }
@@ -180,6 +192,7 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
     @Override
     protected void onPostExecute(BusEvent busEvent) {
         super.onPostExecute(busEvent);
+        publishProgress(100);
 
         BusProvider.getBus().post(busEvent);
     }

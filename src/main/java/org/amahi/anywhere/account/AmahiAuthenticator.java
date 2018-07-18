@@ -54,27 +54,15 @@ class AmahiAuthenticator extends AbstractAccountAuthenticator {
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         Bundle accountBundle = new Bundle();
 
-        if (options == null || options.get(Intents.Extras.ACCOUNT_TYPE) == null) {
+        if (getAccounts().isEmpty()) {
+            Intent accountIntent = new Intent(context, AuthenticationActivity.class);
+            accountIntent.putExtra(Intents.Extras.ACCOUNT_TYPE, AmahiAccount.TYPE);
+            accountIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
-            if (getAccounts().isEmpty()) {
-                Intent accountIntent = new Intent(context, AuthenticationActivity.class);
-                accountIntent.putExtra(Intents.Extras.ACCOUNT_TYPE, AmahiAccount.TYPE);
-                accountIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-
-                accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);
-            } else {
-                accountBundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_CANCELED);
-                accountBundle.putString(AccountManager.KEY_ERROR_MESSAGE, context.getString(R.string.message_error_account_exists));
-            }
-
-            return accountBundle;
+            accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);
         } else {
-            if (options.get(Intents.Extras.ACCOUNT_TYPE).equals(AmahiAccount.TYPE_ADMIN)) {
-                Intent intent = Intents.Builder.with(context).buildPINAuthenticationIntent();
-                intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-
-                accountBundle.putParcelable(AccountManager.KEY_INTENT, intent);
-            }
+            accountBundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_CANCELED);
+            accountBundle.putString(AccountManager.KEY_ERROR_MESSAGE, context.getString(R.string.message_error_account_exists));
         }
 
         return accountBundle;

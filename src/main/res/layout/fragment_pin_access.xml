@@ -72,11 +72,17 @@
             android:text="@string/message_error_pin" />
 
         <TextView
+            android:id="@+id/text_message_local_connection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/message_connection_error" />
+        <TextView
             android:id="@+id/text_message_connection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="@string/message_error_local_connection" />
+            android:text="@string/message_error_authentication_connection" />
 
         <TextView
             android:id="@+id/text_message_pin_empty"

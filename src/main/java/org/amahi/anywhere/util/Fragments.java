@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.util;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.Fragment;
@@ -164,11 +163,12 @@ public final class Fragments {
             return fragment;
         }
 
-        public static BottomSheetDialogFragment buildFileOptionsDialogFragment(Context context, ServerFile file) {
+        public static BottomSheetDialogFragment buildFileOptionsDialogFragment(ServerFile file, ServerShare serverShare) {
             BottomSheetDialogFragment fragment = new FileOptionsDialogFragment();
 
             Bundle bundle = new Bundle();
             bundle.putParcelable(Arguments.SERVER_FILE, file);
+            bundle.putParcelable(Arguments.SERVER_SHARE, serverShare);
             fragment.setArguments(bundle);
             return fragment;
         }

@@ -520,22 +520,21 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         }
     }
 
-    private void storeServerSession(Server server) {
-        Preferences.setServerSession(getContext(), server.getSession());
-    }
-
     private String getServerSession() {
         return Preferences.getServerSession(getContext());
     }
 
     @Subscribe
     public void onAuthenticationStart(ServerAuthenticationStartEvent event) {
+        if (server.getName().equals(getString(R.string.demo_server_name))) {
+            BusProvider.getBus().post(new SharesSelectedEvent());
+            return;
+        }
+
         String authToken = Preferences.getServerToken(getActivity());
         String session = Preferences.getServerSession(getContext());
 
-        if (server.getName().equals(getString(R.string.demo_server_name))
-            || (authToken != null && server.getSession().equals(session))) {
-
+        if (authToken != null && server.getSession().equals(session)) {
             serverClient.onHdaAuthenticated(new ServerAuthenticationCompleteEvent(authToken));
             BusProvider.getBus().post(new SharesSelectedEvent());
             return;
@@ -549,7 +548,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void startAuthenticationActivity() {
-        getActivity().startActivityForResult(Intents.Builder.with(getActivity()).buildPINAuthenticationIntent(), PIN_REQUEST_CODE);
+        getActivity().startActivityForResult(Intents.Builder.with(getActivity()).buildPINAuthenticationIntent(server.getSession()), PIN_REQUEST_CODE);
     }
 
     @Subscribe
@@ -610,7 +609,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
-        Preferences.setServerSession(getContext(), server.getSession());
         setUpServerNavigation();
     }
 

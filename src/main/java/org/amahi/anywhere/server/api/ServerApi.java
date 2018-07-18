@@ -50,19 +50,16 @@ public interface ServerApi {
 
     @GET("/shares")
     Call<List<ServerShare>> getShares(
-        @Header("Session") String session,
         @Header("Authorization") String authToken);
 
     @GET("/files")
     Call<List<ServerFile>> getFiles(
-        @Header("Session") String session,
         @Header("Authorization") String authToken,
         @Query("s") String share,
         @Query("p") String path);
 
     @DELETE("/files")
     Call<Void> deleteFile(
-        @Header("Session") String session,
         @Header("Authorization") String authToken,
         @Query("s") String share,
         @Query("p") String path);
@@ -70,7 +67,6 @@ public interface ServerApi {
     @Multipart
     @POST("/files")
     Call<ResponseBody> uploadFile(
-        @Header("Session") String session,
         @Header("Authorization") String authToken,
         @Query("s") String share,
         @Query("p") String path,

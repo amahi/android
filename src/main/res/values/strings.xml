@@ -104,6 +104,7 @@
     <string name="notification_download_title">Downloading File</string>
     <string name="notification_offline_download_complete">File Available Offline</string>
     <string name="notification_offline_download_paused">Waiting for internet</string>
+    <string name="message_sign_in_dialog_title">Signing In</string>
 
     <string name="share_subject">Check out my Amahi home server!</string>
     <string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>

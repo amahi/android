@@ -70,6 +70,7 @@ public final class Intents {
         public static final String SERVER_SHARE = "server_share";
         public static final String IMAGE_URIS = "image_uris";
         public static final String ACCOUNT_TYPE = "account_type";
+        public static final String SERVER_SESSION = "server_session";
 
         private Extras() {
         }
@@ -288,9 +289,10 @@ public final class Intents {
             return downloadService;
         }
 
-        public Intent buildPINAuthenticationIntent() {
+        public Intent buildPINAuthenticationIntent(String session) {
             Intent intent = new Intent(context, AuthenticationActivity.class);
             intent.putExtra(Extras.ACCOUNT_TYPE, AmahiAccount.TYPE_ADMIN);
+            intent.putExtra(Extras.SERVER_SESSION, session);
             return intent;
         }
     }

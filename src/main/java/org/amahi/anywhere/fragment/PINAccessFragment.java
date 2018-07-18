@@ -43,6 +43,8 @@ import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.bus.AuthenticationConnectionFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationFailedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.DialogButtonClickedEvent;
+import org.amahi.anywhere.bus.ProbingProgressEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.HdaAuthBody;
 import org.amahi.anywhere.task.LocalServerProbingTask;
@@ -57,15 +59,19 @@ public class PINAccessFragment extends Fragment {
 
     public static final String TAG = "PINAccessFragment";
 
+    private ProgressDialogFragment progressDialog;
+
     @Inject
     public ServerClient serverClient;
 
     private EditText pinEditText;
     private Button pinLoginButton;
+    private LocalServerProbingTask probingTask;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setRetainInstance(true);
         return inflater.inflate(R.layout.fragment_pin_access, container, false);
     }
 
@@ -74,6 +80,7 @@ public class PINAccessFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setUpInjections();
         setUpPINAuthentication(view);
+        setUpSignInDialog();
     }
 
     private void setUpInjections() {
@@ -133,17 +140,19 @@ public class PINAccessFragment extends Fragment {
     }
 
     private void showProgress() {
-        LocalLoginDialogFragment fragment = (LocalLoginDialogFragment) getChildFragmentManager().findFragmentByTag("log_in");
-        if (fragment == null) {
-            fragment = new LocalLoginDialogFragment();
-            fragment.show(getChildFragmentManager(), "log_in");
+        progressDialog = (ProgressDialogFragment) getChildFragmentManager()
+            .findFragmentByTag(ProgressDialogFragment.SIGN_IN_DIALOG_TAG);
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialogFragment();
+            progressDialog.show(getChildFragmentManager(), ProgressDialogFragment.SIGN_IN_DIALOG_TAG);
         }
     }
 
     private void startAuthentication(String pin) {
         if (getAccounts().isEmpty()) {
             // secondary user access
-            new LocalServerProbingTask(getActivity(), pin).execute();
+            probingTask = new LocalServerProbingTask(getActivity(), pin);
+            probingTask.execute();
         } else {
             // admin user access
             HdaAuthBody authBody = new HdaAuthBody(pin);
@@ -159,6 +168,11 @@ public class PINAccessFragment extends Fragment {
         return Arrays.asList(getAccountManager().getAccountsByType(AmahiAccount.TYPE));
     }
 
+    private void setUpSignInDialog() {
+        progressDialog = (ProgressDialogFragment) getChildFragmentManager()
+            .findFragmentByTag(ProgressDialogFragment.SIGN_IN_DIALOG_TAG);
+    }
+
     @Subscribe
     public void onAuthenticationFailed(AuthenticationFailedEvent event) {
         dismissDialog();
@@ -167,9 +181,8 @@ public class PINAccessFragment extends Fragment {
     }
 
     private void dismissDialog() {
-        LocalLoginDialogFragment fragment = (LocalLoginDialogFragment) getChildFragmentManager().findFragmentByTag("log_in");
-        if (fragment != null) {
-            fragment.dismiss();
+        if (progressDialog != null && progressDialog.isAdded()) {
+            progressDialog.dismiss();
         }
     }
 
@@ -190,11 +203,36 @@ public class PINAccessFragment extends Fragment {
     }
 
     private void showAuthenticationConnectionFailMessage() {
-        ViewDirector.of(getActivity(), R.id.animator_message).show(R.id.text_message_connection);
+        if (getAccounts().isEmpty()) {
+            ViewDirector.of(getActivity(), R.id.animator_message).show(R.id.text_message_local_connection);
+        } else {
+            ViewDirector.of(getActivity(), R.id.animator_message).show(R.id.text_message_connection);
+        }
     }
 
     public String getPIN() {
         return pinEditText.getText().toString();
+    }
+
+    @Subscribe
+    public void onProbingProgress(ProbingProgressEvent event) {
+        updateSignInDialog(event.getProgress());
+    }
+
+    private void updateSignInDialog(int progress) {
+        if (progressDialog != null && progressDialog.isAdded()) {
+            progressDialog.setProgress(progress);
+        }
+    }
+
+    @Subscribe
+    public void onDialogButtonClicked(DialogButtonClickedEvent event) {
+        if (event.getButtonId() == R.id.text_view_cancel) {
+            if (probingTask != null) {
+                probingTask.cancel(true);
+            }
+            dismissDialog();
+        }
     }
 
     @Override

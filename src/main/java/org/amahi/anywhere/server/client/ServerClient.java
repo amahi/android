@@ -259,7 +259,7 @@ public class ServerClient {
     }
 
     public void getShares() {
-        serverApi.getShares(server.getSession(), server.getAuthToken()).enqueue(new ServerSharesResponse());
+        serverApi.getShares(server.getAuthToken()).enqueue(new ServerSharesResponse());
     }
 
     public void getFiles(ServerShare share) {
@@ -267,15 +267,15 @@ public class ServerClient {
             return;
         }
 
-        serverApi.getFiles(server.getSession(), server.getAuthToken(), share.getName(), null).enqueue(new ServerFilesResponse(share));
+        serverApi.getFiles(server.getAuthToken(), share.getName(), null).enqueue(new ServerFilesResponse(share));
     }
 
     public void getFiles(ServerShare share, ServerFile directory) {
-        serverApi.getFiles(server.getSession(), server.getAuthToken(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
+        serverApi.getFiles(server.getAuthToken(), share.getName(), directory.getPath()).enqueue(new ServerFilesResponse(directory, share));
     }
 
     public void deleteFile(ServerShare share, ServerFile serverFile) {
-        serverApi.deleteFile(server.getSession(), server.getAuthToken(), share.getName(), serverFile.getPath())
+        serverApi.deleteFile(server.getAuthToken(), share.getName(), serverFile.getPath())
             .enqueue(new ServerFileDeleteResponse());
     }
 
@@ -299,14 +299,14 @@ public class ServerClient {
     }
 
     private void uploadFileAsync(int id, MultipartBody.Part filePart, String shareName, String path) {
-        serverApi.uploadFile(server.getSession(), server.getAuthToken(), shareName, path, filePart)
+        serverApi.uploadFile(server.getAuthToken(), shareName, path, filePart)
             .enqueue(new ServerFileUploadResponse(id));
     }
 
     private void uploadFileSync(int id, MultipartBody.Part filePart, String shareName, String path) {
         try {
             Response<ResponseBody> response = serverApi
-                .uploadFile(server.getSession(), server.getAuthToken(), shareName, path, filePart)
+                .uploadFile(server.getAuthToken(), shareName, path, filePart)
                 .execute();
             if (response.isSuccessful()) {
                 BusProvider.getBus().post(
@@ -352,5 +352,12 @@ public class ServerClient {
 
     private String getLocalAddress(String ip) {
         return "http://" + ip + ":4563/";
+    }
+
+    public void tearDownServerApi() {
+        serverRoute = null;
+        serverAddress = null;
+        server = null;
+        serverApi = null;
     }
 }

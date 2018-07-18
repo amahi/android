@@ -14,6 +14,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOptionClickEvent;
 import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.model.ServerFile;
+import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 
@@ -62,6 +63,9 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
             } else {
                 offlineLayout.setVisibility(View.GONE);
             }
+            if (!getShare().isWritable()) {
+                deleteLayout.setVisibility(View.GONE);
+            }
         } else {
             offlineLayout.setVisibility(View.GONE);
         }
@@ -78,5 +82,9 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
     public void setOptionAndDismiss(@FileOption.Types int type) {
         setOption(type);
         dismiss();
+    }
+
+    public ServerShare getShare() {
+        return getArguments().getParcelable(Fragments.Arguments.SERVER_SHARE);
     }
 }

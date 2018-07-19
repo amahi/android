@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -35,6 +34,7 @@ import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.activity.AuthenticationActivity;
 import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
+import org.amahi.anywhere.activity.RecentFilesActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -43,6 +43,8 @@ import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.activity.SettingsActivity;
 import org.amahi.anywhere.activity.WebViewActivity;
+import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -70,7 +72,8 @@ public final class Intents {
         public static final String SERVER_SHARE = "server_share";
         public static final String IMAGE_URIS = "image_uris";
         public static final String ACCOUNT_TYPE = "account_type";
-        public static final String SERVER_SESSION = "server_session";
+        public static final String UNIQUE_KEY = "unique_key";
+        public static final String FILE_TYPE = "file_type";
 
         private Extras() {
         }
@@ -114,6 +117,10 @@ public final class Intents {
             return new Intent(context, OfflineFilesActivity.class);
         }
 
+        public Intent buildRecentFilesActivity() {
+            return new Intent(context, RecentFilesActivity.class);
+        }
+
         public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file) {
             Intent intent = new Intent(context, ServerFileTvActivity.class);
             intent.putExtra(Extras.SERVER_FILE, file);
@@ -123,7 +130,7 @@ public final class Intents {
         }
 
         public boolean isServerFileSupported(ServerFile file) {
-            return getServerFileActivity(file) != null;
+            return getServerFileActivity(file.getMime()) != null;
         }
 
         public boolean isMediaServerFile(ServerFile file) {
@@ -133,8 +140,7 @@ public final class Intents {
                 || ServerFileVideoActivity.supports(fileFormat);
         }
 
-        private Class<? extends Activity> getServerFileActivity(ServerFile file) {
-            String fileFormat = file.getMime();
+        private Class<? extends Activity> getServerFileActivity(String fileFormat) {
 
             if (ServerFileAudioActivity.supports(fileFormat)) {
                 if (CheckTV.isATV(context))
@@ -169,10 +175,18 @@ public final class Intents {
         }
 
         public Intent buildServerFileIntent(ServerShare share, @NonNull List<ServerFile> files, ServerFile file) {
-            Intent intent = new Intent(context, getServerFileActivity(file));
+            Intent intent = new Intent(context, getServerFileActivity(file.getMime()));
             intent.putExtra(Extras.SERVER_SHARE, share);
             intent.putParcelableArrayListExtra(Extras.SERVER_FILES, new ArrayList<Parcelable>(files));
             intent.putExtra(Extras.SERVER_FILE, file);
+
+            return intent;
+        }
+
+        public Intent buildRecentFileIntent(RecentFile file) {
+            Intent intent = new Intent(context, getServerFileActivity(file.getMime()));
+            intent.putExtra(Extras.UNIQUE_KEY, file.getUniqueKey());
+            intent.putExtra(Extras.FILE_TYPE, FileManager.RECENT_FILE);
 
             return intent;
         }
@@ -251,13 +265,11 @@ public final class Intents {
         }
 
         public Intent buildMediaPickerIntent() {
-            Intent intent = new Intent(Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            intent.setType("image/* video/*");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "video/*"});
-            }
-            intent = Intent.createChooser(intent, context.getString(R.string.message_media_upload));
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+            intent = Intent.createChooser(intent, context.getString(R.string.message_file_upload));
             return intent;
         }
 
@@ -289,10 +301,10 @@ public final class Intents {
             return downloadService;
         }
 
-        public Intent buildPINAuthenticationIntent(String session) {
+        public Intent buildPINAuthenticationIntent(Server server) {
             Intent intent = new Intent(context, AuthenticationActivity.class);
             intent.putExtra(Extras.ACCOUNT_TYPE, AmahiAccount.TYPE_ADMIN);
-            intent.putExtra(Extras.SERVER_SESSION, session);
+            intent.putExtra(Extras.SERVER_FILE, server);
             return intent;
         }
     }

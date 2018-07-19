@@ -78,9 +78,14 @@ public class ServerFileAudioFragment extends Fragment {
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
         ImageView imageView = event.getImageView();
         Bitmap bitmap = event.getAudioMetadata().getAudioAlbumArt();
-        if (bitmap != null && imageView != null) {
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setImageBitmap(bitmap);
+        if (imageView != null) {
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            } else {
+                imageView.setImageResource(R.drawable.default_audiotrack);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            }
         }
     }
 

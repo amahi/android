@@ -85,6 +85,10 @@ public class ServerFile implements Parcelable {
         return size;
     }
 
+    public void setSize(long size) {
+        this.size = size;
+    }
+
     public ServerShare getParentShare() {
         return parentShare;
     }
@@ -111,6 +115,10 @@ public class ServerFile implements Parcelable {
 
     public String getMime() {
         return mime;
+    }
+
+    public void setMime(String mime) {
+        this.mime = mime;
     }
 
     public Date getModificationTime() {

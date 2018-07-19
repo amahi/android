@@ -29,7 +29,17 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startActivity(new Intent(this, NavigationActivity.class));
+
+        setUpActivity();
+
         finish();
+    }
+
+    private void setUpActivity() {
+        launchNavigation();
+    }
+
+    private void launchNavigation() {
+        startActivity(new Intent(this, NavigationActivity.class));
     }
 }

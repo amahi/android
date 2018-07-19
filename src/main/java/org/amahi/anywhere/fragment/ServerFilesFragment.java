@@ -70,6 +70,7 @@ import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.FileOptionClickEvent;
+import org.amahi.anywhere.bus.OfflineCanceledEvent;
 import org.amahi.anywhere.bus.OfflineFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileDownloadingEvent;
@@ -83,6 +84,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -357,23 +359,26 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void deleteFileFromOfflineStorage() {
-        OfflineFile offlineFile = mOfflineFileRepo.getOfflineFile(getShare().getName(), getCheckedFile().getPath(), getCheckedFile().getName());
-        if (offlineFile.getState() == OfflineFile.DOWNLOADING) {
-            stopDownloading(offlineFile.getDownloadId());
+        OfflineFile offlineFile = mOfflineFileRepo.getOfflineFile(getCheckedFile().getName(), getCheckedFile().getModificationTime().getTime());
+        if (offlineFile != null) {
+            if (offlineFile.getState() == OfflineFile.DOWNLOADING) {
+                stopDownloading(offlineFile.getDownloadId());
+            }
+            File file = new File(getContext().getFilesDir(), Downloader.OFFLINE_PATH + "/" + getCheckedFile().getName());
+            if (file.exists()) {
+                file.delete();
+            }
+            mOfflineFileRepo.delete(offlineFile);
+            Snackbar.make(getRecyclerView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
+                .show();
         }
-        File file = new File(getContext().getFilesDir(), getCheckedFile().getName());
-        if (file.exists()) {
-            file.delete();
-        }
-        mOfflineFileRepo.delete(offlineFile);
-        Snackbar.make(getRecyclerView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
-            .show();
     }
 
-    private void stopDownloading(long downloadID) {
+    private void stopDownloading(long downloadId) {
         DownloadManager dm = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
         if (dm != null) {
-            dm.remove(downloadID);
+            dm.remove(downloadId);
+            BusProvider.getBus().post(new OfflineCanceledEvent(downloadId));
         }
     }
 
@@ -404,6 +409,7 @@ public class ServerFilesFragment extends Fragment implements
                 getFilesMetadataAdapter().removeFile(deleteFilePosition);
                 getFilesMetadataAdapter().setSelectedPosition(RecyclerView.NO_POSITION);
             }
+            showFilesContent();
         } else {
             Toast.makeText(getContext(), R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
         }
@@ -495,6 +501,7 @@ public class ServerFilesFragment extends Fragment implements
             }
         } else {
             getListAdapter().setAdapterMode(FilesFilterAdapter.AdapterMode.OFFLINE);
+            getFilesAdapter().setUpDownloadReceiver();
             showOfflineFiles();
         }
     }

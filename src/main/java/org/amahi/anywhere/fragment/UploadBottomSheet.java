@@ -78,7 +78,7 @@ public class UploadBottomSheet extends BottomSheetDialogFragment {
             R.drawable.ic_camera));
 
         uploadOptions.add(new UploadOption(UploadOption.FILE,
-            getString(R.string.upload_photo),
+            getString(R.string.upload_file),
             R.drawable.ic_cloud_upload));
 
         return uploadOptions;

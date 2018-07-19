@@ -25,6 +25,7 @@ import android.content.Context;
 import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
+import org.amahi.anywhere.activity.RecentFilesActivity;
 import org.amahi.anywhere.activity.ServerAppActivity;
 import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.activity.ServerFileImageActivity;
@@ -32,6 +33,7 @@ import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.cache.CacheModule;
+import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.MainLoginFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.PINAccessFragment;
@@ -81,6 +83,7 @@ import dagger.Provides;
         ServerFileImageActivity.class,
         ServerFileVideoActivity.class,
         NativeVideoActivity.class,
+        RecentFilesActivity.class,
         ServerFileWebActivity.class,
         MainLoginFragment.class,
         PINAccessFragment.class,
@@ -93,6 +96,7 @@ import dagger.Provides;
         ServerFileDownloadingFragment.class,
         SettingsFragment.class,
         UploadSettingsFragment.class,
+        AudioListFragment.class,
         AudioService.class,
         VideoService.class,
         MainTVFragment.class,

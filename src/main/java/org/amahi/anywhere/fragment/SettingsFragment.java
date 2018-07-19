@@ -166,6 +166,7 @@ public class SettingsFragment extends PreferenceFragment implements
     private void tearDownPreferences() {
         Preferences.getPreference(getActivity()).edit().remove(getString(R.string.selected_server_auth)).apply();
         Preferences.getPreference(getActivity()).edit().remove(getString(R.string.selected_server_session)).apply();
+        Preferences.getPreference(getActivity()).edit().remove(getString(R.string.local_server_ip)).apply();
     }
 
     private void tearDownServerClient() {
@@ -173,6 +174,7 @@ public class SettingsFragment extends PreferenceFragment implements
     }
 
     private void setUpApplicationIntro() {
+        Preferences.setFirstRun(getActivity());
         Intent intent = Intents.Builder.with(getActivity()).buildIntroductionIntent();
         startActivity(intent);
     }

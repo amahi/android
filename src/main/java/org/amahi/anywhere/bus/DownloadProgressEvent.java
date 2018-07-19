@@ -17,28 +17,23 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.fragment;
+package org.amahi.anywhere.bus;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.ProgressDialog;
-import android.os.Bundle;
+public class DownloadProgressEvent implements BusEvent {
 
-public class LocalLoginDialogFragment extends DialogFragment {
+    private long id;
+    private int progress;
 
-    private ProgressDialog dialog;
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        dialog = new ProgressDialog(getActivity());
-        dialog.setTitle("Logging In");
-        dialog.setCancelable(false);
-        dialog.setIndeterminate(false);
-        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        return dialog;
+    public DownloadProgressEvent(long id, int progress) {
+        this.id = id;
+        this.progress = progress;
     }
 
-    public void setProgress(int progress) {
-        dialog.setProgress(progress);
+    public long getId() {
+        return id;
+    }
+
+    public int getProgress() {
+        return progress;
     }
 }

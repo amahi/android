@@ -26,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,6 +42,7 @@ import org.amahi.anywhere.bus.AppSelectedEvent;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
+import org.amahi.anywhere.bus.RecentFilesSelectedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.bus.SharesSelectedEvent;
@@ -147,6 +149,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void setUpHomeNavigation() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(isNavigationDrawerAvailable());
         getSupportActionBar().setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
     }
@@ -317,6 +321,21 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
     private void showOfflineFiles() {
         Intent intent = Intents.Builder.with(this).buildServerFilesActivityForOfflineFiles();
+        startActivity(intent);
+    }
+
+    @Subscribe
+    public void onRecentFilesSelected(RecentFilesSelectedEvent event) {
+
+        showRecentFiles();
+
+        if (isNavigationDrawerAvailable()) {
+            hideNavigationDrawer();
+        }
+    }
+
+    private void showRecentFiles() {
+        Intent intent = Intents.Builder.with(this).buildRecentFilesActivity();
         startActivity(intent);
     }
 

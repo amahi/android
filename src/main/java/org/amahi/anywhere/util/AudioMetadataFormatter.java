@@ -70,6 +70,9 @@ public final class AudioMetadataFormatter {
         }
 
         if (TextUtils.isEmpty(audioArtist) && TextUtils.isEmpty(audioAlbum)) {
+            if (audioShare == null) {
+                return null;
+            }
             return audioShare.getName();
         }
 

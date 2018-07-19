@@ -35,6 +35,7 @@ import org.amahi.anywhere.bus.PINAccessEvent;
 import org.amahi.anywhere.bus.ServerAuthenticationCompleteEvent;
 import org.amahi.anywhere.fragment.MainLoginFragment;
 import org.amahi.anywhere.fragment.PINAccessFragment;
+import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Preferences;
@@ -101,6 +102,8 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
 
             finishAuthentication(event.getAuthentication().getToken(), fragment.getUsername(), fragment.getPassword());
         } else if (accountType.equals(AmahiAccount.TYPE_USER)) {
+            String ip = Preferences.getLocalServerIP(this);
+            Preferences.setServerName(this, ip);
             PINAccessFragment fragment = (PINAccessFragment) getFragmentManager().findFragmentByTag(PINAccessFragment.TAG);
 
             finishAuthentication(event.getAuthentication().getToken(), "Server", fragment.getPIN());
@@ -138,12 +141,13 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
 
     @Subscribe
     public void onServerAuthenticationComplete(ServerAuthenticationCompleteEvent event) {
-        Preferences.setServerSession(this, getServerSession());
+        Preferences.setServerSession(this, getServer().getSession());
+        Preferences.setServerName(this, getServer().getName());
         storeAuthToken(event.getAuthToken());
     }
 
-    private String getServerSession() {
-        return getIntent().getStringExtra(Intents.Extras.SERVER_SESSION);
+    private Server getServer() {
+        return getIntent().getParcelableExtra(Intents.Extras.SERVER_FILE);
     }
 
     private void storeAuthToken(String authToken) {
@@ -195,6 +199,9 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        if (accountType.equals(AmahiAccount.TYPE_USER)) {
+            accountType = AmahiAccount.TYPE;
+        }
     }
 
     private static final class State {

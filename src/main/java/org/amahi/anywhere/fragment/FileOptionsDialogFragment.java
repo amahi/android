@@ -63,7 +63,7 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
             } else {
                 offlineLayout.setVisibility(View.GONE);
             }
-            if (!getShare().isWritable()) {
+            if (getShare() != null && !getShare().isWritable()) {
                 deleteLayout.setVisibility(View.GONE);
             }
         } else {

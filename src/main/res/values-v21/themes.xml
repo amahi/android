@@ -32,4 +32,12 @@
         <item name="background">@drawable/bg_action_bar</item>
         <item name="displayOptions">showHome|homeAsUp|showTitle</item>
     </style>
+
+    <style name="Theme.Amahi.NoActionBar">
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+    </style>
 </resources>

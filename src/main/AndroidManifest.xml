@@ -85,7 +85,9 @@
                 android:name="android.max_aspect"
                 android:value="2.1" />
         </activity>
-        <activity android:name=".activity.NavigationActivity" />
+        <activity
+            android:name=".activity.NavigationActivity"
+            android:theme="@style/Theme.Amahi.NoActionBar" />
         <activity android:name=".activity.ServerAppActivity" />
         <activity android:name=".activity.ServerFilesActivity">
             <meta-data
@@ -217,6 +219,7 @@
             android:value="org.amahi.anywhere.util.CastOptionsProvider" />
 
         <activity android:name=".activity.OfflineFilesActivity" />
+        <activity android:name=".activity.RecentFilesActivity"></activity>
     </application>
 
 </manifest>

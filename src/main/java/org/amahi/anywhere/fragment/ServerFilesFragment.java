@@ -327,10 +327,6 @@ public class ServerFilesFragment extends Fragment implements
         BusProvider.getBus().post(new ServerFileSharingEvent(getShare(), getCheckedFile()));
     }
 
-    private ServerFile getOfflineServerFile(OfflineFile offlineFile) {
-        return new ServerFile(offlineFile.getName(), offlineFile.getTimeStamp(), offlineFile.getMime());
-    }
-
     private void deleteFile() {
         if (!isOfflineFragment()) {
             deleteFilePosition = getListAdapter().getSelectedPosition();

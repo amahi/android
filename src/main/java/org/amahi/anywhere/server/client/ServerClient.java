@@ -353,10 +353,11 @@ public class ServerClient {
 
         // TODO: set right remote
         // for now remote address = local address
+        // session = auth token 
         serverRoute.setRemoteAddress(getLocalAddress(ip));
 
         serverAddress = serverRoute.getLocalAddress();
-        server = new Server(auth);
+        server = new Server(auth, auth);
         server.setAuthToken(auth);
         serverApi = buildServerApi();
     }

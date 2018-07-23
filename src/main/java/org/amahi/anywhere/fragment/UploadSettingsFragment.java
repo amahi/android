@@ -162,8 +162,23 @@ public class UploadSettingsFragment extends PreferenceFragment implements
             Bundle accountManagerResult = future.getResult();
 
             authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
+            if (authenticationToken != null) {
+                Account[] accounts = getAccountManager().getAccounts();
+                Account account = accounts[0];
 
-            setUpAuthenticationToken();
+                String isLocalUser = getAccountManager().getUserData(account, "is_local");
+                String ip = getAccountManager().getUserData(account, "ip");
+                if (isLocalUser.equals("F")) {
+                    setUpAuthenticationToken();
+                } else {
+                    getHdaPreference().setSummary(ip);
+                    getHdaPreference().setValue("local_session");
+                    getHdaPreference().setOnPreferenceChangeListener(null);
+                    serverClient.getShares();
+                }
+            } else {
+                setUpAuthenticationToken();
+            }
 
         } catch (OperationCanceledException e) {
             tearDownActivity();

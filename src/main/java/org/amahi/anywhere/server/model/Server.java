@@ -61,8 +61,9 @@ public class Server implements Parcelable {
         this.debug = true;
     }
 
-    public Server(String session) {
+    public Server(String session, String authToken) {
         this.session = session;
+        this.authToken = authToken;
     }
 
     public Server(Parcel parcel) {

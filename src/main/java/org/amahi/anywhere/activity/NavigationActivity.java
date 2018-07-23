@@ -22,6 +22,7 @@ package org.amahi.anywhere.activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -41,6 +42,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AppSelectedEvent;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ForbiddenAccessEvent;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
 import org.amahi.anywhere.bus.RecentFilesSelectedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
@@ -418,6 +420,11 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         if (requestCode == PIN_REQUEST_CODE && resultCode == RESULT_OK) {
             onSharesSelected(new SharesSelectedEvent());
         }
+    }
+
+    @Subscribe
+    public void onForbiddenAccess(ForbiddenAccessEvent event) {
+        Snackbar.make(getContainerContent(), R.string.message_error_forbidden_access, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

@@ -73,6 +73,7 @@
     <string name="message_error_pin">PIN is not correct. Please try again.</string>
     <string name="message_error_local_connection">It seems that you are not connected to the same Wifi as your server.</string>
     <string name="message_error_connection">Connection Error</string>
+    <string name="message_error_forbidden_access">You do not have permission to access shares, contact your administrator</string>
     <string name="message_tap_to_retry">Tap to retry</string>
     <string name="message_error_video">Error playing the video</string>
     <string name="message_error_amahi_anywhere_app">The Amahi Anywhere app in your server is not reachable. Please ensure that Amahi Anywhere app is installed, running and reachable in your network.</string>

@@ -53,6 +53,7 @@ import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
+import org.amahi.anywhere.bus.AuthExpiredEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
 import org.amahi.anywhere.bus.RecentFilesSelectedEvent;
@@ -578,17 +579,18 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         return Preferences.getServerSession(getContext());
     }
 
-    private void storeServerName(Server server) {
-        Preferences.setServerName(getContext(), server.getName());
-    }
-
     private String getServerName() {
         return Preferences.getServerName(getContext());
     }
 
     @Subscribe
     public void onAuthenticationStart(ServerAuthenticationStartEvent event) {
+        if (server == null) {
+            return;
+        }
         if (server.getName().equals(getString(R.string.demo_server_name))) {
+            Preferences.setServerName(getActivity(), server.getName());
+            getServerNameTextView().setText(server.getName());
             BusProvider.getBus().post(new SharesSelectedEvent());
             return;
         }
@@ -597,6 +599,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         String session = Preferences.getServerSession(getContext());
 
         if (authToken != null && server.getSession().equals(session)) {
+            Preferences.setServerName(getActivity(), server.getName());
+            getServerNameTextView().setText(server.getName());
             serverClient.onHdaAuthenticated(new ServerAuthenticationCompleteEvent(authToken));
             BusProvider.getBus().post(new SharesSelectedEvent());
             return;
@@ -675,6 +679,26 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
         areServersVisible = false;
         setUpNavigationList();
+    }
+
+    @Subscribe
+    public void onAuthExpired(AuthExpiredEvent event) {
+        if (!getAccounts().isEmpty()) {
+            Account account = getAccounts().get(0);
+            String isLocal = getAccountManager().getUserData(account, "is_local");
+            if (isLocal != null && isLocal.equals("T")) {
+                serverClient.tearDownServerApi();
+                getAccountManager().removeAccount(account, null, null);
+                PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().clear().apply();
+                Preferences.getPreference(getActivity()).edit().clear().apply();
+                setUpAuthentication();
+            } else {
+                Preferences.getPreference(getActivity()).edit().remove(getString(R.string.selected_server_session)).apply();
+                Preferences.getPreference(getActivity()).edit().remove(getString(R.string.selected_server_auth)).apply();
+                Preferences.getPreference(getActivity()).edit().remove(getString(R.string.pref_server_select_key)).apply();
+                startAuthenticationActivity();
+            }
+        }
     }
 
     @Override

@@ -155,7 +155,6 @@ public class LocalServerProbingTask extends AsyncTask<Void, Integer, BusEvent> {
             DhcpInfo d = wm.getDhcpInfo();
             String ip = intToIp(d.dns1);
             String prefix = ip.substring(0, ip.lastIndexOf(".") + 1);
-//            prefix = "192.168.54.";
             for (int i = 0; i < 255; i++) {
                 if (isCancelled()) {
                     break;

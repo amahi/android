@@ -99,7 +99,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     private Server server;
 
     private boolean areServersVisible;
-    private List<Server> serversList;
+    private ArrayList<Server> serversList;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -199,8 +199,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
                     setUpServers(authenticationToken);
                 } else {
                     setUpLocalServerApi(authenticationToken, ip);
-                    BusProvider.getBus().post(new SharesSelectedEvent());
-                    setUpLocalNavigation();
+                    if (!CheckTV.isATV(getActivity())) {
+                        BusProvider.getBus().post(new SharesSelectedEvent());
+                        setUpLocalNavigation();
+                    } else {
+                        ArrayList<Server> servers = new ArrayList<>();
+                        servers.add(server);
+                        launchTV(servers);
+                    }
                 }
             } else {
                 setUpAuthenticationToken();
@@ -295,12 +301,12 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         return serverList;
     }
 
-    private List<Server> getServersList() {
+    private ArrayList<Server> getServersList() {
         return serversList;
     }
 
-    private List<Server> filterActiveServers(List<Server> servers) {
-        List<Server> activeServers = new ArrayList<>();
+    private ArrayList<Server> filterActiveServers(List<Server> servers) {
+        ArrayList<Server> activeServers = new ArrayList<>();
 
         for (Server server : servers) {
             if (server.isActive()) {
@@ -343,7 +349,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Subscribe
     public void onServersLoaded(ServersLoadedEvent event) {
-        setUpServersContent(event.getServers());
+        replaceServersList(filterActiveServers(event.getServers()));
 
         setUpNavigation();
 
@@ -461,18 +467,18 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         String session = getServerSession();
 
-        List<Server> activeServers = filterActiveServers(servers);
+        this.serversList = filterActiveServers(servers);
         if (session != null) {
-            for (int i = 0; i < activeServers.size(); i++) {
-                if (activeServers.get(i).getSession().equals(session)) {
-                    server = activeServers.get(i);
+            for (int i = 0; i < serversList.size(); i++) {
+                if (serversList.get(i).getSession().equals(session)) {
+                    server = serversList.get(i);
                     getServerNameTextView().setText(serversList.get(i).getName());
                     setUpServerConnection(server);
                     break;
                 }
             }
         } else if (!servers.isEmpty()) {
-            selectDemoServer(activeServers);
+            selectDemoServer(serversList);
         }
     }
 
@@ -481,6 +487,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
             if (activeServers.get(i).getName().equals(getString(R.string.demo_server_name))) {
                 server = activeServers.get(i);
                 getServerNameTextView().setText(activeServers.get(i).getName());
+                Preferences.setServerSession(getActivity(), server.getSession());
+                Preferences.setServerName(getActivity(), server.getName());
+                Preferences.setServerToken(getActivity(), null);
                 setUpServerConnection(server);
                 break;
             }
@@ -623,7 +632,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         setUpNavigationList();
         showContent();
 
-        if (CheckTV.isATV(getContext())) launchTV();
+        if (CheckTV.isATV(getContext())) {
+            String authToken = Preferences.getServerToken(getActivity());
+            serverClient.onHdaAuthenticated(new ServerAuthenticationCompleteEvent(authToken));
+            launchTV(serversList);
+        }
     }
 
     private void setUpServerConnection() {
@@ -639,7 +652,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         }
     }
 
-    private void launchTV() {
+    private void launchTV(ArrayList<Server> servers) {
+        Intent tvIntent = Intents.Builder.with(getActivity()).buildTVActivity(servers,
+            getString(R.string.intent_servers));
         startActivity(tvIntent);
     }
 
@@ -668,7 +683,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpLocalServerApi(String auth, String ip) {
-        serverClient.connectLocalServer(auth, ip);
+        this.server = serverClient.connectLocalServer(auth, ip);
     }
 
     private void showRecentFiles() {

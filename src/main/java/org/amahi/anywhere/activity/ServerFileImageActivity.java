@@ -57,6 +57,7 @@ import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.CheckTV;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.FullScreenHelper;
@@ -162,14 +163,16 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     }
 
     private boolean isCastConnected() {
-        return mCastSession != null && mCastSession.isConnected();
+        return !CheckTV.isATV(this) && mCastSession != null && mCastSession.isConnected();
     }
 
     private void setUpCast() {
-        mCastContext = CastContext.getSharedInstance(this);
-        mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
-        if (isCastConnected()) {
-            loadRemoteMedia();
+        if (!CheckTV.isATV(this)) {
+            mCastContext = CastContext.getSharedInstance(this);
+            mCastSession = mCastContext.getSessionManager().getCurrentCastSession();
+            if (isCastConnected()) {
+                loadRemoteMedia();
+            }
         }
     }
 
@@ -281,8 +284,10 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar_server_file_image, menu);
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-            R.id.media_route_menu_item);
+        if (isCastConnected()) {
+            CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
+                R.id.media_route_menu_item);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -374,7 +379,9 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        mCastContext.getSessionManager().addSessionManagerListener(this, CastSession.class);
+        if (isCastConnected())
+            mCastContext.getSessionManager().addSessionManagerListener(this, CastSession.class);
+
         BusProvider.getBus().register(this);
     }
 
@@ -382,7 +389,8 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
-        mCastContext.getSessionManager().removeSessionManagerListener(this, CastSession.class);
+        if (isCastConnected())
+            mCastContext.getSessionManager().removeSessionManagerListener(this, CastSession.class);
         BusProvider.getBus().unregister(this);
     }
 

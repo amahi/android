@@ -50,6 +50,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.DownloadService;
 import org.amahi.anywhere.service.UploadService;
+import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
 import org.amahi.anywhere.tv.activity.TvPlaybackAudioActivity;
@@ -67,6 +68,7 @@ public final class Intents {
 
     public static final class Extras {
         public static final String SERVER_APP = "server_app";
+        public static final String SERVERS = "servers";
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_FILES = "server_files";
         public static final String SERVER_SHARE = "server_share";
@@ -306,6 +308,12 @@ public final class Intents {
             intent.putExtra(Extras.ACCOUNT_TYPE, AmahiAccount.TYPE_ADMIN);
             intent.putExtra(Extras.SERVER_FILE, server);
             return intent;
+        }
+
+        public Intent buildTVActivity(ArrayList<Server> servers, String serversKey) {
+            Intent tvIntent = new Intent(context, MainTVActivity.class);
+            tvIntent.putParcelableArrayListExtra(serversKey, servers);
+            return tvIntent;
         }
     }
 }

@@ -70,14 +70,6 @@ public final class Preferences {
         preferences.edit().putString(context.getString(R.string.pref_key_theme), context.getString(R.string.pref_theme_dark)).apply();
     }
 
-    public static void setServertoPref(String server, Context context, SharedPreferences sharedPref) {
-        sharedPref.edit().putString(context.getString(R.string.pref_server_select_key), server).apply();
-    }
-
-    public static String getServerFromPref(Context context, SharedPreferences sharedPreferences) {
-        return sharedPreferences.getString(context.getString(R.string.pref_server_select_key), null);
-    }
-
     public static boolean getFirstRun(Context context) {
         return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getBoolean(context.getString(R.string.is_first_run), true);
     }
@@ -144,6 +136,10 @@ public final class Preferences {
 
     public static void setSortOption(Context context, int filesSort) {
         getPreference(context).edit().putInt(Defaults.SORTING_OPTION, filesSort).apply();
+    }
+
+    public static void resetPreferences(Context context) {
+        getPreference(context).edit().clear().apply();
     }
 
     private static final class Locations {

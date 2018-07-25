@@ -104,6 +104,8 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity {
         } else if (accountType.equals(AmahiAccount.TYPE_USER)) {
             String ip = Preferences.getLocalServerIP(this);
             Preferences.setServerName(this, ip);
+            // TODO: set server session
+            Preferences.setServerSession(this, event.getAuthentication().getToken());
             Preferences.setServerToken(this, event.getAuthentication().getToken());
             PINAccessFragment fragment = (PINAccessFragment) getFragmentManager().findFragmentByTag(PINAccessFragment.TAG);
 

@@ -347,19 +347,21 @@ public class ServerClient {
         serverApi.getApps(server.getSession()).enqueue(new ServerAppsResponse());
     }
 
-    public void connectLocalServer(String auth, String ip) {
+    public Server connectLocalServer(String auth, String ip) {
         serverRoute = new ServerRoute();
         serverRoute.setLocalAddress(getLocalAddress(ip));
 
         // TODO: set right remote
         // for now remote address = local address
-        // session = auth token 
+        // session = auth token
         serverRoute.setRemoteAddress(getLocalAddress(ip));
 
         serverAddress = serverRoute.getLocalAddress();
         server = new Server(auth, auth);
         server.setAuthToken(auth);
+        server.setName(ip);
         serverApi = buildServerApi();
+        return server;
     }
 
     private String getLocalAddress(String ip) {

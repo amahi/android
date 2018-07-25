@@ -81,6 +81,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
+        setUpActionBar();
+
         if (CheckTV.isATV(this)) {
             handleTvFirstRun();
             showTvLoading();
@@ -91,6 +93,11 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         setUpHomeNavigation();
 
         setUpNavigation(savedInstanceState);
+    }
+
+    private void setUpActionBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 
     private void handleTvFirstRun() {
@@ -111,8 +118,6 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         hideActionBar();
 
         setUpNavigationFragment();
-
-        setUpShares();
     }
 
     private void inflateStubs() {
@@ -151,8 +156,6 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void setUpHomeNavigation() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(isNavigationDrawerAvailable());
         getSupportActionBar().setDisplayHomeAsUpEnabled(isNavigationDrawerAvailable());
     }

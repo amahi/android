@@ -70,6 +70,7 @@ public class Server implements Parcelable {
         this.name = parcel.readString();
         this.session = parcel.readString();
         this.active = Boolean.valueOf(parcel.readString());
+        this.debug = Boolean.valueOf(parcel.readString());
     }
 
     public static List<Server> filterActiveServers(List<Server> servers) {
@@ -80,6 +81,10 @@ public class Server implements Parcelable {
             }
         }
         return activeServers;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getName() {
@@ -115,6 +120,7 @@ public class Server implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(session);
         parcel.writeString(String.valueOf(active));
+        parcel.writeString(String.valueOf(debug));
     }
 
     @Override

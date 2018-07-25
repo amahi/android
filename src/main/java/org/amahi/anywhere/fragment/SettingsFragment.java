@@ -164,8 +164,9 @@ public class SettingsFragment extends PreferenceFragment implements
     }
 
     private void tearDownPreferences() {
-        Preferences.getPreference(getActivity()).edit().clear().apply();
+        Preferences.resetPreferences(getActivity());
         PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().clear().apply();
+        Preferences.setFirstRun(getActivity());
     }
 
     private void tearDownServerClient() {

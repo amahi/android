@@ -174,7 +174,7 @@ public class VideoService extends Service {
     }
 
     private void searchSubtitleFile() {
-        if (serverClient.isConnected()) {
+        if (videoShare != null && serverClient.isConnected()) {
             if (!isDirectoryAvailable()) {
                 serverClient.getFiles(videoShare);
             } else {
@@ -189,9 +189,15 @@ public class VideoService extends Service {
         for (ServerFile file : files) {
             if (videoFile.getNameOnly().equals(file.getNameOnly())) {
                 if (Mimes.match(file.getMime()) == Mimes.Type.SUBTITLE) {
+                    pauseVideo();
+                    Media media = new Media(mLibVLC, getVideoUri());
+                    mMediaPlayer.setMedia(media);
+                    media.release();
                     mMediaPlayer.getMedia().addSlave(
                         new Media.Slave(
                             Media.Slave.Type.Subtitle, 4, getSubtitleUri(file)));
+                    playVideo();
+                    mMediaPlayer.setTime(pauseTime);
                     break;
                 }
             }
@@ -265,6 +271,19 @@ public class VideoService extends Service {
         mLibVLC.release();
     }
 
+    public void enableSubtitles(boolean enable) {
+        if (enable) {
+            searchSubtitleFile();
+        } else {
+            Media media = mMediaPlayer.getMedia();
+            media.clearSlaves();
+            pauseVideo();
+            mMediaPlayer.setMedia(media);
+            media.release();
+            mMediaPlayer.play();
+            mMediaPlayer.setTime(pauseTime);
+        }
+    }
 
     public static final class VideoServiceBinder extends Binder {
         private final VideoService videoService;

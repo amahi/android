@@ -95,7 +95,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     VideoSwipeGestures.SeekControl,
     SessionManagerListener<CastSession> {
 
-    private static final boolean ENABLE_SUBTITLES = false;
+    private boolean isSubtitlesEnable = false;
     private static SurfaceSizes CURRENT_SIZE = SurfaceSizes.SURFACE_BEST_FIT;
     @Inject
     ServerClient serverClient;
@@ -139,6 +139,13 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         setUpVideoTitle();
 
         setUpVideo();
+
+        loadState(savedInstanceState);
+    }
+
+    private void loadState(Bundle state) {
+        if (state != null)
+            isSubtitlesEnable = state.getBoolean(State.SUBTITLES_ENABLED, false);
     }
 
     private void setUpInjections() {
@@ -315,7 +322,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
             getVideoMainFrame().setVisibility(View.VISIBLE);
             getProgressBar().setVisibility(View.INVISIBLE);
         } else {
-            videoService.startVideo(getVideoShare(), getVideoFile(), ENABLE_SUBTITLES);
+            videoService.startVideo(getVideoShare(), getVideoFile(), false);
             addLayoutChangeListener();
             setUpPlayPosition();
         }
@@ -644,10 +651,10 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.action_bar_cast_button, menu);
+        getMenuInflater().inflate(R.menu.action_bar_video_files, menu);
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
             R.id.media_route_menu_item);
+        menu.findItem(R.id.menu_subtitle).setChecked(isSubtitlesEnable);
         return true;
     }
 
@@ -657,10 +664,19 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.menu_subtitle:
+                menuItem.setChecked(!menuItem.isChecked());
+                enableSubtitles(menuItem.isChecked());
+                return true;
 
             default:
                 return super.onOptionsItemSelected(menuItem);
         }
+    }
+
+    private void enableSubtitles(boolean enable) {
+        videoService.enableSubtitles(enable);
+        isSubtitlesEnable = enable;
     }
 
     @Override
@@ -835,6 +851,13 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         return builder.build();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(State.SUBTITLES_ENABLED, isSubtitlesEnable);
+    }
+
     private enum SurfaceSizes {
         SURFACE_BEST_FIT,
         SURFACE_FIT_SCREEN,
@@ -842,5 +865,9 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
         SURFACE_16_9,
         SURFACE_4_3,
         SURFACE_ORIGINAL;
+    }
+
+    private static final class State {
+        public static final String SUBTITLES_ENABLED = "subtitles_enabled";
     }
 }

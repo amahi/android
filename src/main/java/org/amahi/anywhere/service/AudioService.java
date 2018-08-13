@@ -72,9 +72,9 @@ import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.OfflineFile;
-import org.amahi.anywhere.db.entities.PlayedFile;
+import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
-import org.amahi.anywhere.db.repositories.PlayedFileRepository;
+import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.model.AudioMetadata;
 import org.amahi.anywhere.receiver.AudioReceiver;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -86,7 +86,10 @@ import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Identifier;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.MediaNotificationManager;
+import org.amahi.anywhere.util.Preferences;
 
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -109,6 +112,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
     private ServerShare audioShare;
     private List<ServerFile> audioFiles;
     private ServerFile audioFile;
+    private boolean isPreparing = false;
 
     private AudioMetadataFormatter audioMetadataFormatter;
     private Bitmap audioAlbumArt;
@@ -220,15 +224,48 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     private void setUpAudioPlayback() {
+        setUpRecentFiles();
+
         MediaSource mediaSource;
         if (isFileAvailableOffline(getAudioFile())) {
             mediaSource = new ExtractorMediaSource.Factory(
                 new DefaultDataSourceFactory(this, Identifier.getUserAgent(this)))
-                .createMediaSource(getOfflineFileUri(audioFile.getName()));
+                .createMediaSource(getOfflineFileUri(getAudioFile().getName()));
         } else {
             mediaSource = buildMediaSource(getAudioUri());
         }
-        audioPlayer.prepare(mediaSource, true, false);
+        audioPlayer.prepare(mediaSource, true, true);
+        isPreparing = true;
+    }
+
+    private void setUpRecentFiles() {
+        String uri;
+        long size;
+        if (isFileAvailableOffline(getAudioFile())) {
+            uri = getUriFrom(getAudioFile().getName(), getAudioFile().getModificationTime());
+            size = new File(getOfflineFileUri(getAudioFile().getName()).toString()).length();
+        } else {
+            uri = getAudioUri().toString();
+            size = getAudioFile().getSize();
+        }
+
+        String serverName = Preferences.getServerName(this);
+
+        RecentFile recentFile = new RecentFile(audioFile.getUniqueKey(),
+            uri,
+            serverName,
+            System.currentTimeMillis(),
+            size,
+            getAudioFile().getMime(),
+            getAudioFile().getModificationTime().getTime());
+        RecentFileRepository recentFileRepository = new RecentFileRepository(this);
+        recentFileRepository.insert(recentFile);
+    }
+
+    private String getUriFrom(String name, Date modificationTime) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile offlineFile = repository.getOfflineFile(name, modificationTime.getTime());
+        return offlineFile.getFileUri();
     }
 
     private boolean isFileAvailableOffline(ServerFile serverFile) {
@@ -242,7 +279,16 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     private Uri getAudioUri() {
-        return serverClient.getFileUri(audioShare, audioFile);
+        if (audioShare != null) {
+            return serverClient.getFileUri(audioShare, getAudioFile());
+        } else {
+            return getRecentFileUri();
+        }
+    }
+
+    private Uri getRecentFileUri() {
+        RecentFileRepository repository = new RecentFileRepository(this);
+        return Uri.parse(repository.getRecentFile(getAudioFile().getUniqueKey()).getUri());
     }
 
     private void setUpAudioMetadata() {
@@ -258,7 +304,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
-        if (audioFile != null && audioFile.getUniqueKey().equals(event.getServerFile().getUniqueKey())) {
+        if (audioFile != null && event.getServerFile() != null && audioFile.getUniqueKey().equals(event.getServerFile().getUniqueKey())) {
             final AudioMetadata metadata = event.getAudioMetadata();
             this.audioMetadataFormatter = new AudioMetadataFormatter(
                 metadata.getAudioTitle(), metadata.getAudioArtist(), metadata.getAudioAlbum());
@@ -295,8 +341,9 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     public void setPlayPosition(long playPosition) {
-        playAudio();
         getAudioPlayer().seekTo(playPosition);
+        playAudio();
+        BusProvider.getBus().post(new AudioPreparedEvent());
     }
 
     public PendingIntent createContentIntent() {
@@ -306,6 +353,14 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     public ServerFile getAudioFile() {
         return audioFile;
+    }
+
+    public ServerShare getAudioShare() {
+        return audioShare;
+    }
+
+    public List<ServerFile> getAudioFiles() {
+        return audioFiles;
     }
 
     public AudioMetadataFormatter getAudioMetadataFormatter() {
@@ -391,13 +446,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Subscribe
     public void onAudioCompleted(AudioCompletedEvent event) {
-        deletePlayedFileFromDatabase();
         startNextAudio();
-    }
-
-    private void deletePlayedFileFromDatabase() {
-        PlayedFileRepository repository = new PlayedFileRepository(this);
-        repository.delete(getAudioFile().getUniqueKey());
     }
 
     public void playAudio() {
@@ -424,9 +473,9 @@ public class AudioService extends MediaBrowserServiceCompat implements
             PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
             PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
         if (audioPlayer.getPlayWhenReady()) {
-            actions |= PlaybackStateCompat.ACTION_PAUSE;
-        } else {
             actions |= PlaybackStateCompat.ACTION_PLAY;
+        } else {
+            actions |= PlaybackStateCompat.ACTION_PAUSE;
         }
         return actions;
     }
@@ -516,22 +565,11 @@ public class AudioService extends MediaBrowserServiceCompat implements
     public void onDestroy() {
         super.onDestroy();
 
-        savePlayPosition();
-
         tearDownBus();
 
         tearDownAudioPlayer();
         tearDownAudioPlayerRemote();
         tearDownAudioPlayerNotification();
-    }
-
-    private void savePlayPosition() {
-        PlayedFileRepository repository = new PlayedFileRepository(this);
-
-        if (getAudioPlayer().getCurrentPosition() >= 1000 && getAudioPlayer().getDuration() != getAudioPlayer().getCurrentPosition()) {
-            PlayedFile playedFile = new PlayedFile(getAudioFile().getUniqueKey(), getAudioPlayer().getCurrentPosition());
-            repository.insert(playedFile);
-        }
     }
 
     private void tearDownAudioMetadataFormatter() {
@@ -578,7 +616,8 @@ public class AudioService extends MediaBrowserServiceCompat implements
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if (playbackState == Player.STATE_ENDED) {
             BusProvider.getBus().post(new AudioCompletedEvent());
-        } else if (playbackState == Player.STATE_READY) {
+        } else if (playbackState == Player.STATE_READY && isPreparing) {
+            isPreparing = false;
             BusProvider.getBus().post(new AudioPreparedEvent());
         }
     }

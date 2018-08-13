@@ -47,10 +47,14 @@ public class ServerShare implements Parcelable {
     @SerializedName("tags")
     private List<String> tags;
 
+    @SerializedName("writable")
+    private boolean writable;
+
     @SuppressWarnings("unchecked")
     private ServerShare(Parcel parcel) {
         this.name = parcel.readString();
         this.tags = parcel.readArrayList(String.class.getClassLoader());
+        this.writable = parcel.readByte() != 0;
     }
 
     public String getName() {
@@ -71,10 +75,15 @@ public class ServerShare implements Parcelable {
         return Tag.FILES;
     }
 
+    public boolean isWritable() {
+        return writable;
+    }
+
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(name);
         parcel.writeList(tags);
+        parcel.writeByte((byte) (writable ? 1 : 0));
     }
 
     @Override

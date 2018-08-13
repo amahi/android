@@ -32,18 +32,23 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.entities.PlayedFile;
+import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.db.repositories.PlayedFileRepository;
+import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.Preferences;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -102,6 +107,8 @@ public class VideoService extends Service {
     }
 
     private void setUpVideoPlayback(boolean isSubtitleEnabled) {
+        setUpRecentFiles();
+
         Media media;
         if (isFileAvailableOffline(videoFile)) {
             media = new Media(mLibVLC, getOfflineFileUri(videoFile.getName()));
@@ -115,10 +122,40 @@ public class VideoService extends Service {
         }
     }
 
+    private void setUpRecentFiles() {
+        String uri;
+        long size;
+        if (isFileAvailableOffline(videoFile)) {
+            uri = getUriFrom(videoFile.getName(), videoFile.getModificationTime());
+            size = new File(getOfflineFileUri(videoFile.getName())).length();
+        } else {
+            uri = getVideoUri().toString();
+            size = videoFile.getSize();
+        }
+
+        String serverName = Preferences.getServerName(this);
+
+        RecentFile recentFile = new RecentFile(videoFile.getUniqueKey(),
+            uri,
+            serverName,
+            System.currentTimeMillis(),
+            size,
+            videoFile.getMime(),
+            videoFile.getModificationTime().getTime());
+        RecentFileRepository recentFileRepository = new RecentFileRepository(this);
+        recentFileRepository.insert(recentFile);
+    }
+
     private boolean isFileAvailableOffline(ServerFile serverFile) {
         OfflineFileRepository repository = new OfflineFileRepository(this);
         OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
         return file != null && file.getState() == OfflineFile.DOWNLOADED;
+    }
+
+    private String getUriFrom(String name, Date modificationTime) {
+        OfflineFileRepository repository = new OfflineFileRepository(this);
+        OfflineFile offlineFile = repository.getOfflineFile(name, modificationTime.getTime());
+        return offlineFile.getFileUri();
     }
 
     private String getOfflineFileUri(String name) {
@@ -126,7 +163,16 @@ public class VideoService extends Service {
     }
 
     private Uri getVideoUri() {
+        if (videoShare == null) {
+            return getRecentFileUri();
+        }
+
         return serverClient.getFileUri(videoShare, videoFile);
+    }
+
+    private Uri getRecentFileUri() {
+        RecentFileRepository repository = new RecentFileRepository(this);
+        return Uri.parse(repository.getRecentFile(videoFile.getUniqueKey()).getUri());
     }
 
     private void searchSubtitleFile() {

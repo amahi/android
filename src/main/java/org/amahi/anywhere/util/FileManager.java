@@ -20,6 +20,10 @@ import io.fabric.sdk.android.services.concurrency.AsyncTask;
 
 public class FileManager {
 
+    public static final int RECENT_FILE = 0;
+    public static final int SERVER_FILE = 1;
+    public static final int OFFLINE_FILE = 2;
+
     private Context ctx;
 
     public FileManager(Context context) {

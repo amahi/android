@@ -49,6 +49,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.NetworkUtils;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.UploadManager;
 
 import java.util.ArrayList;
@@ -118,6 +119,10 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
         if (isAutoUploadEnabled()) {
             if (isUploadAllowed()) {
+                if (isSecondaryUser()) {
+                    connectSecondaryUserServer();
+                    startUploading();
+                }
                 connectToServer();
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -136,6 +141,12 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
     private boolean isUploadAllowed() {
         return networkUtils.isUploadAllowed();
+    }
+
+    private boolean isSecondaryUser() {
+        String session = PreferenceManager.getDefaultSharedPreferences(this)
+            .getString(getString(R.string.preference_key_upload_server), null);
+        return session != null && session.equals("local_session");
     }
 
     private void connectToServer() {
@@ -196,6 +207,10 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        startUploading();
+    }
+
+    private void startUploading() {
         if (uploadManager == null) {
             setUpUploadManager();
         }
@@ -205,11 +220,18 @@ public class UploadService extends Service implements UploadManager.UploadCallba
     private Server getUploadServer() {
         String session = PreferenceManager.getDefaultSharedPreferences(this)
             .getString(getString(R.string.preference_key_upload_server), null);
-        if (session != null) {
-            return new Server(session);
+        String authToken = Preferences.getServerToken(this);
+        if (session != null && authToken != null) {
+            return new Server(session, authToken);
         } else {
             return null;
         }
+    }
+
+    private void connectSecondaryUserServer() {
+        String auth = Preferences.getServerToken(this);
+        String ip = Preferences.getLocalServerIP(this);
+        serverClient.connectLocalServer(auth, ip);
     }
 
     private void setUpUploadManager() {

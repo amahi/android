@@ -26,18 +26,21 @@
     <string name="title_settings">Settings</string>
     <string name="title_shares">Shares</string>
     <string name="title_selected_server">Server</string>
-    <string name="server_name">Server Name</string>
+    <string name="title_no_server">No Server</string>
     <string name="title_upload_list">Upload</string>
     <string name="title_offline_files">Offline Files</string>
+    <string name="title_recent_files">Recent Files</string>
 
     <string name="button_search_application">Search Google Play</string>
     <string name="button_sign_in">Sign in</string>
+    <string name="button_pin_access">PIN Access</string>
     <string name="button_yes">Yes</string>
     <string name="button_no">No</string>
     <string name="button_retry">Retry</string>
 
     <string name="hint_password">Password</string>
     <string name="hint_username">Username</string>
+    <string name="hint_pin">PIN</string>
 
     <string name="menu_back">Back</string>
     <string name="menu_forward">Forward</string>
@@ -45,26 +48,32 @@
     <string name="menu_navigation_open">Open navigation</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_share">Share</string>
-    <string name="menu_download">Download</string>
+    <string name="menu_save">Save to Device</string>
     <string name="menu_delete">Delete</string>
     <string name="menu_offline">Offline</string>
     <string name="menu_sort">Sort</string>
     <string name="menu_search">Search</string>
     <string name="menu_file_upload">Upload File</string>
     <string name="menu_open">OPEN</string>
+    <string name="menu_audio_files">Files</string>
 
     <string name="media_route_menu_item">cast</string>
 
     <string name="message_empty_apps">No Apps</string>
     <string name="message_empty_files">No Files</string>
     <string name="message_empty_shares">No Shares</string>
+    <string name="message_empty_recent_files">No Recent Files</string>
 
     <string name="message_error_account_exists">Account already exists.</string>
     <string name="message_error_search_application">We haven’t found any supported apps for this file.</string>
     <string name="message_error_authentication">The username or password are not correct. Please try again. <a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
     <string name="message_error_authentication_connection">Connection error. Check your settings and try again.</string>
     <string name="message_error_authentication_field_empty">Username or Password field cannot be left empty</string>
+    <string name="message_error_pin_field_empty">PIN field cannot be left empty</string>
+    <string name="message_error_pin">PIN is not correct. Please try again.</string>
+    <string name="message_error_local_connection">It seems that you are not connected to the same Wifi as your server.</string>
     <string name="message_error_connection">Connection Error</string>
+    <string name="message_error_forbidden_access">You do not have permission to access shares, contact your administrator</string>
     <string name="message_tap_to_retry">Tap to retry</string>
     <string name="message_error_video">Error playing the video</string>
     <string name="message_error_amahi_anywhere_app">The Amahi Anywhere app in your server is not reachable. Please ensure that Amahi Anywhere app is installed, running and reachable in your network.</string>
@@ -73,6 +82,7 @@
 
     <string name="message_notice_check_settings">Check your settings and try again</string>
     <string name="message_notice_create_some">Create some and try again</string>
+    <string name="message_notice_visit_some">Visit some and try again</string>
 
     <string name="message_progress_file_downloading">Downloading file …</string>
     <string name="message_progress_file_preparing">Preparing file …</string>
@@ -84,7 +94,7 @@
     <string name="message_delete_file_body">This action cannot be undone.</string>
     <string name="message_delete_progress">Deleting</string>
     <string name="message_delete_file_error">Some error occurred while deleting file</string>
-    <string name="message_media_upload">Select Media Files to Upload</string>
+    <string name="message_file_upload">Select Files to Upload</string>
     <string name="message_file_upload_title">Uploading your file</string>
     <string name="message_file_upload_complete">File uploaded successfully</string>
     <string name="message_file_upload_error">There was some error in uploading your file</string>
@@ -97,8 +107,11 @@
     <string name="message_file_download_complete">File downloaded successfully</string>
     <string name="message_offline_file_deleted">Offline file removed successfully</string>
     <string name="notification_download_title">Downloading File</string>
-    <string name="notification_offline_download_complete">File Available Offline</string>
+    <string name="notification_download_offline_title">Making available offline</string>
+    <string name="notification_offline_download_complete">File available offline</string>
     <string name="notification_offline_download_paused">Waiting for internet</string>
+    <string name="message_sign_in_dialog_title">Signing In</string>
+    <string name="notification_offline_download_error">Error while making file available offline</string>
 
     <string name="share_subject">Check out my Amahi home server!</string>
     <string name="share_message">I use the Amahi Home Server for storing, backing up and streaming all my files.\n\nCheck it out!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
@@ -122,7 +135,7 @@
     <string name="media_route_menu_title">Play on&#8230;</string>
 
     <string name="upload_camera">Use Camera</string>
-    <string name="upload_photo">Upload Photos / Videos</string>
+    <string name="upload_file">Upload File</string>
 
     <!--ANDROID TV RELATED STRINGS-->
     <string name="app_title">Amahi TV</string>
@@ -132,6 +145,8 @@
     <string name="preference">PREFERENCE</string>
     <string name="is_first_run">isFirstRun</string>
     <string name="selected_server_session">SERVER_SESSION</string>
+    <string name="selected_server_auth">SERVER_AUTH</string>
+    <string name="local_server_ip">SERVER_IP</string>
     <string name="exit_title">Exit</string>
     <string name="exit_message">Are you sure you want to quit?</string>
     <string name="yes">Yes</string>
@@ -164,5 +179,7 @@
 
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
+
+    <string name="demo_server_name">Welcome to Amahi</string>
 
 </resources>

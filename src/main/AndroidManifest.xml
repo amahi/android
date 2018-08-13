@@ -21,6 +21,7 @@
     android:installLocation="auto">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -84,7 +85,9 @@
                 android:name="android.max_aspect"
                 android:value="2.1" />
         </activity>
-        <activity android:name=".activity.NavigationActivity" />
+        <activity
+            android:name=".activity.NavigationActivity"
+            android:theme="@style/Theme.Amahi.NoActionBar" />
         <activity android:name=".activity.ServerAppActivity" />
         <activity android:name=".activity.ServerFilesActivity">
             <meta-data
@@ -216,6 +219,7 @@
             android:value="org.amahi.anywhere.util.CastOptionsProvider" />
 
         <activity android:name=".activity.OfflineFilesActivity" />
+        <activity android:name=".activity.RecentFilesActivity" />
     </application>
 
 </manifest>

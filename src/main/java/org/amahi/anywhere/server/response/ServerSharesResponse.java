@@ -19,7 +19,9 @@
 
 package org.amahi.anywhere.server.response;
 
+import org.amahi.anywhere.bus.AuthExpiredEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ForbiddenAccessEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -38,10 +40,19 @@ import retrofit2.Response;
 public class ServerSharesResponse implements Callback<List<ServerShare>> {
     @Override
     public void onResponse(Call<List<ServerShare>> call, Response<List<ServerShare>> response) {
-        if (response.isSuccessful())
-            BusProvider.getBus().post(new ServerSharesLoadedEvent(response.body()));
-        else
-            this.onFailure(call, new HttpException(response));
+        switch (response.code()) {
+            case 200:
+                BusProvider.getBus().post(new ServerSharesLoadedEvent(response.body()));
+                break;
+            case 401:
+                BusProvider.getBus().post(new AuthExpiredEvent());
+                break;
+            case 403:
+                BusProvider.getBus().post(new ForbiddenAccessEvent());
+                break;
+            default:
+                this.onFailure(call, new HttpException(response));
+        }
     }
 
     @Override

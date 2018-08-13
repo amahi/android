@@ -22,10 +22,12 @@ package org.amahi.anywhere.activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,7 +42,9 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AppSelectedEvent;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ForbiddenAccessEvent;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
+import org.amahi.anywhere.bus.RecentFilesSelectedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.bus.SharesSelectedEvent;
@@ -64,6 +68,9 @@ import javax.inject.Inject;
  * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
 public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
+
+    public static final int PIN_REQUEST_CODE = 102;
+
     @Inject
     ServerClient serverClient;
     private ActionBarDrawerToggle navigationDrawerToggle;
@@ -73,6 +80,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+
+        setUpActionBar();
 
         if (CheckTV.isATV(this)) {
             handleTvFirstRun();
@@ -84,6 +93,11 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         setUpHomeNavigation();
 
         setUpNavigation(savedInstanceState);
+    }
+
+    private void setUpActionBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 
     private void handleTvFirstRun() {
@@ -104,8 +118,6 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         hideActionBar();
 
         setUpNavigationFragment();
-
-        setUpShares();
     }
 
     private void inflateStubs() {
@@ -318,6 +330,21 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     @Subscribe
+    public void onRecentFilesSelected(RecentFilesSelectedEvent event) {
+
+        showRecentFiles();
+
+        if (isNavigationDrawerAvailable()) {
+            hideNavigationDrawer();
+        }
+    }
+
+    private void showRecentFiles() {
+        Intent intent = Intents.Builder.with(this).buildRecentFilesActivity();
+        startActivity(intent);
+    }
+
+    @Subscribe
     public void onShareSelected(ShareSelectedEvent event) {
         setUpShare(event.getShare());
     }
@@ -388,6 +415,19 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
     private boolean isNavigationDrawerOpen() {
         return getDrawer().isDrawerOpen(findViewById(R.id.container_navigation));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PIN_REQUEST_CODE && resultCode == RESULT_OK) {
+            onSharesSelected(new SharesSelectedEvent());
+        }
+    }
+
+    @Subscribe
+    public void onForbiddenAccess(ForbiddenAccessEvent event) {
+        Snackbar.make(getContainerContent(), R.string.message_error_forbidden_access, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

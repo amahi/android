@@ -55,7 +55,6 @@ import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 import org.amahi.anywhere.util.ProgressRequestBody;
-import org.amahi.anywhere.util.Time;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -280,6 +279,11 @@ public class ServerClient {
             .enqueue(new ServerFileDeleteResponse());
     }
 
+    public void deleteFile(String shareName, ServerFile serverFile) {
+        serverApi.deleteFile(server.getSession(), server.getAuthToken(), shareName, serverFile.getPath())
+            .enqueue(new ServerFileDeleteResponse());
+    }
+
     private MultipartBody.Part createFilePart(int id, File file) {
         return MultipartBody.Part.createFormData("file",
             file.getName(),
@@ -327,8 +331,8 @@ public class ServerClient {
             .path("files")
             .appendQueryParameter("s", share.getName())
             .appendQueryParameter("p", file.getPath())
-            .appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
             .appendQueryParameter("session", server.getSession())
+            .appendQueryParameter("auth", server.getAuthToken())
             .build();
     }
 
@@ -341,5 +345,33 @@ public class ServerClient {
 
     public void getApps() {
         serverApi.getApps(server.getSession()).enqueue(new ServerAppsResponse());
+    }
+
+    public Server connectLocalServer(String auth, String ip) {
+        serverRoute = new ServerRoute();
+        serverRoute.setLocalAddress(getLocalAddress(ip));
+
+        // TODO: set right remote
+        // for now remote address = local address
+        // session = auth token
+        serverRoute.setRemoteAddress(getLocalAddress(ip));
+
+        serverAddress = serverRoute.getLocalAddress();
+        server = new Server(auth, auth);
+        server.setAuthToken(auth);
+        server.setName(ip);
+        serverApi = buildServerApi();
+        return server;
+    }
+
+    private String getLocalAddress(String ip) {
+        return "http://" + ip + ":4563/";
+    }
+
+    public void tearDownServerApi() {
+        serverRoute = null;
+        serverAddress = null;
+        server = null;
+        serverApi = null;
     }
 }

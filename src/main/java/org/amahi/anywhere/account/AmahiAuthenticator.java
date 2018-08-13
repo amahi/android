@@ -31,6 +31,7 @@ import android.text.TextUtils;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.AuthenticationActivity;
+import org.amahi.anywhere.util.Intents;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +56,7 @@ class AmahiAuthenticator extends AbstractAccountAuthenticator {
 
         if (getAccounts().isEmpty()) {
             Intent accountIntent = new Intent(context, AuthenticationActivity.class);
+            accountIntent.putExtra(Intents.Extras.ACCOUNT_TYPE, AmahiAccount.TYPE);
             accountIntent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
             accountBundle.putParcelable(AccountManager.KEY_INTENT, accountIntent);

@@ -57,6 +57,11 @@
         <item name="displayOptions">showHome|homeAsUp|showTitle</item>
     </style>
 
+    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
+    </style>
+
     <style name="Theme.Amahi.Authentication" parent="Theme.AppCompat">
         <item name="android:windowNoTitle">true</item>
         <item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
@@ -79,4 +84,11 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:background">?android:attr/activatedBackgroundIndicator</item>
     </style>
+
+    <style name="Theme.Amahi.NoActionBar">
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

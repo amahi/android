@@ -1,8 +1,8 @@
 buildscript {
     repositories {
-        jcenter()
         maven { url 'https://maven.fabric.io/public' }
         google()
+        jcenter()
     }
 
     dependencies {
@@ -122,7 +122,6 @@ dependencies {
     def SUPPORT_LIBRARY_VERSION = "26.1.0"
     implementation "com.android.support:support-v4:${SUPPORT_LIBRARY_VERSION}"
     implementation "com.android.support:support-v13:${SUPPORT_LIBRARY_VERSION}"
-    implementation "com.android.support:recyclerview-v7:${SUPPORT_LIBRARY_VERSION}"
     implementation "com.android.support:appcompat-v7:${SUPPORT_LIBRARY_VERSION}"
     implementation "com.android.support:design:${SUPPORT_LIBRARY_VERSION}"
     implementation "com.android.support:preference-v7:${SUPPORT_LIBRARY_VERSION}"

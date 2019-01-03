@@ -16,8 +16,9 @@ android:
     - extra-android-m2repository
     - extra-google-m2repository
     - sys-img-armeabi-v7a-android-19
-  licenses:
-    - .+
+
+    licenses:
+    - '.+'
 
 before_script:
   - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a

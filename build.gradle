@@ -111,13 +111,13 @@ static def formatStringField(field) {
 
 dependencies {
     repositories {
-        jcenter()
+        google()
         mavenCentral()
         mavenLocal()
         maven { url 'https://maven.fabric.io/public' }
         maven { url 'http://dl.bintray.com/megabitdragon/maven' }
         maven { url 'https://jitpack.io' }
-        google()
+        jcenter()
     }
     def SUPPORT_LIBRARY_VERSION = "26.1.0"
     implementation "com.android.support:support-v4:${SUPPORT_LIBRARY_VERSION}"

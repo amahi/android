@@ -10,11 +10,11 @@
 
 1. Submit an issue describing your proposed change.
 2. Fork the repository on GitHub.
-3. Clone the fork : `git clone https://github.com/your-username/android.git`
+3. Clone the fork: `git clone https://github.com/your-username/android.git`
 
 ## Making Changes
 
-* Create a branch : `git checkout -b branch-name`. Please avoid working directly on the
+* Create a branch: `git checkout -b branch-name`. Please avoid working directly on the
     `master` branch.
 * Make commits of logical units.
 * Make sure your commit messages are in the proper format.

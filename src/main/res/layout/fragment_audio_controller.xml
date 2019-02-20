@@ -19,6 +19,7 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/audio_controller"
     android:layout_width="match_parent"
     android:layout_height="64dp"
@@ -35,6 +36,8 @@
         tools:ignore="contentDescription" />
 
     <ImageButton
+
+        app:contentDescription="@string/stop_the_audio"
         android:id="@+id/stop_audio_btn"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -43,7 +46,7 @@
         android:padding="16dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_close_white_24dp"
-        tools:ignore="contentDescription" />
+        />
 
     <ImageButton
         android:id="@+id/play_pause_btn"

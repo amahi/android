@@ -21,6 +21,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="center"
     android:orientation="vertical"
     android:paddingLeft="32dp"
@@ -29,6 +30,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        tools:ignore="contentDescription"
         android:paddingLeft="32dp"
         android:paddingRight="32dp"
         android:src="@drawable/ic_banner" />

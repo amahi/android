@@ -25,7 +25,6 @@
     <string name="title_apps">Apps</string>
     <string name="title_settings">Settings</string>
     <string name="title_shares">Shares</string>
-    <string name="title_selected_server">Server</string>
     <string name="title_no_server">No Server</string>
     <string name="title_upload_list">Upload</string>
     <string name="title_offline_files">Offline Files</string>
@@ -161,7 +160,6 @@
     <string name="intro_desc_tv_3">Browse your photo library in your TV, fast and at amazing resolution.</string>
     <string name="intro_desc_phone_3">Browse your photo library easily, upload photos directly from your phone.</string>
 
-    <string name="intro_title_4">Play Your Music</string>
     <string name="intro_desc_tv_4">Listen to your music library in your TV, perfect for parties, or for relaxing with your favorite tunes.</string>
     <string name="intro_desc_phone_4">Listen to your music library, at home or on the road.</string>
 
@@ -171,5 +169,7 @@
 
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
+    <string name="intro_title_4">Play your music</string>
+    <string name="title_selected_server">Server</string>
 
 </resources>

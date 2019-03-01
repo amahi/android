@@ -40,7 +40,50 @@
         <FrameLayout
             android:id="@+id/container_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/empty_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ic_empty_folder"
+                    tools:ignore="ContentDescription"/>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
+                    android:text="@string/message_empty_files"
+                    android:textSize="@dimen/text_large"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
+                    android:text="@string/message_notice_create_some"
+                    android:textSize="@dimen/text_small" />
+
+            </LinearLayout>
+        </FrameLayout>
+
 
         <ViewStub
             android:id="@+id/view_stub_tv_loading"

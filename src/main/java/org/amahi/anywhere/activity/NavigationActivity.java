@@ -115,6 +115,12 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         tvLoadingStub.inflate();
     }
 
+    private View getEmptyContainer() {
+        return findViewById(R.id.empty_box);
+    }
+
+    private void removeEmptyContainer() {getEmptyContainer().setVisibility(View.INVISIBLE);}
+
     private void hideMobileContainers() {
         RelativeLayout tvLoading = findViewById(R.id.tv_loading);
 
@@ -272,6 +278,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void setUpShares() {
+        removeEmptyContainer();
         Fragments.Operator.at(this).replace(buildSharesFragment(), R.id.container_content);
     }
 
@@ -299,6 +306,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void setUpApps() {
+        removeEmptyContainer();
         Fragments.Operator.at(this).replace(buildAppsFragment(), R.id.container_content);
     }
 

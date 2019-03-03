@@ -169,7 +169,14 @@
 
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
+
     <string name="intro_title_4">Play your music</string>
     <string name="title_selected_server">Server</string>
+
+    <string name="stop_the_audio" translatable="false">"Stop the audio"</string>
+    <string name="play_the_audio" translatable="false">"Play the audio"</string>
+    <string name="pause_the_audio" translatable="false">"Pause the audio"</string>
+    <string name="upload" translatable="false">"Upload"</string>
+    <string name="sign_in" translatable="false">"Sign in"</string>
 
 </resources>

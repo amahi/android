@@ -94,6 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/button_sign_in"
+            android:contentDescription="@string/sign_in"
             android:textColor="@android:color/white" />
 
         <Space

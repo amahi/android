@@ -19,9 +19,6 @@
 
 <resources>
 
-    <string name="application_name" translatable="false">Amahi</string>
-
-
     <string name="title_apps">Apps</string>
     <string name="title_settings">Paramètres</string>
     <string name="title_shares">Partages</string>

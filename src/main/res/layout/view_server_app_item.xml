@@ -20,6 +20,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
+    xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="8dp">
@@ -28,7 +29,8 @@
         android:id="@+id/logo"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginRight="8dp" />
+        tools:ignore="contentDescription"
+        android:layout_marginEnd="8dp" />
 
     <TextView
         android:id="@+id/text"

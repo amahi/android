@@ -183,8 +183,8 @@ public class OfflineFilesActivity extends AppCompatActivity {
     @Subscribe
     public void onFileDeleting(OfflineFileDeleteEvent event) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Delete file");
-        builder.setMessage("Are you sure?");
+        builder.setTitle(R.string.alert_delete_dialog);
+        builder.setMessage(R.string.alert_delete_confirm);
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

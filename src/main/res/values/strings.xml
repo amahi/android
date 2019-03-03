@@ -172,4 +172,7 @@
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
 
+    <string name="alert_delete_dialog">Delete file</string>
+    <string name="alert_delete_confirm">Are you sure?</string>
+
 </resources>

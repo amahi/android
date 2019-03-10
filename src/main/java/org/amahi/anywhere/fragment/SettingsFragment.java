@@ -98,7 +98,7 @@ public class SettingsFragment extends PreferenceFragment implements
     private String getServerConnectionSummary() {
         ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
 
-        return String.format("%s", serverConnection.getEntry());
+        return String.format(getString(R.string.percent_s), serverConnection.getEntry());
     }
 
     private Preference getPreference(int id) {
@@ -207,7 +207,7 @@ public class SettingsFragment extends PreferenceFragment implements
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
         sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message));
-        sendIntent.setType("text/plain");
+        sendIntent.setType(getString(R.string.text_plain));
         startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
     }
 

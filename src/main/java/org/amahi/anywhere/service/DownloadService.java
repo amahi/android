@@ -236,7 +236,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void notifyDownloadStart() {
-        Intent intent = new Intent("DownloadStarted");
+        Intent intent = new Intent(getString(R.string.downloadstarted));
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -252,8 +252,8 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void updateOfflineActivityUI(int progress) {
-        Intent intent = new Intent("DownloadProgress");
-        intent.putExtra("progress", progress);
+        Intent intent = new Intent(getString(R.string.downloadprogress));
+        intent.putExtra(getString(R.string.progress), progress);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -282,8 +282,8 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void notifyDownloadFinish(boolean isSuccess) {
-        Intent intent = new Intent("DownloadFinished");
-        intent.putExtra("success", isSuccess);
+        Intent intent = new Intent(getString(R.string.downloadfinished));
+        intent.putExtra(getString(R.string.success), isSuccess);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

@@ -228,7 +228,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     private String getAutoUploadTitle(boolean isUploadEnabled) {
-        return isUploadEnabled ? "Enable" : "Disable";
+        return isUploadEnabled ? getString(R.string.enable) : getString(R.string.disable);
     }
 
     private void setUpSettingsListeners() {

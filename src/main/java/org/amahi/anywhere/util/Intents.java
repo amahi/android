@@ -238,7 +238,7 @@ public final class Intents {
 
         public Intent buildFeedbackIntent() {
             String feedbackAddress = "support@amahi.org";
-            String feedbackSubject = "Android Amahi Anywhere";
+            String feedbackSubject = context.getString(R.string.android_amahi_anywhere);
 
             String feedbackUri = String.format(Uris.EMAIL, feedbackAddress, feedbackSubject);
 

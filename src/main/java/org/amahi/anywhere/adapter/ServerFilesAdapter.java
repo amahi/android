@@ -33,6 +33,8 @@ import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -261,6 +263,15 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             moreInfo = itemView.findViewById(R.id.more_info);
             moreOptions = itemView.findViewById(R.id.more_options);
             progressBar = itemView.findViewById(R.id.download_progress_bar);
+
+            setUpAnimation();
+
+        }
+
+        private void setUpAnimation() {
+            Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
+            itemView.startAnimation(animation);
+
         }
     }
 

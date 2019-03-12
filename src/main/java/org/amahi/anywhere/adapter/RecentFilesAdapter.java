@@ -8,6 +8,8 @@ import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -148,6 +150,15 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
             fileLastVisited = itemView.findViewById(R.id.last_modified);
             moreInfo = itemView.findViewById(R.id.more_info);
             moreOptions = itemView.findViewById(R.id.more_options);
+
+            setUpAnimation();
+
+        }
+
+        private void setUpAnimation() {
+            Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
+            itemView.startAnimation(animation);
+
         }
     }
 }

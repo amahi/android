@@ -23,6 +23,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -131,7 +132,7 @@ public class SettingsFragment extends PreferenceFragment implements
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
         accountSignOut.setOnPreferenceClickListener(preference -> {
-            tearDownAccount();
+            setConfirmationDialog();
             return true;
         });
         applicationIntro.setOnPreferenceClickListener(preference -> {
@@ -169,6 +170,14 @@ public class SettingsFragment extends PreferenceFragment implements
 
     private void openUploadSettingsFragment() {
         BusProvider.getBus().post(new UploadSettingsOpeningEvent());
+    }
+
+    private void setConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getString(R.string.sign_out_title))
+            .setMessage(getString(R.string.sign_out_message))
+            .setPositiveButton(getString(R.string.sign_out_title), (dialog, which) -> tearDownAccount())
+            .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss()).show();
     }
 
     private void tearDownAccount() {

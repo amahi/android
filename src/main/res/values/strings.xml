@@ -140,6 +140,9 @@
     <string name="selected_server_session">SERVER_SESSION</string>
     <string name="exit_title">Exit</string>
     <string name="exit_message">Are you sure you want to quit?</string>
+    <string name="sign_out_title">Sign Out</string>
+    <string name="sign_out_message">Are you sure you want to sign out?</string>
+    <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 

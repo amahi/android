@@ -48,6 +48,7 @@
                 android:orientation="vertical"
                 android:scaleType="fitXY">
 
+
                 <ImageView
                     android:id="@+id/imageView1"
                     android:layout_width="64dp"

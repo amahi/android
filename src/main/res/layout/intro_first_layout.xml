@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <ImageView
@@ -12,7 +13,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="90dp"
-        app:srcCompat="@drawable/ic_banner" />
+        app:srcCompat="@drawable/ic_banner"
+        tools:ignore="contentDescription"/>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"

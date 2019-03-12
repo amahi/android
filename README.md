@@ -20,7 +20,7 @@ You will need JDK 1.7+ installed to work with it. Gradle, Android SDK, and proje
   chromecast.app.id = APP_ID
   ```
 
-This is something to keep **private** and you obtain it by asking in the [Amahi IRC channel](http://talk.amahi.org) or send a message to `support at Amahi dot org`.
+This is something to keep **private** and you obtain it by sending a message to `support at Amahi dot org`.
 
 
 2. Build the application using a command line or using GUI.

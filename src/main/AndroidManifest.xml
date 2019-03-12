@@ -17,6 +17,7 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
     package="org.amahi.anywhere"
     android:installLocation="auto">
 
@@ -51,7 +52,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/application_name"
         android:resizeableActivity="true"
-        android:theme="@style/Theme.Amahi">
+        android:theme="@style/Theme.Amahi"
+        tools:ignore="GoogleAppIndexingWarning">
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="org.amahi.anywhere.fileprovider"

@@ -68,13 +68,16 @@ public class AudioControllerFragment extends Fragment {
         playPauseButton.setOnClickListener(v -> {
             if (audioService.getAudioPlayer().getPlayWhenReady()) {
                 playPauseButton.setImageResource(R.drawable.lb_ic_play);
-            } else {
+                playPauseButton.setContentDescription(getResources().getString(R.string.play_the_audio));
+                } else {
                 playPauseButton.setImageResource(R.drawable.lb_ic_pause);
+                playPauseButton.setContentDescription(getResources().getString(R.string.pause_the_audio));
             }
             BusProvider.getBus().post(new AudioControlPlayPauseEvent());
         });
 
         closeButton.setOnClickListener(v -> BusProvider.getBus().post(new AudioStopEvent()));
+        closeButton.setContentDescription(getResources().getString(R.string.stop_the_audio));
 
         controller.setOnClickListener(v -> BusProvider.getBus().post(
             new FileOpeningEvent(audioService.getAudioShare(),
@@ -87,9 +90,9 @@ public class AudioControllerFragment extends Fragment {
 
         if (audioService.getAudioPlayer().getPlayWhenReady()) {
             playPauseButton.setImageResource(R.drawable.lb_ic_pause);
-        } else {
+            } else {
             playPauseButton.setImageResource(R.drawable.lb_ic_play);
-        }
+            }
 
         AudioMetadataFormatter formatter = audioService.getAudioMetadataFormatter();
         if (formatter != null) {

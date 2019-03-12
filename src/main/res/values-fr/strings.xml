@@ -19,9 +19,6 @@
 
 <resources>
 
-    <string name="application_name" translatable="false">Amahi</string>
-
-
     <string name="title_apps">Apps</string>
     <string name="title_settings">Paramètres</string>
     <string name="title_shares">Partages</string>
@@ -75,9 +72,8 @@
 
     <string name="message_notice_check_settings">Vérifiez vos paramètres et réessayez</string>
 
-    <!-- TODO: Translate those, missing some context here -->
-    <string name="message_notice_create_some">Create some and try again</string>
-    <string name="message_notice_visit_some">Visit some and try again</string>
+    <string name="message_notice_create_some">Créez-en et essayez à nouveau</string>
+    <string name="message_notice_visit_some">Visitez-en et essayez encore</string>
 
     <string name="message_progress_file_downloading">Téléchargement du fichier …</string>
     <string name="message_progress_file_preparing">Préparation du fichier …</string>

@@ -115,7 +115,7 @@
     <string name="message_duplicate_file_upload_body">फ़ाइल% 1 $ s पहले से मौजूद है। क्या आप वाकई मौजूदा फ़ाइल को बदलना चाहते हैं?</string>
     <string name="notification_upload_title">नई छवि अपलोड कर रहा है</string>
     <string name="notification_upload_message">फ़ाइल% 1 $ s</string>
-    <string name="message_upload_success">अपलोड पूरा हूवा</string>
+    <string name="message_upload_success">अपलोड पूरा हुआ</string>
     <string name="message_upload_error">अपलोड विफल</string>
     <string name="message_file_download_complete">फ़ाइल सफलतापूर्वक डाउनलोड की गई</string>
     <string name="message_offline_file_deleted">ऑफ़लाइन फ़ाइल सफलतापूर्वक निकाल दी गई</string>
@@ -126,7 +126,7 @@
     <string name="notification_offline_download_error">फ़ाइल को ऑफ़लाइन उपलब्ध कराते समय त्रुटि</string>
     <string name="share_subject">मेरे अमाही होम सर्वर की जाँच करें!</string>
     <string name="share_message">मैं अपनी सभी फाइलों को स्टोर करने, बैकअप लेने और स्ट्रीमिंग के लिए अम्मी होम सर्वर का उपयोग करता हूं। इसकी जांच - पड़ताल करें! <a href="https://www.amahi.org/"> https://www.amahi.org/ </a> </string>
-    <string name="title_version_settings">एंड्राइड के लिए अमही</string>
+    <string name="title_version_settings">एंड्राइड के लिए अमाही</string>
     <string name="message_no_search_result">कोई खोज परिणाम नहीं मिला</string>
     <string name="application_not_found">कोई हैंडलर आवेदन नहीं मिला</string>
     <string name="message_logout">सफलतापूर्वक लॉग आउट किया गया</string>
@@ -158,7 +158,7 @@
     <string name="intro_title_2">अपने HDA तक पहुँचें</string>
     <string name="intro_desc_2">अमाही आपको अपने वीडियो चलाने, अपनी तस्वीरों को देखने, अपने संगीत को सुनने और बहुत कुछ करने देता है!</string>
     <string name="intro_title_3">अपनी तस्वीरें ब्राउज़ करें</string>
-    <string name="intro_desc_tv_3">अपने टीवी, तेज और अद्भुत संकल्प में अपनी फोटो लाइब्रेरी ब्राउज़ करें</string>
+    <string name="intro_desc_tv_3">अपने टीवी पर तेज और शानदार रेसोलुशन में अपनी फोटो लाइब्रेरी ब्राउज़ करें</string>
     <string name="intro_desc_phone_3">अपने फोटो लाइब्रेरी को आसानी से ब्राउज़ करें, सीधे अपने फोन से फोटो अपलोड करें</string>
     <string name="intro_title_4">अपना संगीत बजाओ</string>
     <string name="intro_desc_tv_4">अपने टीवी में अपने संगीत पुस्तकालय, पार्टियों के लिए एकदम सही, या अपने पसंदीदा धुनों के साथ आराम करने के लिए सुनो।</string>

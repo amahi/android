@@ -41,6 +41,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
@@ -107,6 +109,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private static final int CAMERA_PERMISSION = 103;
     private static final int REQUEST_UPLOAD_IMAGE = 201;
     private static final int REQUEST_CAMERA_IMAGE = 202;
+    // private Context context;
     @Inject
     ServerClient serverClient;
     private ServerFile file;
@@ -153,6 +156,13 @@ public class ServerFilesActivity extends AppCompatActivity implements
         setUpUploadDialog();
         setUpFilesFragment();
         setUpFilesState(state);
+    }
+
+    //For animation
+    public void setUpAnimation(View itemView, Context context) {
+        Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
+        itemView.startAnimation(animation);
+
     }
 
     private void setUpFilesTitle() {

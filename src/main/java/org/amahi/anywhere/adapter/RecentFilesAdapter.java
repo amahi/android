@@ -20,6 +20,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.RecentFile;
@@ -60,7 +61,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
 
     private void setUpViewHolder(RecentFile file, RecentFilesViewHolder fileHolder) {
         Uri uri = Uri.parse(file.getUri());
-        String name = uri.getQueryParameter("p").substring(uri.getQueryParameter("p").lastIndexOf('/')+1);
+        String name = uri.getQueryParameter("p").substring(uri.getQueryParameter("p").lastIndexOf('/') + 1);
         String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(name.lastIndexOf(".") + 1));
         String size = Formatter.formatFileSize(context, file.getSize());
 
@@ -141,6 +142,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         ImageView fileIconView, moreOptions;
         TextView fileTextView, fileSize, fileLastVisited;
         LinearLayout moreInfo;
+        ServerFilesActivity serverFilesActivity = new ServerFilesActivity();
 
         RecentFilesViewHolder(View itemView) {
             super(itemView);
@@ -151,13 +153,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
             moreInfo = itemView.findViewById(R.id.more_info);
             moreOptions = itemView.findViewById(R.id.more_options);
 
-            setUpAnimation();
-
-        }
-
-        private void setUpAnimation() {
-            Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
-            itemView.startAnimation(animation);
+            serverFilesActivity.setUpAnimation(itemView, context);
 
         }
     }

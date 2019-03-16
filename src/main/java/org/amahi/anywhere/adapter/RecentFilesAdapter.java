@@ -61,7 +61,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
 
     private void setUpViewHolder(RecentFile file, RecentFilesViewHolder fileHolder) {
         Uri uri = Uri.parse(file.getUri());
-        String name = uri.getQueryParameter("p").substring(uri.getQueryParameter("p").lastIndexOf('/') + 1);
+        String name = uri.getQueryParameter("p").substring(uri.getQueryParameter("p").lastIndexOf('/')+1);
         String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(name.lastIndexOf(".") + 1));
         String size = Formatter.formatFileSize(context, file.getSize());
 

@@ -109,7 +109,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private static final int CAMERA_PERMISSION = 103;
     private static final int REQUEST_UPLOAD_IMAGE = 201;
     private static final int REQUEST_CAMERA_IMAGE = 202;
-    // private Context context;
     @Inject
     ServerClient serverClient;
     private ServerFile file;
@@ -158,7 +157,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
         setUpFilesState(state);
     }
 
-    //For animation
     public void setUpAnimation(View itemView, Context context) {
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
         itemView.startAnimation(animation);

@@ -35,7 +35,8 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.util.Log;
 
 import org.amahi.anywhere.R;
@@ -252,7 +253,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
 
         notificationBuilder
-            .setStyle(new NotificationCompat.MediaStyle()
+            .setStyle(new MediaStyle()
                 .setShowActionsInCompactView(1)  // show only play/pause in compact view
                 .setMediaSession(mSessionToken))
             .setSmallIcon(getAudioPlayerNotificationIcon())

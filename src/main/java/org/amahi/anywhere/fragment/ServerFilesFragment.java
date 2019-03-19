@@ -119,6 +119,7 @@ public class ServerFilesFragment extends Fragment implements
 
     public static final int SORT_MODIFICATION_TIME = 0;
     public static final int SORT_NAME = 1;
+    public static final int SORT_SIZE = 2;
 
     @Inject
     ServerClient serverClient;
@@ -643,6 +644,9 @@ public class ServerFilesFragment extends Fragment implements
             case SORT_MODIFICATION_TIME:
                 return new FileModificationTimeComparator();
 
+            case SORT_SIZE:
+                return new FileSizeComparator();
+
             default:
                 return null;
         }
@@ -786,6 +790,10 @@ public class ServerFilesFragment extends Fragment implements
                 menuItem.setIcon(R.drawable.ic_menu_sort_modification_time);
                 break;
 
+            case SORT_SIZE:
+                menuItem.setIcon(R.drawable.ic_menu_sort_size);
+                break;
+
             default:
                 break;
         }
@@ -811,6 +819,10 @@ public class ServerFilesFragment extends Fragment implements
                 break;
 
             case SORT_MODIFICATION_TIME:
+                filesSort = SORT_SIZE;
+                break;
+
+            case SORT_SIZE:
                 filesSort = SORT_NAME;
                 break;
 
@@ -958,7 +970,7 @@ public class ServerFilesFragment extends Fragment implements
             getView().findViewById(R.id.none_text).setVisibility(empty ? View.VISIBLE : View.GONE);
     }
 
-    @IntDef({SORT_MODIFICATION_TIME, SORT_NAME})
+    @IntDef({SORT_MODIFICATION_TIME, SORT_NAME, SORT_SIZE})
     public @interface Types {
     }
 
@@ -981,6 +993,13 @@ public class ServerFilesFragment extends Fragment implements
         @Override
         public int compare(ServerFile firstFile, ServerFile secondFile) {
             return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
+        }
+    }
+
+    private static final class FileSizeComparator implements Comparator<ServerFile> {
+        @Override
+        public int compare(ServerFile firstFile, ServerFile secondFile) {
+            return -Long.compare(firstFile.getSize(), secondFile.getSize());
         }
     }
 }

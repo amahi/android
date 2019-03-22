@@ -19,9 +19,9 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="center"
     android:orientation="vertical"
     android:paddingLeft="32dp"
@@ -30,10 +30,10 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:ignore="contentDescription"
         android:paddingLeft="32dp"
         android:paddingRight="32dp"
-        android:src="@drawable/ic_banner" />
+        android:src="@drawable/ic_banner"
+        tools:ignore="contentDescription" />
 
     <Space
         android:layout_width="match_parent"
@@ -80,11 +80,20 @@
         android:layout_height="16dp" />
 
     <com.dd.processbutton.iml.ActionProcessButton
-        android:contentDescription="@string/sign_in"
         android:id="@+id/button_authentication"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="@string/sign_in"
         android:text="@string/button_sign_in"
+        android:textColor="@android:color/white" />
+
+    <com.dd.processbutton.iml.ActionProcessButton
+        android:id="@+id/button_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/register"
+        android:text="@string/button_register"
         android:textColor="@android:color/white" />
 
     <Space

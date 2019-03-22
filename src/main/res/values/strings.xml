@@ -35,6 +35,7 @@
     <string name="button_yes">Yes</string>
     <string name="button_no">No</string>
     <string name="button_retry">Retry</string>
+    <string name="button_register">Create a new account</string>
 
     <string name="hint_password">Password</string>
     <string name="hint_username">Username</string>
@@ -181,5 +182,6 @@
     <string name="pause_the_audio" translatable="false">"Pause the audio"</string>
     <string name="upload" translatable="false">"Upload"</string>
     <string name="sign_in" translatable="false">"Sign in"</string>
+    <string name="register" translatable="false">"Create a new account"</string>
 
 </resources>

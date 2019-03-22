@@ -23,7 +23,9 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
@@ -99,6 +101,10 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
         return findViewById(R.id.button_authentication);
     }
 
+    private ActionProcessButton getRegisterButton() {
+        return findViewById(R.id.button_register);
+    }
+
     private void setUpAuthenticationMessages() {
         TextView authenticationFailureMessage = findViewById(R.id.text_message_authentication);
         TextView authenticationConnectionFailureMessage = findViewById(R.id.text_message_authentication_connection);
@@ -110,6 +116,7 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
     private void setUpAuthenticationListeners() {
         setUpAuthenticationTextListener();
         setUpAuthenticationActionListener();
+        setUpRegisterActionListener();
     }
 
     private void setUpAuthenticationTextListener() {
@@ -144,6 +151,15 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
 
     private void setUpAuthenticationActionListener() {
         getAuthenticationButton().setOnClickListener(this::onClick);
+    }
+
+    private void setUpRegisterActionListener() {
+        getRegisterButton().setOnClickListener(this::onRegisterClick);
+    }
+
+    private void onRegisterClick(View view) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.amahi.org/signup"));
+        startActivity(browserIntent);
     }
 
     public void onClick(View view) {

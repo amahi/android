@@ -20,6 +20,8 @@
 package org.amahi.anywhere;
 
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
@@ -41,6 +43,9 @@ import timber.log.Timber;
 public class AmahiApplication extends Application {
     private ObjectGraph injector;
 
+    private static final String UPLOAD_CHANNEL_ID = "file_upload";
+    private static final String DOWNLOAD_CHANNEL_ID = "file_download";
+
     public static AmahiApplication from(Context context) {
         return (AmahiApplication) context.getApplicationContext();
     }
@@ -54,6 +59,10 @@ public class AmahiApplication extends Application {
         setUpDetecting();
 
         setUpInjections();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             setUpJobs();
@@ -104,4 +113,24 @@ public class AmahiApplication extends Application {
         public static final int PHOTOS_CONTENT_JOB = 125;
         public static final int NET_CONNECTIVITY_JOB = 126;
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+
+        // Creating NotificationChannel only for API 26+
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+        NotificationChannel uploadChannel = new NotificationChannel(UPLOAD_CHANNEL_ID, getString(R.string.upload_channel), importance);
+        uploadChannel.setDescription(getString(R.string.upload_channel_desc));
+
+        NotificationChannel downloadChannel = new NotificationChannel(DOWNLOAD_CHANNEL_ID, getString(R.string.download_channel), importance);
+        downloadChannel.setDescription(getString(R.string.download_channel_desc));
+
+        // Once the channel is registered, it's importance and behaviour can't be changed
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(uploadChannel);
+        notificationManager.createNotificationChannel(downloadChannel);
+
+    }
+
 }

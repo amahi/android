@@ -182,4 +182,12 @@
     <string name="upload" translatable="false">"Upload"</string>
     <string name="sign_in" translatable="false">"Sign in"</string>
 
+    <string name="upload_channel" translatable="false">File Upload</string>
+    <string name="upload_channel_desc" translatable="false">Shows file upload progress</string>
+
+    <string name="download_channel" translatable="false">File Download</string>
+    <string name="download_channel_desc" translatable="false">Shows file download progress</string>
+
+
+
 </resources>

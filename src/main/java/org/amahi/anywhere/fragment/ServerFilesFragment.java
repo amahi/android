@@ -737,6 +737,7 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        menu.clear();
         super.onCreateOptionsMenu(menu, menuInflater);
 
         menuInflater.inflate(R.menu.action_bar_server_files, menu);

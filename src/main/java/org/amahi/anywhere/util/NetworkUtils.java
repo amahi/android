@@ -66,4 +66,10 @@ public class NetworkUtils {
         NetworkInfo network = getNetwork();
         return isNetworkConnected(network);
     }
+
+    public boolean isWifiConnected() {
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return wifi.isConnected();
+    }
 }

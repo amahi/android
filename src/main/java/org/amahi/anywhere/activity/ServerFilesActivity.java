@@ -25,11 +25,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -41,6 +43,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
@@ -80,6 +83,7 @@ import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.NetworkUtils;
 import org.amahi.anywhere.util.PathUtil;
 
 import java.io.File;
@@ -228,7 +232,26 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     private void setUpFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
         if (Intents.Builder.with(this).isServerFileSupported(file)) {
-            startFileActivity(share, files, file);
+            NetworkUtils networkUtils = new NetworkUtils(this);
+            if (isFileAvailableOffline(file)) {
+                startFileActivity(share, files, file);
+            } else {
+                if (isConnectionLocal()) {
+                    //check if the phone is still connected to local server
+                    if (networkUtils.isWifiConnected() || networkUtils.isNetworkAvailable()) {
+                        startFileActivity(share, files, file);
+                    } else {
+                        Toast.makeText(this, R.string.message_connect_to_server_and_try_again, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    if (networkUtils.isNetworkAvailable()) {
+                        startFileActivity(share, files, file);
+                    } else {
+                        Toast.makeText(this, R.string.message_connect_and_try_again, Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
             return;
         }
 
@@ -559,6 +582,16 @@ public class ServerFilesActivity extends AppCompatActivity implements
         OfflineFileRepository repository = new OfflineFileRepository(this);
         OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
         return file != null && file.getState() == OfflineFile.DOWNLOADED;
+    }
+
+    private boolean isConnectionLocal() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+        if (preferenceConnection != null) {
+            return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+        } else {
+            return false;
+        }
     }
 
     @Override

@@ -634,7 +634,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
 
-        if(isFinishing()) {
+        if (isFinishing()) {
             if (audioService != null &&
                 (!audioService.getAudioPlayer().getPlayWhenReady() || getShare() == null)) {
                 tearDownAudioService();

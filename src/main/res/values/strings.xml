@@ -182,4 +182,12 @@
     <string name="upload" translatable="false">"Upload"</string>
     <string name="sign_in" translatable="false">"Sign in"</string>
 
+    <string name="key_on_off">switch_key</string>
+    <string name="lock_heading">Fingerprint Authentication</string>
+    <string name="lock_sub_heading">Place your fingertip on the home button to verify your identity</string>
+    <string name="lock_hardware">Your Device does not have a Fingerprint Sensor</string>
+    <string name="lock_permission">Fingerprint authentication permission not enabled</string>
+    <string name="lock_fingerprint">Register at least one Fingerprint in Settings</string>
+    <string name="lock_security_enabled">Lock screen security not enabled in Settings</string>
+
 </resources>

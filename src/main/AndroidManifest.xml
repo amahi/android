@@ -21,6 +21,7 @@
     package="org.amahi.anywhere"
     android:installLocation="auto">
 
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -220,7 +221,9 @@
             android:value="org.amahi.anywhere.util.CastOptionsProvider" />
 
         <activity android:name=".activity.OfflineFilesActivity" />
-        <activity android:name=".activity.RecentFilesActivity"></activity>
+        <activity android:name=".activity.RecentFilesActivity"/>
+            <activity android:name=".activity.FingerprintActivity">
+        </activity>
     </application>
 
 </manifest>

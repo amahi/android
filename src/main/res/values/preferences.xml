@@ -23,6 +23,7 @@
     <string name="preference_category_account">Account</string>
     <string name="preference_category_settings">Settings</string>
     <string name="preference_category_upload">Auto Upload</string>
+    <string name="preference_category_security">Security</string>
 
     <string name="preference_title_about_feedback">Feedback</string>
     <string name="preference_title_about_rating">Rate</string>
@@ -32,6 +33,7 @@
     <string name="preference_title_server_connection">Connection</string>
     <string name="preference_title_tell_a_friend">Tell a friend</string>
     <string name="preference_title_upload_settings">Auto Upload Photos</string>
+    <string name="preference_title_security">Fingerprint lock</string>
 
     <string name="preference_title_upload_server">Server</string>
     <string name="preference_title_upload_share">Share</string>

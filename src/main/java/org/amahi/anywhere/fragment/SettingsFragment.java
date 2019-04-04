@@ -23,6 +23,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,6 +32,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.widget.Toast;
@@ -60,10 +62,12 @@ public class SettingsFragment extends PreferenceFragment implements
     AccountManagerCallback<Boolean> {
     @Inject
     ServerClient serverClient;
+    private Activity mActivity;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mActivity=this.getActivity();
         setUpInjections();
         setUpSettings();
     }
@@ -130,6 +134,8 @@ public class SettingsFragment extends PreferenceFragment implements
         Preference applicationRating = getPreference(R.string.preference_key_about_rating);
         Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
+        SwitchPreference security= (SwitchPreference) findPreference(this.getResources()
+            .getString(R.string.key_on_off));
 
         accountSignOut.setOnPreferenceClickListener(preference -> {
             setConfirmationDialog();
@@ -158,6 +164,16 @@ public class SettingsFragment extends PreferenceFragment implements
         autoUpload.setOnPreferenceClickListener(preference -> {
             openUploadSettingsFragment();
             return true;
+        });
+        security.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if(security.isChecked())
+                    security.setChecked(false);
+                else
+                    security.setChecked(true);
+                return false;
+            }
         });
 
     }

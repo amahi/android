@@ -35,6 +35,7 @@
     <color name="background_transparent_primary">#cc000000</color>
     <color name="background_transparent_secondary">#80000000</color>
     <color name="primary_text_material_light">#deffffff</color>
+    <color name="fingerprint_success">#008000</color>
 
     <!--ATV COLORS-->
     <color name="intro_1">#0277bd</color>

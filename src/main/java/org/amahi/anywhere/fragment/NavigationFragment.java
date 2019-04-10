@@ -473,6 +473,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         //Changing the Title Server Name
         getServerNameTextView().setText(getServersList().get(position).getName());
 
+        showNavigationItems();
+
         storeServerName(getServersList().get(position));
 
         BusProvider.getBus().post(new SharesSelectedEvent());

@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +44,7 @@ import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
+import org.amahi.anywhere.fragment.AlertDialogFragment;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.model.FileOption;
@@ -71,7 +71,8 @@ public class RecentFilesActivity extends AppCompatActivity implements
     ServerFileClickListener,
     SwipeRefreshLayout.OnRefreshListener,
     EasyPermissions.PermissionCallbacks,
-    CastStateListener {
+    CastStateListener,
+    AlertDialogFragment.DeleteFileDialogCallback {
 
     @Inject
     ServerClient serverClient;
@@ -442,16 +443,23 @@ public class RecentFilesActivity extends AppCompatActivity implements
     }
 
     private void deleteFile() {
+        AlertDialogFragment deleteFileDialog = new AlertDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.DELETE_FILE_DIALOG);
+        deleteFileDialog.setArguments(bundle);
+        deleteFileDialog.show(getSupportFragmentManager(), "delete_dialog");
+    }
 
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.message_delete_file_title)
-            .setMessage(R.string.message_delete_file_body)
-            .setPositiveButton(R.string.button_yes, (dialog, which) -> {
-                showDeleteDialog();
-                serverClient.deleteFile(getSelectedRecentFile().getShareName(), prepareServerFile(getSelectedRecentFile()));
-            })
-            .setNegativeButton(R.string.button_no, null)
-            .show();
+    @Override
+    public void dialogPositiveButtonOnClick() {
+        showDeleteDialog();
+        serverClient.deleteFile(getSelectedRecentFile().getShareName(), prepareServerFile(getSelectedRecentFile()));
+
+    }
+
+    @Override
+    public void dialogNegativeButtonOnClick() {
+
     }
 
     private void showDeleteDialog() {

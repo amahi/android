@@ -37,7 +37,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,6 +61,7 @@ import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.fragment.AudioControllerFragment;
+import org.amahi.anywhere.fragment.AlertDialogFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ProgressDialogFragment;
@@ -101,7 +101,8 @@ import timber.log.Timber;
 public class ServerFilesActivity extends AppCompatActivity implements
     EasyPermissions.PermissionCallbacks,
     ServiceConnection,
-    CastStateListener {
+    CastStateListener,
+    AlertDialogFragment.DuplicateFileDialogCallback {
 
     private static final int FILE_UPLOAD_PERMISSION = 102;
     private static final int CAMERA_PERMISSION = 103;
@@ -444,12 +445,23 @@ public class ServerFilesActivity extends AppCompatActivity implements
     }
 
     private void showDuplicateFileUploadDialog(final File file) {
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.message_duplicate_file_upload)
-            .setMessage(getString(R.string.message_duplicate_file_upload_body, file.getName()))
-            .setPositiveButton(R.string.button_yes, (dialog, which) -> uploadFile(file))
-            .setNegativeButton(R.string.button_no, null)
-            .show();
+
+        AlertDialogFragment duplicateFileDialog = new AlertDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.DUPLICATE_FILE_DIALOG);
+        bundle.putSerializable("file", file);
+        duplicateFileDialog.setArguments(bundle);
+        duplicateFileDialog.show(getSupportFragmentManager(), "duplicate_file_dialog");
+    }
+
+    @Override
+    public void dialogPositiveButtonOnClick(File file) {
+        uploadFile(file);
+    }
+
+    @Override
+    public void dialogNegativeButtonOnClick() {
+
     }
 
     private void uploadFile(File uploadFile) {

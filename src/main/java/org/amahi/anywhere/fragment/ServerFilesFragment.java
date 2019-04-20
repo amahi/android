@@ -36,7 +36,6 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -114,7 +113,8 @@ public class ServerFilesFragment extends Fragment implements
     SearchView.OnQueryTextListener,
     FilesFilterAdapter.onFilterListChange,
     EasyPermissions.PermissionCallbacks,
-    CastStateListener {
+    CastStateListener,
+    AlertDialogFragment.DeleteFileDialogCallback {
     public final static int EXTERNAL_STORAGE_PERMISSION = 101;
 
     public static final int SORT_MODIFICATION_TIME = 0;
@@ -335,18 +335,32 @@ public class ServerFilesFragment extends Fragment implements
     private void deleteFile() {
         if (!isOfflineFragment()) {
             deleteFilePosition = getListAdapter().getSelectedPosition();
-            new AlertDialog.Builder(getContext())
-                .setTitle(R.string.message_delete_file_title)
-                .setMessage(R.string.message_delete_file_body)
-                .setPositiveButton(R.string.button_yes, (dialog, which) -> {
-                    deleteProgressDialog.show();
-                    serverClient.deleteFile(getShare(), getCheckedFile());
-                })
-                .setNegativeButton(R.string.button_no, null)
-                .show();
+            showDeleteConfirmationDialog();
         } else {
             BusProvider.getBus().post(new OfflineFileDeleteEvent(getCheckedFile()));
         }
+    }
+
+    private void showDeleteConfirmationDialog() {
+        AlertDialogFragment deleteFileDialog = new AlertDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.DELETE_FILE_DIALOG);
+        deleteFileDialog.setArguments(bundle);
+        deleteFileDialog.setTargetFragment(this, 2);
+        deleteFileDialog.show(getFragmentManager(), "delete_dialog");
+    }
+
+    @Override
+    public void dialogPositiveButtonOnClick() {
+        deleteProgressDialog.show();
+
+        serverClient.deleteFile(getShare(), getCheckedFile());
+
+    }
+
+    @Override
+    public void dialogNegativeButtonOnClick() {
+
     }
 
     private void changeOfflineState(boolean enable) {
@@ -401,6 +415,7 @@ public class ServerFilesFragment extends Fragment implements
         if (fileDeleteEvent.isDeleted()) {
             if (!isMetadataAvailable()) {
                 if (!isOfflineFragment()) {
+                    deleteFilePosition = getListAdapter().getSelectedPosition();
                     getFilesAdapter().removeFile(deleteFilePosition);
                 } else {
                     getListAdapter().removeFile(getListAdapter().getSelectedPosition());
@@ -520,6 +535,7 @@ public class ServerFilesFragment extends Fragment implements
 
         setUpFilesContent(files);
         setUpFilesContentSort(filesSort);
+        lastSelectedFilePosition = state.getInt(State.SELECTED_ITEM);
         getListAdapter().setSelectedPosition(state.getInt(State.SELECTED_ITEM, -1));
 
         showFilesContent();

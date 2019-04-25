@@ -26,10 +26,10 @@ import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.widget.Toast;
@@ -43,6 +43,7 @@ import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Preferences;
 
@@ -54,10 +55,10 @@ import javax.inject.Inject;
 /**
  * Settings fragment. Shows application's settings.
  */
-public class SettingsFragment extends PreferenceFragment implements
+public class SettingsFragment extends PreferenceFragmentCompat implements
     SharedPreferences.OnSharedPreferenceChangeListener,
     AccountManagerCallback<Boolean>,
-    SignOutDialogFragment.Callback {
+    AlertDialogFragment.SignOutDialogCallback {
     @Inject
     ServerClient serverClient;
 
@@ -65,6 +66,10 @@ public class SettingsFragment extends PreferenceFragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setUpInjections();
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle bundle, String s) {
         setUpSettings();
     }
 
@@ -173,8 +178,11 @@ public class SettingsFragment extends PreferenceFragment implements
     }
 
     private void setUpSignOutDialogFragment() {
-        SignOutDialogFragment signOutDialogFragment = new SignOutDialogFragment();
+        AlertDialogFragment signOutDialogFragment = new AlertDialogFragment();
         signOutDialogFragment.setTargetFragment(this, 1);
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.SIGN_OUT_DIALOG);
+        signOutDialogFragment.setArguments(bundle);
         signOutDialogFragment.show(getFragmentManager(), "sign_out_dialog");
     }
 

@@ -125,6 +125,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:${SUPPORT_LIBRARY_VERSION}"
     implementation "com.android.support:design:${SUPPORT_LIBRARY_VERSION}"
     implementation "com.android.support:preference-v7:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.android.support:preference-v14:${SUPPORT_LIBRARY_VERSION}"
     implementation "com.android.support:customtabs:${SUPPORT_LIBRARY_VERSION}"
     implementation "com.android.support:leanback-v17:${SUPPORT_LIBRARY_VERSION}"
     implementation "com.android.support:mediarouter-v7:${SUPPORT_LIBRARY_VERSION}"

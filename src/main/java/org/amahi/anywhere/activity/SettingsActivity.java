@@ -19,8 +19,8 @@
 
 package org.amahi.anywhere.activity;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -57,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setUpSettingsFragment() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .replace(R.id.settings_container, new SettingsFragment()).commit();
     }
@@ -76,7 +76,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Subscribe
     public void onUploadSettingsOpenEvent(UploadSettingsOpeningEvent event) {
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .replace(R.id.settings_container, new UploadSettingsFragment())
             .addToBackStack(null)

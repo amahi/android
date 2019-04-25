@@ -20,6 +20,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     AlertDialog.Builder builder;
     public static final int DELETE_FILE_DIALOG = 0;
     public static final int DUPLICATE_FILE_DIALOG = 1;
+    public static final int SIGN_OUT_DIALOG = 2;
 
 
     @NonNull
@@ -40,6 +41,9 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
             case DUPLICATE_FILE_DIALOG:
                 buildDuplicateDialog();
                 break;
+
+            case SIGN_OUT_DIALOG:
+                buildSignOutDialog();
         }
 
         return builder.create();
@@ -58,6 +62,13 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
             .setMessage(getString(R.string.message_duplicate_file_upload_body, file.getName()))
             .setPositiveButton(getString(R.string.button_yes), this)
             .setNegativeButton(getString(R.string.button_no), this);
+    }
+
+    private void buildSignOutDialog() {
+        builder.setTitle(getString(R.string.sign_out_title))
+            .setMessage(getString(R.string.sign_out_message))
+            .setPositiveButton(getString(R.string.sign_out_title), this)
+            .setNegativeButton(getString(R.string.cancel), this);
     }
 
     @Override
@@ -88,6 +99,19 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
                     callback.dialogNegativeButtonOnClick();
                 }
             }
+        } else if (dialogType == SIGN_OUT_DIALOG) {
+            SignOutDialogCallback callback = getSignOutDialogCallback();
+
+            if (callback != null) {
+                if (which == DialogInterface.BUTTON_POSITIVE) {
+                    dialog.dismiss();
+                    callback.dialogPositiveButtonOnClick();
+                } else if (which == DialogInterface.BUTTON_NEGATIVE) {
+                    dialog.dismiss();
+                    callback.dialogNegativeButtonOnClick();
+                }
+            }
+
         }
 
 
@@ -133,6 +157,27 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
         return callback;
     }
 
+    private SignOutDialogCallback getSignOutDialogCallback() {
+
+        SignOutDialogCallback callback;
+        if (getTargetFragment() != null) {
+            try {
+                callback = (SignOutDialogCallback) getTargetFragment();
+            } catch (ClassCastException e) {
+                Log.e(this.getClass().getSimpleName(), "Callback of this class must be implemented by target fragment!", e);
+                throw e;
+            }
+        } else {
+            try {
+                callback = (SignOutDialogCallback) getActivity();
+            } catch (ClassCastException e) {
+                Log.e(this.getClass().getSimpleName(), "Callback of this class must be implemented by the activity!", e);
+                throw e;
+            }
+        }
+        return callback;
+    }
+
 
     public interface DuplicateFileDialogCallback {
 
@@ -143,6 +188,14 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     }
 
     public interface DeleteFileDialogCallback {
+
+        void dialogPositiveButtonOnClick();
+
+
+        void dialogNegativeButtonOnClick();
+    }
+
+    public interface SignOutDialogCallback {
 
         void dialogPositiveButtonOnClick();
 

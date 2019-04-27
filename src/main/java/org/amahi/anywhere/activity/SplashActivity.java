@@ -20,26 +20,34 @@
 package org.amahi.anywhere.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
-public class SplashActivity extends AppCompatActivity {
+import org.amahi.anywhere.R;
+
+public class SplashActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setUpActivity();
-
+        addPreferencesFromResource(R.xml.settings);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+        String code = pref.getString("code", null);
+        if (code == null)
+            launchNavigation();
+        else
+            launchFingerprintNavigation();
         finish();
-    }
 
-    private void setUpActivity() {
-        launchNavigation();
     }
 
     private void launchNavigation() {
         startActivity(new Intent(this, NavigationActivity.class));
+    }
+
+    private void launchFingerprintNavigation() {
+        startActivity(new Intent(this, PasscodeActivity.class));
     }
 }

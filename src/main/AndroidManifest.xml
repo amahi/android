@@ -21,6 +21,8 @@
     package="org.amahi.anywhere"
     android:installLocation="auto">
 
+    <uses-feature android:name="android.hardware.fingerprint" android:required="true"/>
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -52,6 +54,7 @@
         android:banner="@drawable/tv_banner"
         android:icon="@drawable/ic_launcher"
         android:label="@string/application_name"
+        tools:node="replace"
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi"
         tools:ignore="GoogleAppIndexingWarning">
@@ -221,7 +224,10 @@
             android:value="org.amahi.anywhere.util.CastOptionsProvider" />
 
         <activity android:name=".activity.OfflineFilesActivity" />
-        <activity android:name=".activity.RecentFilesActivity"></activity>
+        <activity android:name=".activity.RecentFilesActivity"/>
+        <activity android:name=".activity.PasscodeActivity"/>
+        <activity android:name=".activity.SetPasscodeActivity"/>
+        <activity android:name=".activity.DisablePasscodeActivity"/>
     </application>
 
 </manifest>

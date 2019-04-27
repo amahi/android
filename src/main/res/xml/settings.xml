@@ -67,4 +67,12 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/preference_category_security">
+
+        <Preference
+            android:key="@string/key_on_off"
+            android:title="@string/preference_title_security" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

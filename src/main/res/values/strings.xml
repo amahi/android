@@ -188,6 +188,23 @@
     <string name="download_channel" translatable="false">File Download</string>
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
 
+    <!--Passcode Activity strings-->
+    <string name="key_on_off" translatable="false">switch_key</string>
+    <string name="confirm_passcode" translatable="false">Confirm your Passcode</string>
+    <string name="passcode_turn_off" translatable="false">"Passcode turned off"</string>
+    <string name="passcode_failed" translatable="false">"Failed code, try again!"</string>
+    <string name="passcode_enter_new" translatable="false">"Enter your new passcode"</string>
+    <string name="passcode_reenter" translatable="false">"Re-enter your new passcode"</string>
+    <string name="passcode_set" translatable="false">"Passcode set!"</string>
+    <string name="passcode_invalid" translatable="false">"Invalid code!"</string>
+    <string name="passcode_unlock" translatable="false">"Please Unlock first"</string>
+    <string name="passcode_dialog_title" translatable="false">"What would you like to do?"</string>
+    <string name="passcode_dialog_change" translatable="false">"Change Passcode"</string>
+    <string name="passcode_dialog_turn_off" translatable="false">"Turn Off Passcode"</string>
 
+    <string name="fingerprint_support" translatable="false">"Your device doesn't support fingerprint authentication"</string>
+    <string name="fingerprint_permission" translatable="false">"Please enable the fingerprint permission"</string>
+    <string name="fingerprint_configured" translatable="false">"No fingerprint configured. Please register at least one fingerprint in your device's Settings"</string>
+    <string name="fingerprint_security" translatable="false">"Please enable fingerprint security in your device's Settings"</string>
 
 </resources>

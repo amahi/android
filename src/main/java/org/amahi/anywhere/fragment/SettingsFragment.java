@@ -24,6 +24,7 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -33,12 +34,16 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.activity.DisablePasscodeActivity;
 import org.amahi.anywhere.activity.NavigationActivity;
+import org.amahi.anywhere.activity.SetPasscodeActivity;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.server.ApiConnection;
@@ -130,6 +135,7 @@ public class SettingsFragment extends PreferenceFragment implements
         Preference applicationRating = getPreference(R.string.preference_key_about_rating);
         Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
+        Preference security = getPreference(R.string.key_on_off);
 
         accountSignOut.setOnPreferenceClickListener(preference -> {
             setConfirmationDialog();
@@ -159,7 +165,51 @@ public class SettingsFragment extends PreferenceFragment implements
             openUploadSettingsFragment();
             return true;
         });
+        security.setOnPreferenceClickListener(preference -> {
+            passcodeDialog();
+            return true;
+        });
+    }
 
+    private void passcodeDialog() {
+        SharedPreferences pref = getActivity().getSharedPreferences("MyPref", 0);
+        String code = pref.getString("code", null);
+        if (code == null) {
+            Intent intent = new Intent(getActivity(), SetPasscodeActivity.class);
+            startActivity(intent);
+        } else {
+            final Dialog dialog = new Dialog(getActivity());
+            View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_passcode, null);
+            dialog.setContentView(view);
+            Button change_btn = (Button) view.findViewById(R.id.change_btn);
+            Button turnoff_btn = (Button) view.findViewById(R.id.turnoff_btn);
+
+            change_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    changePasscode();
+                }
+            });
+
+            turnoff_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    turnOffPassocode();
+                }
+            });
+            dialog.show();
+        }
+    }
+
+    private void turnOffPassocode() {
+        Intent intent = new Intent(getActivity(), DisablePasscodeActivity.class);
+        startActivity(intent);
+    }
+
+    private void changePasscode() {
+        Intent intent = new Intent(getActivity(), DisablePasscodeActivity.class);
+        intent.putExtra("set", "1");
+        startActivity(intent);
     }
 
     private void setUpApplicationIntro() {

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/code_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_secondary">
+
+    <TextView
+        android:id="@+id/profile_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:fontFamily="sans-serif-thin"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="@string/passcode_unlock"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <com.andrognito.pinlockview.IndicatorDots
+        android:id="@+id/indicator_dots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp" />
+
+    <com.andrognito.pinlockview.PinLockView
+        android:id="@+id/pin_lock_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/indicator_dots"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="6dp"
+        app:keypadButtonSize="72dp"
+        app:keypadShowDeleteButton="true"
+        app:keypadTextColor="@color/primary"
+        app:keypadTextSize="28sp" />
+
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/pin_lock_view"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/ic_fingerprint_white" />
+
+    <TextView
+        android:id="@+id/sign_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp"
+        android:clickable="true"
+        android:text="@string/sign_out_title"
+        android:textColor="@color/white" />
+
+</RelativeLayout>

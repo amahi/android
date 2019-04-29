@@ -3,8 +3,10 @@ package org.amahi.anywhere.activity;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.view.WindowManager;
 
 import org.amahi.anywhere.R;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +23,19 @@ public class AuthenticationActivityTest {
     @Rule
     public ActivityTestRule<AuthenticationActivity> authenticationActivityTestRule =
         new ActivityTestRule(AuthenticationActivity.class);
+
+    @Before
+    public void unlockScreen() {
+        final AuthenticationActivity activity = authenticationActivityTestRule.getActivity();
+        Runnable wakeUpDevice = new Runnable() {
+            public void run() {
+                activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        };
+        activity.runOnUiThread(wakeUpDevice);
+    }
 
     @Test
     public void testIsErrorMessageDisplayed_UsernameOrPasswordIsEmpty() {

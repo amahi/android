@@ -23,10 +23,12 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.view.MenuItem;
 
 import com.squareup.otto.Subscribe;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
@@ -38,8 +40,15 @@ import org.amahi.anywhere.fragment.UploadSettingsFragment;
  * Settings itself are provided via {@link org.amahi.anywhere.fragment.SettingsFragment}.
  */
 public class SettingsActivity extends AppCompatActivity {
+    public static final int RESULT_THEME_UPDATED = 3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (AmahiApplication.getInstance().isLightThemeEnabled()) {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
         super.onCreate(savedInstanceState);
 
         setUpHomeNavigation();

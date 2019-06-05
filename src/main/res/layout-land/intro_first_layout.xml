@@ -13,7 +13,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        app:srcCompat="@drawable/ic_banner"
+        app:srcCompat="@drawable/ic_banner_white"
         tools:ignore="contentDescription"/>
 
     <android.support.v7.widget.CardView

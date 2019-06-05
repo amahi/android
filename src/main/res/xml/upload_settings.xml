@@ -36,7 +36,8 @@
         android:inputType="text"
         android:key="@string/preference_key_upload_location"
         android:summary="@string/preference_summary_location"
-        android:title="@string/preference_title_upload_location" />
+        android:title="@string/preference_title_upload_location"
+        android:textColor="@color/primary_text"/>
 
     <SwitchPreference
         android:defaultValue="false"

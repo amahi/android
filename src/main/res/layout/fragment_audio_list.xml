@@ -22,7 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="158dp"
-    android:background="#F9333333"
+    android:background="@color/background_secondary"
     android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView

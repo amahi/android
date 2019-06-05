@@ -35,7 +35,9 @@
         tools:ignore="contentDescription"
         android:layout_marginEnd="8dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_file_audio" />
+        android:src="@drawable/ic_file_audio"
+        android:tint="@color/icons"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -59,6 +61,7 @@
                 android:paddingStart="0dp"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:textColor="@color/primary_text"
                 tools:text="File Name"
                 android:textSize="@dimen/text_medium" />
 
@@ -91,7 +94,7 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="#686868"
+                android:textColor="@color/secondary_text"
                 android:textSize="@dimen/text_micro" />
 
             <TextView
@@ -100,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="#686868"
+                android:textColor="@color/secondary_text"
                 android:textSize="@dimen/text_micro" />
 
         </LinearLayout>

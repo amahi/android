@@ -32,7 +32,8 @@
         android:layout_height="wrap_content"
         android:maxLines="1"
         android:textSize="@dimen/text_medium"
-        tools:text="Audio Name" />
+        tools:text="Audio Name"
+        android:textColor="@color/primary_text"/>
 
     <TextView
         android:id="@+id/audio_subtitle_text"
@@ -40,6 +41,7 @@
         android:layout_height="wrap_content"
         android:maxLines="1"
         android:textSize="@dimen/text_small"
-        tools:text="Audio Subtitle" />
+        tools:text="Audio Subtitle"
+        android:textColor="@color/secondary_text"/>
 
 </LinearLayout>

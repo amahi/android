@@ -44,7 +44,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="140dp"
-                android:background="@android:color/black"
+                android:background="@color/background_primary"
                 android:orientation="vertical"
                 android:scaleType="fitXY">
 
@@ -86,7 +86,6 @@
                         android:ellipsize="end"
                         android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:textColor="@android:color/white"
                         android:paddingEnd="16dp"
                         android:paddingStart="16dp"
                         android:text="@string/title_no_server"
@@ -118,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="32dp"
                     android:layout_marginStart="16dp"
-                    android:src="@drawable/ic_offline_white_24dp"
+                    android:src="@drawable/ic_offline_24dp"
                     tools:ignore="contentDescription" />
 
                 <TextView

@@ -22,10 +22,12 @@ package org.amahi.anywhere.activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -70,9 +72,16 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     ServerClient serverClient;
     private ActionBarDrawerToggle navigationDrawerToggle;
     private String navigationTitle;
+    final private int SETTINGS_ACTION = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (AmahiApplication.getInstance().isLightThemeEnabled()) {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
@@ -363,7 +372,19 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
     private void setUpSettings() {
         Intent intent = Intents.Builder.with(this).buildSettingsIntent();
-        startActivity(intent);
+        startActivityForResult(intent, SETTINGS_ACTION);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == SETTINGS_ACTION) {
+            if (resultCode == SettingsActivity.RESULT_THEME_UPDATED) {
+                finish();
+                startActivity(getIntent());
+                return;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

@@ -88,12 +88,12 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
         switch (position) {
             case NavigationDrawerAdapter.NavigationItems.SHARES:
                 name = mContext.getString(R.string.title_shares);
-                imageId = R.drawable.ic_shares_white;
+                imageId = R.drawable.ic_shares;
                 break;
 
             case NavigationDrawerAdapter.NavigationItems.APPS:
                 name = mContext.getString(R.string.title_apps);
-                imageId = R.drawable.ic_apps_white;
+                imageId = R.drawable.ic_apps;
                 break;
 
             default:

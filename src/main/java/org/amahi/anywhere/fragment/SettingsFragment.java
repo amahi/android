@@ -33,6 +33,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatDelegate;
 import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -60,6 +61,7 @@ public class SettingsFragment extends PreferenceFragment implements
     AccountManagerCallback<Boolean> {
     @Inject
     ServerClient serverClient;
+    public static final int RESULT_THEME_UPDATED = 3;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -130,6 +132,7 @@ public class SettingsFragment extends PreferenceFragment implements
         Preference applicationRating = getPreference(R.string.preference_key_about_rating);
         Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
+        Preference lightTheme = getPreference(R.string.pref_key_light_theme);
 
         accountSignOut.setOnPreferenceClickListener(preference -> {
             setConfirmationDialog();
@@ -159,6 +162,10 @@ public class SettingsFragment extends PreferenceFragment implements
             openUploadSettingsFragment();
             return true;
         });
+        lightTheme.setOnPreferenceChangeListener((preference, newValue) -> {
+            setUpTheme((Boolean) newValue);
+            return true;
+        });
 
     }
 
@@ -170,6 +177,21 @@ public class SettingsFragment extends PreferenceFragment implements
 
     private void openUploadSettingsFragment() {
         BusProvider.getBus().post(new UploadSettingsOpeningEvent());
+    }
+
+    private void setUpTheme(Boolean isLightThemeEnabled) {
+        getActivity().setResult(RESULT_THEME_UPDATED);
+        if (isLightThemeEnabled) {
+            AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
+        AmahiApplication.getInstance().setIsLightThemeEnabled(isLightThemeEnabled);
+        getActivity().finish();
+        startActivity(getActivity().getIntent());
     }
 
     private void setConfirmationDialog() {

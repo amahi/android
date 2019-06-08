@@ -24,7 +24,8 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start">
+    tools:openDrawer="start"
+    android:background="@color/background_primary">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,7 +36,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/bg_action_bar" />
+            android:background="@color/background_toolbar" />
 
         <FrameLayout
             android:id="@+id/container_content"
@@ -55,7 +56,6 @@
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@android:color/black"
         android:fitsSystemWindows="true" />
 
 </android.support.v4.widget.DrawerLayout>

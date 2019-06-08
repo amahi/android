@@ -19,9 +19,11 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -90,9 +92,10 @@ public class ServerSharesFragment extends Fragment implements
 
         setSwipeToRefresh();
 
-        mRecyclerView.addItemDecoration(new
-            DividerItemDecoration(getActivity(),
-            DividerItemDecoration.VERTICAL));
+        DividerItemDecoration decoration = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
+        Drawable dividerDrawable = ContextCompat.getDrawable(getContext(), R.drawable.divider);
+        decoration.setDrawable(dividerDrawable);
+        mRecyclerView.addItemDecoration(decoration);
 
         return rootView;
     }

@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -154,10 +156,9 @@ public class RecentFilesActivity extends AppCompatActivity implements
     }
 
     private void addListItemDivider() {
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
-            getRecentFileRView().getContext(),
-            DividerItemDecoration.VERTICAL);
-
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        Drawable dividerDrawable = ContextCompat.getDrawable(this, R.drawable.divider);
+        dividerItemDecoration.setDrawable(dividerDrawable);
         getRecentFileRView().addItemDecoration(dividerItemDecoration);
     }
 

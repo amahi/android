@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="88dp"
-        android:background="#80000000"
+        android:background="@color/background_primary"
         android:orientation="vertical"
         android:paddingBottom="12dp"
         android:paddingTop="12dp">
@@ -52,7 +52,7 @@
             android:maxLines="1"
             android:paddingLeft="32dp"
             android:paddingRight="32dp"
-            android:textColor="@android:color/white"
+            android:textColor="@color/primary_text"
             android:textSize="@dimen/text_medium"
             android:textStyle="bold" />
 
@@ -68,7 +68,7 @@
             android:maxLines="1"
             android:paddingLeft="32dp"
             android:paddingRight="32dp"
-            android:textColor="@android:color/white"
+            android:textColor="@color/secondary_text"
             android:textSize="@dimen/text_small" />
 
     </LinearLayout>

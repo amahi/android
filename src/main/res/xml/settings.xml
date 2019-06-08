@@ -40,6 +40,11 @@
             android:key="@string/preference_screen_key_upload"
             android:title="@string/preference_title_upload_settings" />
 
+        <SwitchPreference
+            android:key="@string/pref_key_light_theme"
+            android:title="@string/pref_title_light_theme"
+            android:defaultValue="false"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/preference_category_about">

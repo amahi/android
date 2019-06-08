@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2014 Amahi
+  ~
+  ~ This file is part of Amahi.
+  ~
+  ~ Amahi is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Amahi is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <!-- https://www.materialpalette.com/blue/orange -->
+    <color name="primary">#2196F3</color>
+    <color name="primary_dark">#0069c0</color>
+    <color name="primary_light">#BBDEFB</color>
+    <color name="primary_action_mode">#328ce7</color>
+    <color name="accent">#ef5350</color>
+    <color name="primary_text">#000000</color>
+    <color name="secondary_text">#1a1a1a</color>
+    <color name="icons">#000000</color>
+    <color name="divider">#757575</color>
+    <color name="error_red">#d32f2f</color>
+    <color name="sign_in_button">#1976D2</color>
+    <color name="background_toolbar">#19B4F4</color>
+
+    <color name="background_primary">#FFFFFF</color>
+    <color name="background_secondary">#deffffff</color>
+    <color name="background_transparent_primary">#FFFFFF</color>
+    <color name="background_transparent_secondary">#deffffff</color>
+    <color name="primary_text_material_light">#000000</color>
+
+    <!--ATV COLORS-->
+    <color name="intro_1">#0277bd</color>
+    <color name="intro_2">#3949ab</color>
+    <!--DARK GRAY USED FOR intro_3-->
+    <color name="intro_4">#26a69a</color>
+    <color name="intro_5">#ffab00</color>
+    <color name="intro_6">#303f9f</color>
+</resources>

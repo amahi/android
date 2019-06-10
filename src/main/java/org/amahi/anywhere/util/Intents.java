@@ -27,7 +27,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.IntroductionActivity;

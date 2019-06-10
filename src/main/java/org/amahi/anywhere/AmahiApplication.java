@@ -27,8 +27,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatDelegate;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.crashlytics.android.Crashlytics;
 

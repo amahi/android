@@ -19,7 +19,7 @@
 
 package org.amahi.anywhere.util;
 
-import android.support.v4.util.ArrayMap;
+import androidx.collection.ArrayMap;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerFile;

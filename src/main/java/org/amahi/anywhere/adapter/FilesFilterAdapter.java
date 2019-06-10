@@ -22,7 +22,7 @@ package org.amahi.anywhere.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.widget.Filter;

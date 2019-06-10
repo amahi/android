@@ -20,10 +20,10 @@
 package org.amahi.anywhere.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.BottomSheetDialogFragment;
+import androidx.annotation.Nullable;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +41,7 @@ import java.util.ArrayList;
 
 /**
  * Bottom sheet component for showing upload related options.
- * Extends {@link android.support.design.widget.BottomSheetDialog}
+ * Extends {@link BottomSheetDialog}
  */
 public class UploadBottomSheet extends BottomSheetDialogFragment {
 
@@ -54,7 +54,7 @@ public class UploadBottomSheet extends BottomSheetDialogFragment {
             @Override
             public void onGlobalLayout() {
                 BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) getDialog();
-                FrameLayout bottomSheet = bottomSheetDialog.findViewById(android.support.design.R.id.design_bottom_sheet);
+                FrameLayout bottomSheet = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
                 assert bottomSheet != null;
                 BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomSheet);
                 behavior.setState(BottomSheetBehavior.STATE_EXPANDED);

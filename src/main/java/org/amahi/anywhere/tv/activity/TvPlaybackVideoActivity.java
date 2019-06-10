@@ -24,9 +24,9 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v17.leanback.widget.PlaybackControlsRow;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.leanback.widget.PlaybackControlsRow;
 import android.view.KeyEvent;
 
 import org.amahi.anywhere.AmahiApplication;

@@ -19,7 +19,7 @@
 
 package org.amahi.anywhere.bus;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.widget.ImageView;
 
 import org.amahi.anywhere.adapter.AudioFilesAdapter;

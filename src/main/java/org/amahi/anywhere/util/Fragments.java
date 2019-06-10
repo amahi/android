@@ -21,10 +21,10 @@ package org.amahi.anywhere.util;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.FileOptionsDialogFragment;

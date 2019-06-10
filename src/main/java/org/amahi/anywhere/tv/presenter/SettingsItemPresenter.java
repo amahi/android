@@ -22,7 +22,7 @@ package org.amahi.anywhere.tv.presenter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v17.leanback.widget.Presenter;
+import androidx.leanback.widget.Presenter;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;

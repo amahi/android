@@ -20,7 +20,7 @@
 package org.amahi.anywhere.model;
 
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Represents metadata for an audio file.

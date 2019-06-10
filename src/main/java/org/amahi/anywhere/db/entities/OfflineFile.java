@@ -1,8 +1,8 @@
 package org.amahi.anywhere.db.entities;
 
-import android.arch.persistence.room.Entity;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 @Entity(tableName = "offline_table", primaryKeys = {"share", "path", "name"})
 public class OfflineFile {

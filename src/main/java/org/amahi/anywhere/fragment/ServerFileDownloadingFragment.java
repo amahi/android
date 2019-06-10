@@ -70,7 +70,7 @@ public class ServerFileDownloadingFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        ProgressDialog dialog = new ProgressDialog(getActivity(),R.style.AlertDialogTheme);
+        ProgressDialog dialog = new ProgressDialog(getActivity(), R.style.AlertDialogTheme);
 
         dialog.setMessage(getString(R.string.message_progress_file_downloading));
 

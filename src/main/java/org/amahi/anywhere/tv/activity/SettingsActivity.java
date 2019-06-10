@@ -22,8 +22,8 @@ package org.amahi.anywhere.tv.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v17.leanback.app.GuidedStepFragment;
+import androidx.annotation.Nullable;
+import androidx.leanback.app.GuidedStepFragment;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.tv.fragment.ConnectionFragment;

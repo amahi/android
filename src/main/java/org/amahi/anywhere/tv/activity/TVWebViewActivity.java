@@ -22,7 +22,7 @@ package org.amahi.anywhere.tv.activity;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.webkit.WebView;
 
 import org.amahi.anywhere.AmahiApplication;

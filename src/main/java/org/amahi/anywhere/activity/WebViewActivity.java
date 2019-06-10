@@ -1,7 +1,7 @@
 package org.amahi.anywhere.activity;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;

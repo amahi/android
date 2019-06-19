@@ -60,7 +60,6 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void setUpHomeNavigation() {
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
     }
 
     private void setUpSettingsFragment() {

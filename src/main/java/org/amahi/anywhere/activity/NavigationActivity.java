@@ -29,7 +29,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
-import android.view.Gravity;
+import androidx.core.view.GravityCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
@@ -183,7 +183,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         this.navigationDrawerToggle = buildNavigationDrawerToggle();
 
         getDrawer().addDrawerListener(this);
-        getDrawer().setDrawerShadow(R.drawable.bg_shadow_drawer, Gravity.START);
+        getDrawer().setDrawerShadow(R.drawable.bg_shadow_drawer, GravityCompat.START);
     }
 
     private ActionBarDrawerToggle buildNavigationDrawerToggle() {

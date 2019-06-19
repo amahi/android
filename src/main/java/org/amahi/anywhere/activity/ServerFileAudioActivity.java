@@ -23,18 +23,25 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaLoadOptions;
 import com.google.android.gms.cast.MediaMetadata;
@@ -70,7 +77,6 @@ import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.view.AudioControls;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,6 +95,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     ViewPager.OnPageChangeListener,
     ServiceConnection,
     MediaController.MediaPlayerControl,
+    View.OnClickListener,
     SessionManagerListener<CastSession> {
     private static final Set<String> SUPPORTED_FORMATS;
 
@@ -108,8 +115,10 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private AudioMetadataFormatter metadataFormatter;
     private PlaybackLocation mLocation = PlaybackLocation.LOCAL;
     private AudioService audioService;
-    private AudioControls audioControls;
     private boolean changeAudio = true;
+    private boolean audioControlsAvailable = false;
+    private static final String AUDIO_LIST_VISIBLE = "audio_list_visible";
+    private boolean audioListVisible = false;
 
     public static boolean supports(String mime_type) {
         return SUPPORTED_FORMATS.contains(mime_type);
@@ -129,6 +138,10 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         prepareFiles();
 
         setUpAudio();
+
+        if (savedInstanceState != null) {
+            audioListVisible = savedInstanceState.getBoolean(AUDIO_LIST_VISIBLE);
+        }
     }
 
     private void setUpInjections() {
@@ -136,8 +149,10 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void setUpHomeNavigation() {
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+        Toolbar toolbar = findViewById(R.id.toolbar_audio);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     private void setUpCast() {
@@ -229,7 +244,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void setUpAudioTitle(ServerFile file) {
-        getSupportActionBar().setTitle(file.getName());
+        getAudioTitleView().setText(file.getName());
     }
 
     private TextView getAudioTitleView() {
@@ -326,8 +341,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         super.onAttachedToWindow();
         setUpAudioControls();
         if (isAudioServiceAvailable()) {
-            audioControls.setMediaPlayer(this);
-            showAudio();
+            getPlayerControlView().setPlayer(audioService.getAudioPlayer());
         }
     }
 
@@ -337,24 +351,39 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     }
 
     private void setUpAudioControls() {
-        if (!areAudioControlsAvailable()) {
-            audioControls = new AudioControls(this);
-
-            audioControls.setMediaPlayer(this);
-            audioControls.setPrevNextListeners(new AudioControlsNextListener(), new AudioControlsPreviousListener());
-            audioControls.setAnchorView(findViewById(R.id.layout_content));
+        if (isAudioServiceAvailable()) {
+            getPlayerControlView().setPlayer(audioService.getAudioPlayer());
+            getNextButton().setOnClickListener(this);
+            getPreviousButton().setOnClickListener(this);
+            audioControlsAvailable = true;
         }
+        getPlayerControlView().setShowTimeoutMs(0);
+    }
+
+    private PlayerControlView getPlayerControlView() {
+        return findViewById(R.id.control_view);
+    }
+
+    private ImageButton getNextButton() {
+        return getPlayerControlView().findViewById(R.id.m_exo_next);
+    }
+
+    private ImageButton getPreviousButton() {
+        return getPlayerControlView().findViewById(R.id.exo_prev);
     }
 
     private boolean areAudioControlsAvailable() {
-        return audioControls != null;
+        return audioControlsAvailable;
     }
 
     private void setUpAudioPlayback() {
+        if (!areAudioControlsAvailable()) {
+            setUpAudioControls();
+        }
+
         if (audioService.isAudioStarted()) {
             if (getFile().getUniqueKey().equals(audioService.getAudioFile().getUniqueKey())) {
                 setUpAudioMetadata();
-                showAudio();
                 return;
             }
         }
@@ -381,25 +410,12 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     @Subscribe
     public void onAudioPrepared(AudioPreparedEvent event) {
-        if (areAudioControlsAvailable()) {
-            audioControls.setMediaPlayer(this);
-            hideAudioControlsForced();
-            showAudio();
-        }
-    }
 
-    private void showAudio() {
-        showAudioControls();
-    }
-
-    private void showAudioControls() {
-        if (areAudioControlsAvailable() && !audioControls.isShowing()) {
-            audioControls.show(0);
-        }
     }
 
     @Subscribe
     public void onNextAudio(AudioControlNextEvent event) {
+
         int audioPosition = getAudioPager().getCurrentItem();
         audioPosition += 1;
         if (audioPosition == getAudioFiles().size()) {
@@ -503,9 +519,19 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.action_bar_audio_files, menu);
+        setUpAudioListIcon(menu);
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
             R.id.media_route_menu_item);
         return true;
+    }
+
+    public void setUpAudioListIcon(Menu menu) {
+        MenuItem audioListItem = menu.findItem(R.id.menu_audio_list);
+        if (audioListVisible) {
+            audioListItem.setIcon(setDrawableTintActivated());
+        } else {
+            audioListItem.setIcon(setDrawableTintNormal());
+        }
     }
 
     @Override
@@ -516,6 +542,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
                 return true;
             case R.id.menu_audio_list:
                 toggleAudioList();
+                toggleAudioListIcon(menuItem);
                 return true;
 
             default:
@@ -562,13 +589,46 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
             .commit();
     }
 
+    private void toggleAudioListIcon(MenuItem menuItem) {
+        Drawable drawable = setUpIconDrawable();
+        menuItem.setIcon(drawable);
+
+    }
+
+    private Drawable setUpIconDrawable() {
+        if (isAudioListVisible()) {
+            return setDrawableTintNormal();
+        } else {
+            return setDrawableTintActivated();
+        }
+    }
+
+    private Drawable setDrawableTintActivated() {
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_queue_music_24dp, null);
+        drawable = DrawableCompat.wrap(drawable);
+        DrawableCompat.setTint(drawable, getResources().getColor(R.color.accent));
+        return drawable;
+    }
+
+    private Drawable setDrawableTintNormal() {
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_queue_music_24dp, null);
+        drawable = DrawableCompat.wrap(drawable);
+        DrawableCompat.setTint(drawable, getResources().getColor(R.color.primary_text));
+        return drawable;
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(AUDIO_LIST_VISIBLE, isAudioListVisible());
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
 
         mCastContext.getSessionManager().addSessionManagerListener(this, CastSession.class);
-
-        showAudioControlsForced();
 
         BusProvider.getBus().register(this);
 
@@ -576,19 +636,9 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         changeAudio = true;
     }
 
-    private void showAudioControlsForced() {
-        if (areAudioControlsAvailable() && !audioControls.isShowing()) {
-            audioControls.show(0);
-        }
-    }
-
     private void setUpAudioMetadata() {
         if (!isAudioServiceAvailable()) {
             return;
-        }
-
-        if (audioService.isAudioStarted()) {
-            showAudio();
         }
 
         if (audioService.getAudioMetadataFormatter() != null) {
@@ -606,15 +656,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
         mCastContext.getSessionManager().removeSessionManagerListener(this, CastSession.class);
 
-        hideAudioControlsForced();
-
         BusProvider.getBus().unregister(this);
-    }
-
-    private void hideAudioControlsForced() {
-        if (areAudioControlsAvailable() && audioControls.isShowing()) {
-            audioControls.hideControls();
-        }
     }
 
     @Override
@@ -634,7 +676,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
 
-        if(isFinishing()) {
+        if (isFinishing()) {
             if (audioService != null &&
                 (!audioService.getAudioPlayer().getPlayWhenReady() || getShare() == null)) {
                 tearDownAudioService();
@@ -796,16 +838,12 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         REMOTE
     }
 
-    private static final class AudioControlsNextListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
+    @Override
+    public void onClick(View v) {
+        if (v == getNextButton()) {
             BusProvider.getBus().post(new AudioControlNextEvent());
         }
-    }
-
-    private static final class AudioControlsPreviousListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
+        if (v == getPreviousButton()) {
             BusProvider.getBus().post(new AudioControlPreviousEvent());
         }
     }

@@ -87,8 +87,10 @@ public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.Au
 
         if (selectedPosition == holder.getAdapterPosition()) {
             holder.audioName.setTextColor(ContextCompat.getColor(context, R.color.accent));
+            holder.audioSubtitle.setTextColor(ContextCompat.getColor(context, R.color.accent));
         } else {
             holder.audioName.setTextColor(context.getResources().getColor(R.color.primary_text));
+            holder.audioSubtitle.setTextColor(ContextCompat.getColor(context, R.color.secondary_text));
         }
 
         holder.itemView.setOnClickListener(v -> {

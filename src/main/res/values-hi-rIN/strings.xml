@@ -87,7 +87,8 @@
     <string name="message_empty_shares">कोई शेयर नहीं</string>
     <string name="message_empty_recent_files">हाल की फाइलें नहीं</string>
     <string name="message_error_account_exists">खाता पहले से मौजूद है</string>
-    <string name="message_error_authentication">उपयोगकर्ता नाम या पासवर्ड सही नहीं है। कृपया पुन: प्रयास करें<a href="https://www.amahi.org/forgot"> अपना पासवर्ड भूल गए? </a></string>
+    <string name="forgot_password"> <a href="https://www.amahi.org/forgot"> अपना पासवर्ड भूल गए? </a></string>
+    <string name="message_error_authentication">उपयोगकर्ता नाम या पासवर्ड सही नहीं है। कृपया पुन: प्रयास करें</string>
     <string name="message_error_authentication_connection">कनेक्शन त्रुटि। अपनी सेटिंग जांचें और पुनः प्रयास करें</string>
     <string name="message_error_authentication_field_empty">उपयोगकर्ता नाम या पासवर्ड फ़ील्ड को खाली नहीं छोड़ा जा सकता है</string>
     <string name="message_error_connection">कनेक्शन त्रुटि</string>

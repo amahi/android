@@ -61,7 +61,6 @@ public class ServerAppActivity extends AppCompatActivity {
 
         setUpApp(savedInstanceState);
 
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
     }
 
     private void setUpInjections() {

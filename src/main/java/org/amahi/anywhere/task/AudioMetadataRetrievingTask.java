@@ -25,6 +25,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -60,6 +61,7 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
     private boolean isOfflineFile;
     private MainTVPresenter.ViewHolder viewHolder;
     private WeakReference<ImageView> imageViewWeakReference;
+    private WeakReference<FrameLayout> layoutWeakReference;
     private AudioFilesAdapter.AudioFileViewHolder audioFileHolder;
 
     private AudioMetadataRetrievingTask(Context context, Uri audioUri, ServerFile serverFile) {
@@ -114,6 +116,11 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
         return this;
     }
 
+    public AudioMetadataRetrievingTask setBackgroundView(FrameLayout layout) {
+        this.layoutWeakReference = new WeakReference<>(layout);
+        return this;
+    }
+
     public AudioMetadataRetrievingTask setAudioFileHolder(AudioFilesAdapter.AudioFileViewHolder audioFileHolder) {
         this.audioFileHolder = audioFileHolder;
 
@@ -159,6 +166,10 @@ public class AudioMetadataRetrievingTask extends AsyncTask<Void, Void, BusEvent>
         }
         if (imageViewWeakReference != null && imageViewWeakReference.get() != null) {
             event.setImageView(imageViewWeakReference.get());
+        }
+
+        if (layoutWeakReference != null && layoutWeakReference.get() != null) {
+            event.setBackgroundLayout(layoutWeakReference.get());
         }
         return event;
     }

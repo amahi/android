@@ -2,12 +2,16 @@ package org.amahi.anywhere.fragment;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.squareup.otto.Subscribe;
@@ -20,6 +24,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
+import org.amahi.anywhere.util.BlurBuilder;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Fragments;
 
@@ -56,12 +61,14 @@ public class ServerFileAudioFragment extends Fragment {
             AudioMetadataRetrievingTask
                 .newInstance(getActivity(), getAudioUri(), getFile())
                 .setImageView(getImageView())
+                .setBackgroundView(getBackgroundLayoutView())
                 .execute();
         } else {
             // offline File
 
             new AudioMetadataRetrievingTask(getActivity(), getAudioPath(), getFile())
                 .setImageView(getImageView())
+                .setBackgroundView(getBackgroundLayoutView())
                 .execute();
         }
     }
@@ -77,11 +84,14 @@ public class ServerFileAudioFragment extends Fragment {
     @Subscribe
     public void onAudioMetadataRetrieved(AudioMetadataRetrievedEvent event) {
         ImageView imageView = event.getImageView();
+        FrameLayout backgroundLayout = event.getBackgroundLayout();
         Bitmap bitmap = event.getAudioMetadata().getAudioAlbumArt();
-        if (imageView != null) {
+        if (imageView != null && backgroundLayout != null) {
             if (bitmap != null) {
                 imageView.setImageBitmap(bitmap);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                Bitmap blurred = BlurBuilder.blur(getContext(), bitmap);
+                backgroundLayout.setBackground(new BitmapDrawable(getResources(), blurred));
             } else {
                 imageView.setImageResource(R.drawable.default_audiotrack);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -111,6 +121,10 @@ public class ServerFileAudioFragment extends Fragment {
 
     public ImageView getImageView() {
         return (ImageView) getView().findViewById(R.id.image_album_art);
+    }
+
+    public FrameLayout getBackgroundLayoutView() {
+        return (FrameLayout) getView().findViewById(R.id.layout_audio);
     }
 
     @Override

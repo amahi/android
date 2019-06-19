@@ -154,7 +154,6 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
     private void setUpHomeNavigation() {
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
     }
 
     private void setUpCast() {

@@ -60,7 +60,8 @@
 
     <string name="message_error_account_exists">Ce compte existe déjà.</string>
     <string name="message_error_search_application">Nous n\'avons pas trouvé d\'application supportée pour ce fichier.</string>
-    <string name="message_error_authentication">Ce nom d\'utilisateur ou ce mot de passe est incorrect. Veuillez réessayer. <a href="https://www.amahi.org/forgot">Mot de passe oublié?</a></string>
+    <string name="forgot_password"> <a href="https://www.amahi.org/forgot">Mot de passe oublié?</a></string>
+    <string name="message_error_authentication">Ce nom d\'utilisateur ou ce mot de passe est incorrect. Veuillez réessayer. </string>
     <string name="message_error_authentication_connection">Erreur de connexion. Vérifiez vos paramètres et réessayez.</string>
     <string name="message_error_authentication_field_empty">Le nom d\'utilisateur ou le mot de passe ne peuvent pas être vides</string>
     <string name="message_error_connection">Erreur de connexion</string>

@@ -19,11 +19,14 @@
 
 package org.amahi.anywhere.activity;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+
 import android.view.MenuItem;
 
 import com.squareup.otto.Subscribe;
@@ -55,7 +58,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_settings);
 
-        setUpSettingsFragment();
+        if (savedInstanceState == null) {
+            setUpSettingsFragment();
+        }
     }
 
     private void setUpHomeNavigation() {
@@ -64,7 +69,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setUpSettingsFragment() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .replace(R.id.settings_container, new SettingsFragment()).commit();
     }
@@ -83,7 +88,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Subscribe
     public void onUploadSettingsOpenEvent(UploadSettingsOpeningEvent event) {
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .replace(R.id.settings_container, new UploadSettingsFragment())
             .addToBackStack(null)

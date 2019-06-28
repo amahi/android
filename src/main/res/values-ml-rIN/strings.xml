@@ -36,6 +36,7 @@
     <string name="message_empty_recent_files">അടുത്തിടെയുള്ള ഫയലുകളൊന്നുമില്ല</string>
     <string name="message_error_account_exists">അക്കൗണ്ട് ഇതിനകം നിലവിലുണ്ട്</string>
     <string name="message_error_search_application">ഈ ഫയലിനായി പിന്തുണയ്ക്കുന്ന അപ്ലിക്കേഷനുകളൊന്നും ഞങ്ങൾ കണ്ടെത്തിയില്ല.</string>
+    <string name="forgot_password"> <a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
     <string name="message_error_authentication">ഉപയോക്തൃനാമമോ പാസ്വേഡോ തെറ്റാണ്. വീണ്ടും ശ്രമിക്കുക.</string>
     <string name="message_error_authentication_connection">കണക്ഷൻ തകരാറ്. നിങ്ങളുടെ ക്രമീകരണങ്ങൾ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</string>
     <string name="message_error_authentication_field_empty">ഉപയോക്തൃനാമം അല്ലെങ്കിൽ പാസ്വേഡ് ഫീൽഡ് ശൂന്യമാക്കിയിടാൻ കഴിയില്ല</string>

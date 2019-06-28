@@ -5,7 +5,6 @@ import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,10 +13,8 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import com.google.android.material.snackbar.Snackbar;
-import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
@@ -137,7 +134,6 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void setUpHomeNavigation() {
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
         setUpFilesTitle();
     }
 
@@ -147,19 +143,11 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void setUpRecentFileList() {
         getRecentFileRView().setLayoutManager(new LinearLayoutManager(this));
-        addListItemDivider();
         setUpListAdapter();
     }
 
     private RecyclerView getRecentFileRView() {
         return findViewById(R.id.recent_list);
-    }
-
-    private void addListItemDivider() {
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        Drawable dividerDrawable = ContextCompat.getDrawable(this, R.drawable.divider);
-        dividerItemDecoration.setDrawable(dividerDrawable);
-        getRecentFileRView().addItemDecoration(dividerItemDecoration);
     }
 
     private void setUpListAdapter() {

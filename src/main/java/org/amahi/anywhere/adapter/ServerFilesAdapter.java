@@ -127,10 +127,12 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
             fileHolder.moreInfo.setVisibility(View.GONE);
             fileHolder.moreOptions.setVisibility(View.GONE);
+            fileHolder.rightArrow.setVisibility(View.VISIBLE);
 
         } else {
             fileHolder.moreInfo.setVisibility(View.VISIBLE);
             fileHolder.moreOptions.setVisibility(View.VISIBLE);
+            fileHolder.rightArrow.setVisibility(View.GONE);
 
             if (!isOfflineMode()) {
                 fileHolder.fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
@@ -247,7 +249,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
     }
 
     public class ServerFileViewHolder extends RecyclerView.ViewHolder {
-        ImageView fileIconView, moreOptions;
+        ImageView fileIconView, moreOptions, rightArrow;
         TextView fileTextView, fileSize, fileLastModified;
         LinearLayout moreInfo;
         ProgressBar progressBar;
@@ -261,6 +263,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             moreInfo = itemView.findViewById(R.id.more_info);
             moreOptions = itemView.findViewById(R.id.more_options);
             progressBar = itemView.findViewById(R.id.download_progress_bar);
+            rightArrow = itemView.findViewById(R.id.right_arrow);
         }
     }
 

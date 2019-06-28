@@ -165,6 +165,7 @@ dependencies {
 
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
     implementation 'com.google.android.exoplayer:exoplayer-core:2.7.3'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.7.3'
 
     implementation 'android.arch.persistence.room:runtime:' + rootProject.archRoomVersion
     annotationProcessor 'android.arch.persistence.room:compiler:' + rootProject.archRoomVersion

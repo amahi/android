@@ -17,12 +17,46 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/text"
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/share_item_card"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.MaterialComponents.CardView"
+    android:focusable="true"
+    android:clickable="true"
     android:foreground="?android:attr/selectableItemBackgroundBorderless"
-    android:gravity="center_vertical"
-    android:maxLines="1"
+    android:orientation="horizontal"
+    app:cardElevation="4dp"
     android:padding="8dp"
-    android:textSize="@dimen/text_medium" />
+    android:layout_margin="4dp"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:maxLines="1"
+            android:textSize="@dimen/text_medium" />
+
+        <ImageView
+            android:id="@+id/right_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_right_arrow_24dp"
+            tools:ignore="contentDescription" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

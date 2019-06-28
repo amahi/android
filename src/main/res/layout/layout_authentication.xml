@@ -42,7 +42,8 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/username_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        style="@style/LoginTextInputLayoutStyle">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -62,7 +63,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:passwordToggleEnabled="true"
-        app:passwordToggleTint="@color/accent">
+        app:passwordToggleTint="@color/accent"
+        style="@style/LoginTextInputLayoutStyle">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -72,6 +74,19 @@
             android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="8dp" />
+
+    <TextView
+        android:id="@+id/text_forgot_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="@string/forgot_password"
+        android:textColorLink="@color/accent"/>
 
 
     <Space
@@ -109,7 +124,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/message_error_authentication"
-            android:textColor="@color/secondary_text"/>
+            android:textColor="@color/error_red"
+            android:drawableStart="@drawable/ic_error_24dp"/>
 
         <TextView
             android:id="@+id/text_message_authentication_connection"
@@ -117,7 +133,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/message_error_authentication_connection"
-            android:textColor="@color/secondary_text"/>
+            android:textColor="@color/error_red"
+            android:drawableStart="@drawable/ic_error_24dp"/>
 
         <TextView
             android:id="@+id/text_message_authentication_empty"
@@ -125,7 +142,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/message_error_authentication_field_empty"
-            android:textColor="@color/secondary_text"/>
+            android:textColor="@color/error_red"
+            android:drawableStart="@drawable/ic_error_24dp"/>
 
     </ViewAnimator>
 

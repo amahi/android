@@ -40,7 +40,6 @@ public class WebViewActivity extends AppCompatActivity {
 
     private void setUpHomeNavigation() {
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
     }
 
     @Override

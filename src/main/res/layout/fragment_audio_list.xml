@@ -21,7 +21,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="158dp"
     android:background="@color/background_secondary"
     android:orientation="vertical">
 
@@ -29,6 +28,8 @@
         android:id="@+id/audio_list_r_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/view_audio_file_item" />
+        tools:listitem="@layout/view_audio_file_item"
+        android:background="@color/background_primary"
+        android:padding="8dp"/>
 
 </LinearLayout>

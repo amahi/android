@@ -68,6 +68,7 @@
         <!--Adding Support for the Support Library-->
         <item name="background">@color/background_toolbar</item>
         <item name="displayOptions">showHome|homeAsUp|showTitle</item>
+        <item name="elevation">8dp</item>
     </style>
 
     <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
@@ -75,7 +76,7 @@
         <item name="color">@color/primary_text</item>
     </style>
 
-    <style name="Theme.Amahi.Authentication" parent="Theme.AppCompat">
+    <style name="Theme.Amahi.Authentication" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
         <item name="android:windowBackground">@color/background_primary</item>
@@ -85,6 +86,15 @@
         <item name="passwordToggleTint">@color/secondary_text</item>
         <item name="colorControlNormal">@color/secondary_text</item>
         <item name="colorControlActivated">@color/accent</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/primary_dark</item>
+        <item name="android:textColorPrimary">@color/primary_text</item>
+        <item name="android:textColorSecondary">@color/secondary_text</item>
+    </style>
+    
+    <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/text_input_box_stroke</item>
     </style>
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
@@ -109,5 +119,13 @@
         <item name="windowNoTitle">true</item>
         <item name="android:textColor">@color/primary_text</item>
     </style>
+
+    <style name="Theme.Amahi.NoActionBar.Audio">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:textColor">@color/primary_text</item>
+    </style>
+
+
 
 </resources>

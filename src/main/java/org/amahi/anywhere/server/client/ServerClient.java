@@ -38,11 +38,15 @@ import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
+import org.amahi.anywhere.server.model.NewFriendRequest;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.server.response.AddFriendUserResponse;
+import org.amahi.anywhere.server.response.FriendRequestsResponse;
+import org.amahi.anywhere.server.response.FriendUsersResponse;
 import org.amahi.anywhere.server.response.ServerAppsResponse;
 import org.amahi.anywhere.server.response.ServerFileDeleteResponse;
 import org.amahi.anywhere.server.response.ServerFileUploadResponse;
@@ -326,5 +330,17 @@ public class ServerClient {
 
     public void getApps() {
         serverApi.getApps(server.getSession()).enqueue(new ServerAppsResponse());
+    }
+
+    public void getFriendUsers() {
+        serverApi.getFriendUsers(server.getSession()).enqueue(new FriendUsersResponse());
+    }
+
+    public void addFriendUser(NewFriendRequest friendRequest) {
+        serverApi.addFriendUser(server.getSession(), friendRequest).enqueue(new AddFriendUserResponse());
+    }
+
+    public void getFriendRequests() {
+        serverApi.getFriendRequests(server.getSession()).enqueue(new FriendRequestsResponse());
     }
 }

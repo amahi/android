@@ -223,6 +223,7 @@
 
         <activity android:name=".activity.OfflineFilesActivity" />
         <activity android:name=".activity.RecentFilesActivity"></activity>
+        <activity android:name=".activity.FriendsActivity"></activity>
     </application>
 
 </manifest>

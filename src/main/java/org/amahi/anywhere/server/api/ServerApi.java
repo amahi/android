@@ -19,6 +19,9 @@
 
 package org.amahi.anywhere.server.api;
 
+import org.amahi.anywhere.server.model.FriendRequest;
+import org.amahi.anywhere.server.model.NewFriendRequest;
+import org.amahi.anywhere.server.model.PrimaryUser;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
@@ -29,6 +32,7 @@ import java.util.List;
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -73,5 +77,18 @@ public interface ServerApi {
 
     @GET("/apps")
     Call<List<ServerApp>> getApps(
+        @Header("Session") String session);
+
+    @GET("/frnd/users")
+    Call<List<PrimaryUser>> getFriendUsers(
+        @Header("Session") String session);
+
+    @POST("/frnd/request")
+    Call<NewFriendRequest> addFriendUser(
+        @Header("Session") String session,
+        @Body NewFriendRequest friendRequest);
+
+    @GET("/frnd/requests")
+    Call<List<FriendRequest>> getFriendRequests(
         @Header("Session") String session);
 }

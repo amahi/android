@@ -35,6 +35,8 @@ import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.cache.CacheModule;
 import org.amahi.anywhere.fragment.AudioListFragment;
+import org.amahi.anywhere.fragment.FriendRequestsFragment;
+import org.amahi.anywhere.fragment.FriendsFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
@@ -107,7 +109,9 @@ import dagger.Provides;
         TvPlaybackVideoActivity.class,
         TvPlaybackAudioActivity.class,
         TvPlaybackAudioFragment.class,
-        AudioMetadataRetrievingTask.class
+        AudioMetadataRetrievingTask.class,
+        FriendsFragment.class,
+        FriendRequestsFragment.class
     }
 )
 class AmahiModule {

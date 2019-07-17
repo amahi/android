@@ -23,6 +23,7 @@ import android.app.Application;
 import android.content.Context;
 
 import org.amahi.anywhere.activity.AuthenticationActivity;
+import org.amahi.anywhere.activity.FriendsActivity;
 import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
@@ -111,7 +112,8 @@ import dagger.Provides;
         TvPlaybackAudioFragment.class,
         AudioMetadataRetrievingTask.class,
         FriendsFragment.class,
-        FriendRequestsFragment.class
+        FriendRequestsFragment.class,
+        FriendsActivity.class
     }
 )
 class AmahiModule {

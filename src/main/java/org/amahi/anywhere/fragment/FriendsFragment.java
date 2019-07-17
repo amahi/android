@@ -18,9 +18,10 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.FriendsListAdapter;
 import org.amahi.anywhere.bus.FriendUsersLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
-import org.amahi.anywhere.server.model.PrimaryUser;
+import org.amahi.anywhere.server.model.FriendUser;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -53,7 +54,8 @@ public class FriendsFragment extends Fragment {
 
         getRecyclerView().setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
-        setUpFriendsList();
+        //setUpFriendsList();
+        showFriendUsers();
     }
 
     private RecyclerView getRecyclerView() {
@@ -67,17 +69,27 @@ public class FriendsFragment extends Fragment {
 
     @Subscribe
     private void onFriendUsersLoaded(FriendUsersLoadedEvent event) {
-        showFriendUsers(event.getPrimaryUsers());
+        //showFriendUsers(event.getPrimaryUsers());
     }
 
-    private void showFriendUsers(List<PrimaryUser> primaryUsers) {
-        List<String> friendsEmailList = new ArrayList<>();
+    private void showFriendUsers() {
+        List<FriendUser> friendsList = new ArrayList<>();
 
-        for (PrimaryUser primaryUser : primaryUsers) {
+
+        /*for (PrimaryUser primaryUser : primaryUsers) {
             friendsEmailList.add(primaryUser.getFriendUser().getEmail());
+        }*/
+
+        //TODO: dummy data to be replaced with data from server
+        for (int i = 0; i <= 5; i++) {
+            FriendUser friendUser = new FriendUser();
+            friendUser.setEmail("dummyuser@dummydomain.com");
+            friendUser.setCreatedDate("14-07-2019");
+            friendsList.add(friendUser);
         }
 
-        FriendsListAdapter adapter = new FriendsListAdapter(getContext(), friendsEmailList);
+
+        FriendsListAdapter adapter = new FriendsListAdapter(getContext(), friendsList);
         getRecyclerView().setAdapter(adapter);
 
     }

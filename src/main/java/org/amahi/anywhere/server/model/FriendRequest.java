@@ -10,7 +10,7 @@ public class FriendRequest {
     private int id;
 
     @SerializedName("created_at")
-    private Date createdAt;
+    private String createdAt;
 
     @SerializedName("status")
     private int status;
@@ -29,11 +29,11 @@ public class FriendRequest {
         this.id = id;
     }
 
-    public Date getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 

@@ -9,7 +9,7 @@ public class FriendUser {
     private int id;
 
     @SerializedName("created_at")
-    private Date createdDate;
+    private String createdDate;
 
     @SerializedName("email")
     private String email;
@@ -19,7 +19,7 @@ public class FriendUser {
         return id;
     }
 
-    public Date getCreatedDate() {
+    public String getCreatedDate() {
         return createdDate;
     }
 
@@ -36,7 +36,7 @@ public class FriendUser {
         this.email = email;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(String createdDate) {
         this.createdDate = createdDate;
     }
 }

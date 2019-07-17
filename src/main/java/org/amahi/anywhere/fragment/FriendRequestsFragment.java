@@ -10,10 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -23,7 +20,7 @@ import org.amahi.anywhere.bus.AddFriendUserCompletedEvent;
 import org.amahi.anywhere.bus.FriendRequestsLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.FriendRequest;
-import org.amahi.anywhere.server.model.NewFriendRequest;
+import org.amahi.anywhere.server.model.FriendUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,9 +51,8 @@ public class FriendRequestsFragment extends Fragment {
 
         setUpFriendRequestsList();
 
-        Button btnAddFR = getView().findViewById(R.id.btn_add_fr);
 
-        btnAddFR.setOnClickListener(v -> addFriendRequest());
+        showFriendRequests();
     }
 
     private void setUpInjections() {
@@ -75,40 +71,32 @@ public class FriendRequestsFragment extends Fragment {
 
     @Subscribe
     private void onFriendRequestsLoaded(FriendRequestsLoadedEvent event) {
-        showFriendRequests(event.getFriendRequests());
+        showFriendRequests();
     }
 
-    private void showFriendRequests(List<FriendRequest> friendRequests) {
-        List<String> friendRequestsEmailList = new ArrayList<>();
+    private void showFriendRequests() {
+        List<FriendRequest> friendRequestsList = new ArrayList<>();
 
-        for (FriendRequest friendRequest : friendRequests) {
-            friendRequestsEmailList.add(friendRequest.getFriendUser().getEmail());
+        //TODO: dummy data to be replaced with data from server
+
+        for (int i = 0; i <= 6; i++) {
+            FriendRequest friendRequest = new FriendRequest();
+            FriendUser friendUser = new FriendUser();
+            friendUser.setEmail("dummyuser@dummydomain.com");
+            friendRequest.setFriendUser(friendUser);
+            friendRequest.setStatus(i % 4);
+            friendRequestsList.add(friendRequest);
         }
 
-        FriendRequestsListAdapter adapter = new FriendRequestsListAdapter(getContext(), friendRequestsEmailList);
+        FriendRequestsListAdapter adapter = new FriendRequestsListAdapter(getContext(), friendRequestsList);
         getRecyclerView().setAdapter(adapter);
-    }
-
-    private void addFriendRequest() {
-        TextInputEditText etEmailFR = getView().findViewById(R.id.text_email);
-
-        if (etEmailFR != null && etEmailFR.getText() != null) {
-            NewFriendRequest newFriendRequest = new NewFriendRequest();
-            newFriendRequest.setEmail(etEmailFR.getText().toString());
-            serverClient.addFriendUser(newFriendRequest);
-        }
-
     }
 
     @Subscribe
     private void onAddFriendUser(AddFriendUserCompletedEvent event) {
         if (event.isSuccessful()) {
-            Toast.makeText(getContext(), "friend request success", Toast.LENGTH_LONG).show();
             setUpFriendRequestsList();
-        } else {
-            Toast.makeText(getContext(), "friend request failed", Toast.LENGTH_LONG).show();
         }
-
     }
 
 }

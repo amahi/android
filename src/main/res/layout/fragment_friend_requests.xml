@@ -3,52 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.FriendRequestsFragment">
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/card_add_fr"
-        android:layout_margin="8dp"
-        android:padding="8dp"
-        app:cardCornerRadius="4dp">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/email_text_layout"
-                android:layout_margin="8dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:hint="Registered email of friend">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/text_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"/>
-            </com.google.android.material.textfield.TextInputLayout>
-            <Button
-                android:id="@+id/btn_add_fr"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Add Friend"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_below="@+id/email_text_layout"
-                android:background="@color/accent"
-                android:textColor="@android:color/white"/>
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/list_friend_requests"
-        android:layout_below="@+id/card_add_fr"
-        android:layout_margin="8dp"/>
+        android:id="@+id/list_friend_requests" />
 
 </RelativeLayout>

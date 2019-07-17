@@ -1,6 +1,6 @@
 package org.amahi.anywhere.bus;
 
-public class AddFriendUserCompletedEvent {
+public class AddFriendUserCompletedEvent implements BusEvent {
     public boolean isSuccessful;
 
     public boolean isSuccessful() {

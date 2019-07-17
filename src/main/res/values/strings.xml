@@ -188,7 +188,11 @@
 
     <string name="download_channel" translatable="false">File Download</string>
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
-
+    <string name="message_empty_email_add_friend">Email should not be empty</string>
+    <string name="title_add_new_friend">Add New Friend</string>
+    <string name="message_add_new_friend">Friend request will be sent to the provided email</string>
+    <string name="text_button_add_friend">Add Friend</string>
+    <string name="text_cancel">Cancel</string>
 
 
 </resources>

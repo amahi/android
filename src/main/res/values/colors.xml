@@ -46,4 +46,10 @@
     <color name="intro_4">#26a69a</color>
     <color name="intro_5">#ffab00</color>
     <color name="intro_6">#303f9f</color>
+
+    <!--Friend request status colors-->
+    <color name="status_active">#19B4F4</color>
+    <color name="status_accepted">#4CBB17</color>
+    <color name="status_rejected">#E60000</color>
+    <color name="status_expired">#fad201</color>
 </resources>

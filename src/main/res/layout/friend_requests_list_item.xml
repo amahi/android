@@ -19,7 +19,7 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="3"
+            android:layout_weight="8"
             android:layout_height="wrap_content"
             android:id="@+id/text_friend_request_email"
             android:padding="8dp"
@@ -28,7 +28,7 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:id="@+id/text_friend_request_status"
@@ -38,6 +38,14 @@
             android:gravity="center"
             android:textColor="@android:color/white"
             android:background="@drawable/friend_status_background" />
+
+        <ImageView
+            android:id="@+id/friend_requests_options"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_more_vert"
+            android:layout_gravity="center" />
 
     </LinearLayout>
 

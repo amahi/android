@@ -343,4 +343,12 @@ public class ServerClient {
     public void getFriendRequests() {
         serverApi.getFriendRequests(server.getSession()).enqueue(new FriendRequestsResponse());
     }
+
+    public void deleteFriendUser(int id) {
+        serverApi.deleteFriendUser(server.getSession(), id);
+    }
+
+    public void deleteFriendRequest(int id) {
+        serverApi.deleteFriendRequest(server.getSession(), id);
+    }
 }

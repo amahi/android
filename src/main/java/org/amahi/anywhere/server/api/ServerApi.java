@@ -91,4 +91,14 @@ public interface ServerApi {
     @GET("/frnd/requests")
     Call<List<FriendRequest>> getFriendRequests(
         @Header("Session") String session);
+
+    @DELETE("/frnd/user/")
+    Call<Void> deleteFriendUser(
+        @Header("Session") String session,
+        @Query("id") int id);
+
+    @DELETE("/frnd/request")
+    Call<VerifyError> deleteFriendRequest(
+        @Header("Session") String session,
+        @Query("id") int id);
 }

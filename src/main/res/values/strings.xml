@@ -193,6 +193,11 @@
     <string name="message_add_new_friend">Friend request will be sent to the provided email</string>
     <string name="text_button_add_friend">Add Friend</string>
     <string name="text_cancel">Cancel</string>
+    <string name="title_delete_friend">Delete Friend</string>
+    <string name="message_delete_friend">The action cannot be undone</string>
+    <string name="text_delete">Delete</string>
+    <string name="title_delete_friend_request">Delete Friend Request</string>
+    <string name="message_delete_friend_request">This action cannot be undone</string>
 
 
 </resources>

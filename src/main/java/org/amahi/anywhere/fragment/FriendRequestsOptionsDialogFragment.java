@@ -14,6 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FriendRequestDeleteEvent;
+import org.amahi.anywhere.bus.FriendRequestResendEvent;
 
 public class FriendRequestsOptionsDialogFragment extends BottomSheetDialogFragment {
 
@@ -33,12 +34,20 @@ public class FriendRequestsOptionsDialogFragment extends BottomSheetDialogFragme
     private void setUpViews(View view) {
 
         LinearLayout deleteLayout = view.findViewById(R.id.friend_requests_delete_layout);
+        LinearLayout resendLayout = view.findViewById(R.id.friend_requests_resend_layout);
 
         deleteLayout.setOnClickListener(v -> setUpDelete());
+
+        resendLayout.setOnClickListener(v -> setUpResend());
     }
 
     private void setUpDelete() {
         BusProvider.getBus().post(new FriendRequestDeleteEvent());
+        dismiss();
+    }
+
+    private void setUpResend() {
+        BusProvider.getBus().post(new FriendRequestResendEvent());
         dismiss();
     }
 }

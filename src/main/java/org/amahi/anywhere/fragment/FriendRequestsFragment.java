@@ -22,6 +22,7 @@ import org.amahi.anywhere.adapter.FriendRequestsListAdapter;
 import org.amahi.anywhere.bus.AddFriendUserCompletedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FriendRequestDeleteEvent;
+import org.amahi.anywhere.bus.FriendRequestResendEvent;
 import org.amahi.anywhere.bus.FriendRequestsLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.FriendRequest;
@@ -155,6 +156,11 @@ public class FriendRequestsFragment extends Fragment implements
         deleteFriendRequest();
     }
 
+    @Subscribe
+    public void onResendFriendRequest(FriendRequestResendEvent event) {
+        resendFriendRequest();
+    }
+
     private void deleteFriendRequest() {
         AlertDialogFragment deleteFriendRequestDialog = new AlertDialogFragment();
         Bundle bundle = new Bundle();
@@ -162,6 +168,16 @@ public class FriendRequestsFragment extends Fragment implements
         deleteFriendRequestDialog.setArguments(bundle);
         deleteFriendRequestDialog.setTargetFragment(this, 2);
         deleteFriendRequestDialog.show(getFragmentManager(), "delete_friend_request_dialog");
+    }
+
+    private void resendFriendRequest() {
+        int position = getListAdapter().getSelectedPosition();
+
+        friendRequestsList.get(position).setStatus(0);
+        //set other variables like lastRequestedAt
+        getListAdapter().notifyItemChanged(position);
+
+        Toast.makeText(getContext(), "Friend request resent successfully!", Toast.LENGTH_LONG).show();
     }
 
     @Override

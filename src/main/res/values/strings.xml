@@ -188,7 +188,8 @@
 
     <string name="download_channel" translatable="false">File Download</string>
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
-
+    <string name="title_file_info">File Info</string>
+    <string name="text_ok">OK</string>
 
 
 </resources>

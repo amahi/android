@@ -25,8 +25,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
+
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -47,8 +49,10 @@ import org.amahi.anywhere.adapter.ServerFilesImagePagerAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileCopiedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.db.entities.FileInfo;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.db.repositories.FileInfoRepository;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
@@ -57,6 +61,7 @@ import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.DateTime;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.FullScreenHelper;
@@ -121,6 +126,9 @@ public class ServerFileImageActivity extends AppCompatActivity implements
         setUpCast();
 
         setUpFullScreen();
+
+        setUpLastOpened();
+
     }
 
     private void prepareFiles() {
@@ -170,6 +178,13 @@ public class ServerFileImageActivity extends AppCompatActivity implements
         if (isCastConnected()) {
             loadRemoteMedia();
         }
+    }
+
+    private void setUpLastOpened() {
+        FileInfoRepository fileInfoRepository = new FileInfoRepository(this);
+        FileInfo fileInfo = new FileInfo(getCurrentFile().getUniqueKey(), DateTime.getCurrentTime());
+        fileInfoRepository.insert(fileInfo);
+
     }
 
     private void setUpImageTitle() {

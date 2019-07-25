@@ -21,7 +21,9 @@ package org.amahi.anywhere.util;
 
 import android.content.Context;
 import android.os.Bundle;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,6 +58,7 @@ public final class Fragments {
         public static final String FILE_OPTION = "file_option";
         public static final String IS_OFFLINE_FRAGMENT = "is_offline_fragment";
         public static final String DIALOG_TYPE = "dialog_type";
+        public static final String FILE_UNIQUE_KEY = "file_unique_key";
 
         private Arguments() {
         }

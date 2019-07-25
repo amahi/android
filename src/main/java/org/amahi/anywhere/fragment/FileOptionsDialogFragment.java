@@ -1,9 +1,13 @@
 package org.amahi.anywhere.fragment;
 
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import androidx.appcompat.widget.SwitchCompat;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,10 +42,14 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
         LinearLayout deleteLayout = view.findViewById(R.id.delete_layout);
         LinearLayout downloadLayout = view.findViewById(R.id.download_layout);
         LinearLayout offlineLayout = view.findViewById(R.id.offline_layout);
+        LinearLayout fileInfoLayout = view.findViewById(R.id.file_info_layout);
 
-        shareLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.SHARE));
-        deleteLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DELETE));
-        downloadLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DOWNLOAD));
+        String uniqueKey = getFileUniqueKey();
+
+        shareLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.SHARE, uniqueKey));
+        deleteLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DELETE, uniqueKey));
+        downloadLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DOWNLOAD, uniqueKey));
+        fileInfoLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.FILE_INFO, uniqueKey));
 
         if (!isOfflineFragment()) {
             SwitchCompat offlineSwitch = view.findViewById(R.id.offline_switch);
@@ -52,9 +60,9 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
 
                 offlineSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
                     if (b) {
-                        setOption(FileOption.OFFLINE_ENABLED);
+                        setOption(FileOption.OFFLINE_ENABLED, uniqueKey);
                     } else {
-                        setOption(FileOption.OFFLINE_DISABLED);
+                        setOption(FileOption.OFFLINE_DISABLED, uniqueKey);
                     }
                     file.setOffline(b);
                     getArguments().putParcelable(Fragments.Arguments.SERVER_FILE, file);
@@ -67,16 +75,21 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
         }
     }
 
+    private String getFileUniqueKey() {
+        ServerFile file = getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
+        return file.getUniqueKey();
+    }
+
     private boolean isOfflineFragment() {
         return getArguments().getBoolean(Fragments.Arguments.IS_OFFLINE_FRAGMENT);
     }
 
-    public void setOption(@FileOption.Types int type) {
-        BusProvider.getBus().post(new FileOptionClickEvent(type));
+    public void setOption(@FileOption.Types int type, String uniqueKey) {
+        BusProvider.getBus().post(new FileOptionClickEvent(type, uniqueKey));
     }
 
-    public void setOptionAndDismiss(@FileOption.Types int type) {
-        setOption(type);
+    public void setOptionAndDismiss(@FileOption.Types int type, String uniqueKey) {
+        setOption(type, uniqueKey);
         dismiss();
     }
 }

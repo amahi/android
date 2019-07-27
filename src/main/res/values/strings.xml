@@ -198,6 +198,8 @@
     <string name="text_delete">Delete</string>
     <string name="title_delete_friend_request">Delete Friend Request</string>
     <string name="message_delete_friend_request">This action cannot be undone</string>
+    <string name="message_resend_progress">Resending friend request</string>
+    <string name="message_add_friend_user">Sending friend request</string>
 
 
 </resources>

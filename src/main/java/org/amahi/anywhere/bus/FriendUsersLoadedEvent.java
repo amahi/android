@@ -1,17 +1,21 @@
 package org.amahi.anywhere.bus;
 
-import org.amahi.anywhere.server.model.PrimaryUser;
+import android.util.Log;
+
+import org.amahi.anywhere.server.model.FriendUserItem;
 
 import java.util.List;
 
 public class FriendUsersLoadedEvent implements BusEvent {
-    private final List<PrimaryUser> primaryUsers;
+    private final List<FriendUserItem> friendUsers;
 
-    public FriendUsersLoadedEvent(List<PrimaryUser> primaryUsers) {
-        this.primaryUsers = primaryUsers;
+    public FriendUsersLoadedEvent(List<FriendUserItem> friendUsers) {
+        this.friendUsers = friendUsers;
+
     }
 
-    public List<PrimaryUser> getPrimaryUsers() {
-        return primaryUsers;
+    public List<FriendUserItem> getFriendUsers() {
+        Log.d("entered", "getLEFriendUsrs:");
+        return friendUsers;
     }
 }

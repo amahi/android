@@ -1,10 +1,10 @@
 package org.amahi.anywhere.bus;
 
-public class AddFriendUserCompletedEvent implements BusEvent {
-    private String message;
+public class DeleteFriendRequestCompletedEvent implements BusEvent {
     private Boolean success;
+    private String message;
 
-    public AddFriendUserCompletedEvent(Boolean success, String message) {
+    public DeleteFriendRequestCompletedEvent(Boolean success, String message) {
         this.success = success;
         this.message = message;
     }
@@ -13,13 +13,7 @@ public class AddFriendUserCompletedEvent implements BusEvent {
         return success;
     }
 
-    public void setSuccess(Boolean success) {
-        this.success = success;
-    }
-
     public String getMessage() {
         return message;
     }
-
-
 }

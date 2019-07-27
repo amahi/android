@@ -2,26 +2,48 @@ package org.amahi.anywhere.server.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class NewFriendRequest {
+public class NewFriendRequest{
+
+    @SerializedName("id")
+	private String id;
+
+    @SerializedName("status_txt")
+	private String statusTxt;
+
     @SerializedName("email")
-    private String email;
+	private String email;
 
-    @SerializedName("pin")
-    private int pin;
+	public void setId(String id){
+		this.id = id;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getId(){
+		return id;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setStatusTxt(String statusTxt){
+		this.statusTxt = statusTxt;
+	}
 
-    public int getPin() {
-        return pin;
-    }
+	public String getStatusTxt(){
+		return statusTxt;
+	}
 
-    public void setPin(int pin) {
-        this.pin = pin;
-    }
+	public void setEmail(String email){
+		this.email = email;
+	}
+
+	public String getEmail(){
+		return email;
+	}
+
+	@Override
+ 	public String toString(){
+		return 
+			"NewFriendRequest{" + 
+			"id = '" + id + '\'' + 
+			",status_txt = '" + statusTxt + '\'' + 
+			",email = '" + email + '\'' + 
+			"}";
+		}
 }

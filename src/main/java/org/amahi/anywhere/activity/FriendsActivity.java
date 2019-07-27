@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -16,11 +17,12 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.FriendsPagerAdapter;
 import org.amahi.anywhere.bus.AddFriendUserCompletedEvent;
+import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.fragment.AlertDialogFragment;
 import org.amahi.anywhere.fragment.FriendRequestsFragment;
 import org.amahi.anywhere.fragment.FriendsFragment;
 import org.amahi.anywhere.server.client.ServerClient;
-import org.amahi.anywhere.server.model.NewFriendRequest;
+import org.amahi.anywhere.server.model.PostFriendRequest;
 import org.amahi.anywhere.util.Fragments;
 
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class FriendsActivity extends AppCompatActivity
 
     @Inject
     ServerClient serverClient;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +89,6 @@ public class FriendsActivity extends AppCompatActivity
 
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
@@ -129,11 +131,37 @@ public class FriendsActivity extends AppCompatActivity
 
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        BusProvider.getBus().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        BusProvider.getBus().unregister(this);
+    }
+
+
+    //add friend dialog onclick
+    @Override
     public void dialogPositiveButtonOnClick(String email) {
         if (serverClient.isConnected()) {
             addFriendRequest(email);
+            showProgressDialog(getString(R.string.message_add_friend_user));
         }
+
         //TODO: connect server if not connected
+    }
+
+    private void showProgressDialog(String message) {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(message);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
     }
 
     @Override
@@ -144,8 +172,10 @@ public class FriendsActivity extends AppCompatActivity
     private void addFriendRequest(String email) {
 
         if (email != null) {
-            NewFriendRequest newFriendRequest = new NewFriendRequest();
+            PostFriendRequest newFriendRequest = new PostFriendRequest();
             newFriendRequest.setEmail(email);
+            //TODO: set proper pin
+            newFriendRequest.setPin(1234);
             serverClient.addFriendUser(newFriendRequest);
         }
 
@@ -153,12 +183,11 @@ public class FriendsActivity extends AppCompatActivity
 
 
     @Subscribe
-    private void onAddFriendUser(AddFriendUserCompletedEvent event) {
-        if (event.isSuccessful()) {
-            Toast.makeText(this, "friend request success", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "friend request failed", Toast.LENGTH_LONG).show();
+    public void onAddFriendUser(AddFriendUserCompletedEvent event) {
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
         }
+        Toast.makeText(this, event.getMessage(), Toast.LENGTH_LONG).show();
 
     }
 }

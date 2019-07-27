@@ -3,32 +3,26 @@ package org.amahi.anywhere.server.response;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FriendRequestsLoadFailedEvent;
 import org.amahi.anywhere.bus.FriendRequestsLoadedEvent;
-import org.amahi.anywhere.server.model.FriendRequest;
-
-import java.util.Collections;
-import java.util.List;
+import org.amahi.anywhere.server.model.FriendRequestResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
-public class FriendRequestsResponse implements Callback<List<FriendRequest>> {
+public class FriendRequestsResponse implements Callback<FriendRequestResponse> {
     @Override
-    public void onResponse(Call<List<FriendRequest>> call, Response<List<FriendRequest>> response) {
+    public void onResponse(Call<FriendRequestResponse> call, Response<FriendRequestResponse> response) {
         if (response.isSuccessful()) {
-            List<FriendRequest> friendRequests = response.body();
-            if (friendRequests == null) {
-                friendRequests = Collections.emptyList();
-            }
-            BusProvider.getBus().post(new FriendRequestsLoadedEvent(friendRequests));
+            FriendRequestResponse friendRequestResponse = response.body();
+            BusProvider.getBus().post(new FriendRequestsLoadedEvent(friendRequestResponse.getFriendRequests()));
         } else
             this.onFailure(call, new HttpException(response));
 
     }
 
     @Override
-    public void onFailure(Call<List<FriendRequest>> call, Throwable t) {
+    public void onFailure(Call<FriendRequestResponse> call, Throwable t) {
         BusProvider.getBus().post(new FriendRequestsLoadFailedEvent());
 
     }

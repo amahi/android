@@ -11,18 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.server.model.FriendUser;
+import org.amahi.anywhere.server.model.FriendUserItem;
 import org.amahi.anywhere.util.FriendsItemClickListener;
 
 import java.util.List;
 
 public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.FriendsListViewHolder> {
-    private List<FriendUser> friendsList;
+    private List<FriendUserItem> friendsList;
     private Context context;
     private FriendsItemClickListener friendsItemClickListener;
     private int selectedPosition = RecyclerView.NO_POSITION;
 
-    public FriendsListAdapter(Context context, List<FriendUser> friendsList) {
+    public FriendsListAdapter(Context context, List<FriendUserItem> friendsList) {
         this.context = context;
         this.friendsList = friendsList;
 
@@ -56,7 +56,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         holder.friendEmailText.setText(friendsList.get(position).getEmail());
         StringBuilder builder = new StringBuilder();
         builder.append("Friends since ");
-        builder.append(friendsList.get(position).getCreatedDate());
+        builder.append(friendsList.get(position).getCreatedAt());
         holder.createdAt.setText(builder);
 
         holder.moreOptions.setOnClickListener(v -> {

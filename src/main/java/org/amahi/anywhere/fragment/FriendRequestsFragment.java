@@ -21,12 +21,13 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.FriendRequestsListAdapter;
 import org.amahi.anywhere.bus.AddFriendUserCompletedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.DeleteFriendRequestCompletedEvent;
 import org.amahi.anywhere.bus.FriendRequestDeleteEvent;
 import org.amahi.anywhere.bus.FriendRequestResendEvent;
 import org.amahi.anywhere.bus.FriendRequestsLoadedEvent;
+import org.amahi.anywhere.bus.ResendFriendRequestCompletedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
-import org.amahi.anywhere.server.model.FriendRequest;
-import org.amahi.anywhere.server.model.FriendUser;
+import org.amahi.anywhere.server.model.FriendRequestItem;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.FriendRequestsItemClickListener;
 
@@ -44,8 +45,8 @@ public class FriendRequestsFragment extends Fragment implements
 
     @Inject
     ServerClient serverClient;
-    private ProgressDialog deleteProgressDialog;
-    List<FriendRequest> friendRequestsList;
+    private ProgressDialog progressDialog;
+    private List<FriendRequestItem> friendRequestsList = new ArrayList<>();
     private final static String SELECTED_ITEM = "selected_item";
 
     @Override
@@ -62,8 +63,6 @@ public class FriendRequestsFragment extends Fragment implements
 
         setUpFriendRequestsList(savedInstanceState);
 
-        setUpProgressDialog();
-
     }
 
     private void setUpInjections() {
@@ -76,11 +75,11 @@ public class FriendRequestsFragment extends Fragment implements
 
     private void setUpFriendRequestsList(Bundle state) {
         setUpItemsMenu();
-        /*if (serverClient.isConnected()) {
+        if (serverClient.isConnected()) {
             serverClient.getFriendRequests();
-        }*/
-        setUpListAdapter(state);
-        setUpListActions();
+        }
+        setUpListAdapter();
+        setUpSelectedItem(state);
 
 
     }
@@ -93,24 +92,15 @@ public class FriendRequestsFragment extends Fragment implements
         getListAdapter().setOnClickListener(this);
     }
 
-    private void setUpListAdapter(Bundle state) {
-        friendRequestsList = new ArrayList<>();
-
-        //TODO: dummy data to be replaced with data from server
-
-        for (int i = 0; i <= 6; i++) {
-            FriendRequest friendRequest = new FriendRequest();
-            FriendUser friendUser = new FriendUser();
-            friendUser.setEmail("dummyuser@dummydomain.com");
-            friendRequest.setFriendUser(friendUser);
-            friendRequest.setStatus(i % 4);
-            friendRequestsList.add(friendRequest);
-        }
+    private void setUpListAdapter() {
 
         FriendRequestsListAdapter adapter = new FriendRequestsListAdapter(getContext(), friendRequestsList);
         getRecyclerView().setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         getRecyclerView().setAdapter(adapter);
+        setUpListActions();
+    }
 
+    private void setUpSelectedItem(Bundle state) {
         if (isStateValid(state)) {
             getListAdapter().setSelectedPosition(state.getInt(SELECTED_ITEM));
         }
@@ -141,14 +131,15 @@ public class FriendRequestsFragment extends Fragment implements
 
     @Subscribe
     public void onFriendRequestsLoaded(FriendRequestsLoadedEvent event) {
-        //setUpListAdapter();
+        friendRequestsList = event.getFriendRequests();
+        setUpListAdapter();
     }
 
     @Subscribe
     public void onAddFriendUser(AddFriendUserCompletedEvent event) {
-        /*if (event.isSuccessful()) {
-            setUpListAdapter();
-        }*/
+        if (event.isSuccess()) {
+            getListAdapter().notifyDataSetChanged();
+        }
     }
 
     @Subscribe
@@ -159,6 +150,33 @@ public class FriendRequestsFragment extends Fragment implements
     @Subscribe
     public void onResendFriendRequest(FriendRequestResendEvent event) {
         resendFriendRequest();
+    }
+
+    @Subscribe
+    public void onDeleteFriendRequestCompleted(DeleteFriendRequestCompletedEvent event) {
+        if (event.isSuccess()) {
+            getListAdapter().removeFriend(getListAdapter().getSelectedPosition());
+        }
+        if(progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        Toast.makeText(getContext(), event.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Subscribe
+    public void onResendFriendRequestCompleted(ResendFriendRequestCompletedEvent event) {
+        if(event.isSuccess()) {
+            int position = getListAdapter().getSelectedPosition();
+
+            friendRequestsList.get(position).setStatus(0);
+            //set other variables like lastRequestedAt
+            getListAdapter().notifyItemChanged(position);
+        }
+        if(progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+
+        Toast.makeText(getContext(), event.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     private void deleteFriendRequest() {
@@ -172,12 +190,8 @@ public class FriendRequestsFragment extends Fragment implements
 
     private void resendFriendRequest() {
         int position = getListAdapter().getSelectedPosition();
-
-        friendRequestsList.get(position).setStatus(0);
-        //set other variables like lastRequestedAt
-        getListAdapter().notifyItemChanged(position);
-
-        Toast.makeText(getContext(), "Friend request resent successfully!", Toast.LENGTH_LONG).show();
+        showProgressDialog(getString(R.string.message_resend_progress));
+        serverClient.resendFriendRequest(friendRequestsList.get(position).getId());
     }
 
     @Override
@@ -194,25 +208,21 @@ public class FriendRequestsFragment extends Fragment implements
 
     }
 
-    private void setUpProgressDialog() {
-        deleteProgressDialog = new ProgressDialog(getContext());
-        deleteProgressDialog.setMessage(getString(R.string.message_delete_progress));
-        deleteProgressDialog.setIndeterminate(true);
-        deleteProgressDialog.setCancelable(false);
+    private void showProgressDialog(String message) {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage(message);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
     }
 
 
+    //delete friend request dialog listeners
     @Override
     public void dialogPositiveButtonOnClick() {
-
         int selectedPosition = getListAdapter().getSelectedPosition();
-        //show progress dialog and delete data from server
-        //deleteProgressDialog.show();
-        //serverClient.deleteFriendRequest(friendRequestsList.get(selectedPosition).getId());
-
-        getListAdapter().removeFriend(selectedPosition);
-        Toast.makeText(getContext(), "Friend Request deleted successfully", Toast.LENGTH_LONG).show();
-
+        showProgressDialog(getString(R.string.message_delete_progress));
+        serverClient.deleteFriendRequest(friendRequestsList.get(selectedPosition).getId());
     }
 
     @Override

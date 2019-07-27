@@ -38,14 +38,17 @@ import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
-import org.amahi.anywhere.server.model.NewFriendRequest;
+import org.amahi.anywhere.server.model.PostFriendRequest;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.server.response.AddFriendUserResponse;
+import org.amahi.anywhere.server.response.FriendRequestDeleteResponse;
+import org.amahi.anywhere.server.response.FriendRequestResendResponse;
 import org.amahi.anywhere.server.response.FriendRequestsResponse;
+import org.amahi.anywhere.server.response.FriendUserDeleteResponse;
 import org.amahi.anywhere.server.response.FriendUsersResponse;
 import org.amahi.anywhere.server.response.ServerAppsResponse;
 import org.amahi.anywhere.server.response.ServerFileDeleteResponse;
@@ -88,6 +91,9 @@ public class ServerClient {
     private ServerRoute serverRoute;
     private String serverAddress;
     private ApiConnection serverConnection;
+
+    private static final String BASE_URL = "https://friending-testing.herokuapp.com";
+    private static final String apiKey = "abcdef";
 
     private int network;
 
@@ -133,7 +139,7 @@ public class ServerClient {
     }
 
     private void startServerConnectionDetection() {
-        this.serverAddress = serverRoute.getLocalAddress();
+        this.serverAddress = BASE_URL;
         this.serverApi = buildServerApi();
 
         ServerConnectionDetectingTask.execute(serverRoute);
@@ -145,7 +151,8 @@ public class ServerClient {
 
     @Subscribe
     public void onServerConnectionDetected(ServerConnectionDetectedEvent event) {
-        this.serverAddress = event.getServerAddress();
+        this.serverAddress = BASE_URL;
+        //this.serverAddress = event.getServerAddress();
         this.serverApi = buildServerApi();
 
         finishServerConnectionDetection();
@@ -224,7 +231,8 @@ public class ServerClient {
         if (!isServerRouteLoaded()) {
             return;
         }
-        this.serverAddress = serverRoute.getLocalAddress();
+        this.serverAddress = BASE_URL;
+        //this.serverAddress = serverRoute.getLocalAddress();
         this.serverApi = buildServerApi();
         finishServerConnectionDetection();
     }
@@ -234,7 +242,8 @@ public class ServerClient {
         if (!isServerRouteLoaded()) {
             return;
         }
-        this.serverAddress = serverRoute.getRemoteAddress();
+        this.serverAddress = BASE_URL;
+        //this.serverAddress = serverRoute.getRemoteAddress();
         this.serverApi = buildServerApi();
         finishServerConnectionDetection();
     }
@@ -333,22 +342,26 @@ public class ServerClient {
     }
 
     public void getFriendUsers() {
-        serverApi.getFriendUsers(server.getSession()).enqueue(new FriendUsersResponse());
+        serverApi.getFriendUsers(apiKey).enqueue(new FriendUsersResponse());
     }
 
-    public void addFriendUser(NewFriendRequest friendRequest) {
-        serverApi.addFriendUser(server.getSession(), friendRequest).enqueue(new AddFriendUserResponse());
+    public void addFriendUser(PostFriendRequest friendRequest) {
+        serverApi.addFriendUser(apiKey, friendRequest).enqueue(new AddFriendUserResponse());
     }
 
     public void getFriendRequests() {
-        serverApi.getFriendRequests(server.getSession()).enqueue(new FriendRequestsResponse());
+        serverApi.getFriendRequests(apiKey).enqueue(new FriendRequestsResponse());
     }
 
     public void deleteFriendUser(int id) {
-        serverApi.deleteFriendUser(server.getSession(), id);
+        serverApi.deleteFriendUser(apiKey, id).enqueue(new FriendUserDeleteResponse());
     }
 
     public void deleteFriendRequest(int id) {
-        serverApi.deleteFriendRequest(server.getSession(), id);
+        serverApi.deleteFriendRequest(apiKey, id).enqueue(new FriendRequestDeleteResponse());
+    }
+
+    public void resendFriendRequest(int id) {
+        serverApi.resendFriendRequest(apiKey, id).enqueue(new FriendRequestResendResponse());
     }
 }

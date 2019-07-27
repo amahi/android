@@ -19,10 +19,11 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.FriendsListAdapter;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.DeleteFriendCompletedEvent;
 import org.amahi.anywhere.bus.FriendUsersLoadedEvent;
 import org.amahi.anywhere.bus.FriendDeleteEvent;
 import org.amahi.anywhere.server.client.ServerClient;
-import org.amahi.anywhere.server.model.FriendUser;
+import org.amahi.anywhere.server.model.FriendUserItem;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.FriendsItemClickListener;
 
@@ -42,7 +43,7 @@ public class FriendsFragment extends Fragment implements
     @Inject
     ServerClient serverClient;
     private ProgressDialog deleteProgressDialog;
-    private List<FriendUser> friendsList;
+    private List<FriendUserItem> friendsList = new ArrayList<>();
     private final static String SELECTED_ITEM = "selected_item";
 
     @Override
@@ -67,7 +68,6 @@ public class FriendsFragment extends Fragment implements
 
         setUpProgressDialog();
 
-        //setUpFriendsList();
 
     }
 
@@ -77,12 +77,11 @@ public class FriendsFragment extends Fragment implements
 
     private void setUpFriendsList(Bundle state) {
         setUpItemsMenu();
-        //setup data from server
-        /*if (serverClient.isConnected()) {
+        if (serverClient.isConnected()) {
             serverClient.getFriendUsers();
-        }*/
-        setUpListAdapter(state);
-        setUpListActions();
+        }
+        setUpListAdapter();
+        setUpSelectedItem(state);
 
 
     }
@@ -100,32 +99,20 @@ public class FriendsFragment extends Fragment implements
         return (FriendsListAdapter) getRecyclerView().getAdapter();
     }
 
-    private void setUpListAdapter(Bundle state) {
-        friendsList = new ArrayList<>();
 
-
-        /*for (PrimaryUser primaryUser : primaryUsers) {
-            friendsEmailList.add(primaryUser.getFriendUser().getEmail());
-        }*/
-
-        //TODO: dummy data to be replaced with data from server
-        for (int i = 0; i <= 5; i++) {
-            FriendUser friendUser = new FriendUser();
-            friendUser.setEmail("dummyuser@dummydomain.com");
-            friendUser.setCreatedDate("14-07-2019");
-            friendUser.setId(1234);
-            friendsList.add(friendUser);
-        }
+    private void setUpListAdapter() {
 
         FriendsListAdapter adapter = new FriendsListAdapter(getContext(), friendsList);
         getRecyclerView().setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         getRecyclerView().setAdapter(adapter);
 
+        setUpListActions();
+    }
+
+    private void setUpSelectedItem(Bundle state) {
         if (isStateValid(state)) {
             getListAdapter().setSelectedPosition(state.getInt(SELECTED_ITEM));
         }
-
-
     }
 
     private boolean isStateValid(Bundle state) {
@@ -148,13 +135,26 @@ public class FriendsFragment extends Fragment implements
 
     @Subscribe
     public void onFriendUsersLoaded(FriendUsersLoadedEvent event) {
-        //setUpListAdapter(event.getPrimaryUsers());
+        friendsList = event.getFriendUsers();
+        setUpListAdapter();
     }
 
     @Subscribe
     public void onDeleteFriend(FriendDeleteEvent event) {
         deleteFriend();
 
+    }
+
+    @Subscribe
+    public void onDeleteFriendCompleted(DeleteFriendCompletedEvent event) {
+
+        if (event.isSuccess()) {
+            getListAdapter().removeFriend(getListAdapter().getSelectedPosition());
+        }
+        if (deleteProgressDialog.isShowing()) {
+            deleteProgressDialog.dismiss();
+        }
+        Toast.makeText(getContext(), event.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     private void deleteFriend() {
@@ -193,11 +193,8 @@ public class FriendsFragment extends Fragment implements
     public void dialogPositiveButtonOnClick() {
         int selectedPosition = getListAdapter().getSelectedPosition();
         //delete data from server and show progress dialog
-        //deleteProgressDialog.show();
-        //serverClient.deleteFriendUser(friendsList.get(selectedPosition).getId());
-
-        getListAdapter().removeFriend(selectedPosition);
-        Toast.makeText(getContext(), "Friend deleted successfully", Toast.LENGTH_LONG).show();
+        deleteProgressDialog.show();
+        serverClient.deleteFriendUser(friendsList.get(selectedPosition).getId());
 
     }
 

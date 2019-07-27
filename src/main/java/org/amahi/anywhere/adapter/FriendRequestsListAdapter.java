@@ -12,18 +12,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.server.model.FriendRequest;
+import org.amahi.anywhere.server.model.FriendRequestItem;
 import org.amahi.anywhere.util.FriendRequestsItemClickListener;
 
 import java.util.List;
 
 public class FriendRequestsListAdapter extends RecyclerView.Adapter<FriendRequestsListAdapter.FriendRequestsListViewHolder> {
-    private List<FriendRequest> friendRequestsList;
+    private List<FriendRequestItem> friendRequestsList;
     private Context context;
     private FriendRequestsItemClickListener friendsItemClickListener;
     private int selectedPosition = RecyclerView.NO_POSITION;
 
-    public FriendRequestsListAdapter(Context context, List<FriendRequest> friendRequestsList) {
+    public FriendRequestsListAdapter(Context context, List<FriendRequestItem> friendRequestsList) {
         this.context = context;
         this.friendRequestsList = friendRequestsList;
 
@@ -54,7 +54,7 @@ public class FriendRequestsListAdapter extends RecyclerView.Adapter<FriendReques
 
     @Override
     public void onBindViewHolder(@NonNull FriendRequestsListViewHolder holder, int position) {
-        holder.friendEmailText.setText(friendRequestsList.get(position).getFriendUser().getEmail());
+        holder.friendEmailText.setText(friendRequestsList.get(position).getEmail());
         int status = friendRequestsList.get(position).getStatus();
 
         //set status text and color based on status value

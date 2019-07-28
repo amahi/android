@@ -5,6 +5,8 @@ before_install:
 
 jdk:
  - oraclejdk8
+ - oraclejdk9
+ - oraclejdk11
 
 sudo: required
 android:

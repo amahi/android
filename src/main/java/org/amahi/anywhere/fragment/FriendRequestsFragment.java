@@ -138,7 +138,7 @@ public class FriendRequestsFragment extends Fragment implements
     @Subscribe
     public void onAddFriendUser(AddFriendUserCompletedEvent event) {
         if (event.isSuccess()) {
-            getListAdapter().notifyDataSetChanged();
+            serverClient.getFriendRequests();
         }
     }
 

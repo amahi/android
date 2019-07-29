@@ -3,8 +3,11 @@ language: android
 before_install:
     - yes | sdkmanager "platforms;android-28"
 
+dist: trusty
+
 jdk:
  - oraclejdk8
+ - oraclejdk11
 
 sudo: required
 android:

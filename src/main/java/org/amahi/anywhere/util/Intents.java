@@ -30,6 +30,8 @@ import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.account.AmahiAccount;
+import org.amahi.anywhere.activity.AuthenticationActivity;
 import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
 import org.amahi.anywhere.activity.RecentFilesActivity;
@@ -42,11 +44,13 @@ import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.activity.SettingsActivity;
 import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.DownloadService;
 import org.amahi.anywhere.service.UploadService;
+import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.tv.activity.ServerFileTvActivity;
 import org.amahi.anywhere.tv.activity.TVWebViewActivity;
 import org.amahi.anywhere.tv.activity.TvPlaybackAudioActivity;
@@ -64,10 +68,12 @@ public final class Intents {
 
     public static final class Extras {
         public static final String SERVER_APP = "server_app";
+        public static final String SERVERS = "servers";
         public static final String SERVER_FILE = "server_file";
         public static final String SERVER_FILES = "server_files";
         public static final String SERVER_SHARE = "server_share";
         public static final String IMAGE_URIS = "image_uris";
+        public static final String ACCOUNT_TYPE = "account_type";
         public static final String UNIQUE_KEY = "unique_key";
         public static final String FILE_TYPE = "file_type";
 
@@ -295,6 +301,19 @@ public final class Intents {
             downloadService.putExtra(Extras.SERVER_FILE, serverFile);
             downloadService.putExtra(Extras.SERVER_SHARE, serverShare);
             return downloadService;
+        }
+
+        public Intent buildPINAuthenticationIntent(Server server) {
+            Intent intent = new Intent(context, AuthenticationActivity.class);
+            intent.putExtra(Extras.ACCOUNT_TYPE, AmahiAccount.TYPE_ADMIN);
+            intent.putExtra(Extras.SERVER_FILE, server);
+            return intent;
+        }
+
+        public Intent buildTVActivity(ArrayList<Server> servers, String serversKey) {
+            Intent tvIntent = new Intent(context, MainTVActivity.class);
+            tvIntent.putParcelableArrayListExtra(serversKey, servers);
+            return tvIntent;
         }
     }
 }

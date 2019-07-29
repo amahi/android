@@ -26,6 +26,7 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,6 +36,8 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -46,6 +49,8 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerAuthenticationCompleteEvent;
+import org.amahi.anywhere.bus.ServerAuthenticationStartEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
 import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
@@ -54,6 +59,8 @@ import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +71,9 @@ import javax.inject.Inject;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static android.app.Activity.RESULT_OK;
+import static org.amahi.anywhere.activity.NavigationActivity.PIN_REQUEST_CODE;
 
 /**
  * Upload Settings fragment. Shows upload settings.
@@ -82,6 +92,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
 
     private String authenticationToken;
     private ArrayList<Server> activeServers;
+    private Server server;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -152,8 +163,25 @@ public class UploadSettingsFragment extends PreferenceFragment implements
             Bundle accountManagerResult = future.getResult();
 
             authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
+            if (authenticationToken != null) {
+                Account[] accounts = getAccountManager().getAccounts();
+                Account account = accounts[0];
 
-            setUpAuthenticationToken();
+                setUpAuthenticationToken();
+
+                String isLocalUser = getAccountManager().getUserData(account, "is_local");
+                String ip = getAccountManager().getUserData(account, "ip");
+                if (isLocalUser.equals("F")) {
+                    setUpAuthenticationToken();
+                } else {
+                    getHdaPreference().setSummary(ip);
+                    getHdaPreference().setValue("local_session");
+                    getHdaPreference().setOnPreferenceChangeListener(null);
+                    serverClient.getShares();
+                }
+            } else {
+                setUpAuthenticationToken();
+            }
 
         } catch (OperationCanceledException e) {
             tearDownActivity();
@@ -289,6 +317,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     private void setUpServer(Server server) {
+        this.server = server;
         setUpServerConnection(server);
     }
 
@@ -315,6 +344,40 @@ public class UploadSettingsFragment extends PreferenceFragment implements
             serverClient.connectLocal();
         } else {
             serverClient.connectRemote();
+        }
+    }
+
+    @Subscribe
+    public void onAuthenticationStart(ServerAuthenticationStartEvent event) {
+        if (server.getName().equals(getString(R.string.demo_server_name))) {
+            Toast.makeText(getActivity(), "Not allowed", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String authToken = Preferences.getServerToken(getActivity());
+        String session = Preferences.getServerSession(getActivity());
+
+        if (authToken != null && server.getSession().equals(session)) {
+            serverClient.onHdaAuthenticated(new ServerAuthenticationCompleteEvent(authToken));
+            return;
+        }
+
+        authenticateHdaUser();
+    }
+
+    private void authenticateHdaUser() {
+        startAuthenticationActivity();
+    }
+
+    private void startAuthenticationActivity() {
+        startActivityForResult(Intents.Builder.with(getActivity()).buildPINAuthenticationIntent(server), PIN_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == PIN_REQUEST_CODE) {
+            setUpSharesContent();
         }
     }
 

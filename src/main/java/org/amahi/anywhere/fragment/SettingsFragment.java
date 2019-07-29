@@ -169,6 +169,16 @@ public class SettingsFragment extends PreferenceFragment implements
 
     }
 
+    private void tearDownPreferences() {
+        Preferences.resetPreferences(getActivity());
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().clear().apply();
+        Preferences.setFirstRun(getActivity());
+    }
+
+    private void tearDownServerClient() {
+        serverClient.tearDownServerApi();
+    }
+
     private void setUpApplicationIntro() {
         Preferences.setFirstRun(getActivity());
         Intent intent = Intents.Builder.with(getActivity()).buildIntroductionIntent();
@@ -198,7 +208,11 @@ public class SettingsFragment extends PreferenceFragment implements
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.sign_out_title))
             .setMessage(getString(R.string.sign_out_message))
-            .setPositiveButton(getString(R.string.sign_out_title), (dialog, which) -> tearDownAccount())
+            .setPositiveButton(getString(R.string.sign_out_title), (dialog, which) -> {
+                tearDownAccount();
+                tearDownPreferences();
+                tearDownServerClient();
+            })
             .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss()).show();
     }
 

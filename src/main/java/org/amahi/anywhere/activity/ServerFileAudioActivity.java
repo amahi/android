@@ -228,7 +228,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
             BusProvider.getBus().post(new AudioControlChangeEvent(position));
         }
         changeAudio = true;
-        saveAudioFileState(getFiles().get(position));
+        saveAudioFileState(getAudioFiles().get(position));
     }
 
     private boolean isCastConnected() {
@@ -423,7 +423,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         }
         changeAudio = false;
         getAudioPager().setCurrentItem(audioPosition);
-        saveAudioFileState(getFiles().get(audioPosition));
+        saveAudioFileState(getAudioFiles().get(audioPosition));
     }
 
     private void saveAudioFileState(ServerFile file) {
@@ -439,7 +439,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         }
         changeAudio = false;
         getAudioPager().setCurrentItem(audioPosition);
-        saveAudioFileState(getFiles().get(audioPosition));
+        saveAudioFileState(getAudioFiles().get(audioPosition));
     }
 
     @Subscribe
@@ -582,7 +582,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private void addAudioList() {
         AudioListFragment fragment = Fragments.Builder.buildAudioListFragment(getFile(),
             getShare(),
-            (ArrayList<ServerFile>) getFiles());
+            (ArrayList<ServerFile>) getAudioFiles());
 
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.audio_list_container, fragment, AudioListFragment.TAG)

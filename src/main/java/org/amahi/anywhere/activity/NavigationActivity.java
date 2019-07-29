@@ -68,6 +68,9 @@ import javax.inject.Inject;
  * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
 public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
+
+    public static final int PIN_REQUEST_CODE = 102;
+
     @Inject
     ServerClient serverClient;
     private ActionBarDrawerToggle navigationDrawerToggle;
@@ -85,6 +88,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
+        setUpActionBar();
+
         if (CheckTV.isATV(this)) {
             handleTvFirstRun();
             showTvLoading();
@@ -95,6 +100,11 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         setUpHomeNavigation();
 
         setUpNavigation(savedInstanceState);
+    }
+
+    private void setUpActionBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 
     private void handleTvFirstRun() {
@@ -281,7 +291,9 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void setUpShares() {
-        Fragments.Operator.at(this).replace(buildSharesFragment(), R.id.container_content);
+        //commitAllowingStateLoss into avoid Illegal state exception
+        getSupportFragmentManager().beginTransaction().
+            replace(R.id.container_content, buildSharesFragment()).commitAllowingStateLoss();
     }
 
     private Fragment buildSharesFragment() {
@@ -383,6 +395,10 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
                 startActivity(getIntent());
                 return;
             }
+        }
+        if (requestCode == PIN_REQUEST_CODE && resultCode == RESULT_OK) {
+            onSharesSelected(new SharesSelectedEvent());
+            return;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

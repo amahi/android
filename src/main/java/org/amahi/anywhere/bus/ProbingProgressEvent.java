@@ -17,21 +17,17 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.account;
+package org.amahi.anywhere.bus;
 
-import android.accounts.Account;
+public class ProbingProgressEvent implements BusEvent {
 
-/**
- * Amahi account declaration.
- */
-public class AmahiAccount extends Account {
-    public static final String TYPE = "org.amahi";
-    public static final String TYPE_USER = "org.amahi.user";
-    public static final String TYPE_ADMIN = "org.amahi.admin";
+    private int progress;
 
-    public static final String TYPE_TOKEN = String.format("%s.FULL", TYPE);
+    public ProbingProgressEvent(int progress) {
+        this.progress = progress;
+    }
 
-    public AmahiAccount(String name) {
-        super(name, TYPE);
+    public int getProgress() {
+        return progress;
     }
 }

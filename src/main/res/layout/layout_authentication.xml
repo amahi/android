@@ -17,27 +17,34 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="center"
     android:orientation="vertical"
     android:paddingLeft="32dp"
     android:paddingRight="32dp">
 
-    <ImageView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:ignore="contentDescription"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        android:src="@drawable/ic_banner" />
+        android:layout_gravity="center"
+        android:orientation="vertical">
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="8dp" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="contentDescription"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:src="@drawable/ic_banner" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/username_layout"
@@ -54,9 +61,9 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="8dp" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_layout"
@@ -89,9 +96,9 @@
         android:textColorLink="@color/accent"/>
 
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="16dp" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
 
     <com.dd.processbutton.iml.ActionProcessButton
         android:contentDescription="@string/sign_in"
@@ -102,21 +109,21 @@
         android:textColor="@android:color/white"
         android:backgroundTint="@color/sign_in_button"/>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="16dp" />
-
-    <ViewAnimator
-        android:id="@+id/animator_message"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:inAnimation="@anim/slide_down_text"
-        android:outAnimation="@anim/slide_up_text">
-
         <Space
-            android:id="@+id/view_message_empty"
-            android:layout_width="0dp"
-            android:layout_height="0dp" />
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <ViewAnimator
+            android:id="@+id/animator_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inAnimation="@anim/slide_down_text"
+            android:outAnimation="@anim/slide_up_text">
+
+            <Space
+                android:id="@+id/view_message_empty"
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
 
         <TextView
             android:id="@+id/text_message_authentication"
@@ -145,6 +152,17 @@
             android:textColor="@color/error_red"
             android:drawableStart="@drawable/ic_error_24dp"/>
 
-    </ViewAnimator>
+        </ViewAnimator>
+    </LinearLayout>
 
-</LinearLayout>
+    <Button
+        android:id="@+id/button_pin_access"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="16dp"
+        android:background="@color/holo_orange_light"
+        android:text="@string/button_pin_access"
+        android:textColor="@android:color/white" />
+
+</FrameLayout>

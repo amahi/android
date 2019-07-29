@@ -18,13 +18,19 @@ public class RecentFile {
 
     private long visitTime;
     private long size;
+    @NonNull
+    private String mime;
+    private long modificationTime;
 
-    public RecentFile(@NonNull String uniqueKey, String uri, String serverName, long visitTime, long size) {
+    public RecentFile(@NonNull String uniqueKey, String uri, String serverName, long visitTime, long size,
+                      @NonNull String mime, long modificationTime) {
         this.uniqueKey = uniqueKey;
         this.uri = uri;
         this.serverName = serverName;
         this.visitTime = visitTime;
         this.size = size;
+        this.mime = mime;
+        this.modificationTime = modificationTime;
     }
 
     @NonNull
@@ -73,17 +79,6 @@ public class RecentFile {
         this.serverName = serverName;
     }
 
-    public String getMime() {
-        Uri uri = Uri.parse(getUri());
-        String name = getName();
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(name.lastIndexOf(".") + 1));
-    }
-
-    public long getModificationTime() {
-        Uri uri = Uri.parse(getUri());
-        return Long.parseLong(uri.getQueryParameter("mtime"));
-    }
-
     public String getShareName() {
         Uri uri = Uri.parse(getUri());
         return uri.getQueryParameter("s");
@@ -92,5 +87,21 @@ public class RecentFile {
     public String getPath() {
         Uri uri = Uri.parse(getUri());
         return uri.getQueryParameter("p");
+    }
+
+    public String getMime() {
+        return mime;
+    }
+
+    public void setMime(String mimeType) {
+        this.mime = mime;
+    }
+
+    public long getModificationTime() {
+        return modificationTime;
+    }
+
+    public void setModificationTime(long modificationTime) {
+        this.modificationTime = modificationTime;
     }
 }

@@ -17,21 +17,18 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.account;
+package org.amahi.anywhere.server.model;
 
-import android.accounts.Account;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Amahi account declaration.
+ * Authentication API resource.
  */
-public class AmahiAccount extends Account {
-    public static final String TYPE = "org.amahi";
-    public static final String TYPE_USER = "org.amahi.user";
-    public static final String TYPE_ADMIN = "org.amahi.admin";
+public class HdaAuthResponse {
+    @SerializedName("auth_token")
+    private String authToken;
 
-    public static final String TYPE_TOKEN = String.format("%s.FULL", TYPE);
-
-    public AmahiAccount(String name) {
-        super(name, TYPE);
+    public String getAuthToken() {
+        return authToken;
     }
 }

@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.util;
 
-import android.content.Context;
 import android.os.Bundle;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import androidx.fragment.app.Fragment;
@@ -28,7 +27,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.FileOptionsDialogFragment;
+import org.amahi.anywhere.fragment.MainLoginFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.PINAccessFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
@@ -63,6 +64,14 @@ public final class Fragments {
 
     public static final class Builder {
         private Builder() {
+        }
+
+        public static android.app.Fragment buildMainLoginFragment() {
+            return new MainLoginFragment();
+        }
+
+        public static android.app.Fragment buildPINFragment() {
+            return new PINAccessFragment();
         }
 
         public static Fragment buildNavigationFragment() {
@@ -169,11 +178,12 @@ public final class Fragments {
             return fragment;
         }
 
-        public static BottomSheetDialogFragment buildFileOptionsDialogFragment(Context context, ServerFile file) {
+        public static BottomSheetDialogFragment buildFileOptionsDialogFragment(ServerFile file, ServerShare serverShare) {
             BottomSheetDialogFragment fragment = new FileOptionsDialogFragment();
 
             Bundle bundle = new Bundle();
             bundle.putParcelable(Arguments.SERVER_FILE, file);
+            bundle.putParcelable(Arguments.SERVER_SHARE, serverShare);
             fragment.setArguments(bundle);
             return fragment;
         }

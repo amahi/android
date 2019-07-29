@@ -86,12 +86,36 @@ public final class Preferences {
         context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putBoolean(context.getString(R.string.is_first_run), false).apply();
     }
 
+    public static void setServerSession(Context context, String serverName) {
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.selected_server_session), serverName).apply();
+    }
+
+    public static String getServerSession(Context context) {
+        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.selected_server_session), null);
+    }
+
     public static void setServerName(Context context, String serverName) {
         context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.pref_server_select_key), serverName).apply();
     }
 
     public static String getServerName(Context context) {
         return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.pref_server_select_key), null);
+    }
+
+    public static void setServerToken(Context context, String serverSession) {
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.selected_server_auth), serverSession).apply();
+    }
+
+    public static String getServerToken(Context context) {
+        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.selected_server_auth), null);
+    }
+
+    public static void setLocalServerIP(Context context, String ip) {
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.local_server_ip), ip).apply();
+    }
+
+    public static String getLocalServerIP(Context context) {
+        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.local_server_ip), null);
     }
 
     public static Preferences ofCookie(Context context) {
@@ -120,6 +144,10 @@ public final class Preferences {
 
     public static void setSortOption(Context context, int filesSort) {
         getPreference(context).edit().putInt(Defaults.SORTING_OPTION, filesSort).apply();
+    }
+
+    public static void resetPreferences(Context context) {
+        getPreference(context).edit().clear().apply();
     }
 
     private static final class Locations {

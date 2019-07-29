@@ -60,7 +60,7 @@ public class IntroductionActivity extends AppIntro {
     }
 
     private void launchTv() {
-        if(!CheckTV.isATV(this) && Preferences.getFirstRun(this)) {
+        if (!CheckTV.isATV(this) && Preferences.getFirstRun(this)) {
             Preferences.setFirstRun(this);
             launchNavigation();
         }

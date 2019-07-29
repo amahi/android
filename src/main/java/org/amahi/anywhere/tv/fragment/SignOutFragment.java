@@ -28,25 +28,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.leanback.app.GuidedStepFragment;
 import androidx.leanback.widget.GuidanceStylist;
 import androidx.leanback.widget.GuidedAction;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.activity.NavigationActivity;
+import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.util.Preferences;
 
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class SignOutFragment extends GuidedStepFragment implements AccountManagerCallback<Boolean> {
 
     private static final int ACTION_CONTINUE = 0;
     private static final int ACTION_BACK = 1;
 
+    @Inject
+    ServerClient serverClient;
     private Context mContext;
 
     public SignOutFragment() {
@@ -76,6 +85,16 @@ public class SignOutFragment extends GuidedStepFragment implements AccountManage
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setUpInjections();
+    }
+
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
+    }
+
+    @Override
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
 
         addAction(actions, ACTION_CONTINUE, getString(R.string.pref_title_sign_out), "");
@@ -89,6 +108,8 @@ public class SignOutFragment extends GuidedStepFragment implements AccountManage
         switch ((int) action.getId()) {
             case ACTION_CONTINUE:
                 tearDownAccount();
+                tearDownPreferences();
+                tearDownServerClient();
                 break;
 
             case ACTION_BACK:
@@ -107,6 +128,16 @@ public class SignOutFragment extends GuidedStepFragment implements AccountManage
             .title(title)
             .description(desc)
             .build());
+    }
+
+    private void tearDownPreferences() {
+        Preferences.resetPreferences(getActivity());
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().clear().apply();
+        Preferences.setFirstRun(getActivity());
+    }
+
+    private void tearDownServerClient() {
+        serverClient.tearDownServerApi();
     }
 
     private void tearDownAccount() {

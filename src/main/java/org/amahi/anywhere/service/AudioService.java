@@ -255,7 +255,9 @@ public class AudioService extends MediaBrowserServiceCompat implements
             uri,
             serverName,
             System.currentTimeMillis(),
-            size);
+            size,
+            getAudioFile().getMime(),
+            getAudioFile().getModificationTime().getTime());
         RecentFileRepository recentFileRepository = new RecentFileRepository(this);
         recentFileRepository.insert(recentFile);
     }

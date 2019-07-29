@@ -17,21 +17,7 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.account;
+package org.amahi.anywhere.bus;
 
-import android.accounts.Account;
-
-/**
- * Amahi account declaration.
- */
-public class AmahiAccount extends Account {
-    public static final String TYPE = "org.amahi";
-    public static final String TYPE_USER = "org.amahi.user";
-    public static final String TYPE_ADMIN = "org.amahi.admin";
-
-    public static final String TYPE_TOKEN = String.format("%s.FULL", TYPE);
-
-    public AmahiAccount(String name) {
-        super(name, TYPE);
-    }
+public class PINAccessEvent implements BusEvent {
 }

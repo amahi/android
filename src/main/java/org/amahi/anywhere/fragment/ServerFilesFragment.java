@@ -328,10 +328,6 @@ public class ServerFilesFragment extends Fragment implements
         BusProvider.getBus().post(new ServerFileSharingEvent(getShare(), getCheckedFile()));
     }
 
-    private ServerFile getOfflineServerFile(OfflineFile offlineFile) {
-        return new ServerFile(offlineFile.getName(), offlineFile.getTimeStamp(), offlineFile.getMime());
-    }
-
     private void deleteFile() {
         if (!isOfflineFragment()) {
             deleteFilePosition = getListAdapter().getSelectedPosition();
@@ -986,7 +982,7 @@ public class ServerFilesFragment extends Fragment implements
     public void onMoreOptionClick(View view, int position) {
         setItemSelected(position);
         if (getListAdapter().getAdapterMode() != FilesFilterAdapter.AdapterMode.OFFLINE) {
-            Fragments.Builder.buildFileOptionsDialogFragment(getContext(), getCheckedFile())
+            Fragments.Builder.buildFileOptionsDialogFragment(getCheckedFile(), getShare())
                 .show(getChildFragmentManager(), "file_options_dialog");
         } else {
             Fragments.Builder.buildOfflineFileOptionsDialogFragment()

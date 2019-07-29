@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.leanback.app.GuidedStepFragment;
@@ -31,17 +32,34 @@ import androidx.leanback.widget.GuidanceStylist;
 import androidx.leanback.widget.GuidedAction;
 import androidx.core.content.ContextCompat;
 
+import com.squareup.otto.Subscribe;
+
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NavigationActivity;
+import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.ServerAuthenticationStartEvent;
+import org.amahi.anywhere.bus.ServerConnectedEvent;
+import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
+import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import static android.app.Activity.RESULT_OK;
+import static org.amahi.anywhere.activity.NavigationActivity.PIN_REQUEST_CODE;
+
 public class ServerSelectFragment extends GuidedStepFragment {
 
     private static final int OPTION_CHECK_SET_ID = 10;
+
+    @Inject
+    ServerClient serverClient;
+
     private int indexSelected = 0;
     private Context mContext;
     private ArrayList<Server> mServerArrayList;
@@ -61,6 +79,11 @@ public class ServerSelectFragment extends GuidedStepFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setUpInjections();
+    }
+
+    private void setUpInjections() {
+        AmahiApplication.from(getActivity()).inject(this);
     }
 
     @NonNull
@@ -188,5 +211,109 @@ public class ServerSelectFragment extends GuidedStepFragment {
                 startActivity(new Intent(mContext, NavigationActivity.class));
             }
         }
+    }
+
+    private Server getSelectedServer() {
+        return mServerArrayList.get(getSelectedActionPosition() - 1);
+    }
+
+    private void setUpServerConnection(Server server) {
+        if (serverClient.isConnected(server)) {
+            setUpServerConnection();
+        } else {
+            serverClient.connect(getActivity(), server);
+        }
+    }
+
+    private void setUpServerConnection() {
+        if (!isConnectionAvailable() || isConnectionAuto()) {
+            serverClient.connectAuto();
+            return;
+        }
+
+        if (isConnectionLocal()) {
+            serverClient.connectLocal();
+        } else {
+            serverClient.connectRemote();
+        }
+    }
+
+    private boolean isConnectionAvailable() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        return preferences.contains(getString(R.string.preference_key_server_connection));
+    }
+
+    private boolean isConnectionAuto() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+
+        return preferenceConnection.equals(getString(R.string.preference_key_server_connection_auto));
+    }
+
+    private boolean isConnectionLocal() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+
+        return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+    }
+
+    @Subscribe
+    public void onServerConnected(ServerConnectedEvent event) {
+        setUpServerConnection();
+    }
+
+    @Subscribe
+    public void onAuthenticationStart(ServerAuthenticationStartEvent event) {
+        Server server = getSelectedServer();
+        if (server == null) {
+            return;
+        }
+        if (server.getName().equals(getString(R.string.demo_server_name))) {
+            Preferences.setServerName(getActivity(), server.getName());
+            Preferences.setServerSession(getActivity(), server.getSession());
+            Preferences.setServerToken(getActivity(), null);
+            launchTV();
+            return;
+        }
+
+        authenticateHdaUser();
+    }
+
+    private void authenticateHdaUser() {
+        startAuthenticationActivity();
+    }
+
+    private void startAuthenticationActivity() {
+        startActivityForResult(Intents.Builder.with(getActivity()).buildPINAuthenticationIntent(getSelectedServer()), PIN_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PIN_REQUEST_CODE && resultCode == RESULT_OK) {
+            launchTV();
+        }
+    }
+
+    private void launchTV() {
+        Intent tvIntent = Intents.Builder.with(getActivity()).buildTVActivity(mServerArrayList,
+            getString(R.string.intent_servers));
+        startActivity(tvIntent);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        BusProvider.getBus().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        BusProvider.getBus().unregister(this);
     }
 }

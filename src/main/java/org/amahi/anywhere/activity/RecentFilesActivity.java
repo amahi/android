@@ -216,7 +216,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     public void onMoreOptionClick(View view, int position) {
         this.selectedPosition = position;
         ServerFile file = prepareServerFile(recentFiles.get(position));
-        Fragments.Builder.buildFileOptionsDialogFragment(this, file)
+        Fragments.Builder.buildFileOptionsDialogFragment(file, null)
             .show(getSupportFragmentManager(), "file_options_dialog");
     }
 

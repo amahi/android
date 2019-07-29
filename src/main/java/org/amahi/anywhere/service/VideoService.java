@@ -139,7 +139,9 @@ public class VideoService extends Service {
             uri,
             serverName,
             System.currentTimeMillis(),
-            size);
+            size,
+            videoFile.getMime(),
+            videoFile.getModificationTime().getTime());
         RecentFileRepository recentFileRepository = new RecentFileRepository(this);
         recentFileRepository.insert(recentFile);
     }

@@ -18,12 +18,11 @@ public class RecentFile {
 
     private long visitTime;
     private long size;
-    @NonNull
     private String mime;
     private long modificationTime;
 
     public RecentFile(@NonNull String uniqueKey, String uri, String serverName, long visitTime, long size,
-                      @NonNull String mime, long modificationTime) {
+                       String mime, long modificationTime) {
         this.uniqueKey = uniqueKey;
         this.uri = uri;
         this.serverName = serverName;

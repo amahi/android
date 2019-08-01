@@ -51,6 +51,23 @@ public abstract class AppDatabase extends RoomDatabase {
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("CREATE TABLE `hda_cache` (`ip` TEXT NOT NULL, "
                 + "PRIMARY KEY(`ip`))");
+
+            //for adding modificationTime and mime columns
+            database.execSQL("ALTER TABLE `recent_file_table` "
+                + " ADD COLUMN `modificationTime` INTEGER");
+            database.execSQL("ALTER TABLE `recent_file_table` "
+                + " ADD COLUMN `mime` TEXT");
+
+            //for ordering the columns according to the expected table creation found in logs
+
+            database.execSQL("CREATE TABLE IF NOT EXISTS `temp_recent_file_table` (`visitTime` INTEGER NOT NULL, `size` INTEGER NOT NULL, `modificationTime` INTEGER NOT NULL, `uniqueKey` TEXT NOT NULL, `mime` TEXT, `serverName` TEXT, `uri` TEXT,  PRIMARY KEY(`uniqueKey`))");
+
+            database.execSQL("INSERT INTO `temp_recent_file_table` SELECT `visitTime`, `size`, `modificationTime`, `uniqueKey`, `mime`, `serverName`, `uri` FROM `recent_file_table`");
+
+            database.execSQL("DROP TABLE `recent_file_table`;");
+
+            database.execSQL("ALTER TABLE `temp_recent_file_table` RENAME TO `recent_file_table`");
+
         }
     };
 }

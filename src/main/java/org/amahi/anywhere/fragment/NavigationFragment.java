@@ -195,7 +195,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
                 String isLocalUser = getAccountManager().getUserData(account, "is_local");
                 String ip = getAccountManager().getUserData(account, "ip");
-                if (isLocalUser.equals("F")) {
+
+                if (isLocalUser == null || isLocalUser.equals("F")) {
                     setUpServers(authenticationToken);
                 } else {
                     setUpLocalServerApi(authenticationToken, ip);

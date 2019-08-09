@@ -43,6 +43,8 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.server.response.FriendRequestsResponse;
+import org.amahi.anywhere.server.response.FriendUsersResponse;
 import org.amahi.anywhere.server.response.ServerAppsResponse;
 import org.amahi.anywhere.server.response.ServerFileDeleteResponse;
 import org.amahi.anywhere.server.response.ServerFileUploadResponse;
@@ -84,6 +86,9 @@ public class ServerClient {
     private ServerRoute serverRoute;
     private String serverAddress;
     private ApiConnection serverConnection;
+
+    private static final String BASE_URL = "https://friending-testing.herokuapp.com";
+    private static final String apiKey = "abcdef";
 
     private int network;
 
@@ -129,7 +134,7 @@ public class ServerClient {
     }
 
     private void startServerConnectionDetection() {
-        this.serverAddress = serverRoute.getLocalAddress();
+        this.serverAddress = BASE_URL;
         this.serverApi = buildServerApi();
 
         ServerConnectionDetectingTask.execute(serverRoute);
@@ -141,7 +146,8 @@ public class ServerClient {
 
     @Subscribe
     public void onServerConnectionDetected(ServerConnectionDetectedEvent event) {
-        this.serverAddress = event.getServerAddress();
+        this.serverAddress = BASE_URL;
+        //this.serverAddress = event.getServerAddress();
         this.serverApi = buildServerApi();
 
         finishServerConnectionDetection();
@@ -220,7 +226,8 @@ public class ServerClient {
         if (!isServerRouteLoaded()) {
             return;
         }
-        this.serverAddress = serverRoute.getLocalAddress();
+        this.serverAddress = BASE_URL;
+        //this.serverAddress = serverRoute.getLocalAddress();
         this.serverApi = buildServerApi();
         finishServerConnectionDetection();
     }
@@ -230,7 +237,8 @@ public class ServerClient {
         if (!isServerRouteLoaded()) {
             return;
         }
-        this.serverAddress = serverRoute.getRemoteAddress();
+        this.serverAddress = BASE_URL;
+        //this.serverAddress = serverRoute.getRemoteAddress();
         this.serverApi = buildServerApi();
         finishServerConnectionDetection();
     }
@@ -326,5 +334,13 @@ public class ServerClient {
 
     public void getApps() {
         serverApi.getApps(server.getSession()).enqueue(new ServerAppsResponse());
+    }
+
+    public void getFriendUsers() {
+        serverApi.getFriendUsers(apiKey).enqueue(new FriendUsersResponse());
+    }
+
+    public void getFriendRequests() {
+        serverApi.getFriendRequests(apiKey).enqueue(new FriendRequestsResponse());
     }
 }

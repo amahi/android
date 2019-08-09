@@ -54,6 +54,7 @@
         android:label="@string/application_name"
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -222,6 +223,8 @@
 
         <activity android:name=".activity.OfflineFilesActivity" />
         <activity android:name=".activity.RecentFilesActivity"></activity>
+        <activity android:name=".activity.FriendsActivity"
+            android:theme="@style/Theme.Amahi.Friends"></activity>
     </application>
 
 </manifest>

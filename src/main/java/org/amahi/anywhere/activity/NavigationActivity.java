@@ -22,6 +22,7 @@ package org.amahi.anywhere.activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -30,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
@@ -43,6 +45,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AppSelectedEvent;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FriendsSelectedEvent;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
 import org.amahi.anywhere.bus.RecentFilesSelectedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
@@ -342,6 +345,21 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
     private void showRecentFiles() {
         Intent intent = Intents.Builder.with(this).buildRecentFilesActivity();
+        startActivity(intent);
+    }
+
+    @Subscribe
+    public void onFriendsSelected(FriendsSelectedEvent event) {
+
+        showFriends();
+
+        if (isNavigationDrawerAvailable()) {
+            hideNavigationDrawer();
+        }
+    }
+
+    private void showFriends() {
+        Intent intent = Intents.Builder.with(this).buildFriendsActivity();
         startActivity(intent);
     }
 

@@ -3,10 +3,13 @@ package org.amahi.anywhere.fragment;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 
 import android.app.AlertDialog;
+
 import androidx.fragment.app.DialogFragment;
+
 import android.util.Log;
 
 import org.amahi.anywhere.R;
@@ -40,6 +43,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
             case DUPLICATE_FILE_DIALOG:
                 buildDuplicateDialog();
                 break;
+
         }
 
         return builder.create();
@@ -59,6 +63,8 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
             .setPositiveButton(getString(R.string.button_yes), this)
             .setNegativeButton(getString(R.string.button_no), this);
     }
+
+
 
     @Override
     public void onClick(DialogInterface dialog, int which) {

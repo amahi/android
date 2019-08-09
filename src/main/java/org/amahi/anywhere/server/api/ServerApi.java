@@ -19,6 +19,8 @@
 
 package org.amahi.anywhere.server.api;
 
+import org.amahi.anywhere.server.model.FriendRequestResponse;
+import org.amahi.anywhere.server.model.FriendUserResponse;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
@@ -74,4 +76,14 @@ public interface ServerApi {
     @GET("/apps")
     Call<List<ServerApp>> getApps(
         @Header("Session") String session);
+
+    @GET("/frnd/users")
+    Call<FriendUserResponse> getFriendUsers(
+        @Header("api-key") String apiKey);
+
+
+    @GET("/frnd/requests")
+    Call<FriendRequestResponse> getFriendRequests(
+        @Header("api-key") String apiKey);
+
 }

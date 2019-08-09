@@ -27,9 +27,11 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.activity.FriendsActivity;
 import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
 import org.amahi.anywhere.activity.RecentFilesActivity;
@@ -115,6 +117,10 @@ public final class Intents {
 
         public Intent buildRecentFilesActivity() {
             return new Intent(context, RecentFilesActivity.class);
+        }
+
+        public Intent buildFriendsActivity() {
+            return new Intent(context, FriendsActivity.class);
         }
 
         public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file) {

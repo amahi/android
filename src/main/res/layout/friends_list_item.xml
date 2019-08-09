@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,44 +14,26 @@
     android:padding="8dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="8dp">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="8"
+
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:id="@+id/text_friend_email"
+            android:textSize="18sp"
+            android:textColor="@color/primary_text"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/text_friend_email"
-                android:textSize="18sp"
-                android:textColor="@color/primary_text"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/text_friend_created_at"
-                android:gravity="center_vertical"
-                android:paddingEnd="5dp"
-                android:paddingTop="5dp"
-                android:text="Friends since 01-08-2018"
-                android:textSize="14sp"/>
-
-        </LinearLayout>
-
-
-
-        <ImageView
-            android:id="@+id/friends_more_options"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/ic_more_vert"
-            tools:ignore="contentDescription" />
+            android:id="@+id/text_friend_created_at"
+            android:gravity="center_vertical"
+            android:paddingEnd="5dp"
+            android:paddingTop="5dp"
+            android:text="Friends since 01-08-2018"
+            android:textSize="14sp"/>
 
     </LinearLayout>
 

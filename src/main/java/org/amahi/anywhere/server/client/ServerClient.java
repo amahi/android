@@ -38,17 +38,12 @@ import org.amahi.anywhere.server.ApiAdapter;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.api.ProxyApi;
 import org.amahi.anywhere.server.api.ServerApi;
-import org.amahi.anywhere.server.model.PostFriendRequest;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
 import org.amahi.anywhere.server.model.ServerRoute;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.server.response.AddFriendUserResponse;
-import org.amahi.anywhere.server.response.FriendRequestDeleteResponse;
-import org.amahi.anywhere.server.response.FriendRequestResendResponse;
 import org.amahi.anywhere.server.response.FriendRequestsResponse;
-import org.amahi.anywhere.server.response.FriendUserDeleteResponse;
 import org.amahi.anywhere.server.response.FriendUsersResponse;
 import org.amahi.anywhere.server.response.ServerAppsResponse;
 import org.amahi.anywhere.server.response.ServerFileDeleteResponse;
@@ -345,23 +340,7 @@ public class ServerClient {
         serverApi.getFriendUsers(apiKey).enqueue(new FriendUsersResponse());
     }
 
-    public void addFriendUser(PostFriendRequest friendRequest) {
-        serverApi.addFriendUser(apiKey, friendRequest).enqueue(new AddFriendUserResponse());
-    }
-
     public void getFriendRequests() {
         serverApi.getFriendRequests(apiKey).enqueue(new FriendRequestsResponse());
-    }
-
-    public void deleteFriendUser(int id) {
-        serverApi.deleteFriendUser(apiKey, id).enqueue(new FriendUserDeleteResponse());
-    }
-
-    public void deleteFriendRequest(int id) {
-        serverApi.deleteFriendRequest(apiKey, id).enqueue(new FriendRequestDeleteResponse());
-    }
-
-    public void resendFriendRequest(int id) {
-        serverApi.resendFriendRequest(apiKey, id).enqueue(new FriendRequestResendResponse());
     }
 }

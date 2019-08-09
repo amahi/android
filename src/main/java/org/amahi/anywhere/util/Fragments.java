@@ -30,8 +30,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.FileOptionsDialogFragment;
-import org.amahi.anywhere.fragment.FriendRequestsOptionsDialogFragment;
-import org.amahi.anywhere.fragment.FriendsOptionsDialogFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
@@ -191,15 +189,6 @@ public final class Fragments {
             return fragment;
         }
 
-        public static BottomSheetDialogFragment buildFriendsOptionsDialogFragment() {
-            BottomSheetDialogFragment fragment = new FriendsOptionsDialogFragment();
-            return fragment;
-        }
-
-        public static BottomSheetDialogFragment buildFriendRequestsOptionsDialogFragment() {
-            BottomSheetDialogFragment fragment = new FriendRequestsOptionsDialogFragment();
-            return fragment;
-        }
 
     }
 

@@ -19,13 +19,8 @@
 
 package org.amahi.anywhere.server.api;
 
-import org.amahi.anywhere.server.model.DeleteFriendRequestResponse;
-import org.amahi.anywhere.server.model.DeleteFriendResponse;
 import org.amahi.anywhere.server.model.FriendRequestResponse;
 import org.amahi.anywhere.server.model.FriendUserResponse;
-import org.amahi.anywhere.server.model.NewFriendRequestResponse;
-import org.amahi.anywhere.server.model.PostFriendRequest;
-import org.amahi.anywhere.server.model.ResendFriendRequestResponse;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerFileMetadata;
@@ -36,15 +31,12 @@ import java.util.List;
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
 import retrofit2.http.Part;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -89,27 +81,9 @@ public interface ServerApi {
     Call<FriendUserResponse> getFriendUsers(
         @Header("api-key") String apiKey);
 
-    @POST("/frnd/request")
-    Call<NewFriendRequestResponse> addFriendUser(
-        @Header("api-key") String apiKey,
-        @Body PostFriendRequest friendRequest);
 
     @GET("/frnd/requests")
     Call<FriendRequestResponse> getFriendRequests(
         @Header("api-key") String apiKey);
 
-    @DELETE("/frnd/user/{id}")
-    Call<DeleteFriendResponse> deleteFriendUser(
-        @Header("api-key") String apiKey,
-        @Path("id") int id);
-
-    @DELETE("/frnd/request/{id}")
-    Call<DeleteFriendRequestResponse> deleteFriendRequest(
-        @Header("api-key") String apiKey,
-        @Path("id") int id);
-
-    @PUT("/frnd/request/{id}/resend")
-    Call<ResendFriendRequestResponse> resendFriendRequest(
-        @Header("api-key") String key,
-        @Path("id") int id);
 }

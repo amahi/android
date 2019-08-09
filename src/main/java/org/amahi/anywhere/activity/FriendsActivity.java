@@ -4,38 +4,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
-import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.adapter.FriendsPagerAdapter;
-import org.amahi.anywhere.bus.AddFriendUserCompletedEvent;
 import org.amahi.anywhere.bus.BusProvider;
-import org.amahi.anywhere.fragment.AlertDialogFragment;
 import org.amahi.anywhere.fragment.FriendRequestsFragment;
 import org.amahi.anywhere.fragment.FriendsFragment;
 import org.amahi.anywhere.server.client.ServerClient;
-import org.amahi.anywhere.server.model.PostFriendRequest;
-import org.amahi.anywhere.util.Fragments;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class FriendsActivity extends AppCompatActivity
-    implements AlertDialogFragment.AddFriendDialogCallback {
+public class FriendsActivity extends AppCompatActivity {
 
     @Inject
     ServerClient serverClient;
-    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +40,6 @@ public class FriendsActivity extends AppCompatActivity
 
         getTabLayout().setupWithViewPager(getPager());
 
-        setUpAddFriendFAB();
 
     }
 
@@ -72,21 +61,6 @@ public class FriendsActivity extends AppCompatActivity
 
         FriendsPagerAdapter adapter = new FriendsPagerAdapter(getSupportFragmentManager(), fragmentList, fragmentTitles);
         getPager().setAdapter(adapter);
-    }
-
-    private void setUpAddFriendFAB() {
-        FloatingActionButton fab = findViewById(R.id.fab_add_friend);
-
-        fab.setOnClickListener(v -> showAddFriendDialog());
-    }
-
-    private void showAddFriendDialog() {
-        AlertDialogFragment addFriendDialog = new AlertDialogFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.ADD_FRIEND_DIALOG);
-        addFriendDialog.setArguments(bundle);
-        addFriendDialog.show(getSupportFragmentManager(), "add_friend_dialog");
-
     }
 
     @Override
@@ -144,50 +118,4 @@ public class FriendsActivity extends AppCompatActivity
         BusProvider.getBus().unregister(this);
     }
 
-
-    //add friend dialog onclick
-    @Override
-    public void dialogPositiveButtonOnClick(String email) {
-        if (serverClient.isConnected()) {
-            addFriendRequest(email);
-            showProgressDialog(getString(R.string.message_add_friend_user));
-        }
-
-        //TODO: connect server if not connected
-    }
-
-    private void showProgressDialog(String message) {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage(message);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-    }
-
-    @Override
-    public void dialogNegativeButtonOnClick() {
-
-    }
-
-    private void addFriendRequest(String email) {
-
-        if (email != null) {
-            PostFriendRequest newFriendRequest = new PostFriendRequest();
-            newFriendRequest.setEmail(email);
-            //TODO: set proper pin
-            newFriendRequest.setPin(1234);
-            serverClient.addFriendUser(newFriendRequest);
-        }
-
-    }
-
-
-    @Subscribe
-    public void onAddFriendUser(AddFriendUserCompletedEvent event) {
-        if (progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-        Toast.makeText(this, event.getMessage(), Toast.LENGTH_LONG).show();
-
-    }
 }

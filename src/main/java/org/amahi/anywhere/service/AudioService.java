@@ -31,12 +31,18 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.support.v4.media.MediaBrowserCompat;
+
 import androidx.media.MediaBrowserServiceCompat;
+
 import android.support.v4.media.MediaMetadataCompat;
+
 import androidx.media.session.MediaButtonReceiver;
+
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
@@ -51,6 +57,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.LoopingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -89,6 +96,8 @@ import org.amahi.anywhere.util.MediaNotificationManager;
 import org.amahi.anywhere.util.Preferences;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -111,11 +120,15 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     private ServerShare audioShare;
     private List<ServerFile> audioFiles;
+    private List<ServerFile> shuffledAudioFiles = new ArrayList<>();
+
     private ServerFile audioFile;
     private boolean isPreparing = false;
 
     private AudioMetadataFormatter audioMetadataFormatter;
     private Bitmap audioAlbumArt;
+    private static final int REPEAT_ALL = 0;
+    private static final int REPEAT_ONE = 1;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -166,7 +179,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     private void setUpAudioPlayer() {
         audioPlayer =
-            ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(this), new DefaultTrackSelector(), new DefaultLoadControl());
+            ExoPlayerFactory.newSimpleInstance(this, new DefaultRenderersFactory(this), new DefaultTrackSelector(), new DefaultLoadControl());
         audioPlayer.addListener(this);
         audioPlayer.setPlayWhenReady(true);
         audioPlayer.setVolume(1.0f);
@@ -416,13 +429,30 @@ public class AudioService extends MediaBrowserServiceCompat implements
         setUpAudioMetadata();
     }
 
-    private ServerFile getNextAudioFile() {
-        int audioPosition = audioFiles.indexOf(audioFile);
+    public List<ServerFile> getShuffledAudioFiles() {
+        return shuffledAudioFiles;
+    }
 
-        if (audioPosition == audioFiles.size() - 1) {
-            return audioFiles.get(0);
+    private ServerFile getNextAudioFile() {
+
+        if (getRepeatModePreference() == REPEAT_ONE) {
+            return audioFile;
         }
-        return audioFiles.get(audioPosition + 1);
+
+        if (!isShuffleEnabled()) {
+            int audioPosition = audioFiles.indexOf(audioFile);
+            if (audioPosition == audioFiles.size() - 1) {
+                return audioFiles.get(0);
+            }
+            return audioFiles.get(audioPosition + 1);
+        } else {
+            int audioPosition = shuffledAudioFiles.indexOf(audioFile);
+            if (audioPosition == shuffledAudioFiles.size() - 1) {
+                return shuffledAudioFiles.get(0);
+            }
+            return shuffledAudioFiles.get(audioPosition + 1);
+        }
+
     }
 
     private void startPreviousAudio() {
@@ -434,17 +464,52 @@ public class AudioService extends MediaBrowserServiceCompat implements
     }
 
     private ServerFile getPreviousAudioFile() {
-        int audioPosition = audioFiles.indexOf(audioFile);
 
-        if (audioPosition == 0) {
-            audioPosition = audioFiles.size();
+        if (getRepeatModePreference() == REPEAT_ONE) {
+            return audioFile;
         }
-        return audioFiles.get(audioPosition - 1);
+
+        if (!isShuffleEnabled()) {
+            int audioPosition = audioFiles.indexOf(audioFile);
+            if (audioPosition == 0) {
+                audioPosition = audioFiles.size();
+            }
+            return audioFiles.get(audioPosition - 1);
+        } else {
+            int audioPosition = shuffledAudioFiles.indexOf(audioFile);
+            if (audioPosition == 0) {
+                audioPosition = shuffledAudioFiles.size();
+            }
+            return shuffledAudioFiles.get(audioPosition - 1);
+
+        }
     }
 
     @Subscribe
     public void onAudioCompleted(AudioCompletedEvent event) {
-        startNextAudio();
+        if (getRepeatModePreference() == REPEAT_ONE) {
+            playAudioInLoop();
+        } else {
+            startNextAudio();
+        }
+    }
+
+    public int getRepeatModePreference() {
+        return Preferences.getAudioRepeatMode(this);
+    }
+
+    public void playAudioInLoop() {
+        MediaSource mediaSource;
+        if (isFileAvailableOffline(getAudioFile())) {
+            mediaSource = new ExtractorMediaSource.Factory(
+                new DefaultDataSourceFactory(this, Identifier.getUserAgent(this)))
+                .createMediaSource(getOfflineFileUri(getAudioFile().getName()));
+        } else {
+            mediaSource = buildMediaSource(getAudioUri());
+        }
+        LoopingMediaSource loopingMediaSource = new LoopingMediaSource(mediaSource);
+        audioPlayer.prepare(loopingMediaSource, true, true);
+
     }
 
     public void playAudio() {
@@ -457,6 +522,19 @@ public class AudioService extends MediaBrowserServiceCompat implements
         mediaSession.setActive(false);
         audioPlayer.setPlayWhenReady(false);
         setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+    }
+
+    public void enableShuffle(boolean isShuffleEnabled) {
+        audioPlayer.setShuffleModeEnabled(isShuffleEnabled);
+    }
+
+    public boolean isShuffleEnabled() {
+        return audioPlayer.getShuffleModeEnabled();
+    }
+
+    public void shuffleAudioList() {
+        shuffledAudioFiles = new ArrayList<>(audioFiles);
+        Collections.shuffle(shuffledAudioFiles);
     }
 
     private void setMediaPlaybackState(int state) {
@@ -627,6 +705,11 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     @Override
     public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+        if (shuffleModeEnabled) {
+            shuffleAudioList();
+        }
+        Preferences.setAudioShuffleMode(this, shuffleModeEnabled);
+
 
     }
 

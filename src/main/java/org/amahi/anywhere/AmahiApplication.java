@@ -30,6 +30,7 @@ import android.preference.PreferenceManager;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.crashlytics.android.BuildConfig;
 import com.crashlytics.android.Crashlytics;
 
 import org.amahi.anywhere.job.NetConnectivityJob;

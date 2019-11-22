@@ -22,6 +22,8 @@ package org.amahi.anywhere.activity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -33,6 +35,7 @@ import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -73,6 +76,16 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
         setUpInjections();
 
         setUpAuthentication();
+        Button buttonSignUp=(Button)findViewById(R.id.button_SignUp);
+        buttonSignUp.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                String url_for_SignUp="https://www.amahi.org/signup";
+                Intent intent_for_signUpPage= new Intent(Intent.ACTION_VIEW);
+                intent_for_signUpPage.setData(Uri.parse(url_for_SignUp));
+                startActivity(intent_for_signUpPage);
+            }
+        });
     }
 
     private void setUpInjections() {

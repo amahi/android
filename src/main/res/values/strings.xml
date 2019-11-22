@@ -32,6 +32,7 @@
 
     <string name="button_search_application">Search Google Play</string>
     <string name="button_sign_in">Sign in</string>
+    <string name="button_sign_up">Sign up</string>
     <string name="button_yes">Yes</string>
     <string name="button_no">No</string>
     <string name="button_retry">Retry</string>
@@ -182,6 +183,7 @@
     <string name="pause_the_audio" translatable="false">"Pause the audio"</string>
     <string name="upload" translatable="false">"Upload"</string>
     <string name="sign_in" translatable="false">"Sign in"</string>
+    <string name="sign_up" translatable="false">"Sign up"</string>
 
     <string name="upload_channel" translatable="false">File Upload</string>
     <string name="upload_channel_desc" translatable="false">Shows file upload progress</string>

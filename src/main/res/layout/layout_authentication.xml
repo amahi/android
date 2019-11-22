@@ -105,6 +105,17 @@
     <Space
         android:layout_width="match_parent"
         android:layout_height="16dp" />
+    <com.dd.processbutton.iml.ActionProcessButton
+        android:contentDescription="@string/sign_up"
+        android:id="@+id/button_SignUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_sign_up"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/sign_in_button"/>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
 
     <ViewAnimator
         android:id="@+id/animator_message"

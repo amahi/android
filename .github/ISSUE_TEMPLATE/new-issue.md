@@ -1,33 +1,40 @@
 ---
 name: New issue
-about: Create a report to help us improve or add a feature
-title: ''
-labels: ''
-assignees: cpg
+about: Solved crash at Bottom sheet by allowing the permission
+title: 'Permissions Crash Solved'
+labels: 'Permissions'
+assignees: None
 
 ---
 
 **Describe the issue**
-A clear and concise description of what the bug/feature is.
+The application was crashing when we click on the floating action button and Click on Any one like camera or files 
+then dilogue appears to seek for permission but when i clicked the  deny so then i again clicked on floating action 
+button and clicked on camera then the application crashed.
 
 **To Reproduce or Feature details**
 Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error or expected behavior
+1. Go to 'shares and click on '
+2. Click on 'floating action button'
+3. click on 'camera and then deny'
+4. click on 'floatin action button and then camera again'
+5. now you will see the crash
 
 **Expected behavior**
-A clear and concise description of what you expected to happen.
+<a href="https://imgflip.com/gif/3l2o6o"><img src="https://i.imgflip.com/3l2o6o.gif" title="made at imgflip.com"/></a>
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**I solved and did this**
+<a href="https://imgflip.com/gif/3l2oe9"><img src="https://i.imgflip.com/3l2oe9.gif" title="made at imgflip.com"/></a>
+
+<a href="https://imgflip.com/gif/3l2oji"><img src="https://i.imgflip.com/3l2oji.gif" title="made at imgflip.com"/></a>
+
+<a href="https://imgflip.com/gif/3l2ond"><img src="https://i.imgflip.com/3l2ond.gif" title="made at imgflip.com"/></a>
 
 **Smartphone (please complete as much of the following information as possible):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+ - Device: oppo realmeOne
+ - OS: latest
+ - Browser chrome
+ - Version latest
 
 **Additional context**
 Add any other context about the problem here.

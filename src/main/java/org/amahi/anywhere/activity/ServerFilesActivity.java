@@ -422,11 +422,11 @@ public class ServerFilesActivity extends AppCompatActivity implements
     }
 
 
-    private void displayNeverAskAgainDialog(final String snackbar) {
+    private void displayNeverAskAgainDialog(final String text,final String snackbar) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("We need to send SMS for performing necessary task. Please permit the permission through "
-            + "Settings screen.\n\nSelect Permissions -> Enable permission");
+        builder.setMessage(text
+            + "Settings screen.\n\nSelect Permissions -> Enable Storage permission");
         builder.setCancelable(false);
         builder.setPositiveButton("Permit Manually", new DialogInterface.OnClickListener() {
             @Override
@@ -484,7 +484,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
             if(x == 1) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (PermissionUtils.neverAskAgainSelected(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        displayNeverAskAgainDialog(getString(R.string.camera_permission_denied));
+                        displayNeverAskAgainDialog("the camera permission is required to write content on the storage",getString(R.string.camera_permission_denied));
                     }
                 }
             }
@@ -531,7 +531,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
             requestStoragePermission("the File permission is required to access the storage of the device",getString(R.string.file_upload_permission_denied));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (PermissionUtils.neverAskAgainSelected(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    displayNeverAskAgainDialog(getString(R.string.file_upload_permission_denied));
+                    displayNeverAskAgainDialog("the File permission is required to access the storage of the device",getString(R.string.file_upload_permission_denied));
                 }
             }
         }

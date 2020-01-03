@@ -1,34 +1,25 @@
 ---
-name: New issue
-about: Solved crash at Bottom sheet by allowing the permission
-title: 'Permissions Crash Solved'
-labels: 'Permissions'
-assignees: None
+about: Create a report to help us improve or add a feature
+title: ''
+labels: ''
+assignees: cpg
 
 ---
 
 **Describe the issue**
-The application was crashing when we click on the floating action button and Click on Any one like camera or files 
-then dilogue appears to seek for permission but when i clicked the  deny so then i again clicked on floating action 
-button and clicked on camera then the application crashed.
 
 **To Reproduce or Feature details**
 Steps to reproduce the behavior:
-1. Go to 'shares and click on '
-2. Click on 'floating action button'
-3. click on 'camera and then deny'
-4. click on 'floatin action button and then camera again'
-5. now you will see the crash
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error or expected behavior
 
 **Expected behavior**
-<a href="https://imgflip.com/gif/3l2o6o"><img src="https://i.imgflip.com/3l2o6o.gif" title="made at imgflip.com"/></a>
+A clear and concise description of what you expected to happen.
 
-**I solved and did this**
-<a href="https://imgflip.com/gif/3l2oe9"><img src="https://i.imgflip.com/3l2oe9.gif" title="made at imgflip.com"/></a>
-
-<a href="https://imgflip.com/gif/3l2oji"><img src="https://i.imgflip.com/3l2oji.gif" title="made at imgflip.com"/></a>
-
-<a href="https://imgflip.com/gif/3l2ond"><img src="https://i.imgflip.com/3l2ond.gif" title="made at imgflip.com"/></a>
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
 
 **Smartphone (please complete as much of the following information as possible):**
  - Device: oppo realmeOne

@@ -19,6 +19,9 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
 import androidx.fragment.app.Fragment;
@@ -29,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 
@@ -59,12 +63,11 @@ public class ServerAppsFragment extends Fragment {
     private RecyclerView mRecyclerView;
 
     private LinearLayout mEmptyLinearLayout;
-
     private LinearLayout mErrorLinearLayout;
-
+    View rootView;
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
+         rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
 
         mRecyclerView = rootView.findViewById(R.id.list_server_apps);
 
@@ -76,11 +79,34 @@ public class ServerAppsFragment extends Fragment {
 
         mErrorLinearLayout = rootView.findViewById(R.id.error);
 
+     if(!isNetworkConnected()) {
+         rootView.findViewById(R.id.empty2).setVisibility(View.GONE);
+         rootView.findViewById(R.id.empty1).setVisibility(View.GONE);
+         rootView.findViewById(R.id.MessageError1).setVisibility(View.VISIBLE);
+         rootView.findViewById(R.id.MessageError2).setVisibility(View.VISIBLE);
+     }else{
+         rootView.findViewById(R.id.empty2).setVisibility(View.VISIBLE);
+         rootView.findViewById(R.id.empty1).setVisibility(View.VISIBLE);
+         rootView.findViewById(R.id.MessageError1).setVisibility(View.GONE);
+         rootView.findViewById(R.id.MessageError2).setVisibility(View.GONE);
+     }
         mRecyclerView.addItemDecoration(new
             DividerItemDecoration(getActivity(),
             DividerItemDecoration.VERTICAL));
         return rootView;
     }
+
+        protected boolean isNetworkConnected() {
+            try {
+                ConnectivityManager mConnectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+                return mNetworkInfo != null;
+
+            } catch (NullPointerException e) {
+                return false;
+
+            }
+        }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -121,12 +147,14 @@ public class ServerAppsFragment extends Fragment {
         if (apps != null) {
             mEmptyLinearLayout.setVisibility(View.GONE);
             setUpAppsContent(apps);
-
             showAppsContent();
-        } else {
-            mEmptyLinearLayout.setVisibility(View.VISIBLE);
+        }
+        else {
+           mErrorLinearLayout.setVisibility(View.VISIBLE);
         }
     }
+
+
 
     private void setUpAppsContent(List<ServerApp> apps) {
         getAppsAdapter().replaceWith(apps);

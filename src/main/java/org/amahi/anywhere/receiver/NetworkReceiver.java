@@ -50,7 +50,6 @@ public class NetworkReceiver extends BroadcastReceiver {
             BusProvider.getBus().post(new NetworkChangedEvent(network.getType()));
             startDownloadService(context);
         }
-
         if (networkUtils.isUploadAllowed()) {
             startUploadService(context);
         } else {

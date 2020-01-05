@@ -143,7 +143,9 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         playbackControlsRowPresenter.setProgressColor(Color.WHITE);
         playbackControlsRowPresenter.setOnActionClickedListener(action -> {
             if (action.getId() == mPlayPauseAction.getId()) {
-                togglePlayPause(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    togglePlayPause(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
+                }
             } else if (action.getId() == mRewindAction.getId()) {
                 rewind();
             } else if (action.getId() == mFastForwardAction.getId()) {

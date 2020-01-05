@@ -16,7 +16,6 @@
         <item name="android:textColorPrimaryInverse">@color/primary_text_material_light</item>
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
         <item name="android:actionModeBackground">@color/primary_action_mode</item>
-        <item name="android:windowContentTransitions">true</item>
         <!--Adding Support for the Support Library-->
         <item name="actionBarStyle">@style/Theme.Amahi.ActionBar</item>
         <item name="colorPrimary">@color/primary</item>

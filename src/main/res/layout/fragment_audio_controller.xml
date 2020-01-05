@@ -25,7 +25,6 @@
     android:layout_height="64dp"
     android:background="@color/background_secondary"
     android:elevation="4dp"
-    android:transitionName="LayoutAimation"
     tools:ignore="UnusedAttribute">
 
     <ImageView
@@ -61,7 +60,6 @@
         android:src="@drawable/lb_ic_play"
         android:tint="@color/primary_text"
         tools:ignore="contentDescription"
-        android:transitionName="PlayAnimation"
         />
 
     <LinearLayout
@@ -74,7 +72,6 @@
         android:orientation="vertical"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
-        android:transitionName="DescriptionAnimation"
         >
 
         <TextView

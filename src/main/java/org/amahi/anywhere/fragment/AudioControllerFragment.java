@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
@@ -90,6 +91,7 @@ public class AudioControllerFragment extends Fragment {
             new FileOpeningEvent(audioService.getAudioShare(),
                 audioService.getAudioFiles(),
                 audioService.getAudioFile())));
+
     }
 
     public void connect(AudioService audioService) {

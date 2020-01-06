@@ -111,6 +111,7 @@ import timber.log.Timber;
  * such as opening and sharing.
  * The files navigation itself is done via {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
+
 public class ServerFilesActivity extends AppCompatActivity implements
     EasyPermissions.PermissionCallbacks,
     ServiceConnection,

@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
@@ -41,6 +42,9 @@ import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.TextView;
 
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerLibraryInfo;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaLoadOptions;
@@ -128,6 +132,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_file_audio);
+        Animatoo.animateSlideLeft(this);
 
         setUpInjections();
 
@@ -144,6 +149,11 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
     private void setUpInjections() {
         AmahiApplication.from(this).inject(this);
     }
@@ -151,9 +161,12 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private void setUpHomeNavigation() {
         Toolbar toolbar = findViewById(R.id.toolbar_audio);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        
     }
+
+
 
     private void setUpCast() {
         mCastContext = CastContext.getSharedInstance(this);
@@ -768,6 +781,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
             public void onStatusUpdated() {
                 Intent intent = new Intent(ServerFileAudioActivity.this, ExpandedControlsActivity.class);
                 startActivity(intent);
+                Animatoo.animateSlideUp(ServerFileAudioActivity.this);
                 remoteMediaClient.removeListener(this);
                 finish();
             }

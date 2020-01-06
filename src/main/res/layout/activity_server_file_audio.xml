@@ -18,6 +18,7 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -33,6 +34,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/control_view"
         android:layout_gravity="bottom"
+        android:focusable="true"
+        app:shutter_background_color="@android:color/transparent"
         />
 
     <FrameLayout
@@ -46,6 +49,7 @@
         android:id="@+id/toolbar_audio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
         android:elevation="4dp">
 
         <LinearLayout

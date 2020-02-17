@@ -2,6 +2,8 @@ package org.amahi.anywhere.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,7 +71,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
     }
 
     @Override
-    public void onBindViewHolder(NavigationDrawerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NavigationDrawerViewHolder holder, int position) {
         if (mServerName != null) {
             setSelectedServerOptions(holder, position);
             return;
@@ -78,6 +80,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
     }
 
     private void setSelectedServerOptions(NavigationDrawerViewHolder holder, int position) {
+        assert mServerName != null;
         getServerBubble(holder).setImageDrawable(getServerBubble(mServerName, position));
         getTitleShare(holder).setText(mServerName.get(position));
     }
@@ -114,6 +117,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
     @Override
     public int getItemCount() {
+        assert mServerName != null;
         return mNavigationItems != null ? mNavigationItems.size() : mServerName.size();
     }
 

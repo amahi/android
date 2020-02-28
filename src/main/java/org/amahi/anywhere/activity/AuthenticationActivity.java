@@ -165,6 +165,10 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
             if (getUsername().trim().isEmpty() && getPassword().trim().isEmpty())
                 getUsernameEdit().requestFocus();
 
+        } else if (getUsername().contains(" ")) {
+            ViewDirector.of(this,R.id.animator_message).show(R.id.text_message_username_contains_spaces);
+            getUsernameEdit().requestFocus();
+
         } else {
             startAuthentication();
 

@@ -164,5 +164,6 @@
 
     <string name="intro_title_6">Prêt</string>
     <string name="intro_desc_6">Vous être prêt. Merci d\'utiliser Amahi.</string>
+    <string name="text_message_username_contains_spaces">Erreur: le nom d\'utilisateur ne doit pas contenir d\'espaces</string>
 
 </resources>

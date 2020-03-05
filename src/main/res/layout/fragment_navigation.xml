@@ -99,6 +99,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="16dp" />
 
+     <androidx.core.widget.NestedScrollView
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content">
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:orientation="vertical">
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_navigation"
                 android:layout_width="match_parent"
@@ -150,8 +157,9 @@
                     android:textSize="@dimen/text_small"
                     android:textStyle="bold" />
             </LinearLayout>
-
+         </LinearLayout>
+     </androidx.core.widget.NestedScrollView>
         </LinearLayout>
-
     </ViewAnimator>
+
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

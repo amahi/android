@@ -19,6 +19,8 @@
 
 package org.amahi.anywhere.adapter;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +52,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.RecyclerViewAnimation;
 import org.amahi.anywhere.util.ServerFileClickListener;
 
 import java.io.File;
@@ -66,6 +69,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
     private Context context;
     private int currentDownloadPosition = RecyclerView.NO_POSITION;
     private int progress;
+    private RecyclerViewAnimation recyclerViewAnimation;
 
     public ServerFilesAdapter(Context context, ServerClient serverClient) {
         this.serverClient = serverClient;
@@ -177,6 +181,18 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             selectedPosition = fileHolder.getAdapterPosition();
             mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
         });
+        setAnimation(fileHolder.itemView,fileHolder.getAdapterPosition());
+    }
+
+    private int lastPosition = -1;
+    private boolean on_attach = true;
+
+    private void setAnimation(View view, int position) {
+        if (position > lastPosition) {
+            recyclerViewAnimation = new RecyclerViewAnimation();
+            recyclerViewAnimation.animateFadeIn(view);
+            lastPosition = position;
+        }
     }
 
     private boolean isFileDownloading(ServerFileViewHolder holder, ServerFile file, int position) {

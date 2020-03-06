@@ -50,11 +50,8 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
 
     @Override
     public RecentFilesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view =  LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_file_item, parent, false);
-       RecentFilesViewHolder viewHolder = new RecentFilesViewHolder(view);
+        return new RecentFilesViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_file_item, parent, false));
 
-       setAnimation(viewHolder.itemView, viewHolder.getAdapterPosition());
-       return  viewHolder;
     }
 
     @Override
@@ -101,7 +98,6 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
 
 
     private int lastPosition = -1;
-    private boolean on_attach = true;
 
     private void setAnimation(View view,int position) {
         if (position > lastPosition) {

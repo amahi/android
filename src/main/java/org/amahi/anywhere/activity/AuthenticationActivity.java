@@ -22,12 +22,9 @@ package org.amahi.anywhere.activity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-
-import com.google.android.material.textfield.TextInputLayout;
-
-import androidx.appcompat.app.AppCompatDelegate;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
@@ -36,7 +33,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.dd.processbutton.iml.ActionProcessButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -70,9 +70,18 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
+        if (!isNetworkAvailable(this)) {
+            ViewDirector.of(this,R.id.animator_message).show(R.id.text_message_no_internet_connection_found);
+        }
+
         setUpInjections();
 
         setUpAuthentication();
+    }
+
+    private boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
     private void setUpInjections() {
@@ -164,6 +173,10 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
 
             if (getUsername().trim().isEmpty() && getPassword().trim().isEmpty())
                 getUsernameEdit().requestFocus();
+
+        } else if (getUsername().trim().contains(" ")) {
+            ViewDirector.of(this,R.id.animator_message).show(R.id.text_message_username_contains_spaces);
+            getUsernameEdit().requestFocus();
 
         } else {
             startAuthentication();

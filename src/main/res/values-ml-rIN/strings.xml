@@ -48,8 +48,8 @@
     <string name="message_notice_check_settings">നിങ്ങളുടെ ക്രമീകരണങ്ങൾ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</string>
     <string name="message_notice_create_some">കുറച്ച് സൃഷ്ടിച്ച് വീണ്ടും ശ്രമിക്കുക</string>
     <string name="message_notice_visit_some">കുറച്ച് സന്ദർശിച്ച് വീണ്ടും ശ്രമിക്കുക</string>
-    <string name="message_progress_file_downloading">ഫയൽ ഡൗൺലോഡുചെയ്യുന്നു ...</string>
-    <string name="message_progress_file_preparing">ഫയൽ തയ്യാറാക്കുന്നു ...</string>
+    <string name="message_progress_file_downloading">ഫയൽ ഡൗൺലോഡുചെയ്യുന്നു …</string>
+    <string name="message_progress_file_preparing">ഫയൽ തയ്യാറാക്കുന്നു …</string>
     <string name="message_no_files">ഡൌൺലോഡ് ചെയ്ത ഫയലുകൾ ഇവിടെ ദൃശ്യമാകും</string>
     <string name="message_create_and_try_again">ഡൌൺലോഡ് ചെയ്യാൻ ഫയലുകൾ കണ്ടെത്തുക</string>
     <string name="message_connection_error">കണക്ഷൻ തകരാറ്</string>
@@ -91,7 +91,7 @@
     <string name="label_next">അടുത്തത്</string>
     <string name="label_play">പ്ലേ ചെയ്യുക</string>
     <string name="label_pause">താൽക്കാലികമായി നിർത്തുക</string>
-    <string name="media_route_menu_title">പ്ലേ ചെയ്യുക ...</string>
+    <string name="media_route_menu_title">പ്ലേ ചെയ്യുക …</string>
     <string name="upload_camera">ക്യാമറ ഉപയോഗിക്കുക</string>
     <string name="upload_file">ഫയൽ അപ്ലോഡുചെയ്യുക</string>
     <string name="app_title">അമാഹി ടിവി</string>
@@ -105,6 +105,7 @@
     <string name="exit_message">നിങ്ങള് വിട്ടു പോകുകയാണ് എന്ന് ഉറപ്പാണോ?</string>
     <string name="yes">അതെ</string>
     <string name="no">ഇല്ല</string>
+    <string name="sign_out_title">സൈൻ ഔട്ട്</string>
     <string name="row_servers">സെർവറുകൾ</string>
     <string name="row_shares">പങ്കിടുന്നു</string>
     <string name="row_apps">അപ്ലിക്കേഷനുകൾ</string>

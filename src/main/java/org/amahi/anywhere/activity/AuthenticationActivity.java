@@ -72,18 +72,9 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
-        if (!isNetworkAvailable(this)) {
-            ViewDirector.of(this,R.id.animator_message).show(R.id.text_message_no_internet_connection_found);
-        }
-
         setUpInjections();
 
         setUpAuthentication();
-    }
-
-    private boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
-        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
     private void setUpInjections() {

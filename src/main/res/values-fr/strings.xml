@@ -134,6 +134,7 @@
     <!--ANDROID TV RELATED STRINGS-->
     <string name="exit_title">Quitter</string>
     <string name="exit_message">Êtes-vous sûr de quitter?</string>
+    <string name="sign_out_title">Déconnexion</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
 

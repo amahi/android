@@ -134,7 +134,6 @@
     <!--ANDROID TV RELATED STRINGS-->
     <string name="exit_title">Quitter</string>
     <string name="exit_message">Êtes-vous sûr de quitter?</string>
-    <string name="sign_out_title">Déconnexion</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
 
@@ -165,7 +164,5 @@
 
     <string name="intro_title_6">Prêt</string>
     <string name="intro_desc_6">Vous être prêt. Merci d\'utiliser Amahi.</string>
-    <string name="text_message_username_contains_spaces">Erreur: le nom d\'utilisateur ne doit pas contenir d\'espaces</string>
-    <string name="no_internet_connection_found">aucune connexion internet trouvée</string>
 
 </resources>

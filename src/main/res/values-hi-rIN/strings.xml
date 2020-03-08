@@ -62,7 +62,6 @@
     <string name="title_recent_files">हाल हीं के फाइल</string>
     <string name="button_search_application">गूगल प्ले खोजें</string>
     <string name="button_sign_in">दाखिल करना</string>
-    <string name="sign_out_title">प्रस्थान करें</string>
     <string name="button_yes">हाँ</string>
     <string name="button_no">नहीं</string>
     <string name="button_retry">पुन: प्रयास करें</string>
@@ -100,8 +99,8 @@
     <string name="message_notice_check_settings">अपनी सेटिंग जांचें और पुनः प्रयास करें</string>
     <string name="message_notice_create_some">कुछ बनाएं और फिर से प्रयास करें</string>
     <string name="message_notice_visit_some">कुछ पर जाएँ और फिर कोशिश करें</string>
-    <string name="message_progress_file_downloading">फ़ाइल डाउनलोड हो रही है …</string>
-    <string name="message_progress_file_preparing">फ़ाइल तैयार कर रहा है …</string>
+    <string name="message_progress_file_downloading">फ़ाइल डाउनलोड हो रही है ...</string>
+    <string name="message_progress_file_preparing">फ़ाइल तैयार कर रहा है ...</string>
     <string name="message_no_files">डाउनलोड की गई फाइलें यहां दिखाई देती हैं</string>
     <string name="message_create_and_try_again">डाउनलोड करने के लिए फ़ाइलें खोजें</string>
     <string name="message_connection_error">कनेक्शन त्रुटि</string>
@@ -179,6 +178,4 @@
     <string name="is_first_run">isFirstRun</string>
     <string name="selected_server_session">सर्वर सत्र</string>
     <string name="message_error_search_application" translatable="false">हमें इस फ़ाइल के लिए कोई समर्थित ऐप्स नहीं मिले हैं।</string>
-    <string name="text_message_username_contains_spaces">उपयोगकर्ता नाम में रिक्त स्थान नहीं होना चाहिए</string>
-    <string name="no_internet_connection_found">कोई इंटरनेट कनेक्शन नहीं मिला</string>
 </resources>

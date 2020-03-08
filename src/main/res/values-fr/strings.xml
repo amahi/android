@@ -30,6 +30,7 @@
 
     <string name="button_search_application">Recherche Google Play</string>
     <string name="button_sign_in">Connexion</string>
+    <string name="button_sign_in_pin">Login with PIN ?</string>
     <string name="button_yes">Oui</string>
     <string name="button_no">Non</string>
     <string name="button_retry">Réessayer</string>
@@ -164,5 +165,8 @@
 
     <string name="intro_title_6">Prêt</string>
     <string name="intro_desc_6">Vous être prêt. Merci d\'utiliser Amahi.</string>
+
+    <string name="pin_access">PIN Access</string>
+    <string name="button_pin_access">Access</string>
 
 </resources>

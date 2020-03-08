@@ -62,6 +62,7 @@
     <string name="title_recent_files">हाल हीं के फाइल</string>
     <string name="button_search_application">गूगल प्ले खोजें</string>
     <string name="button_sign_in">दाखिल करना</string>
+    <string name="button_sign_in_pin">Login with PIN ?</string>
     <string name="button_yes">हाँ</string>
     <string name="button_no">नहीं</string>
     <string name="button_retry">पुन: प्रयास करें</string>
@@ -178,4 +179,8 @@
     <string name="is_first_run">isFirstRun</string>
     <string name="selected_server_session">सर्वर सत्र</string>
     <string name="message_error_search_application" translatable="false">हमें इस फ़ाइल के लिए कोई समर्थित ऐप्स नहीं मिले हैं।</string>
+
+    <string name="pin_access">PIN Access</string>
+    <string name="button_pin_access">Access</string>
+
 </resources>

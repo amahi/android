@@ -106,6 +106,21 @@
         android:layout_width="match_parent"
         android:layout_height="16dp" />
 
+    <TextView
+        android:contentDescription="@string/sign_in"
+        android:id="@+id/text_login_pin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/button_sign_in_pin"
+        android:textColorLink="@color/accent"
+        android:gravity="center"
+
+        />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+
     <ViewAnimator
         android:id="@+id/animator_message"
         android:layout_width="match_parent"

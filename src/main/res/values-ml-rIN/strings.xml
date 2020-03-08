@@ -9,6 +9,7 @@
     <string name="title_recent_files">സമീപകാല ഫയലുകൾ</string>
     <string name="button_search_application">Google Play തിരയുക</string>
     <string name="button_sign_in">സൈൻ ഇൻ</string>
+    <string name="button_sign_in_pin">Login with PIN ?</string>
     <string name="button_yes">അതെ</string>
     <string name="button_no">ഇല്ല</string>
     <string name="button_retry">വീണ്ടും ശ്രമിക്കുക</string>
@@ -178,4 +179,8 @@
     <string name="pref_option_go_back">മടങ്ങിപ്പോവുക</string>
     <string name="pref_connection_desc">നിങ്ങൾക്കാവശ്യമുള്ള കണക്ഷൻ തരം തിരഞ്ഞെടുക്കുക. ഇത് സ്വയം കണ്ടെത്തൽ, റിമോട്ട് അല്ലെങ്കിൽ ലോക്കൽ ഏരിയ നെറ്റ്വർക്ക് ആയി സജ്ജമാക്കാൻ കഴിയും.</string>
     <string name="hint_password">പാസ്വേഡ്</string>
+
+    <string name="pin_access">PIN Access</string>
+    <string name="button_pin_access">Access</string>
+
 </resources>

@@ -22,6 +22,7 @@ package org.amahi.anywhere.activity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -106,6 +107,10 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
         return findViewById(R.id.button_authentication);
     }
 
+    private TextView getPinAuthButton() {
+        return findViewById(R.id.text_login_pin);
+    }
+
     private void setUpAuthenticationMessages() {
         TextView forgotPassword = findViewById(R.id.text_forgot_password);
         TextView authenticationConnectionFailureMessage = findViewById(R.id.text_message_authentication_connection);
@@ -150,6 +155,13 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
 
     private void setUpAuthenticationActionListener() {
         getAuthenticationButton().setOnClickListener(this::onClick);
+        getPinAuthButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent pinIntent = new Intent(AuthenticationActivity.this, PinLoginActivity.class);
+                startActivity(pinIntent);
+            }
+        });
     }
 
     public void onClick(View view) {

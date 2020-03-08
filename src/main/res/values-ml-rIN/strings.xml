@@ -178,5 +178,6 @@
     <string name="pref_option_go_back">മടങ്ങിപ്പോവുക</string>
     <string name="pref_connection_desc">നിങ്ങൾക്കാവശ്യമുള്ള കണക്ഷൻ തരം തിരഞ്ഞെടുക്കുക. ഇത് സ്വയം കണ്ടെത്തൽ, റിമോട്ട് അല്ലെങ്കിൽ ലോക്കൽ ഏരിയ നെറ്റ്വർക്ക് ആയി സജ്ജമാക്കാൻ കഴിയും.</string>
     <string name="hint_password">പാസ്വേഡ്</string>
-    <string name="text_message_username_contains_spaces">خرابی: صارف نام میں خالی جگہ نہیں ہونی چاہئے</string>
+    <string name="text_message_username_contains_spaces">പിശക്: ഉപയോക്തൃനാമത്തിൽ സ്‌പെയ്‌സുകൾ അടങ്ങിയിരിക്കരുത്</string>
+    <string name="no_internet_connection_found">ഇന്റർനെറ്റ് കണക്ഷനൊന്നും കണ്ടെത്തിയില്ല</string>
 </resources>

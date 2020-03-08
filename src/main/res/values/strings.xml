@@ -189,6 +189,7 @@
     <string name="download_channel" translatable="false">File Download</string>
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
     <string name="text_message_username_contains_spaces">Error: Username should not contain spaces</string>
+    <string name="no_internet_connection_found">No internet connection found</string>
 
 
 </resources>

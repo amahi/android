@@ -178,4 +178,6 @@
     <string name="is_first_run">isFirstRun</string>
     <string name="selected_server_session">सर्वर सत्र</string>
     <string name="message_error_search_application" translatable="false">हमें इस फ़ाइल के लिए कोई समर्थित ऐप्स नहीं मिले हैं।</string>
+    <string name="text_message_username_contains_spaces">उपयोगकर्ता नाम में रिक्त स्थान नहीं होना चाहिए</string>
+    <string name="no_internet_connection_found">कोई इंटरनेट कनेक्शन नहीं मिला</string>
 </resources>

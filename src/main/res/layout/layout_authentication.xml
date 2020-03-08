@@ -145,6 +145,24 @@
             android:textColor="@color/error_red"
             android:drawableStart="@drawable/ic_error_24dp"/>
 
+        <TextView
+            android:id="@+id/text_message_username_contains_spaces"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/text_message_username_contains_spaces"
+            android:textColor="@color/error_red"
+            android:drawableStart="@drawable/ic_error_24dp"/>
+
+        <TextView
+            android:id="@+id/text_message_no_internet_connection_found"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/no_internet_connection_found"
+            android:textColor="@color/error_red"
+            android:drawableStart="@drawable/ic_error_24dp"/>
+
     </ViewAnimator>
 
 </LinearLayout>

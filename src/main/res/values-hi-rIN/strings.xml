@@ -182,5 +182,8 @@
 
     <string name="pin_access">PIN Access</string>
     <string name="button_pin_access">Access</string>
+    <string name="message_error_pin_auth_field_empty">PIN ID cannot be left empty</string>
+    <string name="message_error_pin_auth">The pin code not correct. Please try again.</string>
+    <string name="login_account">Login Account ?</string>
 
 </resources>

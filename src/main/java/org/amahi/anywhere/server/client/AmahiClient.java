@@ -50,6 +50,13 @@ public class AmahiClient {
         api.authenticate(Api.getClientId(), Api.getClientSecret(), username, password).enqueue(new AuthenticationResponse());
     }
 
+    public void authenticate(String pin) {
+        //api.authenticate(Api.getClientId(), Api.getClientSecret(), pin).enqueue(new AuthenticationResponse());
+        // TODO check if any previous HDAs and authenticate by pin id
+        // TODO save auth_token
+        // TODO logout
+    }
+
     public void getServers(Context context, String authenticationToken) {
         api.getServers(authenticationToken).enqueue(new ServersResponse(context));
     }

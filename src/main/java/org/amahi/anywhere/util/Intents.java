@@ -30,6 +30,7 @@ import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.activity.FriendsActivity;
 import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
 import org.amahi.anywhere.activity.RecentFilesActivity;
@@ -117,6 +118,10 @@ public final class Intents {
             return new Intent(context, RecentFilesActivity.class);
         }
 
+        public Intent buildFriendsActivity() {
+            return new Intent(context, FriendsActivity.class);
+        }
+
         public Intent buildServerTvFilesActivity(ServerShare share, ServerFile file) {
             Intent intent = new Intent(context, ServerFileTvActivity.class);
             intent.putExtra(Extras.SERVER_FILE, file);
@@ -186,6 +191,15 @@ public final class Intents {
 
             return intent;
         }
+
+        public Intent buildFriends(RecentFile file) {
+            Intent intent = new Intent(context, getServerFileActivity(file.getMime()));
+            intent.putExtra(Extras.UNIQUE_KEY, file.getUniqueKey());
+            intent.putExtra(Extras.FILE_TYPE, FileManager.RECENT_FILE);
+
+            return intent;
+        }
+
 
         public boolean isServerFileOpeningSupported(ServerFile file) {
             PackageManager packageManager = context.getPackageManager();

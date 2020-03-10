@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -43,12 +44,18 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AppSelectedEvent;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FriendRequestsLoadedEvent;
+import org.amahi.anywhere.bus.FriendUsersLoadedEvent;
+import org.amahi.anywhere.bus.FriendsSelectedEvent;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
 import org.amahi.anywhere.bus.RecentFilesSelectedEvent;
 import org.amahi.anywhere.bus.SettingsSelectedEvent;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.bus.SharesSelectedEvent;
+import org.amahi.anywhere.server.api.ServerApi;
 import org.amahi.anywhere.server.client.ServerClient;
+import org.amahi.anywhere.server.model.FriendRequestResponse;
+import org.amahi.anywhere.server.model.FriendUserResponse;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.activity.IntroActivity;
@@ -59,6 +66,12 @@ import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Preferences;
 
 import javax.inject.Inject;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Navigation activity. This is an entry point of the application. Shows navigation between
@@ -95,6 +108,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         setUpHomeNavigation();
 
         setUpNavigation(savedInstanceState);
+
     }
 
     private void handleTvFirstRun() {
@@ -345,6 +359,24 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         startActivity(intent);
     }
 
+
+    @Subscribe
+    public void onFriendsSelected(FriendsSelectedEvent event) {
+
+            showFriends();
+            if (isNavigationDrawerAvailable()) {
+                hideNavigationDrawer();
+            }
+
+    }
+
+    private void showFriends() {
+        Intent intent = Intents.Builder.with(this).buildFriendsActivity();
+        startActivity(intent);
+    }
+
+
+
     @Subscribe
     public void onShareSelected(ShareSelectedEvent event) {
         setUpShare(event.getShare());
@@ -451,4 +483,68 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         private State() {
         }
     }
+
+
+    private void loadData() {
+
+        Retrofit friendUsers = new Retrofit.Builder()
+            .baseUrl("https://friending-testing.herokuapp.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+        ServerApi frndUserserverApi = friendUsers.create(ServerApi.class);
+
+        Call<FriendUserResponse> frndUsercall = frndUserserverApi.getFriendUsers("abcdef");
+
+
+        frndUsercall.enqueue(new Callback<FriendUserResponse>() {
+            @Override
+            public void onResponse(Call<FriendUserResponse> call, Response<FriendUserResponse> response) {
+                if(!response.isSuccessful()){
+                    Toast.makeText(NavigationActivity.this, "fail", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                FriendUserResponse friendUserResponse = response.body();
+                BusProvider.getBus().post(new FriendUsersLoadedEvent(friendUserResponse.getFriendUsers()));
+            }
+
+            @Override
+            public void onFailure(Call<FriendUserResponse> call, Throwable t) {
+
+            }
+        });
+
+
+
+        Retrofit friendRequests = new Retrofit.Builder()
+            .baseUrl("https://friending-testing.herokuapp.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+        ServerApi frndRequestServerapi = friendRequests.create(ServerApi.class);
+
+        Call<FriendRequestResponse> frndRequestcall = frndRequestServerapi.getFriendRequests("abcdef");
+
+
+        frndRequestcall.enqueue(new Callback<FriendRequestResponse>() {
+            @Override
+            public void onResponse(Call<FriendRequestResponse> call, Response<FriendRequestResponse> response) {
+                if(!response.isSuccessful()){
+                    Toast.makeText(NavigationActivity.this, "fail", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                FriendRequestResponse friendRequestResponse = response.body();
+                BusProvider.getBus().post(new FriendRequestsLoadedEvent(friendRequestResponse.getFriendRequests()));
+            }
+
+            @Override
+            public void onFailure(Call<FriendRequestResponse> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+
 }

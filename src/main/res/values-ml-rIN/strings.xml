@@ -6,6 +6,8 @@
     <string name="title_no_server">സെർവര് ഇല്ല</string>
     <string name="title_upload_list">അപ്ലോഡ് ചെയ്യുക</string>
     <string name="title_offline_files">ഓഫ്ലൈൻ ഫയലുകൾ</string>
+    <string name="title_friends">Friends</string>
+    <string name="title_notifications">Notifications</string>
     <string name="title_recent_files">സമീപകാല ഫയലുകൾ</string>
     <string name="button_search_application">Google Play തിരയുക</string>
     <string name="button_sign_in">സൈൻ ഇൻ</string>

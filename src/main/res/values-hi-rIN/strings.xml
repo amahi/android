@@ -60,6 +60,8 @@
     <string name="title_upload_list">अपलोड</string>
     <string name="title_offline_files">ऑफ़लाइन फ़ाइलें</string>
     <string name="title_recent_files">हाल हीं के फाइल</string>
+    <string name="title_friends">Friends</string>
+    <string name="title_notifications">Notifications</string>
     <string name="button_search_application">गूगल प्ले खोजें</string>
     <string name="button_sign_in">दाखिल करना</string>
     <string name="button_sign_in_pin">Login with PIN ?</string>

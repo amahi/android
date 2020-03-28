@@ -116,7 +116,16 @@ public class PinLoginActivity extends AppCompatActivity implements TextWatcher {
 
     private void authenticate() {
         Toast.makeText(this, "AUTH", Toast.LENGTH_SHORT).show();
-        amahiClient.authenticate(getPinCode());
+        checkPreviousHDAdetails();
+    }
+
+    private void checkPreviousHDAdetails() {
+        // do some checks
+        if (true){
+            amahiClient.authenticate(getPinCode());
+        }else{
+            
+        }
     }
 
     private void startAuthentication() {

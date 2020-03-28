@@ -27,6 +27,8 @@
     <string name="title_upload_list">Téléchargement</string>
     <string name="title_offline_files">Fichiers hors connexion</string>
     <string name="title_recent_files">Fichiers récents</string>
+    <string name="title_friends">Friends</string>
+    <string name="title_notifications">Notifications</string>
 
     <string name="button_search_application">Recherche Google Play</string>
     <string name="button_sign_in">Connexion</string>

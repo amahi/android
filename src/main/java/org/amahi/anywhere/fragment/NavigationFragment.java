@@ -54,6 +54,8 @@ import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FriendsSelectedEvent;
+import org.amahi.anywhere.bus.NotificationSelectedEvent;
 import org.amahi.anywhere.bus.OfflineFilesSelectedEvent;
 import org.amahi.anywhere.bus.RecentFilesSelectedEvent;
 import org.amahi.anywhere.bus.ServerConnectedEvent;
@@ -355,6 +357,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
             showServers();
             hideOfflineLayout();
             hideRecentLayout();
+            hideFriendsLayout();
+            hideNotificationsLayout();
         }
 
     }
@@ -365,6 +369,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void hideRecentLayout() {
         getRecentFilesLayout().setVisibility(View.GONE);
+    }
+
+    private void hideFriendsLayout() {
+        getFriendsLayout().setVisibility(View.GONE);
+    }
+
+    private void hideNotificationsLayout() {
+        getNotificationsLayout().setVisibility(View.GONE);
     }
 
     private void setUpNavigationAdapter() {
@@ -394,6 +406,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         return getView().findViewById(R.id.recent_files_layout);
     }
 
+    private LinearLayout getFriendsLayout() {
+        return getView().findViewById(R.id.friends_tab_layout);
+    }
+
+    private LinearLayout getNotificationsLayout() {
+        return getView().findViewById(R.id.notification_tab_layout);
+    }
+
     private LinearLayout getLinearLayoutSelectedServer() {
         return getView().findViewById(R.id.server_select_LinearLayout);
     }
@@ -418,6 +438,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         getOfflineFilesLayout().setOnClickListener(view -> showOfflineFiles());
 
         getRecentFilesLayout().setOnClickListener(view -> showRecentFiles());
+
+        getFriendsLayout().setOnClickListener(view -> showFriendsTab());
+
+        getNotificationsLayout().setOnClickListener(view -> showNotificationsTab());
     }
 
     private void selectedServerListener(int position) {
@@ -492,6 +516,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
                 showServers();
                 hideOfflineLayout();
                 hideRecentLayout();
+                hideFriendsLayout();
+                hideNotificationsLayout();
             }
         });
     }
@@ -505,6 +531,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         getOfflineFilesLayout().setVisibility(View.VISIBLE);
         getRecentFilesLayout().setVisibility(View.VISIBLE);
+        getFriendsLayout().setVisibility(View.VISIBLE);
+        getNotificationsLayout().setVisibility(View.VISIBLE);
     }
 
     @Subscribe
@@ -522,6 +550,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         getOfflineFilesLayout().setVisibility(View.VISIBLE);
         getRecentFilesLayout().setVisibility(View.VISIBLE);
+        getFriendsLayout().setVisibility(View.VISIBLE);
+        getNotificationsLayout().setVisibility(View.VISIBLE);
 
         getOfflineFilesLayout().setOnClickListener(
             view ->
@@ -611,6 +641,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void showRecentFiles() {
         BusProvider.getBus().post(new RecentFilesSelectedEvent());
+    }
+
+    private void showFriendsTab() {
+        BusProvider.getBus().post(new FriendsSelectedEvent());
+    }
+
+    private void showNotificationsTab() {
+        BusProvider.getBus().post(new NotificationSelectedEvent());
     }
 
     @Subscribe

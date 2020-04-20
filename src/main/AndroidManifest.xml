@@ -110,7 +110,7 @@
         <activity
             android:name=".activity.ExpandedControlsActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/Theme.CastVideosDark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

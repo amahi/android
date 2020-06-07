@@ -23,6 +23,7 @@ import android.app.Application;
 import android.content.Context;
 
 import org.amahi.anywhere.activity.AuthenticationActivity;
+import org.amahi.anywhere.activity.FriendsActivity;
 import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
@@ -35,6 +36,8 @@ import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.cache.CacheModule;
 import org.amahi.anywhere.fragment.AudioListFragment;
+import org.amahi.anywhere.fragment.FriendRequestsFragment;
+import org.amahi.anywhere.fragment.FriendsFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
@@ -76,6 +79,7 @@ import dagger.Provides;
     injects = {
         AuthenticationActivity.class,
         NavigationActivity.class,
+        FriendsActivity.class,
         ServerAppActivity.class,
         OfflineFilesActivity.class,
         ServerFilesActivity.class,
@@ -107,7 +111,9 @@ import dagger.Provides;
         TvPlaybackVideoActivity.class,
         TvPlaybackAudioActivity.class,
         TvPlaybackAudioFragment.class,
-        AudioMetadataRetrievingTask.class
+        AudioMetadataRetrievingTask.class,
+        FriendsFragment.class,
+        FriendRequestsFragment.class
     }
 )
 class AmahiModule {

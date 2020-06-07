@@ -110,6 +110,8 @@ static def formatStringField(field) {
 }
 
 dependencies {
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     repositories {
         google()
         mavenCentral()
@@ -170,6 +172,7 @@ dependencies {
     implementation 'android.arch.persistence.room:runtime:' + rootProject.archRoomVersion
     annotationProcessor 'android.arch.persistence.room:compiler:' + rootProject.archRoomVersion
 
+    implementation 'com.balysv:material-ripple:1.0.2'                  // ripple effect
     // Uncomment the dependencies below to enable Chuck Interceptor for logging
 /*
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'

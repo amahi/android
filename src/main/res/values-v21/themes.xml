@@ -37,6 +37,14 @@
         <item name="android:elevation">8dp</item>
     </style>
 
+    <style name="Theme.Amahi.ActionBar.NoElevation" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:background">@color/background_toolbar</item>
+        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
+        <!--Adding Support for the Support Library-->
+        <item name="background">@color/background_toolbar</item>
+        <item name="displayOptions">showHome|homeAsUp|showTitle</item>
+    </style>
+
     <style name="Theme.Amahi.NoActionBar">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
@@ -53,4 +61,10 @@
         <item name="windowNoTitle">true</item>
         <item name="android:textColor">@color/primary_text</item>
     </style>
+
+    <style name="RippleStyleBlack">
+        <item name="mrl_rippleColor">#80000000</item>
+    </style>
+
 </resources>
+

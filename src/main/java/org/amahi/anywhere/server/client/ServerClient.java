@@ -70,6 +70,7 @@ import retrofit2.Response;
 import static org.amahi.anywhere.util.Android.loadServersFromAsset;
 
 
+
 /**
  * Server API implementation. Wraps {@link org.amahi.anywhere.server.api.ProxyApi} and
  * {@link org.amahi.anywhere.server.api.ServerApi}. Reacts to network connection changes as well.
@@ -86,6 +87,8 @@ public class ServerClient {
     private ApiConnection serverConnection;
 
     private int network;
+    private static final String BASE_URL = "https://friending-testing.herokuapp.com";
+    private static final String apiKey = "abcdef";
 
     @Inject
     public ServerClient(ApiAdapter apiAdapter) {
@@ -327,4 +330,6 @@ public class ServerClient {
     public void getApps() {
         serverApi.getApps(server.getSession()).enqueue(new ServerAppsResponse());
     }
+
+
 }

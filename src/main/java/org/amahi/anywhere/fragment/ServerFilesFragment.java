@@ -132,6 +132,7 @@ public class ServerFilesFragment extends Fragment implements
     private ProgressDialog deleteProgressDialog;
     private int deleteFilePosition;
     private int lastSelectedFilePosition = -1;
+    private CharSequence searchQuery = null;
 
     @Types
     private int filesSort = SORT_MODIFICATION_TIME;
@@ -149,6 +150,11 @@ public class ServerFilesFragment extends Fragment implements
             rootView = layoutInflater.inflate(R.layout.fragment_server_files_metadata, container, false);
         }
         mErrorLinearLayout = rootView.findViewById(R.id.error);
+
+        if (savedInstanceState != null) {
+            searchQuery = savedInstanceState.getCharSequence(State.SEARCH_QUERY);
+        }
+
         return rootView;
     }
 
@@ -778,6 +784,14 @@ public class ServerFilesFragment extends Fragment implements
         mediaRouteMenuItem = CastButtonFactory.setUpMediaRouteButton(
             getActivity().getApplicationContext(),
             menu, R.id.media_route_menu_item);
+
+        searchMenuItem = menu.findItem(R.id.menu_search);
+        searchView = (SearchView) searchMenuItem.getActionView();
+
+        if (searchQuery != null) {
+            searchMenuItem.expandActionView();
+            searchView.setQuery(searchQuery, true);
+        }
     }
 
     @Override
@@ -785,8 +799,7 @@ public class ServerFilesFragment extends Fragment implements
         super.onPrepareOptionsMenu(menu);
 
         setUpFilesContentSortIcon(menu.findItem(R.id.menu_sort));
-        searchMenuItem = menu.findItem(R.id.menu_search);
-        searchView = (SearchView) searchMenuItem.getActionView();
+
 
         setUpSearchView();
         setSearchCursor();
@@ -944,6 +957,9 @@ public class ServerFilesFragment extends Fragment implements
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (searchView.isShown()) {
+            outState.putCharSequence(State.SEARCH_QUERY, searchView.getQuery());
+        }
 
         tearDownFilesState(outState);
         outState.putInt(State.SELECTED_ITEM, lastSelectedFilePosition);
@@ -1007,6 +1023,7 @@ public class ServerFilesFragment extends Fragment implements
     private static final class State {
         public static final String FILES = "files";
         public static final String SELECTED_ITEM = "selected_item";
+        public static final String SEARCH_QUERY = "search_query";
 
         private State() {
         }

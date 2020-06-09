@@ -147,7 +147,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void hideActionBar() {
-        getSupportActionBar().hide();
+        if (getSupportActionBar()!=null) getSupportActionBar().hide();
     }
 
     private void setUpInjections() {

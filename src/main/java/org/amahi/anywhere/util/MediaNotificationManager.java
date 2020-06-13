@@ -259,12 +259,12 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         NotificationCompat.Builder notificationBuilder =
             new NotificationCompat.Builder(mService, CHANNEL_ID);
-        notificationBuilder.addAction(R.drawable.ic_skip_previous_48dp,
+        notificationBuilder.addAction(R.drawable.ic_skip_previous_36dp,
             mService.getString(R.string.label_previous), mPreviousIntent);
 
         addPlayPauseAction(notificationBuilder);
 
-        notificationBuilder.addAction(R.drawable.ic_skip_next_48dp,
+        notificationBuilder.addAction(R.drawable.ic_skip_next_36dp,
             mService.getString(R.string.label_next), mNextIntent);
 
         MediaDescriptionCompat description = mMetadata.getDescription();
@@ -321,11 +321,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
         PendingIntent intent;
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
             label = mService.getString(R.string.label_pause);
-            icon = R.drawable.ic_pause_48dp;
+            icon = R.drawable.ic_pause_36dp;
             intent = mPauseIntent;
         } else {
             label = mService.getString(R.string.label_play);
-            icon = R.drawable.ic_play_48dp;
+            icon = R.drawable.ic_play_36dp;
             intent = mPlayIntent;
         }
         builder.addAction(new NotificationCompat.Action(icon, label, intent));

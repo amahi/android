@@ -99,68 +99,68 @@
                 android:layout_width="match_parent"
                 android:layout_height="16dp" />
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/list_navigation"
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:choiceMode="singleChoice"
-                android:divider="@null" />
-
-            <LinearLayout
-                android:id="@+id/offline_files_layout"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
-                    android:layout_marginStart="16dp"
-                    android:src="@drawable/ic_offline_24dp"
-                    tools:ignore="contentDescription" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_offline_files"
-                    android:textSize="@dimen/text_small"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/list_navigation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:choiceMode="singleChoice"
+                        android:divider="@null" />
 
-            <LinearLayout
-                android:id="@+id/recent_files_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="16dp">
+                    <LinearLayout
+                        android:id="@+id/offline_files_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:gravity="center_vertical">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
-                    android:layout_marginStart="16dp"
-                    android:src="@drawable/ic_recent_files_24dp"
-                    tools:ignore="contentDescription" />
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="32dp"
+                            android:layout_marginStart="16dp"
+                            android:src="@drawable/ic_offline_24dp"
+                            tools:ignore="contentDescription" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_recent_files"
-                    android:textSize="@dimen/text_small"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/title_offline_files"
+                            android:textSize="@dimen/text_small"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
-        </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+                    <LinearLayout
+                        android:id="@+id/recent_files_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginTop="16dp">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="32dp"
+                            android:layout_marginStart="16dp"
+                            android:src="@drawable/ic_recent_files_24dp"
+                            tools:ignore="contentDescription" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/title_recent_files"
+                            android:textSize="@dimen/text_small"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
         </LinearLayout>
 
     </ViewAnimator>

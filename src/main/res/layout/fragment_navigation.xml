@@ -16,7 +16,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.amahi.anywhere.util.MultiSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_refresh"
     android:layout_width="match_parent"
@@ -102,6 +102,7 @@
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -164,4 +165,4 @@
         </LinearLayout>
 
     </ViewAnimator>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</org.amahi.anywhere.util.MultiSwipeRefreshLayout>

@@ -44,6 +44,7 @@ import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.MultiSwipeRefreshLayout;
 import org.amahi.anywhere.util.ViewDirector;
 
 import java.util.ArrayList;
@@ -67,14 +68,15 @@ public class ServerSharesFragment extends Fragment implements
 
     private LinearLayout mErrorLinearLayout;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private MultiSwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh);
+        mSwipeRefreshLayout = (MultiSwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh);
+        mSwipeRefreshLayout.setSwipeableChildren(R.id.layout_content);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
 

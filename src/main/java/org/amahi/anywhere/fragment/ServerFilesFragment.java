@@ -87,6 +87,7 @@ import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.MultiSwipeRefreshLayout;
 import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.ServerFileClickListener;
 import org.amahi.anywhere.util.ViewDirector;
@@ -693,7 +694,9 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
-        return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
+        MultiSwipeRefreshLayout multiSwipeRefreshLayout = getView().findViewById(R.id.layout_refresh);
+        multiSwipeRefreshLayout.setSwipeableChildren(R.id.layout_content);
+        return multiSwipeRefreshLayout;
     }
 
     @Subscribe

@@ -165,4 +165,7 @@
     <string name="intro_title_6">Prêt</string>
     <string name="intro_desc_6">Vous être prêt. Merci d\'utiliser Amahi.</string>
 
+    <string name="alert_delete_dialog">Supprimer le fichier</string>
+    <string name="alert_delete_confirm">Êtes-vous sûr?</string>
+
 </resources>

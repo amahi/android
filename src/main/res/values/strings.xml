@@ -164,6 +164,7 @@
     <string name="intro_desc_tv_3">Browse your photo library in your TV, fast and at amazing resolution.</string>
     <string name="intro_desc_phone_3">Browse your photo library easily, upload photos directly from your phone.</string>
 
+    <string name="intro_title_4">Play Your Music</string>
     <string name="intro_desc_tv_4">Listen to your music library in your TV, perfect for parties, or for relaxing with your favorite tunes.</string>
     <string name="intro_desc_phone_4">Listen to your music library, at home or on the road.</string>
 
@@ -173,7 +174,6 @@
 
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
-    <string name="intro_title_4">Play Your Music</string>
     <string name="title_selected_server">Server</string>
     <string name="connection">CONNECTION</string>
     <string name="shares">shares</string>
@@ -204,8 +204,7 @@
 
     <string name="alert_delete_dialog">Delete file</string>
     <string name="alert_delete_confirm">Are you sure?</string>
-
-    <string name="intro_title_4">Play your music</string>
+    
     <string name="title_selected_server">Server</string>
 
     <string name="stop_the_audio" translatable="false">"Stop the audio"</string>

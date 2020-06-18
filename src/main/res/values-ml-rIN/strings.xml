@@ -95,12 +95,6 @@
     <string name="upload_camera">ക്യാമറ ഉപയോഗിക്കുക</string>
     <string name="upload_file">ഫയൽ അപ്ലോഡുചെയ്യുക</string>
     <string name="app_title">അമാഹി ടിവി</string>
-    <string name="intent_files">INTENT_FILE</string>
-    <string name="intent_shares">ഇൻടന്റ് പങ്കിടുക</string>
-    <string name="intent_servers">INTENT_SERVERS</string>
-    <string name="preference">മുൻഗണന</string>
-    <string name="is_first_run">ഇതാണ് ഫ്രസ്റ്റ് റൂണ്</string>
-    <string name="selected_server_session">SERVER_SESSION</string>
     <string name="exit_title">പുറത്ത്</string>
     <string name="exit_message">നിങ്ങള് വിട്ടു പോകുകയാണ് എന്ന് ഉറപ്പാണോ?</string>
     <string name="yes">അതെ</string>

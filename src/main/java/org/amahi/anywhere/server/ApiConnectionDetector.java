@@ -24,6 +24,7 @@ import android.net.Uri;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerRoute;
+import org.amahi.anywhere.util.Constants;
 
 import java.io.IOException;
 import java.net.URL;
@@ -53,7 +54,7 @@ public class ApiConnectionDetector {
     }
 
     public String detect(ServerRoute serverRoute) {
-        Timber.tag(Resources.getSystem().getString(R.string.connection));
+        Timber.tag(Constants.connection);
 
         try {
             Request httpRequest = new Request.Builder()

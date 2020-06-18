@@ -1,7 +1,8 @@
 package org.amahi.anywhere.util;
 
-class Constants {
+public class Constants {
 
-    static final String isFirstRun = "isFirstRun";
-    static final String preference = "PREFERENCE";
+    public static final String isFirstRun = "isFirstRun";
+    public static final String preference = "PREFERENCE";
+    public static final String connection = "CONNECTION";
 }

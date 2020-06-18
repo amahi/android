@@ -79,11 +79,11 @@ public final class Preferences {
     }
 
     public static boolean getFirstRun(Context context) {
-        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getBoolean(context.getString(R.string.is_first_run), true);
+        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getBoolean(Constants.isFirstRun, true);
     }
 
     public static void setFirstRun(Context context) {
-        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putBoolean(context.getString(R.string.is_first_run), false).apply();
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putBoolean(Constants.isFirstRun, false).apply();
     }
 
     public static void setServerName(Context context, String serverName) {

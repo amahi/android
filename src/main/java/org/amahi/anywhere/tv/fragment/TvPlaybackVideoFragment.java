@@ -190,7 +190,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     private void setLibVlc() {
         final ArrayList<String> args = new ArrayList<>();
-        args.add("-vvv");
+        args.add(getString(R.string._vvv));
         mLibVlc = new LibVLC(getActivity(), args);
     }
 
@@ -249,9 +249,9 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         HeaderItem headerItem;
 
         if (getVideoFile().getParentFile() == null)
-            headerItem = new HeaderItem("Video(s) in " + getVideoShare().getName());
+            headerItem = new HeaderItem(getString(R.string.videos_in) + getVideoShare().getName());
         else
-            headerItem = new HeaderItem("Video(s) in " + getVideoFile().getParentFile().getName());
+            headerItem = new HeaderItem(getString(R.string.videosin) + getVideoFile().getParentFile().getName());
 
         return headerItem;
     }

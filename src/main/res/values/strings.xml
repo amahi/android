@@ -173,6 +173,34 @@
 
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
+    <string name="intro_title_4">Play Your Music</string>
+    <string name="title_selected_server">Server</string>
+    <string name="connection">CONNECTION</string>
+    <string name="shares">shares</string>
+    <string name="unknown_artist">Unknown Artist</string>
+    <string name="android_amahi_anywhere">Android Amahi Anywhere</string>
+    <string name="image_mediatype">image/*</string>
+    <string name="md5">MD5</string>
+    <string name="prepare_dialog_2">prepare_dialog</string>
+    <string name="progressdialog">progress_dialog</string>
+    <string name="prepare_dialog_3">prepare_dialog</string>
+    <string name="percent_s">%s</string>
+    <string name="text_plain">text/plain</string>
+    <string name="_vvv">-vvv</string>
+    <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
+    <string name="vvv">-vvv</string>
+    <string name="downloadstarted">DownloadStarted</string>
+    <string name="downloadprogress">DownloadProgress</string>
+    <string name="progress">progress</string>
+    <string name="downloadfinished">DownloadFinished</string>
+    <string name="success">success</string>
+    <string name="settings">Settings</string>
+    <string name="header_settings">Settings</string>
+    <string name="songs_in">Song(s) in</string>
+    <string name="songsin">Song(s) in</string>
+    <string name="videos_in">Video(s) in</string>
+    <string name="videosin">Video(s) in</string>
 
     <string name="alert_delete_dialog">Delete file</string>
     <string name="alert_delete_confirm">Are you sure?</string>

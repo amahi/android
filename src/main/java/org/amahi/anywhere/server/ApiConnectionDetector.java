@@ -19,8 +19,10 @@
 
 package org.amahi.anywhere.server;
 
+import android.content.res.Resources;
 import android.net.Uri;
 
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.model.ServerRoute;
 
 import java.io.IOException;
@@ -51,7 +53,7 @@ public class ApiConnectionDetector {
     }
 
     public String detect(ServerRoute serverRoute) {
-        Timber.tag("CONNECTION");
+        Timber.tag(Resources.getSystem().getString(R.string.connection));
 
         try {
             Request httpRequest = new Request.Builder()
@@ -75,7 +77,7 @@ public class ApiConnectionDetector {
     }
 
     private URL getConnectionUrl(String serverAddress) throws IOException {
-        return new URL(Uri.parse(serverAddress).buildUpon().appendPath("shares").build().toString());
+        return new URL(Uri.parse(serverAddress).buildUpon().appendPath(Resources.getSystem().getString(R.string.shares)).build().toString());
     }
 
     private static final class Connection {

@@ -165,7 +165,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     }
 
     private void setUpUploadDialog() {
-        uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progress_dialog");
+        uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag(getString(R.string.progressdialog));
         if (uploadDialogFragment == null) {
             uploadDialogFragment = new ProgressDialogFragment();
         }
@@ -543,7 +543,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     }
 
     private void dismissPreparingDialog() {
-        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag("prepare_dialog");
+        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag(getString(R.string.prepare_dialog_3));
         if (fragment != null && fragment.isAdded()) {
             fragment.dismiss();
         }

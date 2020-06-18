@@ -132,7 +132,7 @@
     <string name="upload_file">Upload File</string>
 
     <!--ANDROID TV RELATED STRINGS-->
-    <string name="app_title">Amahi TV</string>
+    <string name="app_title" translatable="false">Amahi TV</string>
     <string name="intent_files">INTENT_FILE</string>
     <string name="intent_shares">INTENT_SHARE</string>
     <string name="intent_servers">INTENT_SERVERS</string>

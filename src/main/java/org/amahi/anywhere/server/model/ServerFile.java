@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.util.Constants;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -147,7 +148,7 @@ public class ServerFile implements Parcelable {
     @Nullable
     public String getUniqueKey() {
         try {
-            MessageDigest md = MessageDigest.getInstance(Resources.getSystem().getString(R.string.md5));
+            MessageDigest md = MessageDigest.getInstance(Constants.MD5);
             md.update(getName().getBytes());
             md.update(getModificationTime().toString().getBytes());
             byte[] digest = md.digest();

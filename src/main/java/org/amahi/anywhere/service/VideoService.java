@@ -40,6 +40,7 @@ import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.Preferences;
@@ -91,7 +92,7 @@ public class VideoService extends Service {
 
     private void setUpVideoPlayer() {
         final ArrayList<String> args = new ArrayList<>();
-        args.add(getString(R.string.vvv));
+        args.add(Constants.videoVLCLibArg);
         mLibVLC = new LibVLC(this, args);
         mMediaPlayer = new MediaPlayer(mLibVLC);
     }

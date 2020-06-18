@@ -55,7 +55,7 @@ public class ProgressRequestBody extends RequestBody {
     @Override
     public MediaType contentType() {
         // Only for uploading images
-        return MediaType.parse(Resources.getSystem().getString(R.string.image_mediatype));
+        return MediaType.parse(Constants.imageMediaType);
     }
 
     @Override

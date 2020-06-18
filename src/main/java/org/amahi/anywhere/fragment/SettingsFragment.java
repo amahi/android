@@ -48,6 +48,7 @@ import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Preferences;
@@ -110,7 +111,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     private String getServerConnectionSummary() {
         ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
 
-        return String.format(getString(R.string.percent_s), serverConnection.getEntry());
+        return String.format("%s", serverConnection.getEntry());
     }
 
     private Preference getPreference(int id) {
@@ -258,7 +259,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
         sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message));
-        sendIntent.setType(getString(R.string.text_plain));
+        sendIntent.setType(Constants.emailTextPlainType);
         startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
     }
 

@@ -78,7 +78,7 @@ public class ApiConnectionDetector {
     }
 
     private URL getConnectionUrl(String serverAddress) throws IOException {
-        return new URL(Uri.parse(serverAddress).buildUpon().appendPath(Resources.getSystem().getString(R.string.shares)).build().toString());
+        return new URL(Uri.parse(serverAddress).buildUpon().appendPath(Constants.sharesPathAppendLoc).build().toString());
     }
 
     private static final class Connection {

@@ -168,6 +168,8 @@
     <string name="intro_title_6">Ready</string>
     <string name="intro_desc_6">You\'re all set to go. Thanks for using Amahi.</string>
 
+    <string name="introducing_cast">Introducing Cast</string>
+
     <string name="unknown_artist">Unknown Artist</string>
     <string name="android_amahi_anywhere">Android Amahi Anywhere</string>
     <string name="enable">Enable</string>

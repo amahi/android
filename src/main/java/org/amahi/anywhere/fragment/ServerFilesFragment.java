@@ -194,7 +194,7 @@ public class ServerFilesFragment extends Fragment implements
             new Handler().post(() -> {
                 mIntroductoryOverlay = new IntroductoryOverlay
                     .Builder(getActivity(), mediaRouteMenuItem)
-                    .setTitleText(R.string.introducingcast)
+                    .setTitleText(R.string.introducing_cast)
                     .setSingleTime()
                     .setOnOverlayDismissedListener(
                         () -> mIntroductoryOverlay = null)

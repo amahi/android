@@ -59,7 +59,7 @@ public final class Preferences {
     }
 
     public static SharedPreferences getPreference(Context context) {
-        return context.getSharedPreferences(context.getString(R.string.preference), Context.MODE_PRIVATE);
+        return context.getSharedPreferences(Constants.preference, Context.MODE_PRIVATE);
     }
 
     public static void setLight(Context context, SharedPreferences preferences) {
@@ -79,19 +79,19 @@ public final class Preferences {
     }
 
     public static boolean getFirstRun(Context context) {
-        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getBoolean(Constants.isFirstRun, true);
+        return context.getSharedPreferences(Constants.preference, MODE_PRIVATE).getBoolean(Constants.isFirstRun, true);
     }
 
     public static void setFirstRun(Context context) {
-        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putBoolean(Constants.isFirstRun, false).apply();
+        context.getSharedPreferences(Constants.preference, MODE_PRIVATE).edit().putBoolean(Constants.isFirstRun, false).apply();
     }
 
     public static void setServerName(Context context, String serverName) {
-        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.pref_server_select_key), serverName).apply();
+        context.getSharedPreferences(Constants.preference, MODE_PRIVATE).edit().putString(context.getString(R.string.pref_server_select_key), serverName).apply();
     }
 
     public static String getServerName(Context context) {
-        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.pref_server_select_key), null);
+        return context.getSharedPreferences(Constants.preference, MODE_PRIVATE).getString(context.getString(R.string.pref_server_select_key), null);
     }
 
     public static Preferences ofCookie(Context context) {

@@ -133,8 +133,6 @@
 
     <!--ANDROID TV RELATED STRINGS-->
     <string name="app_title" translatable="false">Amahi TV</string>
-    <string name="preference">PREFERENCE</string>
-    <string name="is_first_run">isFirstRun</string>
     <string name="exit_title">Exit</string>
     <string name="exit_message">Are you sure you want to quit?</string>
     <string name="sign_out_title">Sign Out</string>

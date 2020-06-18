@@ -99,8 +99,8 @@
     <string name="message_notice_check_settings">अपनी सेटिंग जांचें और पुनः प्रयास करें</string>
     <string name="message_notice_create_some">कुछ बनाएं और फिर से प्रयास करें</string>
     <string name="message_notice_visit_some">कुछ पर जाएँ और फिर कोशिश करें</string>
-    <string name="message_progress_file_downloading">फ़ाइल डाउनलोड हो रही है ...</string>
-    <string name="message_progress_file_preparing">फ़ाइल तैयार कर रहा है ...</string>
+    <string name="message_progress_file_downloading">फ़ाइल डाउनलोड हो रही है&#8230;</string>
+    <string name="message_progress_file_preparing">फ़ाइल तैयार कर रहा है&#8230;</string>
     <string name="message_no_files">डाउनलोड की गई फाइलें यहां दिखाई देती हैं</string>
     <string name="message_create_and_try_again">डाउनलोड करने के लिए फ़ाइलें खोजें</string>
     <string name="message_connection_error">कनेक्शन त्रुटि</string>

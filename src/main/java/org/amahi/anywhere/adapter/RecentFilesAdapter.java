@@ -1,11 +1,15 @@
 package org.amahi.anywhere.adapter;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.Layout;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +29,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.RecyclerViewAnimation;
 import org.amahi.anywhere.util.ServerFileClickListener;
 
 import java.text.SimpleDateFormat;
@@ -37,7 +42,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
     private Context context;
     private ServerFileClickListener mListener;
     private List<RecentFile> recentFiles;
-
+    private RecyclerViewAnimation recyclerViewAnimation;
     public RecentFilesAdapter(Context context, List<RecentFile> recentFiles) {
         this.context = context;
         this.recentFiles = recentFiles;
@@ -85,9 +90,23 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
     }
 
     private void setUpViewHolderListeners(RecentFilesViewHolder fileHolder) {
-        fileHolder.itemView.setOnClickListener(view -> mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition()));
 
-        fileHolder.moreOptions.setOnClickListener(view -> mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition()));
+        fileHolder.moreOptions.setOnClickListener(view -> {
+            mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
+        });
+
+        setAnimation(fileHolder.itemView,fileHolder.getAdapterPosition());
+    }
+
+
+    private int lastPosition = -1;
+
+    private void setAnimation(View view,int position) {
+        if (position > lastPosition) {
+            recyclerViewAnimation = new RecyclerViewAnimation();
+            recyclerViewAnimation.animateFadeIn(view);
+            lastPosition = position;
+        }
     }
 
     private void setImageIcon(RecentFile file, ImageView fileIconView) {

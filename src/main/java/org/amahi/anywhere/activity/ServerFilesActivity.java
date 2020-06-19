@@ -40,6 +40,8 @@ import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
@@ -153,6 +155,12 @@ public class ServerFilesActivity extends AppCompatActivity implements
         setUpUploadDialog();
         setUpFilesFragment();
         setUpFilesState(state);
+    }
+
+    public void setUpAnimation(View itemView, Context context) {
+        Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
+        itemView.startAnimation(animation);
+
     }
 
     private void setUpFilesTitle() {

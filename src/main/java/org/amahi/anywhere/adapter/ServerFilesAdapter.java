@@ -35,6 +35,8 @@ import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -43,6 +45,7 @@ import android.widget.TextView;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.OfflineFile;
@@ -269,6 +272,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         TextView fileTextView, fileSize, fileLastModified;
         LinearLayout moreInfo;
         ProgressBar progressBar;
+        ServerFilesActivity serverFilesActivity = new ServerFilesActivity();
 
         ServerFileViewHolder(View itemView) {
             super(itemView);
@@ -280,6 +284,9 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             moreOptions = itemView.findViewById(R.id.more_options);
             progressBar = itemView.findViewById(R.id.download_progress_bar);
             rightArrow = itemView.findViewById(R.id.right_arrow);
+
+            serverFilesActivity.setUpAnimation(itemView, context);
+
         }
     }
 

@@ -14,6 +14,8 @@ import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +26,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.RecentFile;
@@ -159,6 +162,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         ImageView fileIconView, moreOptions;
         TextView fileTextView, fileSize, fileLastVisited;
         LinearLayout moreInfo;
+        ServerFilesActivity serverFilesActivity = new ServerFilesActivity();
 
         RecentFilesViewHolder(View itemView) {
             super(itemView);
@@ -168,6 +172,9 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
             fileLastVisited = itemView.findViewById(R.id.last_modified);
             moreInfo = itemView.findViewById(R.id.more_info);
             moreOptions = itemView.findViewById(R.id.more_options);
+
+            serverFilesActivity.setUpAnimation(itemView, context);
+
         }
     }
 }

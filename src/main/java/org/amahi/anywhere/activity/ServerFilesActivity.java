@@ -157,12 +157,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
         setUpFilesState(state);
     }
 
-    public void setUpAnimation(View itemView, Context context) {
-        Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
-        itemView.startAnimation(animation);
-
-    }
-
     private void setUpFilesTitle() {
         getSupportActionBar().setTitle(getShare().getName());
     }

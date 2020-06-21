@@ -266,13 +266,6 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             moreOptions = itemView.findViewById(R.id.more_options);
             progressBar = itemView.findViewById(R.id.download_progress_bar);
             rightArrow = itemView.findViewById(R.id.right_arrow);
-
-            setUpAnimation(itemView, context);
-        }
-
-        private void setUpAnimation(View itemView, Context context) {
-            Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
-            itemView.startAnimation(animation);
         }
     }
 

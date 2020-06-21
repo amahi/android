@@ -150,13 +150,6 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
             fileLastVisited = itemView.findViewById(R.id.last_modified);
             moreInfo = itemView.findViewById(R.id.more_info);
             moreOptions = itemView.findViewById(R.id.more_options);
-
-            setUpAnimation(itemView, context);
-        }
-
-        private void setUpAnimation(View itemView, Context context) {
-            Animation animation = AnimationUtils.loadAnimation(context, R.anim.fade_in);
-            itemView.startAnimation(animation);
         }
     }
 }

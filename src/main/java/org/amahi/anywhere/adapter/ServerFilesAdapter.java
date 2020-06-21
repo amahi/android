@@ -43,7 +43,6 @@ import android.widget.TextView;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.OfflineFile;

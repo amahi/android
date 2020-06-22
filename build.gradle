@@ -77,6 +77,10 @@ android {
         release {
             signingConfig signingConfigs.release
         }
+
+        dev {
+            signingConfig signingConfigs.debug
+        }
     }
 
     android {
@@ -87,6 +91,26 @@ android {
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
+    }
+}
+
+//Note: Here we are checking if it's the dev build environment which is invoked in Travis
+
+def build_param = "${build}";
+
+if (build_param != "dev") {
+    //exclude production build
+    android.variantFilter { variant ->
+        if (variant.buildType.name.equals('dev')) {
+            variant.setIgnore(true);
+        }
+    }
+} else {
+    //exclude all except production build
+    android.variantFilter { variant ->
+        if (!variant.buildType.name.equals('dev')) {
+            variant.setIgnore(true);
+        }
     }
 }
 

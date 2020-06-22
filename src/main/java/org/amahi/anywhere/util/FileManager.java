@@ -2,6 +2,8 @@ package org.amahi.anywhere.util;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
+
 import androidx.core.content.FileProvider;
 
 import org.amahi.anywhere.bus.BusProvider;
@@ -15,8 +17,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import io.fabric.sdk.android.services.concurrency.AsyncTask;
 
 public class FileManager {
 

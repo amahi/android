@@ -192,10 +192,6 @@
             android:name=".job.NetConnectivityJob"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="d7b65346d3cf0028328f006bff447501d70f8996" />
-
         <activity
             android:name=".activity.WebViewActivity"
             android:label="@string/title_version_settings" />

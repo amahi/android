@@ -30,13 +30,12 @@ import android.preference.PreferenceManager;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.crashlytics.android.Crashlytics;
 
 import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.job.PhotosContentJob;
 
 import dagger.ObjectGraph;
-import io.fabric.sdk.android.Fabric;
+
 import timber.log.Timber;
 
 /**
@@ -67,7 +66,7 @@ public class AmahiApplication extends Application {
 
         instance = this;
         setUpLogging();
-        setUpReporting();
+//        setUpReporting();
         setUpDetecting();
 
         setUpInjections();
@@ -111,11 +110,11 @@ public class AmahiApplication extends Application {
         return BuildConfig.DEBUG;
     }
 
-    private void setUpReporting() {
-        if (!isDebugging()) {
-            Fabric.with(this, new Crashlytics());
-        }
-    }
+//    private void setUpReporting() {
+//        if (!isDebugging()) {
+//            // Can disable Crashlytics for Debug Mode
+//        }
+//    }
 
     private void setUpDetecting() {
         if (isDebugging()) {

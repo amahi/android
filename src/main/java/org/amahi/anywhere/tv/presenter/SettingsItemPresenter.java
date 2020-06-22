@@ -80,7 +80,7 @@ public class SettingsItemPresenter extends Presenter {
             if (settingsText.matches(mContext.getString(R.string.pref_title_server_select))) {
                 Intent intent = new Intent(mContext, SettingsActivity.class);
                 intent.putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.pref_title_server_select));
-                intent.putParcelableArrayListExtra(mContext.getString(R.string.intent_servers), serverArrayList);
+                intent.putParcelableArrayListExtra("INTENT_SERVERS", serverArrayList);
                 mContext.startActivity(intent);
             }
 

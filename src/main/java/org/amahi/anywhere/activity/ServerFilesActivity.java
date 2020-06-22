@@ -76,6 +76,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
@@ -166,7 +167,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     }
 
     private void setUpUploadDialog() {
-        uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progress_dialog");
+        uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag(Constants.progressDialogFragment);
         if (uploadDialogFragment == null) {
             uploadDialogFragment = new ProgressDialogFragment();
         }
@@ -544,7 +545,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     }
 
     private void dismissPreparingDialog() {
-        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag("prepare_dialog");
+        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag(Constants.prepareDialogFragment);
         if (fragment != null && fragment.isAdded()) {
             fragment.dismiss();
         }

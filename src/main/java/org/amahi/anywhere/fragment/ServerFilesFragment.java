@@ -32,6 +32,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -787,6 +788,7 @@ public class ServerFilesFragment extends Fragment implements
 
         searchMenuItem = menu.findItem(R.id.menu_search);
         searchView = (SearchView) searchMenuItem.getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
 
         if (searchQuery != null) {
             searchMenuItem.expandActionView();
@@ -967,7 +969,9 @@ public class ServerFilesFragment extends Fragment implements
 
     private void tearDownFilesState(Bundle state) {
         if (areFilesLoaded()) {
-            state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFiles()));
+            if(state!=null) {
+                state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFiles()));
+            }
         }
     }
 

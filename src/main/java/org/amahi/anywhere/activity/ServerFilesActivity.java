@@ -40,6 +40,7 @@ import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
@@ -595,6 +596,9 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
         if (mCastContext.getCastState() != CastState.CONNECTED) {
             setUpAudioServiceBind();
+        } else {
+            getAudioController().getView().setVisibility(View.GONE);
+            getFrameLayout().setVisibility(View.VISIBLE);
         }
     }
 
@@ -629,7 +633,12 @@ public class ServerFilesActivity extends AppCompatActivity implements
         return (AudioControllerFragment) getSupportFragmentManager().findFragmentById(R.id.audio_controller_fragment);
     }
 
+    private FrameLayout getFrameLayout() {
+        return (FrameLayout) findViewById(R.id.controller);
+    }
+
     private void showAudioControls() {
+        getFrameLayout().setVisibility(View.VISIBLE);
         getSupportFragmentManager().beginTransaction()
             .show(getAudioController())
             .commit();

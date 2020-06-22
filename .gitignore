@@ -19,7 +19,7 @@ com_crashlytics_export_strings.xml
 fabric.properties
 
 #Firebase
-google-services.json
+/google-services.json
 
 # Key
 signing.properties

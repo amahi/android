@@ -18,6 +18,9 @@ crashlytics-build.properties
 com_crashlytics_export_strings.xml
 fabric.properties
 
+#Firebase
+google-services.json
+
 # Key
 signing.properties
 amahi-release-key.keystore

@@ -176,10 +176,11 @@ dependencies {
     androidTestImplementation "androidx.annotation:annotation:${SUPPORT_LIBRARY_VERSION}"
 
 //    Dagger
-    implementation 'com.squareup.dagger:dagger:1.2.5'
-    compileOnly 'com.squareup.dagger:dagger-compiler:1.2.5'
-    annotationProcessor 'com.squareup.dagger:dagger-compiler:1.2.5'
-
+    def DAGGER_VERSION=2.27
+    implementation "com.google.dagger:dagger:${DAGGER_VERSION}"
+    implementation "com.google.dagger:dagger-android-support:${DAGGER_VERSION}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${DAGGER_VERSION}"
+    annotationProcessor "com.google.dagger:dagger-android-processor:${DAGGER_VERSION}"
 
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
     implementation 'com.google.android.exoplayer:exoplayer-core:2.7.3'

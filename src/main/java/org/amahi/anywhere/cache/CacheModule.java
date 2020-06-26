@@ -22,14 +22,17 @@ package org.amahi.anywhere.cache;
 import android.content.Context;
 
 import javax.inject.Singleton;
+import javax.inject.Singleton2;
 
 import dagger.Module;
+import dagger.Module2;
 import dagger.Provides;
 
 /**
  * Cache dependency injection module.
  * Provides Singleton {@link CacheManager} for possible consumers.
  */
+@Module2
 @Module(
     complete = false,
     library = true
@@ -37,6 +40,7 @@ import dagger.Provides;
 public class CacheModule {
     @Provides
     @Singleton
+    @Singleton2
     CacheManager provideCacheManager(Context context) {
         return new CacheManager(context);
     }

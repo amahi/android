@@ -41,12 +41,14 @@ import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.inject.Singleton2;
 
 /**
  * File downloader. Uses system {@link android.app.DownloadManager}
  * for downloads placing and cancelling.
  */
 @Singleton
+@Singleton2
 public class Downloader extends BroadcastReceiver {
     public static final String OFFLINE_PATH = "offline_files";
     private final Context context;

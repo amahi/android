@@ -21,6 +21,7 @@ package org.amahi.anywhere.server;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.inject.Singleton2;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Converter.Factory;
@@ -32,6 +33,7 @@ import retrofit2.Retrofit;
  * dependency injection provided components.
  */
 @Singleton
+@Singleton2
 public class ApiAdapter {
     private final Retrofit.Builder apiBuilder;
 

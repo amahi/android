@@ -61,6 +61,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.inject.Singleton2;
 
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
@@ -75,6 +76,7 @@ import static org.amahi.anywhere.util.Android.loadServersFromAsset;
  * {@link org.amahi.anywhere.server.api.ServerApi}. Reacts to network connection changes as well.
  */
 @Singleton
+@Singleton2
 public class ServerClient {
     private final ApiAdapter apiAdapter;
     private final ProxyApi proxyApi;

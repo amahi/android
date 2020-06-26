@@ -28,8 +28,10 @@ import org.amahi.anywhere.BuildConfig;
 import org.amahi.anywhere.util.Time;
 
 import javax.inject.Singleton;
+import javax.inject.Singleton2;
 
 import dagger.Module;
+import dagger.Module2;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -40,7 +42,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * API dependency injection module. Provides resources such as HTTP client and JSON converter
  * for possible consumers.
  */
-
+@Module2
 @Module(
     complete = false,
     library = true
@@ -57,6 +59,7 @@ public class ApiModule {
 
     @Provides
     @Singleton
+    @Singleton2
     OkHttpClient provideHttpClient(ApiHeaders headers, HttpLoggingInterceptor logging) {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
 
@@ -68,6 +71,7 @@ public class ApiModule {
 
     @Provides
     @Singleton
+    @Singleton2
     ApiHeaders provideHeaders(Context context) {
         return new ApiHeaders(context);
     }
@@ -85,18 +89,21 @@ public class ApiModule {
 */
     @Provides
     @Singleton
+    @Singleton2
     Converter.Factory provideJsonConverterFactory(Gson json) {
         return GsonConverterFactory.create(json);
     }
 
     @Provides
     @Singleton
+    @Singleton2
     Gson provideJson() {
         return new GsonBuilder().setDateFormat(Time.Format.RFC_1123).create();
     }
 
     @Provides
     @Singleton
+    @Singleton2
     HttpLoggingInterceptor provideLogging() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
 

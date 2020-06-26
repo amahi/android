@@ -60,14 +60,20 @@ import org.amahi.anywhere.tv.fragment.TvPlaybackVideoFragment;
 import org.amahi.anywhere.util.UploadManager;
 
 import javax.inject.Singleton;
+import javax.inject.Singleton2;
 
 import dagger.Module;
+import dagger.Module2;
 import dagger.Provides;
 
 /**
  * Application dependency injection module. Includes {@link org.amahi.anywhere.server.ApiModule} and
  * provides application's {@link android.content.Context} for possible consumers.
  */
+@Module2(includes = {
+    ApiModule.class,
+    CacheModule.class
+})
 @Module(
     includes = {
         ApiModule.class,
@@ -119,6 +125,7 @@ class AmahiModule {
 
     @Provides
     @Singleton
+    @Singleton2
     Context provideContext() {
         return application;
     }

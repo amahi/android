@@ -29,11 +29,13 @@ import org.amahi.anywhere.server.response.ServersResponse;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.inject.Singleton2;
 
 /**
  * Amahi API implementation. Wraps {@link org.amahi.anywhere.server.api.AmahiApi}.
  */
 @Singleton
+@Singleton2
 public class AmahiClient {
     private final AmahiApi api;
 

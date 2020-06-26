@@ -194,6 +194,9 @@ dependencies {
     betaReleaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 */
 
+    // Firebase
+    implementation 'com.google.firebase:firebase-crashlytics:17.1.0'
+
 }
 
 task generateWrapper(type: Wrapper) {

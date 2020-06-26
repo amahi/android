@@ -31,6 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.VideoView;
 
 import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaLoadOptions;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
@@ -347,7 +348,15 @@ public class NativeVideoActivity extends AppCompatActivity implements
 
             }
         });
-        remoteMediaClient.load(buildMediaInfo(), autoPlay, position);
+
+        remoteMediaClient.load(buildMediaInfo(), buildMediaLoadOptions(autoPlay, position));
+    }
+
+    private MediaLoadOptions buildMediaLoadOptions(boolean autoPlay, int position) {
+        return new MediaLoadOptions.Builder()
+            .setAutoplay(autoPlay)
+            .setPlayPosition(position)
+            .build();
     }
 
     private MediaInfo buildMediaInfo() {

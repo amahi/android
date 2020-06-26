@@ -151,7 +151,7 @@ dependencies {
     implementation "androidx.mediarouter:mediarouter:${SUPPORT_LIBRARY_VERSION}"
     implementation "androidx.media:media:${SUPPORT_LIBRARY_VERSION}"
     implementation "androidx.cardview:cardview:${SUPPORT_LIBRARY_VERSION}"
-    implementation 'com.google.android.gms:play-services-cast-framework:11.6.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:18.1.0'
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
     implementation 'com.jakewharton.timber:timber:4.5.1'

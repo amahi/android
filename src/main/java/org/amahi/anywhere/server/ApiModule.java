@@ -42,11 +42,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * API dependency injection module. Provides resources such as HTTP client and JSON converter
  * for possible consumers.
  */
-@Module2
 @Module(
     complete = false,
     library = true
 )
+@Module2
 public class ApiModule {
 
     /**

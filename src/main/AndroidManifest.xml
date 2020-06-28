@@ -97,6 +97,12 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        <service android:name=".activity.ServerFilesActivity"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService"/>
+            </intent-filter>
+        </service>
         <activity
             android:name=".activity.ServerFileAudioActivity"
             android:launchMode="singleTop"

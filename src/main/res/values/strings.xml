@@ -19,6 +19,8 @@
 
 <resources>
 
+<!--    Please update the Strings here: https://docs.google.com/spreadsheets/d/1NAl8xWGDRj6MmLHKyESONAAyudOHdFnSbaqF1Pr28sE/edit?usp=sharing-->
+
     <string name="application_name" translatable="false">Amahi</string>
 
     <string name="title_apps">Apps</string>

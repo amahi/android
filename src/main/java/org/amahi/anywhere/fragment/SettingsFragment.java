@@ -51,6 +51,7 @@ import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 
 import java.util.Arrays;
@@ -237,6 +238,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
             getAccountManager().removeAccount(account, this, null);
         } else {
+            Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
             tearDownActivity();
         }
     }
@@ -251,11 +253,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     @Override
     public void run(AccountManagerFuture<Boolean> accountManagerFuture) {
+        Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
         tearDownActivity();
     }
 
     private void tearDownActivity() {
-        Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
         Intent myIntent = new Intent(getActivity().getApplicationContext(), NavigationActivity.class);
         myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(myIntent);
@@ -301,8 +303,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
             setUpServerConnection();
         } else if (key.equals(getString(R.string.language_setting_key))) {
+            setUpSettingsSummary();
 
+            setUpLanguage();
         }
+    }
+
+    private void setUpLanguage() {
+        Toast.makeText(getActivity(), LocaleHelper.getLanguage(getContext()), Toast.LENGTH_SHORT).show();
+        LocaleHelper.setLocale(getContext(), getLanguage());
+        tearDownActivity();
+    }
+
+    private String getLanguage() {
+        ListPreference language = (ListPreference) getPreference(R.string.language_setting_key);
+
+        return language.getValue();
     }
 
     private void setUpServerConnection() {

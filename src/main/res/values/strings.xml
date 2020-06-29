@@ -198,6 +198,24 @@
     <string name="download_channel" translatable="false">File Download</string>
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
 
+<!--    Settings-->
+    <string name="general_setting">General</string>
+    <string name="language_setting">Language</string>
+    <string name="language_setting_key" translatable="false">language</string>
+    <string name="language_en">English</string>
+    <string name="language_fr">French</string>
+    <string name="language_en_key" translatable="false">en</string>
+    <string name="lanugage_fr_key" translatable="false">fr</string>
+
+    <string-array name="preference_entries_language" translatable="false">
+        <item>@string/language_en</item>
+        <item>@string/language_fr</item>
+    </string-array>
+
+    <string-array name="preference_entries_keys_language" translatable="false">
+        <item>en</item>
+        <item>fr</item>
+    </string-array>
 
 
 </resources>

@@ -18,7 +18,7 @@ Use the Sheet and create a xml file for a particular column and corresponding ke
 </string>
 ```
 2. Add `language_hi` key in every strings file.
-3. Add the new language to the strings array in `strings.xml (en)`
+3. Add the new language to the strings array in `strings.xml (en)`. This step has to be performed in the English file only.
 ```xml
 <string>
     <string-array name="preference_entries_language" translatable="false">
@@ -30,5 +30,4 @@ Use the Sheet and create a xml file for a particular column and corresponding ke
     </string-array>
 </string>
 ```
-This step has to be performed in the English file only.
 4. Create a PR with a reference to the Issue [#548](https://github.com/amahi/android/issues/548)

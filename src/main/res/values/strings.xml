@@ -54,7 +54,7 @@
     <string name="menu_audio_files">Files</string>
     <string name="menu_video_subtitle">Subtitles</string>
 
-    <string name="media_route_menu_item">cast</string>
+    <string name="media_route_menu_item" translatable="false">cast</string>
 
     <string name="message_empty_apps">No Apps</string>
     <string name="message_empty_files">No Files</string>
@@ -171,7 +171,7 @@
     <string name="introducing_cast">Introducing Cast</string>
 
     <string name="unknown_artist">Unknown Artist</string>
-    <string name="android_amahi_anywhere">Android Amahi Anywhere</string>
+    <string name="android_amahi_anywhere" translatable="false">Android Amahi Anywhere</string>
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="settings">Settings</string>
@@ -198,14 +198,78 @@
     <string name="download_channel" translatable="false">File Download</string>
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
 
-<!--    Settings-->
-    <string name="general_setting">General</string>
-    <string name="language_setting">Language</string>
-    <string name="language_setting_key" translatable="false">language</string>
+<!--    Languages-->
+
     <string name="language_en">English</string>
     <string name="language_fr">French</string>
     <string name="language_en_key" translatable="false">en</string>
-    <string name="lanugage_fr_key" translatable="false">fr</string>
+    <string name="language_fr_key" translatable="false">fr</string>
+
+<!--    Preferences-->
+
+    <string name="preference_category_about">About</string>
+    <string name="preference_category_account">Account</string>
+    <string name="preference_category_settings">Settings</string>
+    <string name="preference_category_upload">Auto Upload</string>
+    <string name="preference_category_general">General</string>
+
+    <string name="preference_title_about_feedback">Feedback</string>
+    <string name="preference_title_about_rating">Rate</string>
+    <string name="preference_title_about_version">Version</string>
+    <string name="preference_title_about_intro">Intro</string>
+    <string name="preference_title_account_sign_out">Sign out</string>
+    <string name="preference_title_server_connection">Connection</string>
+    <string name="preference_title_tell_a_friend">Tell a friend</string>
+    <string name="preference_title_upload_settings">Auto Upload Photos</string>
+    <string name="preference_title_language">Language</string>
+
+    <string name="preference_title_upload_server">Server</string>
+    <string name="preference_title_upload_share">Share</string>
+    <string name="preference_title_upload_location">Location</string>
+    <string name="preference_title_upload_data">Allow on Cellular Data</string>
+
+    <string name="preference_summary_server">Select Server</string>
+    <string name="preference_summary_share">Select Share</string>
+    <string name="preference_summary_location">Select Location</string>
+
+    <string name="preference_message_no_server">"No Server is selected"</string>
+    <string name="preference_message_no_share">"No Share is selected"</string>
+
+    <string name="preference_entry_server_connection_auto">Autodetect</string>
+    <string name="preference_entry_server_connection_remote">Remote</string>
+    <string name="preference_entry_server_connection_local">LAN</string>
+
+    <string name="preference_key_about_feedback" translatable="false">application_feedback</string>
+    <string name="preference_key_about_rating" translatable="false">application_rating</string>
+    <string name="preference_key_about_version" translatable="false">application_version</string>
+    <string name="preference_key_about_intro" translatable="false">application_intro</string>
+    <string name="preference_key_account_sign_out" translatable="false">account_sign_out</string>
+    <string name="preference_key_server_connection" translatable="false">server_connection</string>
+    <string name="preference_key_server_connection_auto" translatable="false">auto</string>
+    <string name="preference_key_server_connection_remote" translatable="false">remote</string>
+    <string name="preference_key_server_connection_local" translatable="false">local</string>
+    <string name="preference_key_tell_a_friend" translatable="false">tell_a_friend</string>
+    <string name="preference_screen_key_upload" translatable="false">auto_upload_screen</string>
+
+    <string name="preference_key_language" translatable="false">language</string>
+
+    <string name="preference_key_upload_switch" translatable="false">auto_upload_switch</string>
+    <string name="preference_key_upload_server" translatable="false">auto_upload_server</string>
+    <string name="preference_key_upload_share" translatable="false">auto_upload_share</string>
+    <string name="preference_key_upload_location" translatable="false">auto_upload_location</string>
+    <string name="preference_key_upload_data" translatable="false">auto_upload_data</string>
+
+    <string-array name="preference_entries_server_connection" translatable="false">
+        <item>@string/preference_entry_server_connection_auto</item>
+        <item>@string/preference_entry_server_connection_remote</item>
+        <item>@string/preference_entry_server_connection_local</item>
+    </string-array>
+
+    <string-array name="preference_entries_keys_server_connection" translatable="false">
+        <item>@string/preference_key_server_connection_auto</item>
+        <item>@string/preference_key_server_connection_remote</item>
+        <item>@string/preference_key_server_connection_local</item>
+    </string-array>
 
     <string-array name="preference_entries_language" translatable="false">
         <item>@string/language_en</item>
@@ -213,9 +277,43 @@
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
-        <item>en</item>
-        <item>fr</item>
+        <item>@string/language_en_key</item>
+        <item>@string/language_fr_key</item>
     </string-array>
 
+    <!-- String related to server selection preference-->
+    <string name="pref_title_server_select">Select server</string>
+    <string name="pref_title_server_select_desc">Choose the server whose shares you want to access.</string>
+    <string name="pref_title_server_active_list">List of active servers</string>
+    <string name="pref_server_active_list_desc">Choose the active server whose shares you want to access.</string>
+    <string name="pref_server_select_key" translatable="false">select_server</string>
+
+    <!-- Strings related to SignOut Preference-->
+    <string name="pref_title_sign_out">Sign out</string>
+    <string name="pref_title_account">Account</string>
+    <string name="pref_sign_out_desc">Sign out from Amahi TV</string>
+    <string name="pref_action_not_defined">Action is not defined</string>
+
+    <!--Strings related to Theme Preference -->
+    <string name="pref_title_light_theme">Light Theme</string>
+    <string name="pref_key_light_theme" translatable="false">light_theme_enabled</string>
+
+    <!--Strings related to TV Theme Preference -->
+    <string name="pref_key_theme" translatable="false">theme selected</string>
+    <string name="pref_title_select_theme">Select theme</string>
+    <string name="pref_title_theme">Theme</string>
+    <string name="pref_theme_desc">Select from Light or Dark</string>
+    <string name="pref_theme_detail_desc">Select the type of connection you want. You can set it as Amahi Light or Amahi Dark</string>
+    <string name="pref_theme_light">Amahi light</string>
+    <string name="pref_theme_dark">Amahi dark</string>
+
+    <!--Strings related to Connection Preference -->
+    <string name="pref_title_connection">Connection</string>
+    <string name="pref_connection_detail">Select from Autodetect, Remote or LAN.</string>
+    <string name="pref_option_autodetect">Autodetect</string>
+    <string name="pref_option_lan">Local area network</string>
+    <string name="pref_option_remote">Remote</string>
+    <string name="pref_option_go_back">Go back</string>
+    <string name="pref_connection_desc">Select the type of connection you want. You can set it as Auto detect, remote or local area network.</string>
 
 </resources>

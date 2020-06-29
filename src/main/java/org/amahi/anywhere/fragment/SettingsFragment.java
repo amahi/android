@@ -101,7 +101,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     private void setUpSettingsSummary() {
         ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
-        ListPreference language = (ListPreference) getPreference(R.string.language_setting_key);
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
         Preference applicationVersion = getPreference(R.string.preference_key_about_version);
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
@@ -112,7 +112,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private String getLanguageSummary() {
-        ListPreference language = (ListPreference) getPreference(R.string.language_setting_key);
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
 
         return String.format("%s", language.getEntry());
     }
@@ -302,7 +302,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             setUpSettingsSummary();
 
             setUpServerConnection();
-        } else if (key.equals(getString(R.string.language_setting_key))) {
+        } else if (key.equals(getString(R.string.preference_key_language))) {
             setUpSettingsSummary();
 
             setUpLanguage();
@@ -315,7 +315,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private String getLanguage() {
-        ListPreference language = (ListPreference) getPreference(R.string.language_setting_key);
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
 
         return language.getValue();
     }

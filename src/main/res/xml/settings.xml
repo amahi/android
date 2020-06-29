@@ -27,14 +27,14 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/general_setting">
+    <PreferenceCategory android:title="@string/preference_category_general">
 
         <ListPreference
             android:defaultValue="@string/language_en_key"
             android:entries="@array/preference_entries_language"
             android:entryValues="@array/preference_entries_keys_language"
-            android:key="@string/language_setting_key"
-            android:title="@string/language_setting" />
+            android:key="@string/preference_key_language"
+            android:title="@string/preference_title_language" />
 
     </PreferenceCategory>
 

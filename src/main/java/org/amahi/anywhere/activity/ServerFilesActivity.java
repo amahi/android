@@ -51,6 +51,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
@@ -86,6 +87,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
@@ -192,7 +194,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
 
     private void setUpUploadDialog() {
-        uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progress_dialog");
+        uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag(Constants.progressDialogFragment);
         if (uploadDialogFragment == null) {
             uploadDialogFragment = new ProgressDialogFragment();
         }
@@ -675,7 +677,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     }
 
     private void dismissPreparingDialog() {
-        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag("prepare_dialog");
+        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag(Constants.prepareDialogFragment);
         if (fragment != null && fragment.isAdded()) {
             fragment.dismiss();
         }
@@ -727,6 +729,9 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
         if (mCastContext.getCastState() != CastState.CONNECTED) {
             setUpAudioServiceBind();
+        } else {
+            getAudioController().getView().setVisibility(View.GONE);
+            getFrameLayout().setVisibility(View.VISIBLE);
         }
     }
 
@@ -761,7 +766,12 @@ public class ServerFilesActivity extends AppCompatActivity implements
         return (AudioControllerFragment) getSupportFragmentManager().findFragmentById(R.id.audio_controller_fragment);
     }
 
+    private FrameLayout getFrameLayout() {
+        return (FrameLayout) findViewById(R.id.controller);
+    }
+
     private void showAudioControls() {
+        getFrameLayout().setVisibility(View.VISIBLE);
         getSupportFragmentManager().beginTransaction()
             .show(getAudioController())
             .commit();

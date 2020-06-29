@@ -32,6 +32,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -132,6 +133,7 @@ public class ServerFilesFragment extends Fragment implements
     private ProgressDialog deleteProgressDialog;
     private int deleteFilePosition;
     private int lastSelectedFilePosition = -1;
+    private CharSequence searchQuery = null;
 
     @Types
     private int filesSort = SORT_MODIFICATION_TIME;
@@ -149,6 +151,11 @@ public class ServerFilesFragment extends Fragment implements
             rootView = layoutInflater.inflate(R.layout.fragment_server_files_metadata, container, false);
         }
         mErrorLinearLayout = rootView.findViewById(R.id.error);
+
+        if (savedInstanceState != null) {
+            searchQuery = savedInstanceState.getCharSequence(State.SEARCH_QUERY);
+        }
+
         return rootView;
     }
 
@@ -188,7 +195,7 @@ public class ServerFilesFragment extends Fragment implements
             new Handler().post(() -> {
                 mIntroductoryOverlay = new IntroductoryOverlay
                     .Builder(getActivity(), mediaRouteMenuItem)
-                    .setTitleText("Introducing Cast")
+                    .setTitleText(R.string.introducing_cast)
                     .setSingleTime()
                     .setOnOverlayDismissedListener(
                         () -> mIntroductoryOverlay = null)
@@ -778,6 +785,15 @@ public class ServerFilesFragment extends Fragment implements
         mediaRouteMenuItem = CastButtonFactory.setUpMediaRouteButton(
             getActivity().getApplicationContext(),
             menu, R.id.media_route_menu_item);
+
+        searchMenuItem = menu.findItem(R.id.menu_search);
+        searchView = (SearchView) searchMenuItem.getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        if (searchQuery != null) {
+            searchMenuItem.expandActionView();
+            searchView.setQuery(searchQuery, true);
+        }
     }
 
     @Override
@@ -785,8 +801,7 @@ public class ServerFilesFragment extends Fragment implements
         super.onPrepareOptionsMenu(menu);
 
         setUpFilesContentSortIcon(menu.findItem(R.id.menu_sort));
-        searchMenuItem = menu.findItem(R.id.menu_search);
-        searchView = (SearchView) searchMenuItem.getActionView();
+
 
         setUpSearchView();
         setSearchCursor();
@@ -944,6 +959,9 @@ public class ServerFilesFragment extends Fragment implements
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (searchView.isShown()) {
+            outState.putCharSequence(State.SEARCH_QUERY, searchView.getQuery());
+        }
 
         tearDownFilesState(outState);
         outState.putInt(State.SELECTED_ITEM, lastSelectedFilePosition);
@@ -951,7 +969,9 @@ public class ServerFilesFragment extends Fragment implements
 
     private void tearDownFilesState(Bundle state) {
         if (areFilesLoaded()) {
-            state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFiles()));
+            if(state!=null) {
+                state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFiles()));
+            }
         }
     }
 
@@ -1007,6 +1027,7 @@ public class ServerFilesFragment extends Fragment implements
     private static final class State {
         public static final String FILES = "files";
         public static final String SELECTED_ITEM = "selected_item";
+        public static final String SEARCH_QUERY = "search_query";
 
         private State() {
         }

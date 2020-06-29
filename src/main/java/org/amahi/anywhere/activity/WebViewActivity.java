@@ -1,5 +1,6 @@
 package org.amahi.anywhere.activity;
 
+import android.content.Context;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -8,6 +9,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.util.LocaleHelper;
 
 public class WebViewActivity extends AppCompatActivity {
 
@@ -52,5 +54,10 @@ public class WebViewActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(menuItem);
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

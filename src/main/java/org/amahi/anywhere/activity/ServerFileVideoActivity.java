@@ -71,6 +71,7 @@ import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.VideoSwipeGestures;
 import org.amahi.anywhere.view.MediaControls;
 import org.videolan.libvlc.IVLCVout;
@@ -868,5 +869,10 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
     private static final class State {
         public static final String SUBTITLES_ENABLED = "subtitles_enabled";
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

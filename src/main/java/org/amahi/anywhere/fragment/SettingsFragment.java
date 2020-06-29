@@ -310,7 +310,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private void setUpLanguage() {
-        Toast.makeText(getActivity(), LocaleHelper.getLanguage(getContext()), Toast.LENGTH_SHORT).show();
         LocaleHelper.setLocale(getContext(), getLanguage());
         tearDownActivity();
     }

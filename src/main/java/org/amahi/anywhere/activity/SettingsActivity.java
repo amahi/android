@@ -22,6 +22,7 @@ package org.amahi.anywhere.activity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,6 +38,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.fragment.UploadSettingsFragment;
+import org.amahi.anywhere.util.LocaleHelper;
 
 /**
  * Settings activity. Shows application's settings.
@@ -106,5 +108,10 @@ public class SettingsActivity extends AppCompatActivity {
         super.onPause();
 
         BusProvider.getBus().unregister(this);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import com.github.paolorotolo.appintro.AppIntroFragment;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.util.CheckTV;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.SampleSlide;
 
@@ -70,5 +72,10 @@ public class IntroductionActivity extends AppIntro {
 
     private void launchNavigation() {
         startActivity(new Intent(this, NavigationActivity.class));
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

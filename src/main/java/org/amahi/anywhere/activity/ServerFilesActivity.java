@@ -81,6 +81,7 @@ import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.PathUtil;
 
@@ -725,5 +726,10 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
         private State() {
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

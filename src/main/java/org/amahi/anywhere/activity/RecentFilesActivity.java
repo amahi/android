@@ -12,6 +12,8 @@ import android.os.Environment;
 import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
@@ -425,6 +427,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     private void startFileOpeningActivity(RecentFile file, Uri fileUri) {
         Intent intent = Intents.Builder.with(this).buildServerFileOpeningIntent(prepareServerFile(file), fileUri);
         startActivity(intent);
+        Animatoo.animateSplit(this);
     }
 
     private RecentFile getSelectedRecentFile() {
@@ -434,6 +437,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     private void startFileSharingActivity(RecentFile file, Uri fileUri) {
         Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(prepareServerFile(file), fileUri);
         startActivity(intent);
+        Animatoo.animateSplit(this);
     }
 
     private void deleteFile() {

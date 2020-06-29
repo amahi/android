@@ -30,6 +30,7 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.framework.CastButtonFactory;

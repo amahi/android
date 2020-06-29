@@ -36,6 +36,7 @@ import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -343,6 +344,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     private void showRecentFiles() {
         Intent intent = Intents.Builder.with(this).buildRecentFilesActivity();
         startActivity(intent);
+        Animatoo.animateSlideUp(this);
     }
 
     @Subscribe
@@ -353,6 +355,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     private void setUpShare(ServerShare share) {
         Intent intent = Intents.Builder.with(this).buildServerFilesActivity(share);
         startActivity(intent);
+        Animatoo.animateSwipeLeft(this);
     }
 
     @Subscribe
@@ -363,6 +366,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     private void setUpApp(ServerApp app) {
         Intent intent = Intents.Builder.with(this).buildServerAppAcitivity(app);
         startActivity(intent);
+        Animatoo.animateSplit(this);
     }
 
     @Subscribe
@@ -373,6 +377,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     private void setUpSettings() {
         Intent intent = Intents.Builder.with(this).buildSettingsIntent();
         startActivityForResult(intent, SETTINGS_ACTION);
+        Animatoo.animateInAndOut(this);
     }
 
     @Override
@@ -381,6 +386,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
             if (resultCode == SettingsActivity.RESULT_THEME_UPDATED) {
                 finish();
                 startActivity(getIntent());
+                Animatoo.animateSplit(this);
                 return;
             }
         }

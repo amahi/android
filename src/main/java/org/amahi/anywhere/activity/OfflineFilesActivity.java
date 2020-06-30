@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
@@ -101,6 +103,7 @@ public class OfflineFilesActivity extends AppCompatActivity {
     private void startFileActivity(ServerFile file, List<ServerFile> serverFiles) {
         Intent intent = Intents.Builder.with(this).buildServerFileIntent(null, serverFiles, file);
         startActivity(intent);
+        Animatoo.animateSwipeLeft(this);
     }
 
     @Subscribe
@@ -120,6 +123,7 @@ public class OfflineFilesActivity extends AppCompatActivity {
     private void startFileSharingActivity(ServerFile file, Uri fileUri) {
         Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
         startActivity(intent);
+        Animatoo.animateSlideUp(this);
     }
 
     @Subscribe

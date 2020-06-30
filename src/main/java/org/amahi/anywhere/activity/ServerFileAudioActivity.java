@@ -41,6 +41,7 @@ import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.TextView;
 
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaLoadOptions;
@@ -175,6 +176,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
             List<ServerFile> serverFiles = new ArrayList<>();
             serverFiles.add(serverFile);
             getIntent().putExtra(Intents.Extras.SERVER_FILES, new ArrayList<Parcelable>(serverFiles));
+            Animatoo.animateSwipeLeft(this);
         }
     }
 
@@ -314,6 +316,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private void setUpAudioService() {
         Intent intent = new Intent(this, AudioService.class);
         startService(intent);
+        Animatoo.animateSwipeLeft(this);
     }
 
     private void setUpAudioServiceBind() {
@@ -687,6 +690,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private void tearDownAudioService() {
         Intent intent = new Intent(this, AudioService.class);
         stopService(intent);
+        Animatoo.animateSwipeLeft(this);
     }
 
     @Override

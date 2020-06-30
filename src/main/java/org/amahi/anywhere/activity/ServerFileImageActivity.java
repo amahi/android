@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaLoadOptions;
 import com.google.android.gms.cast.MediaMetadata;
@@ -135,6 +136,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements
             List<ServerFile> serverFiles = new ArrayList<>();
             serverFiles.add(serverFile);
             getIntent().putExtra(Intents.Extras.SERVER_FILES, new ArrayList<Parcelable>(serverFiles));
+            Animatoo.animateSwipeLeft(this);
         }
     }
 
@@ -350,6 +352,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     private void startFileSharingActivity(ServerFile file, Uri fileUri) {
         Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
         startActivity(intent);
+        Animatoo.animateSwipeLeft(this);
     }
 
     @Subscribe

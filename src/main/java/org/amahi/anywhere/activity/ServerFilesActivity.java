@@ -33,6 +33,8 @@ import android.os.IBinder;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.fragment.app.Fragment;
@@ -245,6 +247,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private void startFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
         Intent intent = Intents.Builder.with(this).buildServerFileIntent(share, files, file);
         startActivity(intent);
+        Animatoo.animateSwipeLeft(this);
     }
 
     private void startFileOpeningActivity(ServerShare share, ServerFile file) {
@@ -293,11 +296,13 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private void startFileOpeningActivity(ServerFile file, Uri fileUri) {
         Intent intent = Intents.Builder.with(this).buildServerFileOpeningIntent(file, fileUri);
         startActivity(intent);
+        Animatoo.animateInAndOut(this);
     }
 
     private void startFileSharingActivity(ServerFile file, Uri fileUri) {
         Intent intent = Intents.Builder.with(this).buildServerFileSharingIntent(file, fileUri);
         startActivity(intent);
+        Animatoo.animateSwipeLeft(this);
     }
 
     private void showGooglePlaySearchFragment(ServerFile file) {

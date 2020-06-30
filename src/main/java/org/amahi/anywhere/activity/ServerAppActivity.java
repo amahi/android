@@ -30,6 +30,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
+
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -95,6 +97,7 @@ public class ServerAppActivity extends AppCompatActivity {
 
     private void setUpAppWebAgent() {
         getWebView().getSettings().setUserAgentString(getAppWebAgent());
+        Animatoo.animateSwipeLeft(this);
     }
 
     private WebView getWebView() {

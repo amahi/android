@@ -46,6 +46,7 @@ import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.framework.CastButtonFactory;
@@ -173,6 +174,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
             List<ServerFile> serverFiles = new ArrayList<>();
             serverFiles.add(serverFile);
             getIntent().putExtra(Intents.Extras.SERVER_FILES, new ArrayList<Parcelable>(serverFiles));
+            Animatoo.animateSwipeLeft(this);
         }
     }
 

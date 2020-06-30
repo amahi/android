@@ -478,7 +478,7 @@ public class ServerFileImageActivity extends AppCompatActivity implements
         }
         return serverClient.getFileUri(getShare(), getCurrentFile()).toString();
     }
-
+//
     private String getRecentFileUri() {
         RecentFileRepository repository = new RecentFileRepository(this);
         return repository.getRecentFile(getCurrentFile().getUniqueKey()).getUri();

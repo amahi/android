@@ -38,6 +38,7 @@ import android.provider.MediaStore;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -119,22 +120,21 @@ public class ServerFilesActivity extends AppCompatActivity implements
     CastStateListener,
     AlertDialogFragment.DuplicateFileDialogCallback {
 
-    private int STORAGE_PERMISSION_CODE = 1;
     private static final int FILE_UPLOAD_PERMISSION = 102;
     private static final int CAMERA_PERMISSION = 103;
     private static final int REQUEST_UPLOAD_IMAGE = 201;
     private static final int REQUEST_CAMERA_IMAGE = 202;
     @Inject
     ServerClient serverClient;
+    int x;
+    private int STORAGE_PERMISSION_CODE = 1;
     private ServerFile file;
     @FileOption.Types
     private int fileOption;
     private ProgressDialogFragment uploadDialogFragment;
     private File cameraImage;
-
     private AudioService audioService;
     private boolean isControllerShown = false;
-
     private CastContext mCastContext;
 
     @Override
@@ -187,11 +187,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
             }
         });
     }
-
-
-
-
-
 
     private void setUpUploadDialog() {
         uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag(Constants.progressDialogFragment);
@@ -392,8 +387,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
                 break;
         }
     }
-    int x;
-    private void requestStoragePermission(final String text,final String snackbarText) {
+
+    private void requestStoragePermission(final String text, final String snackbarText) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
             Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
@@ -405,7 +400,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions(ServerFilesActivity.this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
-                            x = 1;
+                        x = 1;
                     }
                 })
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -419,12 +414,12 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
         } else {
             ActivityCompat.requestPermissions(this,
-                new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
         }
     }
 
 
-    private void displayNeverAskAgainDialog(final String text,final String snackbar) {
+    private void displayNeverAskAgainDialog(final String text, final String snackbar) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(text
@@ -467,7 +462,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
 //
 
 
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkCameraPermissions() {
 //        String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -482,11 +476,11 @@ public class ServerFilesActivity extends AppCompatActivity implements
             openCamera();
         } else {
 
-            requestStoragePermission("the camera permission is required to write content on the storage",getString(R.string.camera_permission_denied));
-            if(x == 1) {
+            requestStoragePermission("the camera permission is required to write content on the storage", getString(R.string.camera_permission_denied));
+            if (x == 1) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (PermissionUtils.neverAskAgainSelected(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        displayNeverAskAgainDialog("the camera permission is required to write content on the storage",getString(R.string.camera_permission_denied));
+                        displayNeverAskAgainDialog("the camera permission is required to write content on the storage", getString(R.string.camera_permission_denied));
                     }
                 }
             }
@@ -530,10 +524,10 @@ public class ServerFilesActivity extends AppCompatActivity implements
             showFileChooser();
         } else {
 
-            requestStoragePermission("the File permission is required to access the storage of the device",getString(R.string.file_upload_permission_denied));
+            requestStoragePermission("the File permission is required to access the storage of the device", getString(R.string.file_upload_permission_denied));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (PermissionUtils.neverAskAgainSelected(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    displayNeverAskAgainDialog("the File permission is required to access the storage of the device",getString(R.string.file_upload_permission_denied));
+                    displayNeverAskAgainDialog("the File permission is required to access the storage of the device", getString(R.string.file_upload_permission_denied));
                 }
             }
         }

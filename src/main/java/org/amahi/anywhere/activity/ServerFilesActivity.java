@@ -34,27 +34,23 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
-import android.widget.FrameLayout;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -71,8 +67,8 @@ import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
-import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.AlertDialogFragment;
+import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ProgressDialogFragment;
@@ -319,13 +315,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (STORAGE_PERMISSION == requestCode) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission granted successfully", Toast.LENGTH_LONG).show();
-            } else {
-                PermissionUtils.setShouldShowStatus(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-            }
-        }
+
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     @Override
@@ -392,7 +383,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
                         x = 1;
                     }
                 })
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         showPermissionSnackBar(snackbarText);
@@ -444,7 +435,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
             openCamera();
         } else {
 
-            requestStoragePermission("the camera permission is required to write content on the storage", getString(R.string.camera_permission_denied));
+            requestStoragePermission(getString(R.string.camera_permission), getString(R.string.camera_permission_denied));
             if (x == 1) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (PermissionUtils.neverAskAgainSelected(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -486,7 +477,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
             showFileChooser();
         } else {
 
-            requestStoragePermission("the File permission is required to access the storage of the device", getString(R.string.file_upload_permission_denied));
+            requestStoragePermission(getString(R.string.file_upload_permission), getString(R.string.file_upload_permission_denied));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (PermissionUtils.neverAskAgainSelected(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                     displayNeverAskAgainDialog("the File permission is required to access the storage of the device", getString(R.string.file_upload_permission_denied));

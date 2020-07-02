@@ -35,7 +35,6 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
@@ -48,7 +47,6 @@ import androidx.fragment.app.Fragment;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -96,7 +94,6 @@ import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.PathUtil;
 import org.amahi.anywhere.util.PermissionUtils;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -124,10 +121,10 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private static final int CAMERA_PERMISSION = 103;
     private static final int REQUEST_UPLOAD_IMAGE = 201;
     private static final int REQUEST_CAMERA_IMAGE = 202;
+    private static final int STORAGE_PERMISSION = 104;
     @Inject
     ServerClient serverClient;
     int x;
-    private int STORAGE_PERMISSION_CODE = 1;
     private ServerFile file;
     @FileOption.Types
     private int fileOption;
@@ -322,7 +319,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (STORAGE_PERMISSION_CODE == requestCode) {
+        if (STORAGE_PERMISSION == requestCode) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permission granted successfully", Toast.LENGTH_LONG).show();
             } else {
@@ -391,7 +388,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions(ServerFilesActivity.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION);
                         x = 1;
                     }
                 })
@@ -406,7 +403,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
         } else {
             ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION);
         }
     }
 
@@ -439,30 +436,9 @@ public class ServerFilesActivity extends AppCompatActivity implements
         builder.show();
     }
 
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
-//        grantResults) {
-//        if (1 == requestCode) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Permission granted successfully", Toast.LENGTH_LONG).show();
-//            } else {
-//                PermissionUtils.setShouldShowStatus(this, Manifest.permission.SEND_SMS);
-//            }
-//        }
-//    }
-//
-
-
+    // Permissions already available for Android L and below
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkCameraPermissions() {
-//        String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-//        if (EasyPermissions.hasPermissions(this, perms)) {
-//            openCamera();
-//        } else {
-//            EasyPermissions.requestPermissions(this, getString(R.string.camera_permission),
-//                CAMERA_PERMISSION, perms);
-//        }
         if (ContextCompat.checkSelfPermission(ServerFilesActivity.this,
             Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             openCamera();
@@ -502,15 +478,9 @@ public class ServerFilesActivity extends AppCompatActivity implements
         return File.createTempFile(imageFileName, ".jpg", storageDir);
     }
 
+    // Permissions already available for Android L and below
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkFileReadPermissions() {
-//        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
-//        if (EasyPermissions.hasPermissions(this, perms)) {
-//            showFileChooser();
-//        } else {
-//            EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
-//                FILE_UPLOAD_PERMISSION, perms);
-//        }
         if (ContextCompat.checkSelfPermission(ServerFilesActivity.this,
             Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             showFileChooser();

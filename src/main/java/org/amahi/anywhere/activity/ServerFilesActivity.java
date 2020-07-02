@@ -20,7 +20,6 @@
 package org.amahi.anywhere.activity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
@@ -32,24 +31,23 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -66,8 +64,8 @@ import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
-import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.AlertDialogFragment;
+import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ProgressDialogFragment;
@@ -91,8 +89,6 @@ import org.amahi.anywhere.util.PathUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -372,15 +368,15 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkCameraPermissions() {
         String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-         if (EasyPermissions.hasPermissions(this, perms)) {
+        if (EasyPermissions.hasPermissions(this, perms)) {
             openCamera();
         } else {
-             if(ActivityCompat.shouldShowRequestPermissionRationale(ServerFilesActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                 showPermissionSnackBar(getString(R.string.file_upload_permission_denied));
-             } else {
-                 EasyPermissions.requestPermissions(this, getString(R.string.camera_permission),
-                     CAMERA_PERMISSION, perms);
-             }
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ServerFilesActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                showPermissionSnackBar(getString(R.string.file_upload_permission_denied));
+            } else {
+                EasyPermissions.requestPermissions(this, getString(R.string.camera_permission),
+                    CAMERA_PERMISSION, perms);
+            }
         }
     }
 
@@ -409,13 +405,13 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkFileReadPermissions() {
-        Log.v("chirag","File Read");
+        Log.v("chirag", "File Read");
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
 
         if (EasyPermissions.hasPermissions(this, perms)) {
             showFileChooser();
         } else {
-            if(ActivityCompat.shouldShowRequestPermissionRationale(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 showPermissionSnackBar(getString(R.string.file_upload_permission_denied));
             } else {
                 EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),

@@ -177,15 +177,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     private void setUpUploadFAB() {
         final FloatingActionButton fab = findViewById(R.id.fab_upload);
-        boolean x = true;
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                new UploadBottomSheet().show(getSupportFragmentManager(), "upload_dialog");
-
-            }
-        });
+        fab.setOnClickListener(view -> new UploadBottomSheet().show(getSupportFragmentManager(), "upload_dialog"));
     }
 
     private void setUpUploadDialog() {

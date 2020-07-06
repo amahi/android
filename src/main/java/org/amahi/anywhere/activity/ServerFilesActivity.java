@@ -20,38 +20,31 @@
 package org.amahi.anywhere.activity;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.FileProvider;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -68,8 +61,8 @@ import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
-import org.amahi.anywhere.fragment.AlertDialogFragment;
 import org.amahi.anywhere.fragment.AudioControllerFragment;
+import org.amahi.anywhere.fragment.AlertDialogFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ProgressDialogFragment;
@@ -90,7 +83,6 @@ import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.PathUtil;
-import org.amahi.anywhere.util.PermissionUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,7 +100,6 @@ import timber.log.Timber;
  * such as opening and sharing.
  * The files navigation itself is done via {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
-
 public class ServerFilesActivity extends AppCompatActivity implements
     EasyPermissions.PermissionCallbacks,
     ServiceConnection,
@@ -121,15 +112,15 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private static final int REQUEST_CAMERA_IMAGE = 202;
     @Inject
     ServerClient serverClient;
-    int x;
-    private int STORAGE_PERMISSION_CODE = 1;
     private ServerFile file;
     @FileOption.Types
     private int fileOption;
     private ProgressDialogFragment uploadDialogFragment;
     private File cameraImage;
+
     private AudioService audioService;
     private boolean isControllerShown = false;
+
     private CastContext mCastContext;
 
     @Override
@@ -172,15 +163,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     private void setUpUploadFAB() {
         final FloatingActionButton fab = findViewById(R.id.fab_upload);
-        boolean x = true;
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                new UploadBottomSheet().show(getSupportFragmentManager(), "upload_dialog");
-
-            }
-        });
+        fab.setOnClickListener(view -> new UploadBottomSheet().show(getSupportFragmentManager(), "upload_dialog"));
     }
 
     private void setUpUploadDialog() {
@@ -325,13 +308,9 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (STORAGE_PERMISSION_CODE == requestCode) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission granted successfully", Toast.LENGTH_LONG).show();
-            } else {
-                PermissionUtils.setShouldShowStatus(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-            }
-        }
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     @Override
@@ -383,102 +362,14 @@ public class ServerFilesActivity extends AppCompatActivity implements
         }
     }
 
-    private void requestStoragePermission(final String text, final String snackbarText) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-            Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-            new AlertDialog.Builder(this)
-                .setTitle("Permission needed")
-                .setMessage(text)
-                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ActivityCompat.requestPermissions(ServerFilesActivity.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
-                        x = 1;
-                    }
-                })
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        showPermissionSnackBar(snackbarText);
-                        dialog.dismiss();
-                    }
-                })
-                .create().show();
-
-        } else {
-            ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
-        }
-    }
-
-
-    private void displayNeverAskAgainDialog(final String text, final String snackbar) {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(text
-            + "Settings screen.\n\nSelect Permissions -> Enable Storage permission");
-        builder.setCancelable(false);
-        builder.setPositiveButton("Permit Manually", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                Intent intent = new Intent();
-                intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                showPermissionSnackBar(snackbar);
-            }
-        });
-        builder.show();
-    }
-
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[]
-//        grantResults) {
-//        if (1 == requestCode) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Permission granted successfully", Toast.LENGTH_LONG).show();
-//            } else {
-//                PermissionUtils.setShouldShowStatus(this, Manifest.permission.SEND_SMS);
-//            }
-//        }
-//    }
-//
-
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkCameraPermissions() {
-//        String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-//        if (EasyPermissions.hasPermissions(this, perms)) {
-//            openCamera();
-//        } else {
-//            EasyPermissions.requestPermissions(this, getString(R.string.camera_permission),
-//                CAMERA_PERMISSION, perms);
-//        }
-        if (ContextCompat.checkSelfPermission(ServerFilesActivity.this,
-            Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
             openCamera();
         } else {
-
-            requestStoragePermission("the camera permission is required to write content on the storage", getString(R.string.camera_permission_denied));
-            if (x == 1) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (PermissionUtils.neverAskAgainSelected(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        displayNeverAskAgainDialog("the camera permission is required to write content on the storage", getString(R.string.camera_permission_denied));
-                    }
-                }
-            }
+            EasyPermissions.requestPermissions(this, getString(R.string.camera_permission),
+                CAMERA_PERMISSION, perms);
         }
     }
 
@@ -507,24 +398,12 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkFileReadPermissions() {
-//        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
-//        if (EasyPermissions.hasPermissions(this, perms)) {
-//            showFileChooser();
-//        } else {
-//            EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
-//                FILE_UPLOAD_PERMISSION, perms);
-//        }
-        if (ContextCompat.checkSelfPermission(ServerFilesActivity.this,
-            Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
             showFileChooser();
         } else {
-
-            requestStoragePermission("the File permission is required to access the storage of the device", getString(R.string.file_upload_permission_denied));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (PermissionUtils.neverAskAgainSelected(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    displayNeverAskAgainDialog("the File permission is required to access the storage of the device", getString(R.string.file_upload_permission_denied));
-                }
-            }
+            EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
+                FILE_UPLOAD_PERMISSION, perms);
         }
     }
 

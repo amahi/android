@@ -48,7 +48,7 @@ public class MainTVActivity extends Activity {
     }
 
     private ArrayList<Server> getServers() {
-        return getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
+        return getIntent().getParcelableArrayListExtra("INTENT_SERVERS");
     }
 
     private void replaceFragment() {

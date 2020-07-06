@@ -51,6 +51,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 import org.amahi.anywhere.tv.presenter.VideoDetailsDescriptionPresenter;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -190,7 +191,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     private void setLibVlc() {
         final ArrayList<String> args = new ArrayList<>();
-        args.add("-vvv");
+        args.add(Constants.videoVLCLibArg);
         mLibVlc = new LibVLC(getActivity(), args);
     }
 
@@ -249,9 +250,9 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         HeaderItem headerItem;
 
         if (getVideoFile().getParentFile() == null)
-            headerItem = new HeaderItem("Video(s) in " + getVideoShare().getName());
+            headerItem = new HeaderItem(getString(R.string.videos_in) + getVideoShare().getName());
         else
-            headerItem = new HeaderItem("Video(s) in " + getVideoFile().getParentFile().getName());
+            headerItem = new HeaderItem(getString(R.string.videosin) + getVideoFile().getParentFile().getName());
 
         return headerItem;
     }

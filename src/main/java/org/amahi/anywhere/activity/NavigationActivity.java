@@ -147,7 +147,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void hideActionBar() {
-        getSupportActionBar().hide();
+        if (getSupportActionBar()!=null) getSupportActionBar().hide();
     }
 
     private void setUpInjections() {
@@ -173,10 +173,11 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         if (!CheckTV.isATV(this)) setUpNavigationFragment();
 
         if (isNavigationDrawerAvailable() && isNavigationDrawerRequired(state)) {
-            showNavigationDrawer();
+            this.navigationTitle = getString(R.string.title_shares);
+            setUpTitle();
+            setUpShares();
         }
 
-        setUpNavigationTitle(state);
     }
 
     private void setUpNavigationDrawer() {
@@ -222,14 +223,6 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     @Override
     public void onDrawerStateChanged(int state) {
         navigationDrawerToggle.onDrawerStateChanged(state);
-    }
-
-    private void setUpNavigationTitle(Bundle state) {
-        this.navigationTitle = getNavigationTitle(state);
-
-        if (isNavigationDrawerAvailable() && !isNavigationDrawerOpen()) {
-            setUpTitle();
-        }
     }
 
     private String getNavigationTitle(Bundle state) {

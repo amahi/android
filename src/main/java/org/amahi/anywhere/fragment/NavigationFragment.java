@@ -332,7 +332,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         tvIntent = new Intent(getContext(), MainTVActivity.class);
 
-        tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers), new ArrayList<>(filterActiveServers(event.getServers())));
+        tvIntent.putParcelableArrayListExtra("INTENT_SERVERS", new ArrayList<>(filterActiveServers(event.getServers())));
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
@@ -472,6 +472,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         //Changing the Title Server Name
         getServerNameTextView().setText(getServersList().get(position).getName());
+
+        showNavigationItems();
 
         storeServerName(getServersList().get(position));
 

@@ -81,7 +81,7 @@
                     <TextView
                         android:id="@+id/server_name"
                         android:layout_width="match_parent"
-                        android:layout_height="20dp"
+                        android:layout_height="wrap_content"
                         android:drawableEnd="@drawable/nav_arrow_down"
                         android:ellipsize="end"
                         android:gravity="center_vertical"

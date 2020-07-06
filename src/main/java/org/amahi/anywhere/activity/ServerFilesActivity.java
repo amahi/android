@@ -405,7 +405,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkFileReadPermissions() {
-        Log.v("chirag", "File Read");
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
 
         if (EasyPermissions.hasPermissions(this, perms)) {
@@ -421,7 +420,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
     }
 
     private void showFileChooser() {
-        Log.v("chirag", "perm present");
         Intent intent = Intents.Builder.with(this).buildMediaPickerIntent();
         this.startActivityForResult(intent, REQUEST_UPLOAD_IMAGE);
     }

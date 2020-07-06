@@ -310,9 +310,9 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         HeaderItem header;
 
         if (getAudioFile().getParentFile() == null)
-            header = new HeaderItem(0, "Song(s) in " + getAudioShare().getName());
+            header = new HeaderItem(0, getString(R.string.songs_in) + getAudioShare().getName());
         else
-            header = new HeaderItem(0, "Song(s) in " + getAudioFile().getParentFile().getName());
+            header = new HeaderItem(0, getString(R.string.songsin) + getAudioFile().getParentFile().getName());
 
         mRowsAdapter.add(new ListRow(header, adapter));
     }

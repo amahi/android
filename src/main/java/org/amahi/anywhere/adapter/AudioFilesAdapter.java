@@ -142,7 +142,7 @@ public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.Au
             if (audioMetadata.getAudioArtist() != null) {
                 audioFile.setSubtitle(audioMetadata.getAudioArtist());
             } else {
-                audioFile.setSubtitle("Unknown Artist");
+                audioFile.setSubtitle(context.getString(R.string.unknown_artist));
             }
             notifyItemChanged(event.getAudioFileHolder().getAdapterPosition());
         }

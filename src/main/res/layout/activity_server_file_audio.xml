@@ -30,20 +30,18 @@
         android:layout_height="match_parent" />
 
     <com.google.android.exoplayer2.ui.PlayerControlView
+        android:id="@+id/control_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/control_view"
         android:layout_gravity="bottom"
         android:focusable="true"
-        app:shutter_background_color="@android:color/transparent"
-        />
+        app:shutter_background_color="@android:color/transparent" />
 
     <FrameLayout
         android:id="@+id/audio_list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        />
+        android:layout_marginTop="?attr/actionBarSize" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_audio"

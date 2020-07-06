@@ -18,7 +18,6 @@ package org.amahi.anywhere.activity;
 
 import android.view.Menu;
 
-import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.media.widget.ExpandedControllerActivity;
 

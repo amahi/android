@@ -34,28 +34,24 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
-
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -72,8 +68,8 @@ import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
-import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.AlertDialogFragment;
+import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ProgressDialogFragment;
@@ -95,7 +91,6 @@ import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.PathUtil;
 import org.amahi.anywhere.util.PermissionUtils;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -120,22 +115,21 @@ public class ServerFilesActivity extends AppCompatActivity implements
     CastStateListener,
     AlertDialogFragment.DuplicateFileDialogCallback {
 
-    private int STORAGE_PERMISSION_CODE = 1;
     private static final int FILE_UPLOAD_PERMISSION = 102;
     private static final int CAMERA_PERMISSION = 103;
     private static final int REQUEST_UPLOAD_IMAGE = 201;
     private static final int REQUEST_CAMERA_IMAGE = 202;
     @Inject
     ServerClient serverClient;
+    int x;
+    private int STORAGE_PERMISSION_CODE = 1;
     private ServerFile file;
     @FileOption.Types
     private int fileOption;
     private ProgressDialogFragment uploadDialogFragment;
     private File cameraImage;
-
     private AudioService audioService;
     private boolean isControllerShown = false;
-
     private CastContext mCastContext;
 
     @Override
@@ -188,11 +182,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
             }
         });
     }
-
-
-
-
-
 
     private void setUpUploadDialog() {
         uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag(Constants.progressDialogFragment);
@@ -393,8 +382,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
                 break;
         }
     }
-    int x;
-    private void requestStoragePermission(final String text,final String snackbarText) {
+
+    private void requestStoragePermission(final String text, final String snackbarText) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
             Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
@@ -406,7 +395,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions(ServerFilesActivity.this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
-                            x = 1;
+                        x = 1;
                     }
                 })
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -420,12 +409,12 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
         } else {
             ActivityCompat.requestPermissions(this,
-                new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
         }
     }
 
 
-    private void displayNeverAskAgainDialog(final String text,final String snackbar) {
+    private void displayNeverAskAgainDialog(final String text, final String snackbar) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(text
@@ -468,7 +457,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
 //
 
 
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkCameraPermissions() {
 //        String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -483,11 +471,11 @@ public class ServerFilesActivity extends AppCompatActivity implements
             openCamera();
         } else {
 
-            requestStoragePermission("the camera permission is required to write content on the storage",getString(R.string.camera_permission_denied));
-            if(x == 1) {
+            requestStoragePermission("the camera permission is required to write content on the storage", getString(R.string.camera_permission_denied));
+            if (x == 1) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (PermissionUtils.neverAskAgainSelected(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        displayNeverAskAgainDialog("the camera permission is required to write content on the storage",getString(R.string.camera_permission_denied));
+                        displayNeverAskAgainDialog("the camera permission is required to write content on the storage", getString(R.string.camera_permission_denied));
                     }
                 }
             }
@@ -531,10 +519,10 @@ public class ServerFilesActivity extends AppCompatActivity implements
             showFileChooser();
         } else {
 
-            requestStoragePermission("the File permission is required to access the storage of the device",getString(R.string.file_upload_permission_denied));
+            requestStoragePermission("the File permission is required to access the storage of the device", getString(R.string.file_upload_permission_denied));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (PermissionUtils.neverAskAgainSelected(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    displayNeverAskAgainDialog("the File permission is required to access the storage of the device",getString(R.string.file_upload_permission_denied));
+                    displayNeverAskAgainDialog("the File permission is required to access the storage of the device", getString(R.string.file_upload_permission_denied));
                 }
             }
         }

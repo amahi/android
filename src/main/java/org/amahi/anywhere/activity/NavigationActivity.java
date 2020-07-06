@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.CheckTV;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 
 import javax.inject.Inject;
@@ -443,5 +445,10 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
         private State() {
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

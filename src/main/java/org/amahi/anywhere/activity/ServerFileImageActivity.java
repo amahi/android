@@ -20,6 +20,7 @@
 package org.amahi.anywhere.activity;
 
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -61,6 +62,7 @@ import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.view.ClickableViewPager;
 
@@ -479,5 +481,10 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     private String getRecentFileUri() {
         RecentFileRepository repository = new RecentFileRepository(this);
         return repository.getRecentFile(getCurrentFile().getUniqueKey()).getUri();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

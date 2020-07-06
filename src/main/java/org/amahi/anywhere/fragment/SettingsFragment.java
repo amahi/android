@@ -51,6 +51,7 @@ import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 
 import java.util.Arrays;
@@ -100,12 +101,20 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     private void setUpSettingsSummary() {
         ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
         Preference applicationVersion = getPreference(R.string.preference_key_about_version);
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
+        language.setSummary(getLanguageSummary());
         serverConnection.setSummary(getServerConnectionSummary());
         applicationVersion.setSummary(getApplicationVersionSummary());
         autoUpload.setSummary(getAutoUploadSummary());
+    }
+
+    private String getLanguageSummary() {
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
+
+        return String.format("%s", language.getEntry());
     }
 
     private String getServerConnectionSummary() {
@@ -229,6 +238,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
             getAccountManager().removeAccount(account, this, null);
         } else {
+            Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
             tearDownActivity();
         }
     }
@@ -243,11 +253,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     @Override
     public void run(AccountManagerFuture<Boolean> accountManagerFuture) {
+        Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
         tearDownActivity();
     }
 
     private void tearDownActivity() {
-        Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
         Intent myIntent = new Intent(getActivity().getApplicationContext(), NavigationActivity.class);
         myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(myIntent);
@@ -292,7 +302,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             setUpSettingsSummary();
 
             setUpServerConnection();
+        } else if (key.equals(getString(R.string.preference_key_language))) {
+            setUpSettingsSummary();
+
+            setUpLanguage();
         }
+    }
+
+    private void setUpLanguage() {
+        LocaleHelper.setLocale(getContext(), getLanguage());
+        tearDownActivity();
+    }
+
+    private String getLanguage() {
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
+
+        return language.getValue();
     }
 
     private void setUpServerConnection() {

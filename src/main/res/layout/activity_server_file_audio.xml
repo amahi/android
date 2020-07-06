@@ -32,20 +32,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/control_view"
-        android:layout_gravity="bottom"
-        />
+        android:layout_gravity="bottom"/>
 
     <FrameLayout
         android:id="@+id/audio_list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        />
+        android:layout_marginTop="?attr/actionBarSize" />
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_audio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/toolbar_audio"
+        android:background="@color/background_secondary"
         android:elevation="4dp">
 
         <LinearLayout
@@ -53,30 +52,29 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="vertical"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp">
 
             <TextView
                 android:id="@+id/text_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:maxLines="1"
+                android:textSize="@dimen/text_medium"
                 android:text="Audio Title"
-                android:textColor="@color/primary_text"
-                android:textSize="@dimen/text_medium" />
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/primary_text"/>
 
             <TextView
                 android:id="@+id/text_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:maxLines="1"
+                android:textSize="@dimen/text_micro"
                 android:text="Audio Subtitle"
-                android:textColor="@color/secondary_text"
-                android:textSize="@dimen/text_micro" />
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/secondary_text"/>
 
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 </FrameLayout>
-

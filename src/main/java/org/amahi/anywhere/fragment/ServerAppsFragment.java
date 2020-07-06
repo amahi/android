@@ -24,19 +24,17 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ViewAnimator;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ViewAnimator;
 
 import com.squareup.otto.Subscribe;
 
@@ -62,19 +60,17 @@ import javax.inject.Inject;
 public class ServerAppsFragment extends Fragment {
     @Inject
     ServerClient serverClient;
-    private ServerAppsAdapter mServerAppsAdapter;
-
-    private RecyclerView mRecyclerView;
-
     ViewAnimator viewAnimator;
+    View rootView;
+    private ServerAppsAdapter mServerAppsAdapter;
+    private RecyclerView mRecyclerView;
     private LinearLayout mEmptyLinearLayout;
     private LinearLayout mErrorLinearLayout;
-    View rootView;
-
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-         rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
+        rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh_apps);
 
@@ -104,17 +100,13 @@ public class ServerAppsFragment extends Fragment {
         return rootView;
     }
 
-
-
-
-
-    private void check(){
-        if(!isNetworkConnected()) {
+    private void check() {
+        if (!isNetworkConnected()) {
             rootView.findViewById(R.id.empty2).setVisibility(View.GONE);
             rootView.findViewById(R.id.empty1).setVisibility(View.GONE);
             rootView.findViewById(R.id.MessageError1).setVisibility(View.VISIBLE);
             rootView.findViewById(R.id.MessageError2).setVisibility(View.VISIBLE);
-        }else{
+        } else {
             rootView.findViewById(R.id.empty2).setVisibility(View.VISIBLE);
             rootView.findViewById(R.id.empty1).setVisibility(View.VISIBLE);
             rootView.findViewById(R.id.MessageError1).setVisibility(View.GONE);
@@ -123,18 +115,17 @@ public class ServerAppsFragment extends Fragment {
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    private boolean isNetworkConnected() {
+        try {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            return mNetworkInfo != null;
 
-        private boolean isNetworkConnected() {
-            try {
-                ConnectivityManager mConnectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
-                return mNetworkInfo != null;
+        } catch (NullPointerException e) {
+            return false;
 
-            } catch (NullPointerException e) {
-                return false;
-
-            }
         }
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -175,13 +166,11 @@ public class ServerAppsFragment extends Fragment {
             mEmptyLinearLayout.setVisibility(View.GONE);
             setUpAppsContent(apps);
             showAppsContent();
-        }
-        else {
+        } else {
             check();
             mErrorLinearLayout.setVisibility(View.VISIBLE);
         }
     }
-
 
     private void setUpAppsContent(List<ServerApp> apps) {
         getAppsAdapter().replaceWith(apps);

@@ -1,21 +1,15 @@
 package org.amahi.anywhere.fragment;
 
-import android.app.Activity;
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,7 +17,6 @@ import android.widget.TextView;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.activity.ServerFileAudioActivity;
 import org.amahi.anywhere.bus.AudioControlPlayPauseEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioStopEvent;
@@ -71,12 +64,12 @@ public class AudioControllerFragment extends Fragment {
         playPauseButton = view.findViewById(R.id.play_pause_btn);
         progressBar = view.findViewById(R.id.media_progress_bar);
         RelativeLayout controller = view.findViewById(R.id.audio_controller);
-        LinearLayout descriptionText = view.findViewById(R.id.LinearLayoutAudioController);
+
         playPauseButton.setOnClickListener(v -> {
             if (audioService.getAudioPlayer().getPlayWhenReady()) {
                 playPauseButton.setImageResource(R.drawable.lb_ic_play);
                 playPauseButton.setContentDescription(getResources().getString(R.string.play_the_audio));
-                } else {
+            } else {
                 playPauseButton.setImageResource(R.drawable.lb_ic_pause);
                 playPauseButton.setContentDescription(getResources().getString(R.string.pause_the_audio));
             }
@@ -97,9 +90,9 @@ public class AudioControllerFragment extends Fragment {
 
         if (audioService.getAudioPlayer().getPlayWhenReady()) {
             playPauseButton.setImageResource(R.drawable.lb_ic_pause);
-            } else {
+        } else {
             playPauseButton.setImageResource(R.drawable.lb_ic_play);
-            }
+        }
 
         AudioMetadataFormatter formatter = audioService.getAudioMetadataFormatter();
         if (formatter != null) {

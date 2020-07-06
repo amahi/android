@@ -33,8 +33,7 @@
         android:layout_height="64dp"
         android:scaleType="centerCrop"
         android:src="@drawable/default_audiotrack"
-        tools:ignore="contentDescription"
-        />
+        tools:ignore="contentDescription" />
 
     <ImageButton
 
@@ -59,11 +58,9 @@
         android:scaleType="centerCrop"
         android:src="@drawable/lb_ic_play"
         android:tint="@color/primary_text"
-        tools:ignore="contentDescription"
-        />
+        tools:ignore="contentDescription" />
 
     <LinearLayout
-        android:id="@+id/LinearLayoutAudioController"
         android:layout_width="wrap_content"
         android:layout_height="64dp"
         android:layout_toEndOf="@id/art_image_view"
@@ -71,8 +68,7 @@
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        >
+        android:paddingStart="8dp">
 
         <TextView
             android:id="@+id/audio_title_text"

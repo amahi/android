@@ -16,12 +16,14 @@
 
 package org.amahi.anywhere.activity;
 
+import android.content.Context;
 import android.view.Menu;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.media.widget.ExpandedControllerActivity;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.util.LocaleHelper;
 
 public class ExpandedControlsActivity extends ExpandedControllerActivity {
 
@@ -31,5 +33,10 @@ public class ExpandedControlsActivity extends ExpandedControllerActivity {
         getMenuInflater().inflate(R.menu.action_bar_expanded_controller, menu);
         CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.media_route_menu_item);
         return true;
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

@@ -54,6 +54,7 @@ import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.ServerFileClickListener;
 
 import java.io.File;
@@ -582,5 +583,10 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private RecentFilesAdapter getListAdapter() {
         return (RecentFilesAdapter) getRecentFileRView().getAdapter();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

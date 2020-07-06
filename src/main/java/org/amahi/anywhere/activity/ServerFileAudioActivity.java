@@ -77,6 +77,7 @@ import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -848,5 +849,10 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         if (v == getPreviousButton()) {
             BusProvider.getBus().post(new AudioControlPreviousEvent());
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.activity;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,6 +37,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.util.Identifier;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.ViewDirector;
 
@@ -252,5 +254,10 @@ public class ServerAppActivity extends AppCompatActivity {
 
             activity.showApp();
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

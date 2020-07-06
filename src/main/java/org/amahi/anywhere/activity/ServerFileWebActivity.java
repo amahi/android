@@ -20,6 +20,7 @@
 package org.amahi.anywhere.activity;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.browser.customtabs.CustomTabsClient;
@@ -34,6 +35,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -136,5 +138,10 @@ public class ServerFileWebActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         onBackPressed();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

@@ -71,6 +71,8 @@ import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.NetworkUtils;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.VideoSwipeGestures;
 import org.amahi.anywhere.view.MediaControls;
 import org.videolan.libvlc.IVLCVout;
@@ -636,6 +638,11 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
                 break;
             case MediaPlayer.Event.EndReached:
                 deletePlayedFileFromDatabase(getVideoFile());
+                //check if the file reached it's end due to no network connection
+                NetworkUtils networkUtils = new NetworkUtils(this);
+                if (!networkUtils.isNetworkAvailable()) {
+                    Toast.makeText(this, R.string.message_connect_and_try_again, Toast.LENGTH_SHORT).show();
+                }
                 finish();
                 break;
             case MediaPlayer.Event.Buffering:
@@ -643,6 +650,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
                 break;
             case MediaPlayer.Event.EncounteredError:
                 Toast.makeText(this, R.string.message_error_video, Toast.LENGTH_SHORT).show();
+                finish();
                 break;
         }
 
@@ -868,5 +876,10 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
     private static final class State {
         public static final String SUBTITLES_ENABLED = "subtitles_enabled";
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

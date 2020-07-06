@@ -42,6 +42,12 @@ import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaLoadOptions;
@@ -79,6 +85,7 @@ import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Preferences;
+import org.amahi.anywhere.util.LocaleHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -157,8 +164,10 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private void setUpHomeNavigation() {
         Toolbar toolbar = findViewById(R.id.toolbar_audio);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        if(getSupportActionBar()!=null) {
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void setUpCast() {
@@ -924,5 +933,10 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
                 Preferences.setAudioRepeatMode(this, REPEAT_MODE);
             }
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

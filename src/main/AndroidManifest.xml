@@ -110,7 +110,7 @@
         <activity
             android:name=".activity.ExpandedControlsActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/Theme.CastVideosDark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -123,7 +123,8 @@
         <activity android:name=".activity.ServerFileWebActivity" />
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_settings" />
+            android:label="@string/title_settings"
+            android:theme="@style/Theme.Amahi.Settings"/>
         <activity
             android:name=".activity.IntroductionActivity"
             android:label="@string/intro_desc_phone_1"

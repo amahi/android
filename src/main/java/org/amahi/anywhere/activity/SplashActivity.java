@@ -19,10 +19,13 @@
 
 package org.amahi.anywhere.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.amahi.anywhere.util.LocaleHelper;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -41,5 +44,10 @@ public class SplashActivity extends AppCompatActivity {
 
     private void launchNavigation() {
         startActivity(new Intent(this, NavigationActivity.class));
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

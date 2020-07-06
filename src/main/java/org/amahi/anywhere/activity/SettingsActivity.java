@@ -19,11 +19,15 @@
 
 package org.amahi.anywhere.activity;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import android.content.Context;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+
 import android.view.MenuItem;
 
 import com.squareup.otto.Subscribe;
@@ -34,6 +38,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.fragment.UploadSettingsFragment;
+import org.amahi.anywhere.util.LocaleHelper;
 
 /**
  * Settings activity. Shows application's settings.
@@ -55,7 +60,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_settings);
 
-        setUpSettingsFragment();
+        if (savedInstanceState == null) {
+            setUpSettingsFragment();
+        }
     }
 
     private void setUpHomeNavigation() {
@@ -63,7 +70,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setUpSettingsFragment() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .replace(R.id.settings_container, new SettingsFragment()).commit();
     }
@@ -82,7 +89,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Subscribe
     public void onUploadSettingsOpenEvent(UploadSettingsOpeningEvent event) {
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .replace(R.id.settings_container, new UploadSettingsFragment())
             .addToBackStack(null)
@@ -101,5 +108,10 @@ public class SettingsActivity extends AppCompatActivity {
         super.onPause();
 
         BusProvider.getBus().unregister(this);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

@@ -31,20 +31,23 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -61,8 +64,8 @@ import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
-import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.AlertDialogFragment;
+import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ProgressDialogFragment;
@@ -368,8 +371,12 @@ public class ServerFilesActivity extends AppCompatActivity implements
         if (EasyPermissions.hasPermissions(this, perms)) {
             openCamera();
         } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.camera_permission),
-                CAMERA_PERMISSION, perms);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ServerFilesActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                showPermissionSnackBar(getString(R.string.file_upload_permission_denied));
+            } else {
+                EasyPermissions.requestPermissions(this, getString(R.string.camera_permission),
+                    CAMERA_PERMISSION, perms);
+            }
         }
     }
 
@@ -399,11 +406,16 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkFileReadPermissions() {
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+
         if (EasyPermissions.hasPermissions(this, perms)) {
             showFileChooser();
         } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
-                FILE_UPLOAD_PERMISSION, perms);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                showPermissionSnackBar(getString(R.string.file_upload_permission_denied));
+            } else {
+                EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
+                    FILE_UPLOAD_PERMISSION, perms);
+            }
         }
     }
 
@@ -440,6 +452,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     if (cameraImage.exists()) {
                         uploadFile(cameraImage);
                     }
+                    break;
+                case AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE:
                     break;
             }
         }

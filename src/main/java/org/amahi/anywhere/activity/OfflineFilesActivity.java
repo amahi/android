@@ -1,14 +1,16 @@
 package org.amahi.anywhere.activity;
 
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -62,7 +64,6 @@ public class OfflineFilesActivity extends AppCompatActivity {
 
     private void setUpHomeNavigation() {
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
     }
 
     private void setUpFiles(Bundle state) {
@@ -180,7 +181,23 @@ public class OfflineFilesActivity extends AppCompatActivity {
 
     @Subscribe
     public void onFileDeleting(OfflineFileDeleteEvent event) {
-        deleteFileFromOfflineStorage(event.getFile());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.alert_delete_dialog);
+        builder.setMessage(R.string.alert_delete_confirm);
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteFileFromOfflineStorage(event.getFile());
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     private void deleteFileFromOfflineStorage(ServerFile serverFile) {

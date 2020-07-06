@@ -16,7 +16,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_refresh"
     android:layout_width="match_parent"
@@ -44,7 +44,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="140dp"
-                android:background="@android:color/black"
+                android:background="@color/background_primary"
                 android:orientation="vertical"
                 android:scaleType="fitXY">
 
@@ -81,12 +81,11 @@
                     <TextView
                         android:id="@+id/server_name"
                         android:layout_width="match_parent"
-                        android:layout_height="20dp"
+                        android:layout_height="wrap_content"
                         android:drawableEnd="@drawable/nav_arrow_down"
                         android:ellipsize="end"
                         android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:textColor="@android:color/white"
                         android:paddingEnd="16dp"
                         android:paddingStart="16dp"
                         android:text="@string/title_no_server"
@@ -100,7 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="16dp" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_navigation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -118,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="32dp"
                     android:layout_marginStart="16dp"
-                    android:src="@drawable/ic_offline_white_24dp"
+                    android:src="@drawable/ic_offline_24dp"
                     tools:ignore="contentDescription" />
 
                 <TextView
@@ -155,4 +154,4 @@
         </LinearLayout>
 
     </ViewAnimator>
-</android.support.v4.widget.SwipeRefreshLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

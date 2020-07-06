@@ -31,14 +31,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.app.NotificationCompat.MediaStyle;
-import android.support.v4.media.session.MediaButtonReceiver;
+import androidx.media.app.NotificationCompat.MediaStyle;
+import androidx.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -259,12 +259,12 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         NotificationCompat.Builder notificationBuilder =
             new NotificationCompat.Builder(mService, CHANNEL_ID);
-        notificationBuilder.addAction(android.R.drawable.ic_media_previous,
+        notificationBuilder.addAction(R.drawable.ic_skip_previous_36dp,
             mService.getString(R.string.label_previous), mPreviousIntent);
 
         addPlayPauseAction(notificationBuilder);
 
-        notificationBuilder.addAction(android.R.drawable.ic_media_next,
+        notificationBuilder.addAction(R.drawable.ic_skip_next_36dp,
             mService.getString(R.string.label_next), mNextIntent);
 
         MediaDescriptionCompat description = mMetadata.getDescription();
@@ -321,11 +321,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
         PendingIntent intent;
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
             label = mService.getString(R.string.label_pause);
-            icon = android.R.drawable.ic_media_pause;
+            icon = R.drawable.ic_pause_36dp;
             intent = mPauseIntent;
         } else {
             label = mService.getString(R.string.label_play);
-            icon = android.R.drawable.ic_media_play;
+            icon = R.drawable.ic_play_36dp;
             intent = mPlayIntent;
         }
         builder.addAction(new NotificationCompat.Action(icon, label, intent));

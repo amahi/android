@@ -20,7 +20,7 @@
 package org.amahi.anywhere.tv.presenter;
 
 import android.content.Context;
-import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter;
+import androidx.leanback.widget.AbstractDetailsDescriptionPresenter;
 import android.text.format.Formatter;
 
 import org.amahi.anywhere.server.model.ServerFile;

@@ -24,12 +24,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v17.leanback.app.GuidedStepFragment;
-import android.support.v17.leanback.widget.GuidanceStylist;
-import android.support.v17.leanback.widget.GuidedAction;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.leanback.app.GuidedStepFragment;
+import androidx.leanback.widget.GuidanceStylist;
+import androidx.leanback.widget.GuidedAction;
+import androidx.core.content.ContextCompat;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NavigationActivity;
@@ -76,7 +76,7 @@ public class ServerSelectFragment extends GuidedStepFragment {
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
         super.onCreateActions(actions, savedInstanceState);
         mSharedPref = Preferences.getPreference(mContext);
-        mServerArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
+        mServerArrayList = getActivity().getIntent().getParcelableArrayListExtra("INTENT_SERVERS");
 
         setTitle(actions);
         populateData();

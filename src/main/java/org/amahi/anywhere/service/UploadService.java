@@ -31,9 +31,9 @@ import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.squareup.otto.Subscribe;
 
@@ -59,6 +59,8 @@ import javax.inject.Inject;
  * File upload service
  */
 public class UploadService extends Service implements UploadManager.UploadCallbacks {
+
+    private static final String UPLOAD_CHANNEL_ID = "file_upload";
 
     @Inject
     ServerClient serverClient;
@@ -236,7 +238,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
     @Override
     public void uploadStarted(int id, String fileName) {
-        notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
+        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), UPLOAD_CHANNEL_ID);
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)

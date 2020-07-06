@@ -1,7 +1,7 @@
 package org.amahi.anywhere.activity;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -40,7 +40,6 @@ public class WebViewActivity extends AppCompatActivity {
 
     private void setUpHomeNavigation() {
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
     }
 
     @Override

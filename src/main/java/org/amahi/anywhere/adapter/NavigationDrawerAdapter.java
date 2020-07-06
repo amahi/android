@@ -2,7 +2,9 @@ package org.amahi.anywhere.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +71,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
     }
 
     @Override
-    public void onBindViewHolder(NavigationDrawerViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NavigationDrawerViewHolder holder, int position) {
         if (mServerName != null) {
             setSelectedServerOptions(holder, position);
             return;
@@ -78,6 +80,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
     }
 
     private void setSelectedServerOptions(NavigationDrawerViewHolder holder, int position) {
+        assert mServerName != null;
         getServerBubble(holder).setImageDrawable(getServerBubble(mServerName, position));
         getTitleShare(holder).setText(mServerName.get(position));
     }
@@ -88,12 +91,12 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
         switch (position) {
             case NavigationDrawerAdapter.NavigationItems.SHARES:
                 name = mContext.getString(R.string.title_shares);
-                imageId = R.drawable.ic_shares_white;
+                imageId = R.drawable.ic_shares;
                 break;
 
             case NavigationDrawerAdapter.NavigationItems.APPS:
                 name = mContext.getString(R.string.title_apps);
-                imageId = R.drawable.ic_apps_white;
+                imageId = R.drawable.ic_apps;
                 break;
 
             default:
@@ -114,6 +117,7 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
     @Override
     public int getItemCount() {
+        assert mServerName != null;
         return mNavigationItems != null ? mNavigationItems.size() : mServerName.size();
     }
 

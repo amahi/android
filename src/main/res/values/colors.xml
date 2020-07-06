@@ -17,24 +17,27 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- https://www.materialpalette.com/blue/orange -->
     <color name="primary">#2196F3</color>
     <color name="primary_dark">#1976D2</color>
-    <color name="primary_light">#BBDEFB</color>
+    <color name="primary_light">#8aacc8</color>
     <color name="primary_action_mode">#328ce7</color>
     <color name="accent">#FF9800</color>
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#757575</color>
+    <color name="primary_text">#FFFFFFFF</color>
+    <color name="secondary_text">#B3FFFFFF</color>
     <color name="icons">#FFFFFF</color>
-    <color name="divider">#BDBDBD</color>
-    <color name="error_red">#d32f2f</color>
+    <color name="divider">#757575</color>
+    <color name="error_red">#ff0033</color>
+    <color name="sign_in_button">#19B4F4</color>
+    <color name="background_toolbar">#19B4F4</color>
 
-    <color name="background_primary">#1a1a1a</color>
-    <color name="background_secondary">#333333</color>
+    <color name="background_primary">#212121</color>
+    <color name="background_secondary">#303030</color>
     <color name="background_transparent_primary">#cc000000</color>
     <color name="background_transparent_secondary">#80000000</color>
     <color name="primary_text_material_light">#deffffff</color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/secondary_text</color>
 
     <!--ATV COLORS-->
     <color name="intro_1">#0277bd</color>

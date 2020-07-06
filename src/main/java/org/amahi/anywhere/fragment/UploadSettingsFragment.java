@@ -29,16 +29,23 @@ import android.accounts.OperationCanceledException;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
+
+import com.google.android.material.textfield.TextInputEditText;
+
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreference;
+import androidx.fragment.app.DialogFragment;
+import androidx.preference.EditTextPreferenceDialogFragmentCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import android.view.View;
 
 import com.squareup.otto.Subscribe;
 
@@ -54,6 +61,7 @@ import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.CustomEditTextPreference;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,12 +76,14 @@ import pub.devrel.easypermissions.EasyPermissions;
 /**
  * Upload Settings fragment. Shows upload settings.
  */
-public class UploadSettingsFragment extends PreferenceFragment implements
+public class UploadSettingsFragment extends PreferenceFragmentCompat implements
     Preference.OnPreferenceChangeListener,
     AccountManagerCallback<Bundle>,
     EasyPermissions.PermissionCallbacks {
 
     private static final int READ_PERMISSIONS = 110;
+    private static final String DIALOG_FRAGMENT_TAG =
+        "android.support.v7.preference.PreferenceFragment.DIALOG";
     @Inject
     AmahiClient amahiClient;
 
@@ -90,7 +100,10 @@ public class UploadSettingsFragment extends PreferenceFragment implements
         setUpInjections();
 
         setUpTitle();
+    }
 
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setUpSettings();
     }
 
@@ -228,7 +241,7 @@ public class UploadSettingsFragment extends PreferenceFragment implements
     }
 
     private String getAutoUploadTitle(boolean isUploadEnabled) {
-        return isUploadEnabled ? "Enable" : "Disable";
+        return isUploadEnabled ? getString(R.string.enable) : getString(R.string.disable);
     }
 
     private void setUpSettingsListeners() {
@@ -263,13 +276,6 @@ public class UploadSettingsFragment extends PreferenceFragment implements
             }
         } else if (key.equals(getString(R.string.preference_key_upload_share))) {
             getSharePreference().setSummary(String.valueOf(newValue));
-        } else if (key.equals(getString(R.string.preference_key_upload_location))) {
-            String location = String.valueOf(newValue);
-            if (location.isEmpty()) {
-                getLocationPreference().setSummary(getString(R.string.preference_summary_location));
-            } else {
-                setUploadLocationSummary(String.valueOf(newValue));
-            }
         }
         return true;
     }
@@ -392,9 +398,87 @@ public class UploadSettingsFragment extends PreferenceFragment implements
         return (ListPreference) getPreference(R.string.preference_key_upload_share);
     }
 
-    private EditTextPreference getLocationPreference() {
-        return (EditTextPreference) getPreference(R.string.preference_key_upload_location);
+    private CustomEditTextPreference getLocationPreference() {
+        return (CustomEditTextPreference) getPreference(R.string.preference_key_upload_location);
     }
+
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+        if (getFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
+            return;
+        }
+
+        DialogFragment f = null;
+        if (preference instanceof CustomEditTextPreference) {
+            f = EditTextPreferenceDialog.newInstance(preference.getKey());
+        } else {
+            super.onDisplayPreferenceDialog(preference);
+        }
+        if (f != null) {
+            f.setTargetFragment(this, 0);
+            f.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
+        }
+    }
+
+    public static class EditTextPreferenceDialog extends EditTextPreferenceDialogFragmentCompat {
+        TextInputEditText etLocation;
+
+        public static EditTextPreferenceDialog newInstance(String key) {
+            final EditTextPreferenceDialog
+                fragment = new EditTextPreferenceDialog();
+            final Bundle b = new Bundle(1);
+            b.putString(ARG_KEY, key);
+            fragment.setArguments(b);
+            return fragment;
+        }
+
+
+        @Override
+        protected void onBindDialogView(View view) {
+            etLocation = view.findViewById(R.id.et_location_preference);
+            etLocation.setText(getUploadLocation());
+            etLocation.setSelection(etLocation.getText().length());
+
+        }
+
+        private String getUploadLocation() {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            return preferences.getString(getString(R.string.preference_key_upload_location), null);
+        }
+
+        private void setUploadLocation(String location) {
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            if (location.isEmpty()) {
+                getPreference().setSummary(getString(R.string.preference_summary_location));
+            } else {
+                setUploadLocationSummary(location);
+            }
+            preferences.edit().putString(getString(R.string.preference_key_upload_location), location).apply();
+
+        }
+
+        private void setUploadLocationSummary(String location) {
+            if (!location.isEmpty()) {
+                if (location.length() > 25) {
+                    location = location.substring(0, 21);
+                    location += "...";
+                }
+                getPreference().setSummary(location);
+            }
+        }
+
+        @Override
+        public void onDialogClosed(boolean positiveResult) {
+            if (positiveResult && etLocation != null && etLocation.getText() != null) {
+                setUploadLocation(etLocation.getText().toString());
+            }
+
+        }
+
+
+    }
+
 
     private void tearDownActivity() {
         getActivity().finish();

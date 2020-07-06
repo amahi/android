@@ -21,11 +21,11 @@ package org.amahi.anywhere.tv.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v17.leanback.app.VerticalGridFragment;
-import android.support.v17.leanback.widget.ArrayObjectAdapter;
-import android.support.v17.leanback.widget.OnItemViewClickedListener;
-import android.support.v17.leanback.widget.VerticalGridPresenter;
+import androidx.annotation.Nullable;
+import androidx.leanback.app.VerticalGridFragment;
+import androidx.leanback.widget.ArrayObjectAdapter;
+import androidx.leanback.widget.OnItemViewClickedListener;
+import androidx.leanback.widget.VerticalGridPresenter;
 
 import com.squareup.otto.Subscribe;
 

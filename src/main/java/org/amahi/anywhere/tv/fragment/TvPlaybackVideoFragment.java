@@ -27,19 +27,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v17.leanback.app.PlaybackFragment;
-import android.support.v17.leanback.widget.Action;
-import android.support.v17.leanback.widget.ArrayObjectAdapter;
-import android.support.v17.leanback.widget.ClassPresenterSelector;
-import android.support.v17.leanback.widget.ControlButtonPresenterSelector;
-import android.support.v17.leanback.widget.HeaderItem;
-import android.support.v17.leanback.widget.ListRow;
-import android.support.v17.leanback.widget.ListRowPresenter;
-import android.support.v17.leanback.widget.OnItemViewClickedListener;
-import android.support.v17.leanback.widget.OnItemViewSelectedListener;
-import android.support.v17.leanback.widget.PlaybackControlsRow;
-import android.support.v17.leanback.widget.PlaybackControlsRowPresenter;
-import android.support.v4.content.ContextCompat;
+import androidx.leanback.app.PlaybackFragment;
+import androidx.leanback.widget.Action;
+import androidx.leanback.widget.ArrayObjectAdapter;
+import androidx.leanback.widget.ClassPresenterSelector;
+import androidx.leanback.widget.ControlButtonPresenterSelector;
+import androidx.leanback.widget.HeaderItem;
+import androidx.leanback.widget.ListRow;
+import androidx.leanback.widget.ListRowPresenter;
+import androidx.leanback.widget.OnItemViewClickedListener;
+import androidx.leanback.widget.OnItemViewSelectedListener;
+import androidx.leanback.widget.PlaybackControlsRow;
+import androidx.leanback.widget.PlaybackControlsRowPresenter;
+import androidx.core.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -51,6 +51,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.presenter.MainTVPresenter;
 import org.amahi.anywhere.tv.presenter.VideoDetailsDescriptionPresenter;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
@@ -190,7 +191,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     private void setLibVlc() {
         final ArrayList<String> args = new ArrayList<>();
-        args.add("-vvv");
+        args.add(Constants.videoVLCLibArg);
         mLibVlc = new LibVLC(getActivity(), args);
     }
 
@@ -249,9 +250,9 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         HeaderItem headerItem;
 
         if (getVideoFile().getParentFile() == null)
-            headerItem = new HeaderItem("Video(s) in " + getVideoShare().getName());
+            headerItem = new HeaderItem(getString(R.string.videos_in) + getVideoShare().getName());
         else
-            headerItem = new HeaderItem("Video(s) in " + getVideoFile().getParentFile().getName());
+            headerItem = new HeaderItem(getString(R.string.videosin) + getVideoFile().getParentFile().getName());
 
         return headerItem;
     }

@@ -22,13 +22,13 @@ package org.amahi.anywhere.tv.fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v17.leanback.app.BrowseFragment;
-import android.support.v17.leanback.widget.ArrayObjectAdapter;
-import android.support.v17.leanback.widget.HeaderItem;
-import android.support.v17.leanback.widget.ListRow;
-import android.support.v17.leanback.widget.ListRowPresenter;
-import android.support.v17.leanback.widget.Presenter;
-import android.support.v17.leanback.widget.PresenterSelector;
+import androidx.leanback.app.BrowseFragment;
+import androidx.leanback.widget.ArrayObjectAdapter;
+import androidx.leanback.widget.HeaderItem;
+import androidx.leanback.widget.ListRow;
+import androidx.leanback.widget.ListRowPresenter;
+import androidx.leanback.widget.Presenter;
+import androidx.leanback.widget.PresenterSelector;
 
 import com.squareup.otto.Subscribe;
 
@@ -164,8 +164,8 @@ public class MainTVFragment extends BrowseFragment {
     private void addSettings(ArrayObjectAdapter adapter) {
         ArrayObjectAdapter gridRowAdapter;
 
-        HeaderItem settings = new HeaderItem("Settings");
-        ArrayList<Server> serverArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
+        HeaderItem settings = new HeaderItem(getString(R.string.header_settings));
+        ArrayList<Server> serverArrayList = getActivity().getIntent().getParcelableArrayListExtra("INTENT_SERVERS");
         gridRowAdapter = new ArrayObjectAdapter(new SettingsItemPresenter(serverArrayList));
         gridRowAdapter.add(getString(R.string.pref_title_server_select));
         gridRowAdapter.add(getString(R.string.pref_title_sign_out));

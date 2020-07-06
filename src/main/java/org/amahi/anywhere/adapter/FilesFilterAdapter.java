@@ -22,7 +22,7 @@ package org.amahi.anywhere.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.widget.Filter;
@@ -37,6 +37,7 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.ServerFileClickListener;
 
 import java.io.File;
@@ -123,7 +124,7 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
                 .into(fileIconView);
         } else {
             Glide.with(fileIconView.getContext())
-                .load(getImageUri(file))
+                .load(getImageUri(fileIconView.getContext(), file))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .placeholder(Mimes.getFileIcon(file))
@@ -135,7 +136,10 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         return new File(context.getFilesDir() + "/" + Downloader.OFFLINE_PATH + "/" + name);
     }
 
-    private Uri getImageUri(ServerFile file) {
+    private Uri getImageUri(Context context, ServerFile file) {
+        if(!Preferences.getServerName(context).equals("Welcome to Amahi")) {
+            return serverClient.getFileThumbnailUri(serverShare, file);
+        }
         return serverClient.getFileUri(serverShare, file);
     }
 

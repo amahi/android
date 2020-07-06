@@ -31,10 +31,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -332,7 +332,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         tvIntent = new Intent(getContext(), MainTVActivity.class);
 
-        tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers), new ArrayList<>(filterActiveServers(event.getServers())));
+        tvIntent.putParcelableArrayListExtra("INTENT_SERVERS", new ArrayList<>(filterActiveServers(event.getServers())));
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
@@ -472,6 +472,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         //Changing the Title Server Name
         getServerNameTextView().setText(getServersList().get(position).getName());
+
+        showNavigationItems();
 
         storeServerName(getServersList().get(position));
 

@@ -19,7 +19,9 @@
 
 package org.amahi.anywhere.bus;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
+
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import org.amahi.anywhere.adapter.AudioFilesAdapter;
@@ -34,6 +36,7 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
     private MainTVPresenter.ViewHolder viewHolder;
     private AudioFilesAdapter.AudioFileViewHolder audioFileHolder;
     private ImageView imageView;
+    private FrameLayout backgroundLayout;
 
     public AudioMetadataRetrievedEvent(AudioMetadata metadata,
                                        ServerFile serverFile,
@@ -67,6 +70,15 @@ public class AudioMetadataRetrievedEvent implements BusEvent {
 
     public void setImageView(ImageView imageView) {
         this.imageView = imageView;
+    }
+
+    @Nullable
+    public FrameLayout getBackgroundLayout() {
+        return backgroundLayout;
+    }
+
+    public void setBackgroundLayout(FrameLayout backgroundLayout) {
+        this.backgroundLayout = backgroundLayout;
     }
 
     public ServerFile getServerFile() {

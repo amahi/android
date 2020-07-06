@@ -23,16 +23,20 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
+
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+import androidx.annotation.Nullable;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.AppCompatDelegate;
+
 import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -44,6 +48,8 @@ import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Constants;
+import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Preferences;
 
@@ -55,16 +61,22 @@ import javax.inject.Inject;
 /**
  * Settings fragment. Shows application's settings.
  */
-public class SettingsFragment extends PreferenceFragment implements
+public class SettingsFragment extends PreferenceFragmentCompat implements
     SharedPreferences.OnSharedPreferenceChangeListener,
-    AccountManagerCallback<Boolean> {
+    AccountManagerCallback<Boolean>,
+    AlertDialogFragment.SignOutDialogCallback {
     @Inject
     ServerClient serverClient;
+    public static final int RESULT_THEME_UPDATED = 3;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setUpInjections();
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle bundle, String s) {
         setUpSettings();
     }
 
@@ -130,9 +142,10 @@ public class SettingsFragment extends PreferenceFragment implements
         Preference applicationRating = getPreference(R.string.preference_key_about_rating);
         Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
+        Preference lightTheme = getPreference(R.string.pref_key_light_theme);
 
         accountSignOut.setOnPreferenceClickListener(preference -> {
-            setConfirmationDialog();
+            setUpSignOutDialogFragment();
             return true;
         });
         applicationIntro.setOnPreferenceClickListener(preference -> {
@@ -159,6 +172,10 @@ public class SettingsFragment extends PreferenceFragment implements
             openUploadSettingsFragment();
             return true;
         });
+        lightTheme.setOnPreferenceChangeListener((preference, newValue) -> {
+            setUpTheme((Boolean) newValue);
+            return true;
+        });
 
     }
 
@@ -172,12 +189,38 @@ public class SettingsFragment extends PreferenceFragment implements
         BusProvider.getBus().post(new UploadSettingsOpeningEvent());
     }
 
-    private void setConfirmationDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getString(R.string.sign_out_title))
-            .setMessage(getString(R.string.sign_out_message))
-            .setPositiveButton(getString(R.string.sign_out_title), (dialog, which) -> tearDownAccount())
-            .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss()).show();
+    private void setUpTheme(Boolean isLightThemeEnabled) {
+        getActivity().setResult(RESULT_THEME_UPDATED);
+        if (isLightThemeEnabled) {
+            AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
+        AmahiApplication.getInstance().setIsLightThemeEnabled(isLightThemeEnabled);
+        getActivity().finish();
+        startActivity(getActivity().getIntent());
+    }
+
+    private void setUpSignOutDialogFragment() {
+        AlertDialogFragment signOutDialogFragment = new AlertDialogFragment();
+        signOutDialogFragment.setTargetFragment(this, 1);
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.SIGN_OUT_DIALOG);
+        signOutDialogFragment.setArguments(bundle);
+        signOutDialogFragment.show(getFragmentManager(), "sign_out_dialog");
+    }
+
+    @Override
+    public void dialogPositiveButtonOnClick() {
+        tearDownAccount();
+    }
+
+    @Override
+    public void dialogNegativeButtonOnClick() {
+
     }
 
     private void tearDownAccount() {
@@ -216,7 +259,7 @@ public class SettingsFragment extends PreferenceFragment implements
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
         sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message));
-        sendIntent.setType("text/plain");
+        sendIntent.setType(Constants.emailTextPlainType);
         startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
     }
 

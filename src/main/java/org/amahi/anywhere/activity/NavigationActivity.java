@@ -22,12 +22,14 @@ package org.amahi.anywhere.activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
@@ -70,9 +72,16 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     ServerClient serverClient;
     private ActionBarDrawerToggle navigationDrawerToggle;
     private String navigationTitle;
+    final private int SETTINGS_ACTION = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (AmahiApplication.getInstance().isLightThemeEnabled()) {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
@@ -138,7 +147,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void hideActionBar() {
-        getSupportActionBar().hide();
+        if (getSupportActionBar()!=null) getSupportActionBar().hide();
     }
 
     private void setUpInjections() {
@@ -164,17 +173,18 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         if (!CheckTV.isATV(this)) setUpNavigationFragment();
 
         if (isNavigationDrawerAvailable() && isNavigationDrawerRequired(state)) {
-            showNavigationDrawer();
+            this.navigationTitle = getString(R.string.title_shares);
+            setUpTitle();
+            setUpShares();
         }
 
-        setUpNavigationTitle(state);
     }
 
     private void setUpNavigationDrawer() {
         this.navigationDrawerToggle = buildNavigationDrawerToggle();
 
         getDrawer().addDrawerListener(this);
-        getDrawer().setDrawerShadow(R.drawable.bg_shadow_drawer, Gravity.START);
+        getDrawer().setDrawerShadow(R.drawable.bg_shadow_drawer, GravityCompat.START);
     }
 
     private ActionBarDrawerToggle buildNavigationDrawerToggle() {
@@ -213,14 +223,6 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     @Override
     public void onDrawerStateChanged(int state) {
         navigationDrawerToggle.onDrawerStateChanged(state);
-    }
-
-    private void setUpNavigationTitle(Bundle state) {
-        this.navigationTitle = getNavigationTitle(state);
-
-        if (isNavigationDrawerAvailable() && !isNavigationDrawerOpen()) {
-            setUpTitle();
-        }
     }
 
     private String getNavigationTitle(Bundle state) {
@@ -363,7 +365,19 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
     private void setUpSettings() {
         Intent intent = Intents.Builder.with(this).buildSettingsIntent();
-        startActivity(intent);
+        startActivityForResult(intent, SETTINGS_ACTION);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == SETTINGS_ACTION) {
+            if (resultCode == SettingsActivity.RESULT_THEME_UPDATED) {
+                finish();
+                startActivity(getIntent());
+                return;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

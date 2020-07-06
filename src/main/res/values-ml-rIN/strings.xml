@@ -36,6 +36,7 @@
     <string name="message_empty_recent_files">അടുത്തിടെയുള്ള ഫയലുകളൊന്നുമില്ല</string>
     <string name="message_error_account_exists">അക്കൗണ്ട് ഇതിനകം നിലവിലുണ്ട്</string>
     <string name="message_error_search_application">ഈ ഫയലിനായി പിന്തുണയ്ക്കുന്ന അപ്ലിക്കേഷനുകളൊന്നും ഞങ്ങൾ കണ്ടെത്തിയില്ല.</string>
+    <string name="forgot_password"> <a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
     <string name="message_error_authentication">ഉപയോക്തൃനാമമോ പാസ്വേഡോ തെറ്റാണ്. വീണ്ടും ശ്രമിക്കുക.</string>
     <string name="message_error_authentication_connection">കണക്ഷൻ തകരാറ്. നിങ്ങളുടെ ക്രമീകരണങ്ങൾ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</string>
     <string name="message_error_authentication_field_empty">ഉപയോക്തൃനാമം അല്ലെങ്കിൽ പാസ്വേഡ് ഫീൽഡ് ശൂന്യമാക്കിയിടാൻ കഴിയില്ല</string>
@@ -47,8 +48,8 @@
     <string name="message_notice_check_settings">നിങ്ങളുടെ ക്രമീകരണങ്ങൾ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</string>
     <string name="message_notice_create_some">കുറച്ച് സൃഷ്ടിച്ച് വീണ്ടും ശ്രമിക്കുക</string>
     <string name="message_notice_visit_some">കുറച്ച് സന്ദർശിച്ച് വീണ്ടും ശ്രമിക്കുക</string>
-    <string name="message_progress_file_downloading">ഫയൽ ഡൗൺലോഡുചെയ്യുന്നു ...</string>
-    <string name="message_progress_file_preparing">ഫയൽ തയ്യാറാക്കുന്നു ...</string>
+    <string name="message_progress_file_downloading">ഫയൽ ഡൗൺലോഡുചെയ്യുന്നു&#8230;</string>
+    <string name="message_progress_file_preparing">ഫയൽ തയ്യാറാക്കുന്നു&#8230;</string>
     <string name="message_no_files">ഡൌൺലോഡ് ചെയ്ത ഫയലുകൾ ഇവിടെ ദൃശ്യമാകും</string>
     <string name="message_create_and_try_again">ഡൌൺലോഡ് ചെയ്യാൻ ഫയലുകൾ കണ്ടെത്തുക</string>
     <string name="message_connection_error">കണക്ഷൻ തകരാറ്</string>
@@ -90,16 +91,10 @@
     <string name="label_next">അടുത്തത്</string>
     <string name="label_play">പ്ലേ ചെയ്യുക</string>
     <string name="label_pause">താൽക്കാലികമായി നിർത്തുക</string>
-    <string name="media_route_menu_title">പ്ലേ ചെയ്യുക ...</string>
+    <string name="media_route_menu_title">പ്ലേ ചെയ്യുക&#8230;</string>
     <string name="upload_camera">ക്യാമറ ഉപയോഗിക്കുക</string>
     <string name="upload_file">ഫയൽ അപ്ലോഡുചെയ്യുക</string>
     <string name="app_title">അമാഹി ടിവി</string>
-    <string name="intent_files">INTENT_FILE</string>
-    <string name="intent_shares">ഇൻടന്റ് പങ്കിടുക</string>
-    <string name="intent_servers">INTENT_SERVERS</string>
-    <string name="preference">മുൻഗണന</string>
-    <string name="is_first_run">ഇതാണ് ഫ്രസ്റ്റ് റൂണ്</string>
-    <string name="selected_server_session">SERVER_SESSION</string>
     <string name="exit_title">പുറത്ത്</string>
     <string name="exit_message">നിങ്ങള് വിട്ടു പോകുകയാണ് എന്ന് ഉറപ്പാണോ?</string>
     <string name="yes">അതെ</string>

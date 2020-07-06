@@ -3,7 +3,9 @@ package org.amahi.anywhere.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,16 +45,15 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         BusProvider.getBus().register(this);
     }
 
+    @NonNull
     @Override
     public RecentFilesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new RecentFilesViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_server_file_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(RecentFilesViewHolder holder, int position) {
-
+    public void onBindViewHolder(@NonNull RecentFilesViewHolder holder, int position) {
         RecentFile file = recentFiles.get(position);
-
         setUpViewHolder(file, holder);
     }
 
@@ -82,8 +83,6 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
     }
 
     private void setUpViewHolderListeners(RecentFilesViewHolder fileHolder) {
-        fileHolder.itemView.setOnClickListener(view -> mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition()));
-
         fileHolder.moreOptions.setOnClickListener(view -> {
             mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
         });

@@ -10,15 +10,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +43,7 @@ import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
+import org.amahi.anywhere.fragment.AlertDialogFragment;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
 import org.amahi.anywhere.model.FileOption;
@@ -71,7 +70,8 @@ public class RecentFilesActivity extends AppCompatActivity implements
     ServerFileClickListener,
     SwipeRefreshLayout.OnRefreshListener,
     EasyPermissions.PermissionCallbacks,
-    CastStateListener {
+    CastStateListener,
+    AlertDialogFragment.DeleteFileDialogCallback {
 
     @Inject
     ServerClient serverClient;
@@ -92,6 +92,11 @@ public class RecentFilesActivity extends AppCompatActivity implements
         setUpCast();
         setUpHomeNavigation();
         setUpFilesContentRefreshing();
+
+        //retrieving preserved selected item (if any) on screen rotation
+        if (savedInstanceState != null && savedInstanceState.containsKey(State.SELECTED_ITEM)) {
+            this.selectedPosition = savedInstanceState.getInt(State.SELECTED_ITEM);
+        }
     }
 
     private void setUpInjections() {
@@ -129,7 +134,6 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void setUpHomeNavigation() {
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.ic_launcher);
         setUpFilesTitle();
     }
 
@@ -139,20 +143,11 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void setUpRecentFileList() {
         getRecentFileRView().setLayoutManager(new LinearLayoutManager(this));
-        addListItemDivider();
         setUpListAdapter();
     }
 
     private RecyclerView getRecentFileRView() {
         return findViewById(R.id.recent_list);
-    }
-
-    private void addListItemDivider() {
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
-            getRecentFileRView().getContext(),
-            DividerItemDecoration.VERTICAL);
-
-        getRecentFileRView().addItemDecoration(dividerItemDecoration);
     }
 
     private void setUpListAdapter() {
@@ -442,16 +437,23 @@ public class RecentFilesActivity extends AppCompatActivity implements
     }
 
     private void deleteFile() {
+        AlertDialogFragment deleteFileDialog = new AlertDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.DELETE_FILE_DIALOG);
+        deleteFileDialog.setArguments(bundle);
+        deleteFileDialog.show(getSupportFragmentManager(), "delete_dialog");
+    }
 
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.message_delete_file_title)
-            .setMessage(R.string.message_delete_file_body)
-            .setPositiveButton(R.string.button_yes, (dialog, which) -> {
-                showDeleteDialog();
-                serverClient.deleteFile(getSelectedRecentFile().getShareName(), prepareServerFile(getSelectedRecentFile()));
-            })
-            .setNegativeButton(R.string.button_no, null)
-            .show();
+    @Override
+    public void dialogPositiveButtonOnClick() {
+        showDeleteDialog();
+        serverClient.deleteFile(getSelectedRecentFile().getShareName(), prepareServerFile(getSelectedRecentFile()));
+
+    }
+
+    @Override
+    public void dialogNegativeButtonOnClick() {
+
     }
 
     private void showDeleteDialog() {
@@ -526,6 +528,13 @@ public class RecentFilesActivity extends AppCompatActivity implements
         startService(downloadService);
     }
 
+    private static final class State {
+        public static final String SELECTED_ITEM = "selected_item";
+
+        private State() {
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -555,6 +564,13 @@ public class RecentFilesActivity extends AppCompatActivity implements
             menu, R.id.media_route_menu_item);
 
         return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //to preserve selected item on screen rotation
+        outState.putInt(State.SELECTED_ITEM, selectedPosition);
     }
 
     @Override

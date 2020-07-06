@@ -1,6 +1,6 @@
 package org.amahi.anywhere.bus;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 public class DialogButtonClickedEvent implements BusEvent {
     public static final int YES = 1;

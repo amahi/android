@@ -22,7 +22,7 @@
 
     <item
         android:id="@+id/menu_share"
-        android:icon="@drawable/ic_share_white_24dp"
+        android:icon="@drawable/ic_share_24dp"
         android:orderInCategory="100"
         android:title="@string/menu_share"
         app:showAsAction="always" />
@@ -32,7 +32,7 @@
         android:id="@+id/media_route_menu_item"
         android:orderInCategory="101"
         android:title="@string/media_route_menu_item"
-        app:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
+        app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
         app:showAsAction="always" />
 
 </menu>

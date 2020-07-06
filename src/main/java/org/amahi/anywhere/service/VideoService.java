@@ -28,6 +28,7 @@ import android.os.IBinder;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
@@ -39,6 +40,7 @@ import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.Preferences;
@@ -90,7 +92,7 @@ public class VideoService extends Service {
 
     private void setUpVideoPlayer() {
         final ArrayList<String> args = new ArrayList<>();
-        args.add("-vvv");
+        args.add(Constants.videoVLCLibArg);
         mLibVLC = new LibVLC(this, args);
         mMediaPlayer = new MediaPlayer(mLibVLC);
     }

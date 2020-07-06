@@ -20,13 +20,14 @@
 package org.amahi.anywhere.activity;
 
 import android.accounts.Account;
-import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.app.Activity;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
+
+import com.google.android.material.textfield.TextInputLayout;
+
+import androidx.appcompat.app.AppCompatDelegate;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
@@ -40,6 +41,7 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.account.AccountAuthenticatorAppCompatActivity;
 import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.bus.AuthenticationConnectionFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationFailedEvent;
@@ -54,12 +56,17 @@ import javax.inject.Inject;
  * Authentication activity. Allows user authentication. If operation succeed
  * the authentication token is saved at the {@link android.accounts.AccountManager}.
  */
-public class AuthenticationActivity extends AccountAuthenticatorActivity implements TextWatcher {
+public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivity implements TextWatcher {
     @Inject
     AmahiClient amahiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (AmahiApplication.getInstance().isLightThemeEnabled()) {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
@@ -100,10 +107,9 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
     }
 
     private void setUpAuthenticationMessages() {
-        TextView authenticationFailureMessage = findViewById(R.id.text_message_authentication);
+        TextView forgotPassword = findViewById(R.id.text_forgot_password);
         TextView authenticationConnectionFailureMessage = findViewById(R.id.text_message_authentication_connection);
-
-        authenticationFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        forgotPassword.setMovementMethod(LinkMovementMethod.getInstance());
         authenticationConnectionFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
@@ -151,49 +157,13 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
             ViewDirector.of(this, R.id.animator_message).show(R.id.text_message_authentication_empty);
 
             if (getUsername().trim().isEmpty())
-                getUsernameEdit().getBackground().setColorFilter(ContextCompat.getColor(AuthenticationActivity.this, android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+                getUsernameEdit().requestFocus();
+
             if (getPassword().trim().isEmpty())
-                getPasswordEdit().getBackground().setColorFilter(ContextCompat.getColor(AuthenticationActivity.this, android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+                getPasswordEdit().requestFocus();
 
-            getUsernameEdit().addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    if (!getUsername().trim().isEmpty())
-                        getUsernameEdit().getBackground().setColorFilter(ContextCompat.getColor(AuthenticationActivity.this, R.color.blue_normal), PorterDuff.Mode.SRC_ATOP);
-                    else
-                        getUsernameEdit().getBackground().setColorFilter(ContextCompat.getColor(AuthenticationActivity.this, R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
-
-            getPasswordEdit().addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    if (!getPassword().trim().isEmpty())
-                        getPasswordEdit().getBackground().setColorFilter(ContextCompat.getColor(AuthenticationActivity.this, R.color.blue_normal), PorterDuff.Mode.SRC_ATOP);
-                    else
-                        getPasswordEdit().getBackground().setColorFilter(ContextCompat.getColor(AuthenticationActivity.this, android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
+            if (getUsername().trim().isEmpty() && getPassword().trim().isEmpty())
+                getUsernameEdit().requestFocus();
 
         } else {
             startAuthentication();

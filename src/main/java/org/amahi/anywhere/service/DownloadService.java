@@ -10,9 +10,10 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.squareup.otto.Subscribe;
@@ -30,6 +31,7 @@ import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Intents;
@@ -46,6 +48,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
 
     private static final int NOTIFICATION_OFFLINE_ID = 101;
     private static final int NOTIFICATION_ERROR_ID = 101;
+    private static final String DOWNLOAD_CHANNEL_ID = "file_download";
 
     @Inject
     ServerClient serverClient;
@@ -53,7 +56,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     @Inject
     Downloader downloader;
     private OfflineFileRepository offlineFileRepository;
-    private Notification.Builder notificationBuilder;
+    private NotificationCompat.Builder notificationBuilder;
     private NetworkUtils networkUtils;
     private boolean isDownloading;
 
@@ -150,7 +153,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void resumeDownload(long downloadId, String fileName) {
-        notificationBuilder = new Notification.Builder(getApplicationContext());
+        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), DOWNLOAD_CHANNEL_ID);
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)
@@ -223,7 +226,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
 
     @Override
     public void downloadStarted(int id, String fileName) {
-        notificationBuilder = new Notification.Builder(getApplicationContext());
+        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), DOWNLOAD_CHANNEL_ID);
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)
@@ -236,7 +239,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void notifyDownloadStart() {
-        Intent intent = new Intent("DownloadStarted");
+        Intent intent = new Intent(Constants.downloadStartedIntent);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -252,8 +255,8 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void updateOfflineActivityUI(int progress) {
-        Intent intent = new Intent("DownloadProgress");
-        intent.putExtra("progress", progress);
+        Intent intent = new Intent(Constants.downloadProgressIntent);
+        intent.putExtra(Constants.progressIntentExtra, progress);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -282,8 +285,8 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void notifyDownloadFinish(boolean isSuccess) {
-        Intent intent = new Intent("DownloadFinished");
-        intent.putExtra("success", isSuccess);
+        Intent intent = new Intent(Constants.downloadFinishedIntent);
+        intent.putExtra(Constants.successIntentExtra, isSuccess);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+    ~ Copyright (c) 2014 Amahi
+    ~
+    ~ This file is part of Amahi.
+    ~
+    ~ Amahi is free software: you can redistribute it and/or modify
+    ~ it under the terms of the GNU General Public License as published by
+    ~ the Free Software Foundation, either version 3 of the License, or
+    ~ (at your option) any later version.
+    ~
+    ~ Amahi is distributed in the hope that it will be useful,
+    ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+    ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    ~ GNU General Public License for more details.
+    ~
+    ~ You should have received a copy of the GNU General Public License
+    ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+    -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="bottom"
+    android:layoutDirection="ltr"
+    android:background="@color/background_secondary"
+    android:orientation="vertical"
+    tools:targetApi="28">
+
+    <com.google.android.exoplayer2.ui.DefaultTimeBar
+        android:id="@id/exo_progress"
+        android:layout_width="match_parent"
+        android:layout_height="12dp"
+        app:played_color="@color/accent"
+        app:bar_height="2dp"
+        app:unplayed_color="@color/secondary_text"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <TextView android:id="@id/exo_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:layout_alignParentStart="true"
+            android:includeFontPadding="false"
+            android:textColor="@color/primary_text"/>
+
+        <TextView android:id="@id/exo_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:layout_alignParentEnd="true"
+            android:includeFontPadding="false"
+            android:textColor="@color/primary_text"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="8dp"
+        android:orientation="horizontal">
+
+        <ImageButton android:id="@id/exo_prev"
+            android:tint="@color/primary_text"
+            style="@style/ExoMediaButton.Previous"/>
+
+        <ImageButton android:id="@id/exo_rew"
+            android:tint="@color/primary_text"
+            style="@style/ExoMediaButton.Rewind"/>
+
+        <ImageButton android:id="@id/exo_shuffle"
+            android:tint="@color/primary_text"
+            style="@style/ExoMediaButton.Shuffle"/>
+
+        <ImageButton android:id="@id/exo_repeat_toggle"
+            android:tint="@color/primary_text"
+            style="@style/ExoMediaButton"/>
+
+        <ImageButton android:id="@id/exo_play"
+            android:tint="@color/accent"
+            style="@style/ExoMediaButton.Play"
+            android:src="@drawable/ic_play_circle"/>
+
+        <ImageButton android:id="@id/exo_pause"
+            android:tint="@color/accent"
+            style="@style/ExoMediaButton.Pause"
+            android:src="@drawable/ic_pause_circle"/>
+
+        <ImageButton android:id="@id/exo_ffwd"
+            android:tint="@color/primary_text"
+            style="@style/ExoMediaButton.FastForward"/>
+
+        <ImageButton android:id="@+id/m_exo_next"
+            android:tint="@color/primary_text"
+            style="@style/ExoMediaButton.Next"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

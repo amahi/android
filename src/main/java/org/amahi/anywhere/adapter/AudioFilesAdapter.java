@@ -1,11 +1,10 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,8 +87,10 @@ public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.Au
 
         if (selectedPosition == holder.getAdapterPosition()) {
             holder.audioName.setTextColor(ContextCompat.getColor(context, R.color.accent));
+            holder.audioSubtitle.setTextColor(ContextCompat.getColor(context, R.color.accent));
         } else {
-            holder.audioName.setTextColor(Color.WHITE);
+            holder.audioName.setTextColor(context.getResources().getColor(R.color.primary_text));
+            holder.audioSubtitle.setTextColor(ContextCompat.getColor(context, R.color.secondary_text));
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -141,7 +142,7 @@ public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.Au
             if (audioMetadata.getAudioArtist() != null) {
                 audioFile.setSubtitle(audioMetadata.getAudioArtist());
             } else {
-                audioFile.setSubtitle("Unknown Artist");
+                audioFile.setSubtitle(context.getString(R.string.unknown_artist));
             }
             notifyItemChanged(event.getAudioFileHolder().getAdapterPosition());
         }

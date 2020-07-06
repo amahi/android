@@ -45,7 +45,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="16dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_close_white_24dp"
+        android:src="@drawable/ic_close_24dp"
         />
 
     <ImageButton
@@ -57,6 +57,7 @@
         android:padding="16dp"
         android:scaleType="centerCrop"
         android:src="@drawable/lb_ic_play"
+        android:tint="@color/primary_text"
         tools:ignore="contentDescription" />
 
     <LinearLayout
@@ -75,7 +76,8 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:textSize="@dimen/text_micro"
-            tools:text="Audio Title" />
+            tools:text="Audio Title"
+            android:textColor="@color/primary_text"/>
 
         <TextView
             android:id="@+id/audio_subtitle_text"
@@ -83,7 +85,8 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:textSize="@dimen/text_micro"
-            tools:text="Audio Subtitle" />
+            tools:text="Audio Subtitle"
+            android:textColor="@color/secondary_text"/>
 
     </LinearLayout>
 

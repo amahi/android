@@ -23,10 +23,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager_audio"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <com.google.android.exoplayer2.ui.PlayerControlView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/control_view"
+        android:layout_gravity="bottom"/>
 
     <FrameLayout
         android:id="@+id/audio_list_container"
@@ -34,44 +40,42 @@
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize" />
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="88dp"
-        android:background="#80000000"
-        android:orientation="vertical"
-        android:paddingBottom="12dp"
-        android:paddingTop="12dp">
+        android:id="@+id/toolbar_audio"
+        android:background="@color/background_secondary"
+        android:elevation="4dp">
 
-        <TextView
-            android:id="@+id/text_title"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:maxLines="1"
-            android:paddingLeft="32dp"
-            android:paddingRight="32dp"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/text_medium"
-            android:textStyle="bold" />
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp">
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="4dp" />
+            <TextView
+                android:id="@+id/text_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textSize="@dimen/text_medium"
+                android:text="Audio Title"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/primary_text"/>
 
-        <TextView
-            android:id="@+id/text_subtitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:maxLines="1"
-            android:paddingLeft="32dp"
-            android:paddingRight="32dp"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/text_small" />
+            <TextView
+                android:id="@+id/text_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textSize="@dimen/text_micro"
+                android:text="Audio Subtitle"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/secondary_text"/>
 
-    </LinearLayout>
-
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
 </FrameLayout>
 

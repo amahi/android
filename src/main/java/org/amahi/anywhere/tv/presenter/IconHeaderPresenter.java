@@ -20,13 +20,14 @@
 package org.amahi.anywhere.tv.presenter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.support.v17.leanback.widget.HeaderItem;
-import android.support.v17.leanback.widget.ListRow;
-import android.support.v17.leanback.widget.Presenter;
-import android.support.v17.leanback.widget.RowHeaderPresenter;
-import android.support.v4.content.ContextCompat;
+import androidx.leanback.widget.HeaderItem;
+import androidx.leanback.widget.ListRow;
+import androidx.leanback.widget.Presenter;
+import androidx.leanback.widget.RowHeaderPresenter;
+import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +60,7 @@ public class IconHeaderPresenter extends RowHeaderPresenter {
         rootView.setFocusable(true);
         ImageView imageView = rootView.findViewById(R.id.header_icon);
 
-        if (headerItem.getName().matches("Settings")) {
+        if (headerItem.getName().matches(Resources.getSystem().getString(R.string.settings))) {
             imageView.setVisibility(View.VISIBLE);
             Drawable icon = ContextCompat.getDrawable(rootView.getContext(), R.drawable.ic_menu_settings);
             imageView.setImageDrawable(icon);

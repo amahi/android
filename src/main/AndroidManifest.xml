@@ -54,9 +54,10 @@
         android:label="@string/application_name"
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="org.amahi.anywhere.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -99,7 +100,7 @@
         <activity
             android:name=".activity.ServerFileAudioActivity"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.Amahi.Fullscreen" />
+            android:theme="@style/Theme.Amahi.NoActionBar.Audio" />
         <activity
             android:name=".activity.ServerFileImageActivity"
             android:theme="@style/Theme.Amahi.Fullscreen" />
@@ -109,7 +110,7 @@
         <activity
             android:name=".activity.ExpandedControlsActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/Theme.CastVideosDark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -122,7 +123,8 @@
         <activity android:name=".activity.ServerFileWebActivity" />
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_settings" />
+            android:label="@string/title_settings"
+            android:theme="@style/Theme.Amahi.Settings"/>
         <activity
             android:name=".activity.IntroductionActivity"
             android:label="@string/intro_desc_phone_1"
@@ -160,7 +162,7 @@
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
             </intent-filter>
         </receiver>
-        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
+        <receiver android:name="androidx.media.session.MediaButtonReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />

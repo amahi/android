@@ -327,4 +327,16 @@ public class ServerClient {
     public void getApps() {
         serverApi.getApps(server.getSession()).enqueue(new ServerAppsResponse());
     }
+
+    public Uri getFileThumbnailUri(ServerShare share, ServerFile file) {
+        return Uri.parse(serverAddress)
+            .buildUpon()
+            .path("cache")
+            .appendQueryParameter("s", share.getName())
+            .appendQueryParameter("p", file.getPath())
+            .appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
+            .appendQueryParameter("session", server.getSession())
+            .build();
+
+    }
 }

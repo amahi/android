@@ -98,22 +98,6 @@ public final class Preferences {
         return new Preferences(context, Locations.COOKIE);
     }
 
-    public String getAppCookies(String appHost) {
-        return getString(appHost);
-    }
-
-    private String getString(String key) {
-        return preferences.getString(key, Defaults.STRING);
-    }
-
-    public void setAppCookies(String appHost, String appCookies) {
-        setString(appHost, appCookies);
-    }
-
-    private void setString(String key, String value) {
-        preferences.edit().putString(key, value).apply();
-    }
-
     public static int getSortOption(Context context) {
         return getPreference(context).getInt(Defaults.SORTING_OPTION, ServerFilesFragment.SORT_MODIFICATION_TIME);
     }
@@ -136,6 +120,22 @@ public final class Preferences {
 
     public static int getAudioRepeatMode(Context context) {
         return getPreference(context).getInt(Defaults.AUDIO_REPEAT, 0);
+    }
+
+    public String getAppCookies(String appHost) {
+        return getString(appHost);
+    }
+
+    private String getString(String key) {
+        return preferences.getString(key, Defaults.STRING);
+    }
+
+    public void setAppCookies(String appHost, String appCookies) {
+        setString(appHost, appCookies);
+    }
+
+    private void setString(String key, String value) {
+        preferences.edit().putString(key, value).apply();
     }
 
     private static final class Locations {

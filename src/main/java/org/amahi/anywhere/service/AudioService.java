@@ -31,21 +31,16 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.SystemClock;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.support.v4.media.MediaBrowserCompat;
-
-import androidx.media.MediaBrowserServiceCompat;
-
 import android.support.v4.media.MediaMetadataCompat;
-
-import androidx.media.session.MediaButtonReceiver;
-
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.media.MediaBrowserServiceCompat;
+import androidx.media.session.MediaButtonReceiver;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -111,24 +106,21 @@ import javax.inject.Inject;
 public class AudioService extends MediaBrowserServiceCompat implements
     AudioManager.OnAudioFocusChangeListener,
     Player.EventListener {
+    private static final int REPEAT_ALL = 0;
+    private static final int REPEAT_ONE = 1;
     @Inject
     ServerClient serverClient;
     private MediaNotificationManager mMediaNotificationManager;
     private SimpleExoPlayer audioPlayer;
     private MediaSessionCompat mediaSession;
     private AudioFocus audioFocus;
-
     private ServerShare audioShare;
     private List<ServerFile> audioFiles;
     private List<ServerFile> shuffledAudioFiles = new ArrayList<>();
-
     private ServerFile audioFile;
     private boolean isPreparing = false;
-
     private AudioMetadataFormatter audioMetadataFormatter;
     private Bitmap audioAlbumArt;
-    private static final int REPEAT_ALL = 0;
-    private static final int REPEAT_ONE = 1;
 
     @Override
     public IBinder onBind(Intent intent) {

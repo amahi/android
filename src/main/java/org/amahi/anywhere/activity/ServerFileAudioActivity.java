@@ -28,13 +28,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
-
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,8 +77,8 @@ import org.amahi.anywhere.util.AudioMetadataFormatter;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.LocaleHelper;
+import org.amahi.anywhere.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,8 +102,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private static final Set<String> SUPPORTED_FORMATS;
     private static final int REPEAT_ALL = 0;
     private static final int REPEAT_ONE = 1;
-    private int REPEAT_MODE = 0;
-
+    private static final String AUDIO_LIST_VISIBLE = "audio_list_visible";
 
     static {
         SUPPORTED_FORMATS = new HashSet<>(Arrays.asList(
@@ -123,6 +115,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     @Inject
     ServerClient serverClient;
+    private int REPEAT_MODE = 0;
     private CastContext mCastContext;
     private CastSession mCastSession;
     private AudioMetadataFormatter metadataFormatter;
@@ -130,7 +123,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private AudioService audioService;
     private boolean changeAudio = true;
     private boolean audioControlsAvailable = false;
-    private static final String AUDIO_LIST_VISIBLE = "audio_list_visible";
     private boolean audioListVisible = false;
 
     public static boolean supports(String mime_type) {
@@ -164,7 +156,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private void setUpHomeNavigation() {
         Toolbar toolbar = findViewById(R.id.toolbar_audio);
         setSupportActionBar(toolbar);
-        if(getSupportActionBar()!=null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -908,11 +900,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         }
     }
 
-    private enum PlaybackLocation {
-        LOCAL,
-        REMOTE
-    }
-
     @Override
     public void onClick(View v) {
         if (v == getNextButton()) {
@@ -938,5 +925,10 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
+    }
+
+    private enum PlaybackLocation {
+        LOCAL,
+        REMOTE
     }
 }

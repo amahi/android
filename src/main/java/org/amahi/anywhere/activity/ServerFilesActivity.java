@@ -114,6 +114,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private static final int CAMERA_PERMISSION = 103;
     private static final int REQUEST_UPLOAD_IMAGE = 201;
     private static final int REQUEST_CAMERA_IMAGE = 202;
+    private static final int ACTION_SETTINGS = 401;
     @Inject
     ServerClient serverClient;
     private ServerFile file;
@@ -243,13 +244,13 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     if (networkUtils.isWifiConnected() || networkUtils.isNetworkAvailable()) {
                         startFileActivity(share, files, file);
                     } else {
-                        Toast.makeText(this, R.string.message_connect_to_server_and_try_again, Toast.LENGTH_SHORT).show();
+                        showErrorSnackbar(getString(R.string.message_connect_to_server_and_try_again), false);
                     }
                 } else {
                     if (networkUtils.isNetworkAvailable()) {
                         startFileActivity(share, files, file);
                     } else {
-                        Toast.makeText(this, R.string.message_connect_and_try_again, Toast.LENGTH_SHORT).show();
+                        showErrorSnackbar(getString(R.string.message_connect_and_try_again), true);
                     }
                 }
 
@@ -364,6 +365,14 @@ public class ServerFilesActivity extends AppCompatActivity implements
             .show();
     }
 
+    private void showErrorSnackbar(String message, boolean showAction) {
+        Snackbar snackbar = Snackbar.make(getParentView(), message, Snackbar.LENGTH_LONG);
+        if(showAction) {
+            snackbar.setAction(R.string.menu_settings, view -> startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), ACTION_SETTINGS));
+        }
+        snackbar.show();
+    }
+
     @Subscribe
     public void onUploadOptionClick(UploadClickEvent event) {
         int option = event.getUploadOption();
@@ -463,6 +472,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     if (cameraImage.exists()) {
                         uploadFile(cameraImage);
                     }
+                    break;
+                case ACTION_SETTINGS:
                     break;
             }
         }

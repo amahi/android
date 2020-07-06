@@ -146,11 +146,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
     private void setUpInjections() {
         AmahiApplication.from(this).inject(this);
     }

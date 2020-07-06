@@ -18,8 +18,8 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/audio_controller"
     android:layout_width="match_parent"
     android:layout_height="64dp"
@@ -33,12 +33,10 @@
         android:layout_height="64dp"
         android:scaleType="centerCrop"
         android:src="@drawable/default_audiotrack"
-        tools:ignore="contentDescription"
-        />
+        tools:ignore="contentDescription" />
 
     <ImageButton
 
-        app:contentDescription="@string/stop_the_audio"
         android:id="@+id/stop_audio_btn"
         android:layout_width="64dp"
         android:layout_height="64dp"
@@ -47,7 +45,7 @@
         android:padding="16dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_close_24dp"
-        />
+        app:contentDescription="@string/stop_the_audio" />
 
     <ImageButton
         android:id="@+id/play_pause_btn"
@@ -59,38 +57,35 @@
         android:scaleType="centerCrop"
         android:src="@drawable/lb_ic_play"
         android:tint="@color/primary_text"
-        tools:ignore="contentDescription"
-        />
+        tools:ignore="contentDescription" />
 
     <LinearLayout
-        android:id="@+id/LinearLayoutAudioController"
         android:layout_width="wrap_content"
         android:layout_height="64dp"
-        android:layout_toEndOf="@id/art_image_view"
         android:layout_toStartOf="@id/play_pause_btn"
+        android:layout_toEndOf="@id/art_image_view"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingEnd="8dp"
         android:paddingStart="8dp"
-        >
+        android:paddingEnd="8dp">
 
         <TextView
             android:id="@+id/audio_title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
+            android:textColor="@color/primary_text"
             android:textSize="@dimen/text_micro"
-            tools:text="Audio Title"
-            android:textColor="@color/primary_text"/>
+            tools:text="Audio Title" />
 
         <TextView
             android:id="@+id/audio_subtitle_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
+            android:textColor="@color/secondary_text"
             android:textSize="@dimen/text_micro"
-            tools:text="Audio Subtitle"
-            android:textColor="@color/secondary_text"/>
+            tools:text="Audio Subtitle" />
 
     </LinearLayout>
 

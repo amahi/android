@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -151,6 +152,8 @@ public class ServerFileImageFragment extends Fragment implements RequestListener
 
     @Override
     public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+        Toast.makeText(getContext(), R.string.message_connect_and_try_again, Toast.LENGTH_SHORT).show();
+        getActivity().finish();
         return false;
     }
 

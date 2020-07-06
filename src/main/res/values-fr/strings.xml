@@ -231,4 +231,7 @@
     <string name="pref_connection_desc">Sélectionnez le type de connexion souhaité. Vous pouvez le définir comme Détection automatique, réseau local ou distant.</string>
     <string name="preference_entry_server_connection_local">LAN</string>
 
+    <string name="message_connect_and_try_again">Veuillez vous connecter à Internet et réessayer.</string>
+    <string name="message_connect_to_server_and_try_again">Veuillez vous connecter à votre serveur et réessayer.</string>
+
 </resources>

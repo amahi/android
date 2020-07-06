@@ -85,6 +85,8 @@
     <string name="message_no_files">Files downloaded appear here</string>
     <string name="message_create_and_try_again">Find files to download</string>
     <string name="message_connection_error">Connection Error</string>
+    <string name="message_connect_and_try_again">Please connect to the internet and try again.</string>
+    <string name="message_connect_to_server_and_try_again">Please connect to your server and try again.</string>
 
     <string name="message_delete_file_title">Confirm File Delete?</string>
     <string name="message_delete_file_body">This action cannot be undone.</string>

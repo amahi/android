@@ -25,15 +25,18 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -86,6 +89,7 @@ import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.NetworkUtils;
 import org.amahi.anywhere.util.PathUtil;
 
 import java.io.File;
@@ -114,6 +118,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private static final int CAMERA_PERMISSION = 103;
     private static final int REQUEST_UPLOAD_IMAGE = 201;
     private static final int REQUEST_CAMERA_IMAGE = 202;
+    private static final int ACTION_SETTINGS = 401;
     @Inject
     ServerClient serverClient;
     private ServerFile file;
@@ -234,7 +239,26 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     private void setUpFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
         if (Intents.Builder.with(this).isServerFileSupported(file)) {
-            startFileActivity(share, files, file);
+            NetworkUtils networkUtils = new NetworkUtils(this);
+            if (isFileAvailableOffline(file)) {
+                startFileActivity(share, files, file);
+            } else {
+                if (isConnectionLocal()) {
+                    //check if the phone is still connected to local server
+                    if (networkUtils.isWifiConnected() || networkUtils.isNetworkAvailable()) {
+                        startFileActivity(share, files, file);
+                    } else {
+                        showErrorSnackbar(getString(R.string.message_connect_to_server_and_try_again), false);
+                    }
+                } else {
+                    if (networkUtils.isNetworkAvailable()) {
+                        startFileActivity(share, files, file);
+                    } else {
+                        showErrorSnackbar(getString(R.string.message_connect_and_try_again), true);
+                    }
+                }
+
+            }
             return;
         }
 
@@ -345,6 +369,14 @@ public class ServerFilesActivity extends AppCompatActivity implements
             .show();
     }
 
+    private void showErrorSnackbar(String message, boolean showAction) {
+        Snackbar snackbar = Snackbar.make(getParentView(), message, Snackbar.LENGTH_LONG);
+        if(showAction) {
+            snackbar.setAction(R.string.menu_settings, view -> startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), ACTION_SETTINGS));
+        }
+        snackbar.show();
+    }
+
     @Subscribe
     public void onUploadOptionClick(UploadClickEvent event) {
         int option = event.getUploadOption();
@@ -453,6 +485,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     if (cameraImage.exists()) {
                         uploadFile(cameraImage);
                     }
+                    break;
+                case ACTION_SETTINGS:
                     break;
                 case AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE:
                     break;
@@ -587,6 +621,16 @@ public class ServerFilesActivity extends AppCompatActivity implements
         OfflineFileRepository repository = new OfflineFileRepository(this);
         OfflineFile file = repository.getOfflineFile(serverFile.getName(), serverFile.getModificationTime().getTime());
         return file != null && file.getState() == OfflineFile.DOWNLOADED;
+    }
+
+    private boolean isConnectionLocal() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+        if (preferenceConnection != null) {
+            return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+        } else {
+            return false;
+        }
     }
 
     @Override

@@ -168,4 +168,7 @@
     <string name="alert_delete_dialog">Supprimer le fichier</string>
     <string name="alert_delete_confirm">Êtes-vous sûr?</string>
 
+    <string name="message_connect_and_try_again">Veuillez vous connecter à Internet et réessayer.</string>
+    <string name="message_connect_to_server_and_try_again">Veuillez vous connecter à votre serveur et réessayer.</string>
+
 </resources>

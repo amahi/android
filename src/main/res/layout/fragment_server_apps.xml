@@ -130,7 +130,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:scrollbarStyle="outsideOverlay" />
-            
+
         </FrameLayout>
 
     </ViewAnimator>

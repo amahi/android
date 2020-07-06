@@ -41,7 +41,6 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.viewpager.widget.ViewPager;
 
-import com.blogspot.atifsoftwares.animatoolib.Animatoo;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaLoadOptions;
@@ -129,7 +128,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_file_audio);
-        Animatoo.animateSlideLeft(this);
 
         setUpInjections();
 
@@ -772,7 +770,6 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
             public void onStatusUpdated() {
                 Intent intent = new Intent(ServerFileAudioActivity.this, ExpandedControlsActivity.class);
                 startActivity(intent);
-                Animatoo.animateSlideUp(ServerFileAudioActivity.this);
                 remoteMediaClient.removeListener(this);
                 finish();
             }

@@ -3,8 +3,6 @@ package org.amahi.anywhere.fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.squareup.otto.Subscribe;
 
@@ -69,7 +70,7 @@ public class AudioControllerFragment extends Fragment {
             if (audioService.getAudioPlayer().getPlayWhenReady()) {
                 playPauseButton.setImageResource(R.drawable.lb_ic_play);
                 playPauseButton.setContentDescription(getResources().getString(R.string.play_the_audio));
-                } else {
+            } else {
                 playPauseButton.setImageResource(R.drawable.lb_ic_pause);
                 playPauseButton.setContentDescription(getResources().getString(R.string.pause_the_audio));
             }
@@ -90,9 +91,9 @@ public class AudioControllerFragment extends Fragment {
 
         if (audioService.getAudioPlayer().getPlayWhenReady()) {
             playPauseButton.setImageResource(R.drawable.lb_ic_pause);
-            } else {
+        } else {
             playPauseButton.setImageResource(R.drawable.lb_ic_play);
-            }
+        }
 
         AudioMetadataFormatter formatter = audioService.getAudioMetadataFormatter();
         if (formatter != null) {

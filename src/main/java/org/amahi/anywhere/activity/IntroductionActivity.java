@@ -27,26 +27,26 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 
-import com.github.paolorotolo.appintro.AppIntro;
-import com.github.paolorotolo.appintro.AppIntroFragment;
+import com.github.paolorotolo.appintro.AppIntro2;
+import com.github.paolorotolo.appintro.AppIntro2Fragment;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.util.CheckTV;
 import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
-import org.amahi.anywhere.util.SampleSlide;
 
-public class IntroductionActivity extends AppIntro {
+public class IntroductionActivity extends AppIntro2 {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addSlide(SampleSlide.newInstance(R.layout.intro_first_layout));
-        addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_2), getString(R.string.intro_desc_2), R.drawable.network, ContextCompat.getColor(this, R.color.intro_2)));
-        addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_3), getString(R.string.intro_desc_phone_3), R.drawable.photos, Color.DKGRAY));
-        addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_4), getString(R.string.intro_desc_phone_4), R.drawable.music, ContextCompat.getColor(this, R.color.intro_4)));
-        addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_5), getString(R.string.intro_desc_phone_5), R.drawable.movies, ContextCompat.getColor(this, R.color.intro_5)));
-        addSlide(AppIntroFragment.newInstance(getString(R.string.intro_title_6), getString(R.string.intro_desc_6), R.drawable.tick, ContextCompat.getColor(this, R.color.intro_6)));
-        setFlowAnimation();
+        addSlide(AppIntro2Fragment.newInstance(getString(R.string.intro_phone_1), getString(R.string.intro_desc_phone_1), R.drawable.ic_banner_white, ContextCompat.getColor(this, R.color.intro_1)));
+        addSlide(AppIntro2Fragment.newInstance(getString(R.string.intro_title_2), getString(R.string.intro_desc_2), R.drawable.network, ContextCompat.getColor(this, R.color.intro_2)));
+        addSlide(AppIntro2Fragment.newInstance(getString(R.string.intro_title_3), getString(R.string.intro_desc_phone_3), R.drawable.photos, Color.DKGRAY));
+        addSlide(AppIntro2Fragment.newInstance(getString(R.string.intro_title_4), getString(R.string.intro_desc_phone_4), R.drawable.music, ContextCompat.getColor(this, R.color.intro_4)));
+        addSlide(AppIntro2Fragment.newInstance(getString(R.string.intro_title_5), getString(R.string.intro_desc_phone_5), R.drawable.movies, ContextCompat.getColor(this, R.color.intro_5)));
+        addSlide(AppIntro2Fragment.newInstance(getString(R.string.intro_title_6), getString(R.string.intro_desc_6), R.drawable.tick, ContextCompat.getColor(this, R.color.intro_6)));
+        setColorTransitionsEnabled(true);
+        setFadeAnimation();
     }
 
     @Override

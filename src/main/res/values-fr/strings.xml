@@ -144,7 +144,7 @@
 
     <!--Introduction TV activity strings-->
     <string name="intro_tv_1">Bienvenue à Amahi pour Android TV</string>
-    <string name="intro_phone_1">Bienvenue à Amahi pour Android.</string>
+    <string name="intro_phone_1">Bienvenue à Amahi pour Android</string>
     <string name="intro_desc_phone_1">Une app Android qui vous permet d\'accéder à vos fichiers dans votre Amahi Home Server.</string>
 
     <string name="intro_title_2">Accéder à votre HDA</string>

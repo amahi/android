@@ -151,7 +151,7 @@
 
     <!--Introduction TV activity strings-->
     <string name="intro_tv_1">Welcome to Amahi for Android TV</string>
-    <string name="intro_phone_1">Welcome to Amahi for Android.</string>
+    <string name="intro_phone_1">Welcome to Amahi for Android</string>
     <string name="intro_desc_phone_1">An Android app that lets you access the files in your Amahi Home Server.</string>
 
     <string name="intro_title_2">Access your HDA</string>

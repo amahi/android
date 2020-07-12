@@ -21,6 +21,7 @@ package org.amahi.anywhere.activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -101,5 +102,12 @@ public class SettingsActivity extends AppCompatActivity {
         super.onPause();
 
         BusProvider.getBus().unregister(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(SettingsActivity.this, NavigationActivity.class));
+        finish();
     }
 }

@@ -372,20 +372,11 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
     private void setUpSettings() {
         Intent intent = Intents.Builder.with(this).buildSettingsIntent();
-        startActivityForResult(intent, SETTINGS_ACTION);
+        startActivity(intent);
+        finish();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == SETTINGS_ACTION) {
-            if (resultCode == SettingsActivity.RESULT_THEME_UPDATED) {
-                finish();
-                startActivity(getIntent());
-                return;
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {

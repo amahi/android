@@ -22,7 +22,6 @@ package org.amahi.anywhere.activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +29,13 @@ import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -54,6 +60,8 @@ public class ServerAppActivity extends AppCompatActivity {
     @Inject
     ServerClient serverClient;
 
+    Context ctx;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +75,7 @@ public class ServerAppActivity extends AppCompatActivity {
 
     private void setUpInjections() {
         AmahiApplication.from(this).inject(this);
+        ctx = this;
     }
 
     private void setUpApp(Bundle state) {
@@ -83,7 +92,7 @@ public class ServerAppActivity extends AppCompatActivity {
         String appCookies = Preferences.ofCookie(this).getAppCookies(appHost);
 
         for (String appCookie : TextUtils.split(appCookies, ";")) {
-            CookieManager.getInstance().setCookie(getAppUrl(), appCookie);
+            CookieManager.getInstance().setCookie(getServerUrl(), appCookie);
         }
     }
 
@@ -91,8 +100,17 @@ public class ServerAppActivity extends AppCompatActivity {
         return getIntent().getParcelableExtra(Intents.Extras.SERVER_APP);
     }
 
-    private String getAppUrl() {
+    private String getServerUrl() {
         return serverClient.getServerAddress();
+    }
+
+    private String getAppUrl() {
+        String host = getApp().getHost();
+        if (host.matches("^(http|https)://")) {
+            return host;
+        } else {
+            return "http://" + host;
+        }
     }
 
     private void setUpAppWebAgent() {
@@ -128,6 +146,18 @@ public class ServerAppActivity extends AppCompatActivity {
 
     private void setUpAppWebTitle() {
         getSupportActionBar().setTitle(getApp().getName());
+    }
+
+    private void setUpAppWebIcon() {
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+        if (!TextUtils.isEmpty(getApp().getLogoUrl())) {
+            Glide.with(ctx).load(getApp().getLogoUrl()).into(new SimpleTarget<GlideDrawable>() {
+                @Override
+                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
+                    getSupportActionBar().setIcon(resource);
+                }
+            });
+        }
     }
 
     private void setUpAppWebContent(Bundle state) {
@@ -192,9 +222,8 @@ public class ServerAppActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         getWebView().saveState(outState);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -210,7 +239,7 @@ public class ServerAppActivity extends AppCompatActivity {
 
     private void tearDownAppWebCookie() {
         String appHost = getApp().getHost();
-        String appCookies = CookieManager.getInstance().getCookie(getAppUrl());
+        String appCookies = CookieManager.getInstance().getCookie(getServerUrl());
 
         Preferences.ofCookie(this).setAppCookies(appHost, appCookies);
 
@@ -225,6 +254,11 @@ public class ServerAppActivity extends AppCompatActivity {
 
     private void showApp() {
         ViewDirector.of(this, R.id.animator).show(R.id.web_content);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 
     private static final class AppWebAgentField {
@@ -254,10 +288,5 @@ public class ServerAppActivity extends AppCompatActivity {
 
             activity.showApp();
         }
-    }
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

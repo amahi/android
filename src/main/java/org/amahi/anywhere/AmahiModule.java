@@ -36,6 +36,7 @@ import org.amahi.anywhere.cache.CacheModule;
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.MainLoginFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.PINAccessFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
@@ -85,6 +86,7 @@ import dagger.Provides;
         RecentFilesActivity.class,
         ServerFileWebActivity.class,
         MainLoginFragment.class,
+        PINAccessFragment.class,
         NavigationFragment.class,
         ServerSharesFragment.class,
         ServerAppsFragment.class,

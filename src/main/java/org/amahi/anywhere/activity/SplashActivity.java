@@ -41,8 +41,7 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
-    private void setUpActivity() {
-        launchNavigation();
+    private void setUpActivity() {  
         if (Preferences.getFirstRun(this) && !CheckTV.isATV(this)) {
             launchIntro();
         } else {

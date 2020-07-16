@@ -51,6 +51,7 @@ import org.amahi.anywhere.server.response.ServerRouteResponse;
 import org.amahi.anywhere.server.response.ServerSharesResponse;
 import org.amahi.anywhere.task.ServerConnectionDetectingTask;
 import org.amahi.anywhere.util.ProgressRequestBody;
+import org.amahi.anywhere.util.Time;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,7 +69,6 @@ import retrofit2.Response;
 
 import static org.amahi.anywhere.util.Android.loadServersFromAsset;
 
-
 /**
  * Server API implementation. Wraps {@link org.amahi.anywhere.server.api.ProxyApi} and
  * {@link org.amahi.anywhere.server.api.ServerApi}. Reacts to network connection changes as well.
@@ -85,6 +85,8 @@ public class ServerClient {
     private ApiConnection serverConnection;
 
     private int network;
+
+    public static final String TAG = ServerClient.class.getSimpleName();
 
     @Inject
     public ServerClient(ApiAdapter apiAdapter) {
@@ -313,6 +315,8 @@ public class ServerClient {
             .path("files")
             .appendQueryParameter("s", share.getName())
             .appendQueryParameter("p", file.getPath())
+            .appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
+            .appendQueryParameter("session", server.getSession())
             .build();
     }
 
@@ -333,6 +337,8 @@ public class ServerClient {
             .path("cache")
             .appendQueryParameter("s", share.getName())
             .appendQueryParameter("p", file.getPath())
+            .appendQueryParameter("mtime", Time.getEpochTimeString(file.getModificationTime()))
+            .appendQueryParameter("session", server.getSession())
             .build();
 
     }

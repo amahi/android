@@ -49,7 +49,7 @@ import okhttp3.Response;
 
 public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
 
-    private static final String TAG = "LocalServerProbingTask";
+    private static final String TAG = LocalServerProbingTask.class.getSimpleName();
 
     private WeakReference<Context> context;
     private OkHttpClient httpClient;
@@ -75,7 +75,6 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
 
     @Override
     protected BusEvent doInBackground(Void... voids) {
-//        String ipString = "192.168.54.129";
         WifiManager wm = (WifiManager) context.get().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (wm != null) {
             DhcpInfo d = wm.getDhcpInfo();
@@ -83,7 +82,6 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
             String prefix = ip.substring(0, ip.lastIndexOf(".") + 1);
             for (int i = 0; i < 255; i++) {
                 String testIp = prefix + String.valueOf(i);
-//                testIp = "192.168.54.129";
                 try {
                     InetAddress ipAddress = InetAddress.getByName(testIp);
                     String hostName = ipAddress.getCanonicalHostName();

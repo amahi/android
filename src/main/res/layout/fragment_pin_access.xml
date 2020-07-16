@@ -36,7 +36,7 @@
         android:inputType="textPassword"
         android:textSize="@dimen/text_large" />
 
-    <android.support.v4.widget.Space
+    <Space
         android:layout_width="match_parent"
         android:layout_height="32dp" />
 
@@ -48,7 +48,7 @@
         android:background="@drawable/bg_action_bar"
         android:text="@string/button_sign_in" />
 
-    <android.support.v4.widget.Space
+    <Space
         android:layout_width="match_parent"
         android:layout_height="16dp" />
 

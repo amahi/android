@@ -33,6 +33,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -84,19 +85,24 @@ import javax.inject.Inject;
 /**
  * Navigation fragments. Shows main application sections and servers list as well.
  */
-public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
-    OnAccountsUpdateListener {
+public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>, OnAccountsUpdateListener {
+
     @Inject
     AmahiClient amahiClient;
+
     @Inject
     ServerClient serverClient;
+
     View view;
+
     private Intent tvIntent;
     private Context mContext;
     private Activity mActivity;
 
     private boolean areServersVisible;
     private List<Server> serversList;
+
+    public static final String TAG = NavigationFragment.class.getSimpleName();
 
     @Override
     public void onAttach(Context context) {
@@ -148,7 +154,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Override
     public void onAccountsUpdated(Account[] accounts) {
-
         if (getAccounts().isEmpty()) {
             setUpAccount();
         }
@@ -189,7 +194,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
             Bundle accountManagerResult = accountManagerFuture.getResult();
             Account account = getAccountManager().getAccounts()[0];
 
-            String isLocalUser = getAccountManager().getUserData(account, "is_local");
+            String isLocalUser = checkIfLocalUser();
             String ip = getAccountManager().getUserData(account, "ip");
 
             String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
@@ -211,7 +216,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         }
     }
 
+    private String checkIfLocalUser() {
+        Account account = getAccountManager().getAccounts()[0];
+        return getAccountManager().getUserData(account, "is_local");
+    }
+
     private void tearDownActivity() {
+        Log.v(TAG, "Tearing Down Activity");
         mActivity.finish();
     }
 

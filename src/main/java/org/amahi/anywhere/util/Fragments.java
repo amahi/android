@@ -67,11 +67,11 @@ public final class Fragments {
         private Builder() {
         }
 
-        public static android.app.Fragment buildMainLoginFragment() {
+        public static Fragment buildMainLoginFragment() {
             return new MainLoginFragment();
         }
 
-        public static android.app.Fragment buildPINFragment() {
+        public static Fragment buildPINFragment() {
             return new PINAccessFragment();
         }
 

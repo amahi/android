@@ -19,8 +19,6 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.app.Fragment;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -34,7 +32,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -52,13 +50,13 @@ import org.amahi.anywhere.util.ViewDirector;
 import javax.inject.Inject;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment } subclass.
  */
 
 public class MainLoginFragment extends Fragment implements TextWatcher,
     View.OnClickListener {
 
-    public static final String TAG = "MainLoginFragment";
+    public static final String TAG = MainLoginFragment.class.getSimpleName();
     @Inject
     AmahiClient amahiClient;
     TextInputLayout username_layout, password_layout;
@@ -98,10 +96,10 @@ public class MainLoginFragment extends Fragment implements TextWatcher,
     }
 
     private void setUpAuthenticationMessages(View view) {
-        TextView authenticationFailureMessage = view.findViewById(R.id.text_message_authentication);
+        TextView forgotPassword = view.findViewById(R.id.text_forgot_password);
         TextView authenticationConnectionFailureMessage = view.findViewById(R.id.text_message_authentication_connection);
 
-        authenticationFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        forgotPassword.setMovementMethod(LinkMovementMethod.getInstance());
         authenticationConnectionFailureMessage.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
@@ -138,49 +136,13 @@ public class MainLoginFragment extends Fragment implements TextWatcher,
             ViewDirector.of(getActivity(), R.id.animator_message).show(R.id.text_message_authentication_empty);
 
             if (getUsername().trim().isEmpty())
-                getUsernameEditText().getBackground().setColorFilter(ContextCompat.getColor(getActivity(), android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+                getUsernameEditText().requestFocus();
+
             if (getPassword().trim().isEmpty())
-                getPasswordEditText().getBackground().setColorFilter(ContextCompat.getColor(getActivity(), android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
+                getPasswordEditText().requestFocus();
 
-            getUsernameEditText().addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    if (!getUsername().trim().isEmpty())
-                        getUsernameEditText().getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.blue_normal), PorterDuff.Mode.SRC_ATOP);
-                    else
-                        getUsernameEditText().getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
-
-            getPasswordEditText().addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    if (!getPassword().trim().isEmpty())
-                        getPasswordEditText().getBackground().setColorFilter(ContextCompat.getColor(getActivity(), R.color.blue_normal), PorterDuff.Mode.SRC_ATOP);
-                    else
-                        getPasswordEditText().getBackground().setColorFilter(ContextCompat.getColor(getActivity(), android.R.color.holo_red_light), PorterDuff.Mode.SRC_ATOP);
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
+            if (getUsername().trim().isEmpty() && getPassword().trim().isEmpty())
+                getUsernameEditText().requestFocus();
 
         } else {
             startAuthentication();
@@ -198,19 +160,15 @@ public class MainLoginFragment extends Fragment implements TextWatcher,
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+        hideAuthenticationFailureMessage();
     }
 
     @Override
-    public void afterTextChanged(Editable s) {
-
-    }
+    public void afterTextChanged(Editable s) { }
 
     private void startAuthentication() {
         hideAuthenticationText();

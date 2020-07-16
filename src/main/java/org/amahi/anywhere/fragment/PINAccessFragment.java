@@ -19,7 +19,6 @@
 
 package org.amahi.anywhere.fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -33,6 +32,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.squareup.otto.Subscribe;
 
@@ -45,7 +45,7 @@ import org.amahi.anywhere.util.ViewDirector;
 
 public class PINAccessFragment extends Fragment {
 
-    public static final String TAG = "PINAccessFragment";
+    public static final String TAG = PINAccessFragment.class.getSimpleName();
 
     private EditText pinEditText;
     private Button pinLoginButton;

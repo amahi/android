@@ -20,9 +20,10 @@
 package org.amahi.anywhere.fragment;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+
+import androidx.fragment.app.DialogFragment;
 
 public class LocalLoginDialogFragment extends DialogFragment {
 

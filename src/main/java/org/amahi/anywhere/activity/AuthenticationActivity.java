@@ -21,11 +21,11 @@ package org.amahi.anywhere.activity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.Fragment;
 
 import com.squareup.otto.Subscribe;
 
@@ -38,6 +38,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.PINAccessEvent;
 import org.amahi.anywhere.fragment.MainLoginFragment;
 import org.amahi.anywhere.fragment.PINAccessFragment;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
@@ -71,12 +72,12 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
 
     private void setUpAuthenticationFragment() {
         if (accountType.equals(AmahiAccount.TYPE)) {
-            MainLoginFragment f = (MainLoginFragment) getFragmentManager().findFragmentByTag(MainLoginFragment.TAG);
+            MainLoginFragment f = (MainLoginFragment) getSupportFragmentManager().findFragmentByTag(MainLoginFragment.TAG);
             if (f == null) {
                 showMainLoginFragment();
             }
         } else {
-            PINAccessFragment f = (PINAccessFragment) getFragmentManager().findFragmentByTag(PINAccessFragment.TAG);
+            PINAccessFragment f = (PINAccessFragment) getSupportFragmentManager().findFragmentByTag(PINAccessFragment.TAG);
             if (f == null) {
                 showPINAccessFragment();
             }
@@ -85,7 +86,7 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
 
     private void showMainLoginFragment() {
         Fragment fragment = Fragments.Builder.buildMainLoginFragment();
-        getFragmentManager()
+        getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.main_container, fragment, MainLoginFragment.TAG)
             .commit();
@@ -94,13 +95,13 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
     @Subscribe
     public void onAuthenticationSucceed(AuthenticationSucceedEvent event) {
         if (accountType.equals(AmahiAccount.TYPE)) {
-            MainLoginFragment fragment = (MainLoginFragment) getFragmentManager().findFragmentByTag(MainLoginFragment.TAG);
+            MainLoginFragment fragment = (MainLoginFragment) getSupportFragmentManager().findFragmentByTag(MainLoginFragment.TAG);
 
             finishAuthentication(event.getAuthentication().getToken(), fragment.getUsername(), fragment.getPassword());
         } else {
-            PINAccessFragment fragment = (PINAccessFragment) getFragmentManager().findFragmentByTag(PINAccessFragment.TAG);
+            PINAccessFragment fragment = (PINAccessFragment) getSupportFragmentManager().findFragmentByTag(PINAccessFragment.TAG);
 
-            finishAuthentication(event.getAuthentication().getToken(), "Server", fragment.getPIN());
+            finishAuthentication(event.getAuthentication().getToken(), Constants.pinAccessUsername, fragment.getPIN());
         }
     }
 
@@ -140,7 +141,7 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
 
     private void showPINAccessFragment() {
         Fragment fragment = Fragments.Builder.buildPINFragment();
-        getFragmentManager()
+        getSupportFragmentManager()
             .beginTransaction()
             .replace(R.id.main_container, fragment, PINAccessFragment.TAG)
             .addToBackStack(MainLoginFragment.TAG)

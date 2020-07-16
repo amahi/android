@@ -41,7 +41,7 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
-    private void setUpActivity() {  
+    private void setUpActivity() {
         if (Preferences.getFirstRun(this) && !CheckTV.isATV(this)) {
             launchIntro();
         } else {
@@ -53,12 +53,13 @@ public class SplashActivity extends AppCompatActivity {
         startActivity(new Intent(this, NavigationActivity.class));
     }
 
+    private void launchIntro() {
+        startActivity(new Intent(this, IntroductionActivity.class));
+    }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 
-    private void launchIntro() {
-        startActivity(new Intent(this, IntroductionActivity.class));
-    }
 }

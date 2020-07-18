@@ -170,7 +170,6 @@ public class AmahiApplication extends Application {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(uploadChannel);
         notificationManager.createNotificationChannel(downloadChannel);
-
     }
 
     @Override

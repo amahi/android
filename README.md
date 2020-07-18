@@ -37,7 +37,6 @@ Enter your personal email in place of `myemail@mydomain.com`
 
   ```
   $ ./gradlew clean assembleDebug
-
   ```
 
 4. Once you have built the application, you will be needing credentials to use the application. Go to Amahi website and create your account, once the account is activated, you will see the description on how to set up the Amahi server. However, this is not strictly needed, as we have a set up of a demo server called "Welcome to Amahi" which you should see even without your own server installed.

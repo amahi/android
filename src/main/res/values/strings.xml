@@ -320,4 +320,6 @@
     <string name="pref_option_go_back">Go back</string>
     <string name="pref_connection_desc">Select the type of connection you want. You can set it as Auto detect, remote or local area network.</string>
 
+    <string name="acra_report_toast" translatable="false">ACRA Log Report Sent!</string>
+
 </resources>

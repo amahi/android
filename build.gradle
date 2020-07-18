@@ -52,10 +52,12 @@ android {
         targetSdkVersion 28
 
         def apiFile = file("api.properties")
+        def acraFile = file("acra.properties")
         def apiProperties = new Properties()
+        def acraProperties = new Properties()
 
-        // NOTE-cpg: this fake api is here for the tests to pass
         def fakeApiFile = file("fakeApi.properties")
+        def fakeAcraFile = file("fakeAcra.properties")
 
         if (apiFile.exists()) {
             apiProperties.load(apiFile.newInputStream())
@@ -63,11 +65,18 @@ android {
             apiProperties.load(fakeApiFile.newInputStream())
         }
 
+        if (acraFile.exists()) {
+            acraProperties.load(acraFile.newInputStream())
+        } else {
+            acraProperties.load(fakeAcraFile.newInputStream())
+        }
+
         buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
         buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
         buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
         buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
         buildConfigField "String", "CHROMECAST_APP_ID", formatStringField(apiProperties["chromecast.app.id"])
+        buildConfigField "String", "ACRA_EMAIL", formatStringField(acraProperties["mailto.email"])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -88,8 +97,8 @@ android {
         }
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -170,6 +179,12 @@ dependencies {
 
     implementation 'android.arch.persistence.room:runtime:' + rootProject.archRoomVersion
     annotationProcessor 'android.arch.persistence.room:compiler:' + rootProject.archRoomVersion
+
+    def acraVersion = '5.6.1'
+    implementation "ch.acra:acra-mail:$acraVersion"
+    implementation "ch.acra:acra-dialog:$acraVersion"
+    implementation "ch.acra:acra-notification:$acraVersion"
+    implementation "ch.acra:acra-toast:$acraVersion"
 
     // Uncomment the dependencies below to enable Chuck Interceptor for logging
 /*

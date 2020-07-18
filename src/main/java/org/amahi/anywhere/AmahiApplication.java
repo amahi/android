@@ -27,6 +27,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -34,6 +35,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.job.PhotosContentJob;
+import org.amahi.anywhere.server.Api;
 
 import dagger.ObjectGraph;
 import io.fabric.sdk.android.Fabric;
@@ -43,6 +45,7 @@ import timber.log.Timber;
  * Application declaration. Basically sets things up at the startup time,
  * such as dependency injection, logging, crash reporting and possible ANR detecting.
  */
+
 public class AmahiApplication extends Application {
     private ObjectGraph injector;
 
@@ -165,4 +168,28 @@ public class AmahiApplication extends Application {
 
     }
 
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        if (isDebugging()) {
+
+//            CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
+//                .setBuildConfigClass(BuildConfig.class)
+//                .setReportFormat(StringFormat.JSON)
+//                .setAlsoReportToAndroidFramework(true)
+//                .setReportContent(ReportField.APP_VERSION_CODE)
+//                .setReportContent(ReportField.APP_VERSION_NAME)
+//                .setReportContent(ReportField.ANDROID_VERSION)
+//                .setReportContent(ReportField.PHONE_MODEL)
+//                .setReportContent(ReportField.CUSTOM_DATA)
+//                .setReportContent(ReportField.STACK_TRACE)
+//                .setReportContent(ReportField.LOGCAT)
+//                .setResReportSendSuccessToast(R.string.acra_report_toast);
+//
+//            builder.getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
+//                .setMailTo(Api.getAcraEmail());
+//
+//            ACRA.init(this, builder);
+        }
+    }
 }

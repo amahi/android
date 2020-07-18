@@ -4,7 +4,6 @@ before_install:
     - yes | sdkmanager "platforms;android-29"
     - yes | sdkmanager "platforms;android-28"
     - yes | sdkmanager "platforms;android-19"
-    - yes | sdkmanager --licenses
 
 jdk:
  - oraclejdk8

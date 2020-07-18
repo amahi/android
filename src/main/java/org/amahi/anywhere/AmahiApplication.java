@@ -33,6 +33,11 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.acra.ACRA;
+import org.acra.ReportField;
+import org.acra.config.CoreConfigurationBuilder;
+import org.acra.config.MailSenderConfigurationBuilder;
+import org.acra.data.StringFormat;
 import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.job.PhotosContentJob;
 import org.amahi.anywhere.server.Api;
@@ -173,23 +178,23 @@ public class AmahiApplication extends Application {
         super.attachBaseContext(base);
         if (isDebugging()) {
 
-//            CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
-//                .setBuildConfigClass(BuildConfig.class)
-//                .setReportFormat(StringFormat.JSON)
-//                .setAlsoReportToAndroidFramework(true)
-//                .setReportContent(ReportField.APP_VERSION_CODE)
-//                .setReportContent(ReportField.APP_VERSION_NAME)
-//                .setReportContent(ReportField.ANDROID_VERSION)
-//                .setReportContent(ReportField.PHONE_MODEL)
-//                .setReportContent(ReportField.CUSTOM_DATA)
-//                .setReportContent(ReportField.STACK_TRACE)
-//                .setReportContent(ReportField.LOGCAT)
-//                .setResReportSendSuccessToast(R.string.acra_report_toast);
-//
-//            builder.getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
-//                .setMailTo(Api.getAcraEmail());
-//
-//            ACRA.init(this, builder);
+            CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
+                .setBuildConfigClass(BuildConfig.class)
+                .setReportFormat(StringFormat.JSON)
+                .setAlsoReportToAndroidFramework(true)
+                .setReportContent(ReportField.APP_VERSION_CODE)
+                .setReportContent(ReportField.APP_VERSION_NAME)
+                .setReportContent(ReportField.ANDROID_VERSION)
+                .setReportContent(ReportField.PHONE_MODEL)
+                .setReportContent(ReportField.CUSTOM_DATA)
+                .setReportContent(ReportField.STACK_TRACE)
+                .setReportContent(ReportField.LOGCAT)
+                .setResReportSendSuccessToast(R.string.acra_report_toast);
+
+            builder.getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
+                .setMailTo(Api.getAcraEmail());
+
+            ACRA.init(this, builder);
         }
     }
 }

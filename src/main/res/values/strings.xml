@@ -144,7 +144,6 @@
     <!--    TODO: Check Strings-->
     <string name="preference">PREFERENCE</string>
     <string name="local_server_ip">SERVER_IP</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!--ANDROID TV STRINGS-->
     <string name="app_title" translatable="false">Amahi TV</string>

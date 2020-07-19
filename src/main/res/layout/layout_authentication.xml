@@ -116,7 +116,7 @@
         <ViewAnimator
             android:id="@+id/animator_message"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:inAnimation="@anim/slide_down_text"
             android:outAnimation="@anim/slide_up_text">
 

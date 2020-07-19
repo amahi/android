@@ -21,7 +21,6 @@ package org.amahi.anywhere.fragment;
 
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -31,9 +30,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
@@ -47,7 +48,7 @@ public class PINAccessFragment extends Fragment {
 
     public static final String TAG = PINAccessFragment.class.getSimpleName();
 
-    private EditText pinEditText;
+    private TextInputLayout pinLayout;
     private Button pinLoginButton;
 
     @Override
@@ -57,7 +58,7 @@ public class PINAccessFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setUpPINAuthentication(view);
     }
@@ -69,7 +70,7 @@ public class PINAccessFragment extends Fragment {
     }
 
     private void setUpPINViews(View view) {
-        pinEditText = view.findViewById(R.id.edit_text_pin);
+        pinLayout = view.findViewById(R.id.pin_layout);
         pinLoginButton = view.findViewById(R.id.button_pin_sign_in);
     }
 
@@ -83,8 +84,16 @@ public class PINAccessFragment extends Fragment {
         pinEmptyMessage.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
+    private EditText getPINEditText() {
+        return pinLayout.getEditText();
+    }
+
+    public String getPIN() {
+        return getPINEditText().getText().toString();
+    }
+
     private void setUpAuthenticationListeners() {
-        pinEditText.addTextChangedListener(new TextWatcher() {
+        getPINEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -101,16 +110,18 @@ public class PINAccessFragment extends Fragment {
             }
         });
 
-        pinEditText.setOnEditorActionListener((v, actionId, event) -> pinLoginButton.callOnClick());
+        getPINEditText().setOnEditorActionListener((v, actionId, event) -> pinLoginButton.callOnClick());
 
         pinLoginButton.setOnClickListener(v -> {
-            String pin = pinEditText.getText().toString();
-            if (TextUtils.isEmpty(pin)) {
+            if (getPIN().trim().isEmpty()) {
                 ViewDirector.of(getActivity(), R.id.animator_message).show(R.id.text_message_pin_empty);
+                return;
+            } else if (getPIN().length() > 5 || getPIN().length() < 3) {
+                ViewDirector.of(getActivity(), R.id.animator_message).show(R.id.text_message_pin);
                 return;
             }
             showProgress();
-            startAuthentication(pin);
+            startAuthentication(getPIN());
         });
     }
 
@@ -141,7 +152,7 @@ public class PINAccessFragment extends Fragment {
     }
 
     private void enableUIControls() {
-        pinEditText.setEnabled(true);
+        pinLayout.setEnabled(true);
         pinLoginButton.setEnabled(true);
     }
 
@@ -158,10 +169,6 @@ public class PINAccessFragment extends Fragment {
 
     private void showAuthenticationConnectionFailMessage() {
         ViewDirector.of(getActivity(), R.id.animator_message).show(R.id.text_message_connection);
-    }
-
-    public String getPIN() {
-        return pinEditText.getText().toString();
     }
 
     @Override

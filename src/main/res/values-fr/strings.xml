@@ -234,4 +234,11 @@
     <string name="message_connect_and_try_again">Veuillez vous connecter à Internet et réessayer.</string>
     <string name="message_connect_to_server_and_try_again">Veuillez vous connecter à votre serveur et réessayer.</string>
 
+    <!--    NAU-->
+    <string name="hint_pin">PIN</string>
+    <string name="button_pin_access">Accès PIN</string>
+    <string name="message_error_pin_field_empty">Le champ PIN ne peut pas être laissé vide.</string>
+    <string name="message_error_pin">Le code PIN n\'est pas correct. Veuillez réessayer.</string>
+    <string name="message_error_local_connection">Il semble que vous n\'êtes pas connecté au même Wifi que votre serveur.</string>
+
 </resources>

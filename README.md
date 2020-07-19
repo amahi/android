@@ -1,8 +1,7 @@
-<h1 align="center">Amahi Android App</h1>
+<h1 align="center"><img alt="Amahi" title="Amahi" src="./src/main/res/drawable-xxhdpi/ic_launcher.png" width="24">  Amahi Android App</h1>
 <p align="center">
-  <img alt="Amahi" title="Amahi" src="./src/main/res/drawable-xxhdpi/ic_launcher.png" width="100">
   <a href="https://play.google.com/store/apps/details?id=org.amahi.anywhere">
-    <img alt="Get it on Google Play" title="Google Play" src="http://i.imgur.com/mtGRPuM.png" width="180">
+    <img alt="Get it on Google Play" title="Google Play" src="http://i.imgur.com/mtGRPuM.png" width="150">
   </a>
 </p>
 

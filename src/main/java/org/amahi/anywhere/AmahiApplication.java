@@ -37,6 +37,7 @@ import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.config.CoreConfigurationBuilder;
 import org.acra.config.MailSenderConfigurationBuilder;
+import org.acra.config.ToastConfigurationBuilder;
 import org.acra.data.StringFormat;
 import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.job.PhotosContentJob;
@@ -187,11 +188,15 @@ public class AmahiApplication extends Application {
                 .setReportContent(ReportField.PHONE_MODEL)
                 .setReportContent(ReportField.CUSTOM_DATA)
                 .setReportContent(ReportField.STACK_TRACE)
-                .setReportContent(ReportField.LOGCAT)
-                .setResReportSendSuccessToast(R.string.acra_report_toast);
+                .setReportContent(ReportField.LOGCAT);
 
             builder.getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
-                .setMailTo(Api.getAcraEmail());
+                .setMailTo(Api.getAcraEmail())
+                .setEnabled(true);
+
+            builder.getPluginConfigurationBuilder(ToastConfigurationBuilder.class)
+                .setResText(R.string.acra_report_toast)
+                .setEnabled(true);
 
             ACRA.init(this, builder);
         }

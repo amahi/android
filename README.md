@@ -1,8 +1,17 @@
-# Amahi Android App     [![Build Status](https://travis-ci.org/amahi/android.svg?branch=master)](https://travis-ci.org/amahi/android)
+<h1 align="center"><img alt="Amahi" title="Amahi" src="./src/main/res/drawable-xxhdpi/ic_launcher.png" width="32">  Amahi Android App</h1>
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=org.amahi.anywhere">
+    <img alt="Get it on Google Play" title="Google Play" src="http://i.imgur.com/mtGRPuM.png" width="150">
+  </a>
+</p>
+
+[![Build Status](https://travis-ci.org/amahi/android.svg?branch=master)](https://travis-ci.org/amahi/android)
+[![Twitter](https://img.shields.io/twitter/follow/amahi.svg?style=social&label=@amahi)](https://twitter.com/amahi)
+[![#amahi on Freenode](https://img.shields.io/badge/chat-on%20freenode-brightgreen)](https://webchat.freenode.net/?channels=amahi)
 
 This repository contains the source code for the Amahi Android app.
 
-You will need JDK 1.7+ installed to work with it. Gradle, Android SDK, and project dependencies will be downloaded automatically.
+You will need JDK 1.8+ installed to work with it. Gradle, Android SDK, and project dependencies will be downloaded automatically.
 
 ## Building the app
 
@@ -20,7 +29,7 @@ You will need JDK 1.7+ installed to work with it. Gradle, Android SDK, and proje
   chromecast.app.id = APP_ID
   ```
 
-This is something to keep **private** and you obtain it by sending a message to `support at Amahi dot org`.
+This is something to keep **private** and you obtain it by sending a message to <support@amahi.org>.
 
 
 2. Build the application using a command line or using GUI.

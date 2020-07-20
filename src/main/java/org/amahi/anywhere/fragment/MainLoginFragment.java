@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -46,6 +48,8 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.PINAccessEvent;
 import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.util.ViewDirector;
+
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -132,22 +136,31 @@ public class MainLoginFragment extends Fragment implements TextWatcher,
 
     @Override
     public void onClick(View view) {
-        if (getUsername().trim().isEmpty() || getPassword().trim().isEmpty()) {
-            ViewDirector.of(getActivity(), R.id.animator_message).show(R.id.text_message_authentication_empty);
+        if(view.getId()==signInButton.getId()) {
 
-            if (getUsername().trim().isEmpty())
-                getUsernameEditText().requestFocus();
+            InputMethodManager imm = (InputMethodManager) Objects.requireNonNull(getContext()).getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-            if (getPassword().trim().isEmpty())
-                getPasswordEditText().requestFocus();
+            if (getUsername().trim().isEmpty() || getPassword().trim().isEmpty()) {
+                ViewDirector.of(getActivity(), R.id.animator_message).show(R.id.text_message_authentication_empty);
 
-            if (getUsername().trim().isEmpty() && getPassword().trim().isEmpty())
-                getUsernameEditText().requestFocus();
+                if (getUsername().trim().isEmpty())
+                    getUsernameEditText().requestFocus();
 
-        } else {
-            startAuthentication();
+                if (getPassword().trim().isEmpty())
+                    getPasswordEditText().requestFocus();
 
-            authenticate();
+                if (getUsername().trim().isEmpty() && getPassword().trim().isEmpty())
+                    getUsernameEditText().requestFocus();
+
+            } else if (getUsername().contains(" ")) {
+                ViewDirector.of(getActivity(), R.id.animator_message).show(R.id.text_message_authentication);
+
+            } else {
+                startAuthentication();
+
+                authenticate();
+            }
         }
     }
 

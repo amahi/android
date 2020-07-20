@@ -56,6 +56,7 @@ android {
         def apiProperties = new Properties()
         def acraProperties = new Properties()
 
+        // NOTE-cpg: this fakeApi and fakeAcra is here for the tests to pass
         def fakeApiFile = file("fakeApi.properties")
         def fakeAcraFile = file("fakeAcra.properties")
 

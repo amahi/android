@@ -61,13 +61,13 @@
         android:layout_width="match_parent"
         android:layout_height="16dp" />
 
-    <Button
+    <com.dd.processbutton.iml.ActionProcessButton
         android:id="@+id/button_pin_sign_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginBottom="16dp"
-        android:background="@color/holo_orange_light"
+        app:pb_colorNormal="@color/sign_in_button"
         android:text="@string/button_sign_in"
         android:textColor="@android:color/white" />
 

@@ -107,7 +107,7 @@
             android:layout_height="wrap_content"
             android:text="@string/button_sign_in"
             android:textColor="@android:color/white"
-            android:backgroundTint="@color/sign_in_button"/>
+            app:pb_colorNormal="@color/sign_in_button"/>
 
         <Space
             android:layout_width="match_parent"

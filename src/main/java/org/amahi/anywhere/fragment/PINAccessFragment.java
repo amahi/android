@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,7 +27,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -34,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.dd.processbutton.iml.ActionProcessButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.otto.Subscribe;
 
@@ -44,12 +46,15 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.task.LocalServerProbingTask;
 import org.amahi.anywhere.util.ViewDirector;
 
+import java.util.Objects;
+
 public class PINAccessFragment extends Fragment {
 
     public static final String TAG = PINAccessFragment.class.getSimpleName();
 
     private TextInputLayout pinLayout;
-    private Button pinLoginButton;
+    private ActionProcessButton pinLoginButton;
+    private View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,6 +65,7 @@ public class PINAccessFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        this.view = view;
         setUpPINAuthentication(view);
     }
 
@@ -126,10 +132,19 @@ public class PINAccessFragment extends Fragment {
     }
 
     private void showProgress() {
-        LocalLoginDialogFragment fragment = (LocalLoginDialogFragment) getChildFragmentManager().findFragmentByTag("log_in");
-        if (fragment == null) {
-            fragment = new LocalLoginDialogFragment();
-            fragment.show(getChildFragmentManager(), "log_in");
+
+        InputMethodManager imm = (InputMethodManager) Objects.requireNonNull(getContext()).getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+        if(pinLoginButton!=null) {
+            pinLoginButton.setMode(ActionProcessButton.Mode.ENDLESS);
+            pinLoginButton.setProgress(1);
+        }
+    }
+
+    private void hideProgress() {
+        if(pinLoginButton!=null) {
+            pinLoginButton.setProgress(0);
         }
     }
 
@@ -139,16 +154,9 @@ public class PINAccessFragment extends Fragment {
 
     @Subscribe
     public void onAuthenticationFailed(AuthenticationFailedEvent event) {
-        dismissDialog();
+        hideProgress();
         enableUIControls();
         showAuthenticationFailMessage();
-    }
-
-    private void dismissDialog() {
-        LocalLoginDialogFragment fragment = (LocalLoginDialogFragment) getChildFragmentManager().findFragmentByTag("log_in");
-        if (fragment != null) {
-            fragment.dismiss();
-        }
     }
 
     private void enableUIControls() {
@@ -162,7 +170,7 @@ public class PINAccessFragment extends Fragment {
 
     @Subscribe
     public void onAuthenticationConnectionFail(AuthenticationConnectionFailedEvent event) {
-        dismissDialog();
+        hideProgress();
         enableUIControls();
         showAuthenticationConnectionFailMessage();
     }

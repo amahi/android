@@ -24,3 +24,6 @@ signing.properties
 amahi-release-key.keystore
 
 .DS*
+
+# Acra
+acra.properties

@@ -22,6 +22,7 @@
     <PreferenceCategory android:title="@string/preference_category_account">
 
         <Preference
+            android:icon="@drawable/logout"
             android:key="@string/preference_key_account_sign_out"
             android:title="@string/preference_title_account_sign_out" />
 
@@ -30,6 +31,7 @@
     <PreferenceCategory android:title="@string/preference_category_general">
 
         <ListPreference
+            android:icon="@drawable/translate"
             android:defaultValue="@string/language_en_key"
             android:entries="@array/preference_entries_language"
             android:entryValues="@array/preference_entries_keys_language"
@@ -41,6 +43,7 @@
     <PreferenceCategory android:title="@string/preference_category_settings">
 
         <ListPreference
+            android:icon="@drawable/wifi"
             android:defaultValue="@string/preference_key_server_connection_auto"
             android:entries="@array/preference_entries_server_connection"
             android:entryValues="@array/preference_entries_keys_server_connection"
@@ -48,10 +51,12 @@
             android:title="@string/preference_title_server_connection" />
 
         <Preference
+            android:icon="@drawable/upload_photo"
             android:key="@string/preference_screen_key_upload"
             android:title="@string/preference_title_upload_settings" />
 
         <SwitchPreference
+            android:icon="@drawable/theme"
             android:key="@string/pref_key_light_theme"
             android:title="@string/pref_title_light_theme"
             android:defaultValue="false"/>
@@ -62,22 +67,27 @@
 
 
         <Preference
+            android:icon="@drawable/version"
             android:key="@string/preference_key_about_version"
             android:title="@string/preference_title_about_version" />
 
         <Preference
+            android:icon="@drawable/intro"
             android:key="@string/preference_key_about_intro"
             android:title="@string/preference_title_about_intro" />
 
         <Preference
+            android:icon="@drawable/feedback"
             android:key="@string/preference_key_about_feedback"
             android:title="@string/preference_title_about_feedback" />
 
         <Preference
+            android:icon="@drawable/rate"
             android:key="@string/preference_key_about_rating"
             android:title="@string/preference_title_about_rating" />
 
         <Preference
+            android:icon="@drawable/friend"
             android:key="@string/preference_key_tell_a_friend"
             android:title="@string/preference_title_tell_a_friend" />
 

@@ -14,7 +14,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -22,8 +29,18 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class ExpandedControlsActivityTest {
 
+    @Rule
+    public ActivityTestRule<RecentFilesActivity> mActivityRule = new ActivityTestRule<>(
+        RecentFilesActivity.class
+    );
+
     @Before
     public void setUp() throws Exception {
+    }
+    
+    @Test
+    public void test1(){
+        onView(withId(android.R.id.empty)).check(matches(isDisplayed()));
     }
 
     @After

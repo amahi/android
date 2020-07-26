@@ -45,6 +45,7 @@
         <item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
         <item name="android:windowBackground">@color/background_primary</item>
         <item name="android:textColorPrimaryInverse">@color/primary_text_material_light</item>
+        <item name="android:tint">@color/accent</item>
         <!--Adding Support for the Support Library-->
         <item name="actionBarStyle">@style/Theme.Amahi.ActionBar</item>
         <item name="colorPrimary">@color/primary</item>
@@ -113,7 +114,7 @@
         <item name="android:textColorPrimary">@color/primary_text</item>
         <item name="android:textColorSecondary">@color/secondary_text</item>
     </style>
-    
+
     <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/text_input_box_stroke</item>
     </style>

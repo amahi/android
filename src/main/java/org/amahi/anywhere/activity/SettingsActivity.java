@@ -23,6 +23,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -66,7 +68,11 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setUpHomeNavigation() {
-        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Drawable icon = getResources().getDrawable(R.drawable.arrow_back);
+        icon.setColorFilter(getResources().getColor(R.color.primary_text_material_light), PorterDuff.Mode.SRC_IN);
+        getSupportActionBar().setHomeAsUpIndicator(icon);
+
     }
 
     private void setUpSettingsFragment() {

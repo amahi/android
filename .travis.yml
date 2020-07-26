@@ -1,22 +1,20 @@
 language: android
 
-before_install:
-    - yes | sdkmanager "platforms;android-29"
-    - yes | sdkmanager "platforms;android-28"
-    - yes | sdkmanager "platforms;android-22"
-
 jdk:
  - oraclejdk8
 
 env:
     global:
-        - ANDROID_TARGET=android-25
+        - ANDROID_TARGET=android-24
         - ANDROID_BUILD_TOOLS_VERSION=28.0.3
         - ANDROID_ABI=armeabi-v7a
 
+before_install:
+    - yes | sdkmanager "platforms;android-29"
+    - yes | sdkmanager "platforms;android-24"
+
 android:
   components:
-    - tools
     - tools
     - platform-tools
     - build-tools-$ANDROID_BUILD_TOOLS_VERSION
@@ -38,6 +36,7 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
+    - ./gradlew assembleDebug
     - ./gradlew connectedDebugAndroidTest
 
 notifications:

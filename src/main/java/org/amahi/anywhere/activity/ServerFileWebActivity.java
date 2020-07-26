@@ -112,6 +112,7 @@ public class ServerFileWebActivity extends AppCompatActivity {
         CustomTabsClient.bindCustomTabsService(this, getPackageName(), mCustomTabsServiceConnection);
 
         mCustomTabsIntent = new CustomTabsIntent.Builder(mCustomTabsSession)
+            .setToolbarColor(getResources().getColor(R.color.primary))
             .setShowTitle(true)
             .build();
 

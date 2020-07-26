@@ -33,10 +33,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,12 +44,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
-import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -84,19 +85,24 @@ import javax.inject.Inject;
 /**
  * Navigation fragments. Shows main application sections and servers list as well.
  */
-public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
-    OnAccountsUpdateListener {
+public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>, OnAccountsUpdateListener {
+
     @Inject
     AmahiClient amahiClient;
+
     @Inject
     ServerClient serverClient;
+
     View view;
+
     private Intent tvIntent;
     private Context mContext;
     private Activity mActivity;
 
     private boolean areServersVisible;
     private List<Server> serversList;
+
+    public static final String TAG = NavigationFragment.class.getSimpleName();
 
     @Override
     public void onAttach(Context context) {
@@ -148,19 +154,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Override
     public void onAccountsUpdated(Account[] accounts) {
-
-        if (Preferences.getFirstRun(mContext)) {
-            launchIntro();
-        }
-
         if (getAccounts().isEmpty()) {
             setUpAccount();
         }
-    }
-
-    private void launchIntro() {
-        startActivity(new Intent(mContext, IntroductionActivity.class));
-        mActivity.finishAffinity();
     }
 
     private void setUpContentRefreshing() {
@@ -196,11 +192,20 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
         try {
             Bundle accountManagerResult = accountManagerFuture.getResult();
+            Account account = getAccountManager().getAccounts()[0];
+
+            String isLocalUser = checkIfLocalUser();
+            String ip = getAccountManager().getUserData(account, "ip");
 
             String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
 
             if (authenticationToken != null) {
-                setUpServers(authenticationToken);
+                if (isLocalUser.equals("F")) {
+                    setUpServers(authenticationToken);
+                } else {
+                    BusProvider.getBus().post(new SharesSelectedEvent());
+                    setUpLocalServerApi(authenticationToken, ip);
+                }
             } else {
                 setUpAuthenticationToken();
             }
@@ -211,7 +216,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         }
     }
 
+    private String checkIfLocalUser() {
+        Account account = getAccountManager().getAccounts()[0];
+        return getAccountManager().getUserData(account, "is_local");
+    }
+
     private void tearDownActivity() {
+        Log.v(TAG, "Tearing Down Activity");
         mActivity.finish();
     }
 
@@ -313,9 +324,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (getAccounts().isEmpty()) {
             setUpAccount();
         } else {
-            if (Preferences.getFirstRun(mActivity) && !CheckTV.isATV(mActivity)) {
-                launchIntro();
-            }
             setUpAuthenticationToken();
         }
     }
@@ -627,6 +635,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void showRecentFiles() {
         BusProvider.getBus().post(new RecentFilesSelectedEvent());
+    }
+
+    private void setUpLocalServerApi(String auth, String ip) {
+        serverClient.connectLocalServer(auth, ip);
     }
 
     @Subscribe

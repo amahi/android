@@ -22,7 +22,6 @@ package org.amahi.anywhere;
 import android.app.Application;
 import android.content.Context;
 
-import org.amahi.anywhere.activity.AuthenticationActivity;
 import org.amahi.anywhere.activity.NativeVideoActivity;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.activity.OfflineFilesActivity;
@@ -35,7 +34,9 @@ import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
 import org.amahi.anywhere.cache.CacheModule;
 import org.amahi.anywhere.fragment.AudioListFragment;
+import org.amahi.anywhere.fragment.MainLoginFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.PINAccessFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
 import org.amahi.anywhere.fragment.ServerFileDownloadingFragment;
@@ -74,7 +75,6 @@ import dagger.Provides;
         CacheModule.class
     },
     injects = {
-        AuthenticationActivity.class,
         NavigationActivity.class,
         ServerAppActivity.class,
         OfflineFilesActivity.class,
@@ -85,6 +85,8 @@ import dagger.Provides;
         NativeVideoActivity.class,
         RecentFilesActivity.class,
         ServerFileWebActivity.class,
+        MainLoginFragment.class,
+        PINAccessFragment.class,
         NavigationFragment.class,
         ServerSharesFragment.class,
         ServerAppsFragment.class,

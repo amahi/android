@@ -22,10 +22,13 @@ package org.amahi.anywhere.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.amahi.anywhere.util.CheckTV;
 import org.amahi.anywhere.util.LocaleHelper;
+import org.amahi.anywhere.util.Preferences;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -39,15 +42,24 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void setUpActivity() {
-        launchNavigation();
+        if (Preferences.getFirstRun(this) && !CheckTV.isATV(this)) {
+            launchIntro();
+        } else {
+            launchNavigation();
+        }
     }
 
     private void launchNavigation() {
         startActivity(new Intent(this, NavigationActivity.class));
     }
 
+    private void launchIntro() {
+        startActivity(new Intent(this, IntroductionActivity.class));
+    }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
 }

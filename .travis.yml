@@ -5,7 +5,7 @@ jdk:
 
 env:
     global:
-        - ANDROID_TARGET=android-24
+        - ANDROID_TARGET=android-28
         - ANDROID_BUILD_TOOLS_VERSION=28.0.3
         - ANDROID_ABI=armeabi-v7a
 
@@ -22,12 +22,12 @@ android:
     - extra-android-support
     - extra-android-m2repository
     - extra-google-m2repository
-    - sys-img-armeabi-v7a-android-28
+    - sys-img-armeabi-v7a-android-22
   licenses:
     - .+
 
 before_script:
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  - echo no | android create avd --force -n test -t android-22 --abi $ANDROID_ABI
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell settings put global window_animation_scale 0 &

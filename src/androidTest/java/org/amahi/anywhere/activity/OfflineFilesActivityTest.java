@@ -34,11 +34,6 @@ public class OfflineFilesActivityTest {
     }
 
     @Test
-    public void test1() {
-        onView(withText(R.string.title_offline_files)).check(matches(isDisplayed()));
-    }
-
-    @Test
     public void test2() {
         onView(withId(R.id.container_files)).check(matches(isDisplayed()));
     }

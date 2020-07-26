@@ -22,22 +22,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class ExpandedControlsActivityTest {
 
-    @Rule
-    public ActivityTestRule<ExpandedControlsActivity> mActivityRule
-        = new ActivityTestRule<>(ExpandedControlsActivity.class);
-
     @Before
     public void setUp() throws Exception {
-    }
-
-    @Test
-    public void test1() {
-        onView(withId(R.menu.action_bar_expanded_controller));
-    }
-
-    @Test
-    public void test2() {
-        onView(withId(R.id.media_route_menu_item));
     }
 
     @After

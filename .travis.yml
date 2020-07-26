@@ -3,14 +3,14 @@ language: android
 before_install:
     - yes | sdkmanager "platforms;android-29"
     - yes | sdkmanager "platforms;android-28"
-    - yes | sdkmanager "platforms;android-19"
+#    - yes | sdkmanager "platforms;android-19"
 
 jdk:
  - oraclejdk8
 
 env:
     matrix:
-        - ANDROID_TARGET=android-19 ANDROID_ABI=armeabi-v7a
+        - ANDROID_TARGET=android-28 ANDROID_ABI=armeabi-v7a
 
 android:
   components:
@@ -19,16 +19,16 @@ android:
     - platform-tools
     - build-tools-28.0.3
     - android-28
-    - android-19
+#    - android-19
     - extra-android-support
     - extra-android-m2repository
     - extra-google-m2repository
-    - sys-img-armeabi-v7a-android-19
+    - sys-img-armeabi-v7a-android-28
   licenses:
     - .+
 
 before_script:
-  - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
+  - echo no | android create avd --force -n test -t android-28 --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell settings put global window_animation_scale 0 &

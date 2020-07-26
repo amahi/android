@@ -151,10 +151,6 @@ dependencies {
 
 //    Espresso Testing Framework Implementations
     def ESPRESSO_LIBRARY_VERSION = "3.2.0"
-//    androidTestImplementation "androidx.test.espresso:espresso-core:${ESPRESSO_LIBRARY_VERSION}"
-//    androidTestImplementation "androidx.test.espresso:espresso-web:${ESPRESSO_LIBRARY_VERSION}"
-//    androidTestImplementation "androidx.test.espresso:espresso-intents:${ESPRESSO_LIBRARY_VERSION}"
-
     androidTestImplementation ("androidx.test.espresso:espresso-core:${ESPRESSO_LIBRARY_VERSION}") {
         exclude group: "javax.inject"
     }

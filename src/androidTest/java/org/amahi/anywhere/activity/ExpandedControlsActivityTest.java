@@ -23,9 +23,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 public class ExpandedControlsActivityTest {
 
     @Rule
-    public ActivityTestRule<ExpandedControlsActivity> mActivityRule = new ActivityTestRule<>(
-        ExpandedControlsActivity.class
-    );
+    public ActivityTestRule<ExpandedControlsActivity> mActivityRule
+        = new ActivityTestRule<>(ExpandedControlsActivity.class);
 
     @Before
     public void setUp() throws Exception {

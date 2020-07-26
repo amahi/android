@@ -26,9 +26,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 public class OfflineFilesActivityTest {
 
     @Rule
-    public ActivityTestRule<OfflineFilesActivity> mActivityRule = new ActivityTestRule<>(
-        OfflineFilesActivity.class
-    );
+    public ActivityTestRule<OfflineFilesActivity> mActivityRule
+        = new ActivityTestRule<>(OfflineFilesActivity.class);
 
     @Before
     public void setUp() throws Exception {

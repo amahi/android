@@ -24,9 +24,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 public class NavigationActivityTest {
 
     @Rule
-    public ActivityTestRule<NavigationActivity> mActivityRule = new ActivityTestRule<>(
-        NavigationActivity.class
-    );
+    public ActivityTestRule<NavigationActivity> mActivityRule
+        = new ActivityTestRule<>(NavigationActivity.class);
 
     @Before
     public void setUp() throws Exception {

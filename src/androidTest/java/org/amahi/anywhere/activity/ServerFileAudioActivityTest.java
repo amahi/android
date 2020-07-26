@@ -28,9 +28,8 @@ import static org.hamcrest.Matchers.not;
 public class ServerFileAudioActivityTest {
 
     @Rule
-    public ActivityTestRule<RecentFilesActivity> mActivityRule = new ActivityTestRule<>(
-        RecentFilesActivity.class
-    );
+    public ActivityTestRule<RecentFilesActivity> mActivityRule
+        = new ActivityTestRule<>(RecentFilesActivity.class);
 
     @Before
     public void setUp() throws Exception {

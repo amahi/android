@@ -25,9 +25,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 public class SettingsActivityTest {
 
     @Rule
-    public ActivityTestRule<SettingsActivity> mActivityRule = new ActivityTestRule<>(
-        SettingsActivity.class
-    );
+    public ActivityTestRule<SettingsActivity> mActivityRule
+        = new ActivityTestRule<>(SettingsActivity.class);
 
     @Before
     public void setUp() throws Exception {

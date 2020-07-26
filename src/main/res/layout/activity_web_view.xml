@@ -7,17 +7,10 @@
     android:background="@color/background_secondary"
     tools:context="org.amahi.anywhere.activity.WebViewActivity">
 
-    <WebView
-        android:id="@+id/webview"
+    <ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/animator"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/background_secondary" />
-
-    <ProgressBar
-        android:id="@+id/progress_webview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+        android:inAnimation="@android:anim/fade_in"
+        android:outAnimation="@android:anim/fade_out"></ViewAnimator>
 </RelativeLayout>

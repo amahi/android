@@ -1,59 +1,73 @@
 package org.amahi.anywhere.activity;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import android.view.MenuItem;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import androidx.browser.customtabs.CustomTabsClient;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsServiceConnection;
+import androidx.browser.customtabs.CustomTabsSession;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.util.LocaleHelper;
 
 public class WebViewActivity extends AppCompatActivity {
 
-    private WebView webView;
+    private static final String amahiURL = "https://www.amahi.org/android";
+
+    CustomTabsClient mCustomTabsClient;
+    CustomTabsSession mCustomTabsSession;
+    CustomTabsServiceConnection mCustomTabsServiceConnection;
+    CustomTabsIntent mCustomTabsIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setUpHomeNavigation();
         setContentView(R.layout.activity_web_view);
-        webView = findViewById(R.id.webview);
 
-        loadWebView("https://www.amahi.org/android");
+        setUpInjections();
 
-    }
-
-    private void loadWebView(String url) {
-        webView.setWebViewClient(new WebViewClient());
-
-        WebSettings settings = webView.getSettings();
-
-        settings.setLoadWithOverviewMode(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setUseWideViewPort(true);
-
-        webView.loadUrl(url);
+        setUpCustomTabs(amahiURL);
 
     }
 
-    private void setUpHomeNavigation() {
-        getSupportActionBar().setHomeButtonEnabled(true);
+    private void setUpInjections() {
+        AmahiApplication.from(this).inject(this);
+    }
+
+    private void setUpCustomTabs(String url) {
+
+        mCustomTabsServiceConnection = new CustomTabsServiceConnection() {
+            @Override
+            public void onCustomTabsServiceConnected(ComponentName componentName, CustomTabsClient customTabsClient) {
+                mCustomTabsClient = customTabsClient;
+                mCustomTabsClient.warmup(0L);
+                mCustomTabsSession = mCustomTabsClient.newSession(null);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                mCustomTabsClient = null;
+            }
+        };
+
+        CustomTabsClient.bindCustomTabsService(this, getPackageName(), mCustomTabsServiceConnection);
+
+        mCustomTabsIntent = new CustomTabsIntent.Builder(mCustomTabsSession)
+            .setShowTitle(true)
+            .build();
+
+        mCustomTabsIntent.launchUrl(this, Uri.parse(url));
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
-        }
+    protected void onResume() {
+        super.onResume();
+        onBackPressed();
     }
 
     @Override

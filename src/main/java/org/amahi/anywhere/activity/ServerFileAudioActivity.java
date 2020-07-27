@@ -62,8 +62,10 @@ import org.amahi.anywhere.bus.AudioControlPreviousEvent;
 import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.AudioPreparedEvent;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.db.entities.FileInfo;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.db.repositories.FileInfoRepository;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.fragment.AudioListFragment;
@@ -74,6 +76,7 @@ import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
 import org.amahi.anywhere.util.AudioMetadataFormatter;
+import org.amahi.anywhere.util.DateTime;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
@@ -139,6 +142,7 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         prepareFiles();
 
         setUpAudio();
+        setUpLastOpened();
 
         if (savedInstanceState != null) {
             audioListVisible = savedInstanceState.getBoolean(AUDIO_LIST_VISIBLE);
@@ -207,6 +211,12 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     private void setUpAudioListener() {
         getAudioPager().addOnPageChangeListener(this);
+    }
+
+    private void setUpLastOpened() {
+        FileInfoRepository fileInfoRepository = new FileInfoRepository(this);
+        FileInfo fileInfo = new FileInfo(getFile().getUniqueKey(), DateTime.getCurrentTime());
+        fileInfoRepository.insert(fileInfo);
     }
 
     @Override

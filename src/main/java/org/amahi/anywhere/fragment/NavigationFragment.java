@@ -109,6 +109,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         super.onAttach(context);
         mContext = context;
 
+        lodNavig("onattach");
+
         if (context instanceof Activity) {
             mActivity = (Activity) context;
         }
@@ -116,6 +118,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
+        lodNavig("oncreateview");
         view = layoutInflater.inflate(R.layout.fragment_navigation, container, false);
         return view;
     }
@@ -123,6 +126,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        lodNavig("onact create");
 
         setUpInjections();
 
@@ -154,12 +159,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Override
     public void onAccountsUpdated(Account[] accounts) {
+        lodNavig("onacc update");
         if (getAccounts().isEmpty()) {
             setUpAccount();
         }
     }
 
     private void setUpContentRefreshing() {
+        lodNavig("content refres");
         SwipeRefreshLayout refreshLayout = getRefreshLayout();
 
         refreshLayout.setColorSchemeResources(
@@ -183,6 +190,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpAuthenticationToken() {
+        lodNavig("setauthtoken");
         Account account = getAccounts().get(0);
 
         getAccountManager().getAuthToken(account, AmahiAccount.TYPE, null, mActivity, this, null);
@@ -217,7 +225,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private String checkIfLocalUser() {
+        lodNavig("check local");
         Account account = getAccountManager().getAccounts()[0];
+        lodNavig(getAccountManager().getUserData(account, "is_local"));
         return getAccountManager().getUserData(account, "is_local");
     }
 
@@ -227,6 +237,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpServers(Bundle state) {
+        lodNavig("setserver");
         getRefreshLayout().setRefreshing(true);
         setUpNavigationState(state);
         setUpServersContent(state);
@@ -235,6 +246,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpServersContent(Bundle state) {
+        lodNavig("setservercontent");
         this.serversList = new ArrayList<>();
 
         if (isServersStateValid(state)) {
@@ -253,6 +265,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpServersState(Bundle state) {
+        lodNavig("setserverstate");
         List<Server> servers = state.getParcelableArrayList(State.SERVERS);
 
         setUpServersContent(servers);
@@ -283,10 +296,12 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private int findTheServer(List<Server> serverList) {
+        lodNavig("findserver");
         String serverName = Preferences.getPreference(mContext).getString(getString(R.string.pref_server_select_key), serverList.get(0).getName());
 
         for (int i = 0; i < serverList.size(); i++) {
             if (serverName.matches(serverList.get(i).getName()))
+                lodNavig(serverList.get(i).getName());
                 return i;
         }
         return 0;
@@ -316,6 +331,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void showContent() {
+        lodNavig("showcontent");
         getRefreshLayout().setRefreshing(false);
         ViewDirector.of(this, R.id.animator_content).show(R.id.layout_content);
     }
@@ -339,11 +355,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpServersContent(String authenticationToken) {
+        lodNavig("setservercontent");
+        lodNavig("auth - " + authenticationToken);
         amahiClient.getServers(mContext, authenticationToken);
     }
 
     @Subscribe
     public void onServersLoaded(ServersLoadedEvent event) {
+        lodNavig("onserverloaded");
         setUpServersContent(event.getServers());
 
         setUpNavigation();
@@ -368,6 +387,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpNavigationList() {
+        lodNavig("setupnavlist");
         getNavigationListView().setVisibility(View.VISIBLE);
         getNavigationListView().setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
 
@@ -537,6 +557,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void showOfflineNavigation() {
+        lodNavig("offline-nav");
         getRefreshLayout().setRefreshing(false);
 
         String serverName = getServerName();
@@ -732,5 +753,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         private State() {
         }
+    }
+
+    private void lodNavig(String msg) {
+        Log.v("navig-nau", msg);
     }
 }

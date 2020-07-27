@@ -171,7 +171,7 @@ public class AudioService extends MediaBrowserServiceCompat implements
 
     private void setUpAudioPlayer() {
         audioPlayer =
-            ExoPlayerFactory.newSimpleInstance(this, new DefaultRenderersFactory(this), new DefaultTrackSelector(), new DefaultLoadControl());
+            ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(this), new DefaultTrackSelector(), new DefaultLoadControl());
         audioPlayer.addListener(this);
         audioPlayer.setPlayWhenReady(true);
         audioPlayer.setVolume(1.0f);

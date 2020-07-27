@@ -30,6 +30,8 @@ import android.preference.PreferenceManager;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -52,7 +54,7 @@ import timber.log.Timber;
  * such as dependency injection, logging, crash reporting and possible ANR detecting.
  */
 
-public class AmahiApplication extends Application {
+public class AmahiApplication extends MultiDexApplication {
     private ObjectGraph injector;
 
     private static final String UPLOAD_CHANNEL_ID = "file_upload";
@@ -176,6 +178,7 @@ public class AmahiApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        MultiDex.install(this);
         if (isDebugging()) {
 
             CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)

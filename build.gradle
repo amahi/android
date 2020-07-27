@@ -79,6 +79,8 @@ android {
         buildConfigField "String", "CHROMECAST_APP_ID", formatStringField(apiProperties["chromecast.app.id"])
         buildConfigField "String", "ACRA_EMAIL", formatStringField(acraProperties["mailto.email"])
 
+        multiDexEnabled true
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

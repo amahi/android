@@ -21,7 +21,8 @@ fabric.properties
 
 # Key
 signing.properties
-amahi-release-key.keystore
+*.keystore
+*.jks
 
 .DS*
 

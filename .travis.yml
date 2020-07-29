@@ -1,36 +1,41 @@
 language: android
 
+jdk:
+    - oraclejdk8
+
+env:
+    global:
+        - ANDROID_TARGET=android-22
+        - ANDROID_BUILD_TOOLS_VERSION=28.0.3
+        - ANDROID_ABI=armeabi-v7a
+
 before_install:
     - yes | sdkmanager "platforms;android-29"
-    - yes | sdkmanager "platforms;android-28"
-    - yes | sdkmanager "platforms;android-19"
-
-jdk:
- - oraclejdk8
 
 android:
-  components:
-    - tools
-    - tools
-    - platform-tools
-    - build-tools-28.0.3
-    - android-28
-    - android-19
-    - extra-android-support
-    - extra-android-m2repository
-    - extra-google-m2repository
-    - sys-img-armeabi-v7a-android-19
-  licenses:
-    - .+
+    components:
+        - tools
+        - platform-tools
+        - build-tools-$ANDROID_BUILD_TOOLS_VERSION
+        - $ANDROID_TARGET
+        - extra-android-m2repository
+        - extra-google-m2repository
+        - sys-img-armeabi-v7a-android-22
+    licenses:
+        - .+
 
 before_script:
-  - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
-  - emulator -avd test -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell settings put global window_animation_scale 0 &
-  - adb shell settings put global transition_animation_scale 0 &
-  - adb shell settings put global animator_duration_scale 0 &
-  - adb shell input keyevent 82 &
+    - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+    - emulator -avd test -no-audio -no-window &
+    - android-wait-for-emulator
+    - adb shell settings put global window_animation_scale 0 &
+    - adb shell settings put global transition_animation_scale 0 &
+    - adb shell settings put global animator_duration_scale 0 &
+    - adb shell input keyevent 82 &
+
+script:
+    - ./gradlew assembleDebug
+    - ./gradlew connectedDebugAndroidTest
 
 notifications:
-  email: false
+    email: false

@@ -48,7 +48,7 @@ android {
         versionName buildVersionName(versionMajor, versionMinor, versionPatch)
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
 
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 28
 
         def apiFile = file("api.properties")

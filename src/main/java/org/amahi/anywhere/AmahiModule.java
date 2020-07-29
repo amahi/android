@@ -32,6 +32,7 @@ import org.amahi.anywhere.activity.ServerFileImageActivity;
 import org.amahi.anywhere.activity.ServerFileVideoActivity;
 import org.amahi.anywhere.activity.ServerFileWebActivity;
 import org.amahi.anywhere.activity.ServerFilesActivity;
+import org.amahi.anywhere.activity.WebViewActivity;
 import org.amahi.anywhere.cache.CacheModule;
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.MainLoginFragment;
@@ -101,6 +102,7 @@ import dagger.Provides;
         VideoService.class,
         MainTVFragment.class,
         TVWebViewActivity.class,
+        WebViewActivity.class,
         ServerFileTvFragment.class,
         UploadService.class,
         DownloadService.class,

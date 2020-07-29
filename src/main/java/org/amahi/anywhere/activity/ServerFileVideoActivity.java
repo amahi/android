@@ -59,8 +59,10 @@ import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.DialogButtonClickedEvent;
+import org.amahi.anywhere.db.entities.FileInfo;
 import org.amahi.anywhere.db.entities.PlayedFile;
 import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.db.repositories.FileInfoRepository;
 import org.amahi.anywhere.db.repositories.PlayedFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.fragment.ResumeDialogFragment;
@@ -68,6 +70,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.VideoService;
+import org.amahi.anywhere.util.DateTime;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
@@ -142,6 +145,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
         setUpVideo();
 
+        setUpLastOpened();
+
         loadState(savedInstanceState);
     }
 
@@ -215,6 +220,12 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
             videoControls.toggle();
         });
         fullScreen.init();
+    }
+
+    private void setUpLastOpened() {
+        FileInfoRepository fileInfoRepository = new FileInfoRepository(this);
+        FileInfo fileInfo = new FileInfo(getVideoFile().getUniqueKey(), DateTime.getCurrentTime());
+        fileInfoRepository.insert(fileInfo);
     }
 
     private FrameLayout getSwipeContainer() {

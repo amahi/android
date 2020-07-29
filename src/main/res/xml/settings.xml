@@ -31,10 +31,10 @@
     <PreferenceCategory android:title="@string/preference_category_general">
 
         <ListPreference
-            android:icon="@drawable/ic_settings_translate"
             android:defaultValue="@string/language_en_key"
             android:entries="@array/preference_entries_language"
             android:entryValues="@array/preference_entries_keys_language"
+            android:icon="@drawable/ic_settings_translate"
             android:key="@string/preference_key_language"
             android:title="@string/preference_title_language" />
 
@@ -43,10 +43,10 @@
     <PreferenceCategory android:title="@string/preference_category_settings">
 
         <ListPreference
-            android:icon="@drawable/ic_settings_connection"
             android:defaultValue="@string/preference_key_server_connection_auto"
             android:entries="@array/preference_entries_server_connection"
             android:entryValues="@array/preference_entries_keys_server_connection"
+            android:icon="@drawable/ic_settings_connection"
             android:key="@string/preference_key_server_connection"
             android:title="@string/preference_title_server_connection" />
 
@@ -56,10 +56,10 @@
             android:title="@string/preference_title_upload_settings" />
 
         <SwitchPreference
+            android:defaultValue="false"
             android:icon="@drawable/ic_settings_app_theme"
             android:key="@string/pref_key_light_theme"
-            android:title="@string/pref_title_light_theme"
-            android:defaultValue="false"/>
+            android:title="@string/pref_title_light_theme" />
 
     </PreferenceCategory>
 

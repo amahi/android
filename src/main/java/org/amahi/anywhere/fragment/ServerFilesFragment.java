@@ -241,6 +241,7 @@ public class ServerFilesFragment extends Fragment implements
     @Subscribe
     public void onFileOptionSelected(FileOptionClickEvent event) {
         selectedFileOption = event.getFileOption();
+        String uniqueKey = event.getFileUniqueKey();
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
                 if (Android.isPermissionRequired()) {
@@ -268,6 +269,10 @@ public class ServerFilesFragment extends Fragment implements
                 break;
             case FileOption.OFFLINE_DISABLED:
                 changeOfflineState(false);
+
+            case FileOption.FILE_INFO:
+                showFileInfo(uniqueKey);
+
         }
     }
 
@@ -436,6 +441,16 @@ public class ServerFilesFragment extends Fragment implements
         } else {
             Toast.makeText(getContext(), R.string.message_delete_file_error, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showFileInfo(String uniqueKey) {
+        AlertDialogFragment fileInfoDialog = new AlertDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.FILE_INFO_DIALOG);
+        bundle.putSerializable("file_unique_key", uniqueKey);
+        fileInfoDialog.setArguments(bundle);
+        fileInfoDialog.setTargetFragment(this, 2);
+        fileInfoDialog.show(getFragmentManager(), "file_info_dialog");
     }
 
     private ServerFile getCheckedFile() {

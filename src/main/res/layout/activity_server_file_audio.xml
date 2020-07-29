@@ -33,6 +33,7 @@
         android:id="@+id/control_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:repeat_toggle_modes="all"
         android:layout_gravity="bottom"
         android:focusable="true"
         app:shutter_background_color="@android:color/transparent" />

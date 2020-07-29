@@ -188,6 +188,9 @@
     <string name="alert_delete_dialog">Delete file</string>
     <string name="alert_delete_confirm">Are you sure?</string>
 
+    <string name="title_file_info">File Info</string>
+    <string name="text_ok">OK</string>
+
     <string name="title_selected_server">Server</string>
 
     <string name="stop_the_audio" translatable="false">"Stop the audio"</string>

@@ -43,7 +43,13 @@
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbarStyle="outsideOverlay" />
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbars="vertical"
+                android:scrollbarSize="18sp"
+                android:scrollbarThumbVertical="@color/accent"
+                android:scrollIndicators="right"
+                android:scrollbarAlwaysDrawVerticalTrack="false"
+                android:fadeScrollbars="true"/>
 
             <LinearLayout
                 android:id="@+id/empty"

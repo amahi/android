@@ -11,8 +11,11 @@ import android.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.db.repositories.FileInfoRepository;
 import org.amahi.anywhere.util.Fragments;
 
 import java.io.File;
@@ -20,10 +23,13 @@ import java.io.File;
 public class AlertDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     File file;
     private int dialogType = -1;
+    private String fileUniqueKey;
     AlertDialog.Builder builder;
     public static final int DELETE_FILE_DIALOG = 0;
     public static final int DUPLICATE_FILE_DIALOG = 1;
-    public static final int SIGN_OUT_DIALOG = 2;
+    public static final int SIGN_OUT_DIALOG = 3;
+    public static final int FILE_INFO_DIALOG = 2;
+    public static final String LAST_OPENED_NULL = "Never opened";
 
 
     @NonNull
@@ -34,6 +40,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
 
         if (getArguments() != null) {
             dialogType = getArguments().getInt(Fragments.Arguments.DIALOG_TYPE);
+            fileUniqueKey = getArguments().getString(Fragments.Arguments.FILE_UNIQUE_KEY);
         }
 
         switch (dialogType) {
@@ -43,6 +50,10 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
 
             case DUPLICATE_FILE_DIALOG:
                 buildDuplicateDialog();
+                break;
+
+            case FILE_INFO_DIALOG:
+                buildFileInfoDialog();
                 break;
 
             case SIGN_OUT_DIALOG:
@@ -65,6 +76,22 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
             .setMessage(getString(R.string.message_duplicate_file_upload_body, file.getName()))
             .setPositiveButton(getString(R.string.button_yes), this)
             .setNegativeButton(getString(R.string.button_no), this);
+    }
+    private void buildFileInfoDialog() {
+        View view = getActivity().getLayoutInflater().inflate(R.layout.file_info_dialog, null);
+        TextView lastOpened = view.findViewById(R.id.text_last_opened);
+        lastOpened.setText(getFileLastOpened());
+        builder.setTitle(getString(R.string.title_file_info))
+            .setPositiveButton(getString(R.string.text_ok), this);
+        builder.setView(view);
+    }
+
+    private String getFileLastOpened() {
+        FileInfoRepository fileInfoRepository = new FileInfoRepository(getContext());
+        if (fileInfoRepository.getFileInfo(fileUniqueKey) == null) {
+            return LAST_OPENED_NULL;
+        }
+        return fileInfoRepository.getFileInfo(fileUniqueKey).getLastOpened();
     }
 
     private void buildSignOutDialog() {

@@ -31,9 +31,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.db.entities.FileInfo;
+import org.amahi.anywhere.db.repositories.FileInfoRepository;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.DateTime;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.LocaleHelper;
 
@@ -77,6 +80,8 @@ public class ServerFileWebActivity extends AppCompatActivity {
         setUpInjections();
 
         setUpWebResource(savedInstanceState);
+
+        setUpLastOpened();
     }
 
     private void setUpInjections() {
@@ -116,6 +121,12 @@ public class ServerFileWebActivity extends AppCompatActivity {
             .build();
 
         mCustomTabsIntent.launchUrl(this, getWebResourceUri());
+    }
+
+    private void setUpLastOpened() {
+        FileInfoRepository fileInfoRepository = new FileInfoRepository(this);
+        FileInfo fileInfo = new FileInfo(getFile().getUniqueKey(), DateTime.getCurrentTime());
+        fileInfoRepository.insert(fileInfo);
     }
 
     private boolean isWebResourceStateValid(Bundle state) {

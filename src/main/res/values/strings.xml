@@ -19,14 +19,6 @@
 
 <resources>
 
-    <!-- Rate this App Popup Customizations-->
-
-    <string name="rate_dialog_title" translatable="false">Rate this App</string>
-    <string name="rate_dialog_message" translatable="false">If you enjoy using this app, would you mind taking a moment to rate it? It won\'t take more than a minute. Thanks for your support!</string>
-    <string name="rate_dialog_ok" translatable="false">Rate It Now</string>
-    <string name="rate_dialog_cancel" translatable="false">Remind Me Later</string>
-    <string name="rate_dialog_no" translatable="false">No, Thanks</string>
-
 <!--    Please update the Strings here: https://docs.google.com/spreadsheets/d/1NAl8xWGDRj6MmLHKyESONAAyudOHdFnSbaqF1Pr28sE/edit?usp=sharing-->
 
     <string name="application_name" translatable="false">Amahi</string>
@@ -332,5 +324,11 @@
     <string name="pref_connection_desc">Select the type of connection you want. You can set it as Auto detect, remote or local area network.</string>
 
     <string name="acra_report_toast" translatable="false">ACRA Log Report Sent!</string>
+
+    <string name="rate_dialog_title">Rate Amahi</string>
+    <string name="rate_dialog_message">If you enjoy using Amahi, would you mind taking a moment to rate it? Thanks for your support!</string>
+    <string name="rate_dialog_ok">Rate It Now</string>
+    <string name="rate_dialog_cancel">Remind Me Later</string>
+    <string name="rate_dialog_no">No, Thanks</string>
 
 </resources>

@@ -19,15 +19,16 @@
 
 package org.amahi.anywhere.activity;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
+import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-
-import android.view.MenuItem;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.squareup.otto.Subscribe;
 
@@ -37,6 +38,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.fragment.UploadSettingsFragment;
+import org.amahi.anywhere.util.LocaleHelper;
 
 /**
  * Settings activity. Shows application's settings.
@@ -64,7 +66,12 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setUpHomeNavigation() {
-        getSupportActionBar().setHomeButtonEnabled(true);
+        Drawable icon = getResources().getDrawable(R.drawable.arrow_back);
+        icon.setColorFilter(getResources().getColor(R.color.primary_text_material_light), PorterDuff.Mode.SRC_IN);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.arrow_back);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void setUpSettingsFragment() {
@@ -106,5 +113,10 @@ public class SettingsActivity extends AppCompatActivity {
         super.onPause();
 
         BusProvider.getBus().unregister(this);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

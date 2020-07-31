@@ -164,8 +164,8 @@ public class MainTVFragment extends BrowseFragment {
     private void addSettings(ArrayObjectAdapter adapter) {
         ArrayObjectAdapter gridRowAdapter;
 
-        HeaderItem settings = new HeaderItem("Settings");
-        ArrayList<Server> serverArrayList = getActivity().getIntent().getParcelableArrayListExtra(getString(R.string.intent_servers));
+        HeaderItem settings = new HeaderItem(getString(R.string.header_settings));
+        ArrayList<Server> serverArrayList = getActivity().getIntent().getParcelableArrayListExtra("INTENT_SERVERS");
         gridRowAdapter = new ArrayObjectAdapter(new SettingsItemPresenter(serverArrayList));
         gridRowAdapter.add(getString(R.string.pref_title_server_select));
         gridRowAdapter.add(getString(R.string.pref_title_sign_out));

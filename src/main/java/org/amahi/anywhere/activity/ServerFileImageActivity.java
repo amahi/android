@@ -20,6 +20,7 @@
 package org.amahi.anywhere.activity;
 
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -47,8 +48,10 @@ import org.amahi.anywhere.adapter.ServerFilesImagePagerAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileCopiedEvent;
 import org.amahi.anywhere.bus.FileDownloadedEvent;
+import org.amahi.anywhere.db.entities.FileInfo;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.entities.RecentFile;
+import org.amahi.anywhere.db.repositories.FileInfoRepository;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.db.repositories.RecentFileRepository;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
@@ -57,10 +60,12 @@ import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.DateTime;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.FullScreenHelper;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.view.ClickableViewPager;
 
@@ -121,6 +126,8 @@ public class ServerFileImageActivity extends AppCompatActivity implements
         setUpCast();
 
         setUpFullScreen();
+
+        setUpLastOpened();
     }
 
     private void prepareFiles() {
@@ -170,6 +177,12 @@ public class ServerFileImageActivity extends AppCompatActivity implements
         if (isCastConnected()) {
             loadRemoteMedia();
         }
+    }
+
+    private void setUpLastOpened() {
+        FileInfoRepository fileInfoRepository = new FileInfoRepository(this);
+        FileInfo fileInfo = new FileInfo(getCurrentFile().getUniqueKey(), DateTime.getCurrentTime());
+        fileInfoRepository.insert(fileInfo);
     }
 
     private void setUpImageTitle() {
@@ -479,5 +492,10 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     private String getRecentFileUri() {
         RecentFileRepository repository = new RecentFileRepository(this);
         return repository.getRecentFile(getCurrentFile().getUniqueKey()).getUri();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

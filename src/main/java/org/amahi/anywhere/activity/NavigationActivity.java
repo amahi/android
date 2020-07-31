@@ -19,6 +19,7 @@
 
 package org.amahi.anywhere.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ import org.amahi.anywhere.util.Android;
 import org.amahi.anywhere.util.CheckTV;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 
 import javax.inject.Inject;
@@ -173,10 +175,11 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         if (!CheckTV.isATV(this)) setUpNavigationFragment();
 
         if (isNavigationDrawerAvailable() && isNavigationDrawerRequired(state)) {
-            showNavigationDrawer();
+            this.navigationTitle = getString(R.string.title_shares);
+            setUpTitle();
+            setUpShares();
         }
 
-        setUpNavigationTitle(state);
     }
 
     private void setUpNavigationDrawer() {
@@ -222,14 +225,6 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     @Override
     public void onDrawerStateChanged(int state) {
         navigationDrawerToggle.onDrawerStateChanged(state);
-    }
-
-    private void setUpNavigationTitle(Bundle state) {
-        this.navigationTitle = getNavigationTitle(state);
-
-        if (isNavigationDrawerAvailable() && !isNavigationDrawerOpen()) {
-            setUpTitle();
-        }
     }
 
     private String getNavigationTitle(Bundle state) {
@@ -450,5 +445,10 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
         private State() {
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

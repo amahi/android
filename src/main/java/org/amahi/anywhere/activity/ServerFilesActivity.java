@@ -25,25 +25,32 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -60,8 +67,8 @@ import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 import org.amahi.anywhere.bus.UploadClickEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
-import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.AlertDialogFragment;
+import org.amahi.anywhere.fragment.AudioControllerFragment;
 import org.amahi.anywhere.fragment.GooglePlaySearchFragment;
 import org.amahi.anywhere.fragment.PrepareDialogFragment;
 import org.amahi.anywhere.fragment.ProgressDialogFragment;
@@ -75,11 +82,14 @@ import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.NetworkUtils;
 import org.amahi.anywhere.util.PathUtil;
 
 import java.io.File;
@@ -108,6 +118,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private static final int CAMERA_PERMISSION = 103;
     private static final int REQUEST_UPLOAD_IMAGE = 201;
     private static final int REQUEST_CAMERA_IMAGE = 202;
+    private static final int ACTION_SETTINGS = 401;
     @Inject
     ServerClient serverClient;
     private ServerFile file;
@@ -165,7 +176,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     }
 
     private void setUpUploadDialog() {
-        uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progress_dialog");
+        uploadDialogFragment = (ProgressDialogFragment) getFragmentManager().findFragmentByTag(Constants.progressDialogFragment);
         if (uploadDialogFragment == null) {
             uploadDialogFragment = new ProgressDialogFragment();
         }
@@ -228,7 +239,26 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     private void setUpFileActivity(ServerShare share, List<ServerFile> files, ServerFile file) {
         if (Intents.Builder.with(this).isServerFileSupported(file)) {
-            startFileActivity(share, files, file);
+            NetworkUtils networkUtils = new NetworkUtils(this);
+            if (isFileAvailableOffline(file)) {
+                startFileActivity(share, files, file);
+            } else {
+                if (isConnectionLocal()) {
+                    //check if the phone is still connected to local server
+                    if (networkUtils.isWifiConnected() || networkUtils.isNetworkAvailable()) {
+                        startFileActivity(share, files, file);
+                    } else {
+                        showErrorSnackbar(getString(R.string.message_connect_to_server_and_try_again), false);
+                    }
+                } else {
+                    if (networkUtils.isNetworkAvailable()) {
+                        startFileActivity(share, files, file);
+                    } else {
+                        showErrorSnackbar(getString(R.string.message_connect_and_try_again), true);
+                    }
+                }
+
+            }
             return;
         }
 
@@ -339,6 +369,14 @@ public class ServerFilesActivity extends AppCompatActivity implements
             .show();
     }
 
+    private void showErrorSnackbar(String message, boolean showAction) {
+        Snackbar snackbar = Snackbar.make(getParentView(), message, Snackbar.LENGTH_LONG);
+        if(showAction) {
+            snackbar.setAction(R.string.menu_settings, view -> startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), ACTION_SETTINGS));
+        }
+        snackbar.show();
+    }
+
     @Subscribe
     public void onUploadOptionClick(UploadClickEvent event) {
         int option = event.getUploadOption();
@@ -366,8 +404,12 @@ public class ServerFilesActivity extends AppCompatActivity implements
         if (EasyPermissions.hasPermissions(this, perms)) {
             openCamera();
         } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.camera_permission),
-                CAMERA_PERMISSION, perms);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ServerFilesActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                showPermissionSnackBar(getString(R.string.file_upload_permission_denied));
+            } else {
+                EasyPermissions.requestPermissions(this, getString(R.string.camera_permission),
+                    CAMERA_PERMISSION, perms);
+            }
         }
     }
 
@@ -397,11 +439,16 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkFileReadPermissions() {
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+
         if (EasyPermissions.hasPermissions(this, perms)) {
             showFileChooser();
         } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
-                FILE_UPLOAD_PERMISSION, perms);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ServerFilesActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                showPermissionSnackBar(getString(R.string.file_upload_permission_denied));
+            } else {
+                EasyPermissions.requestPermissions(this, getString(R.string.file_upload_permission),
+                    FILE_UPLOAD_PERMISSION, perms);
+            }
         }
     }
 
@@ -438,6 +485,10 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     if (cameraImage.exists()) {
                         uploadFile(cameraImage);
                     }
+                    break;
+                case ACTION_SETTINGS:
+                    break;
+                case AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE:
                     break;
             }
         }
@@ -543,7 +594,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     }
 
     private void dismissPreparingDialog() {
-        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag("prepare_dialog");
+        PrepareDialogFragment fragment = (PrepareDialogFragment) getSupportFragmentManager().findFragmentByTag(Constants.prepareDialogFragment);
         if (fragment != null && fragment.isAdded()) {
             fragment.dismiss();
         }
@@ -572,6 +623,16 @@ public class ServerFilesActivity extends AppCompatActivity implements
         return file != null && file.getState() == OfflineFile.DOWNLOADED;
     }
 
+    private boolean isConnectionLocal() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
+        if (preferenceConnection != null) {
+            return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
+        } else {
+            return false;
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
@@ -595,6 +656,9 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
         if (mCastContext.getCastState() != CastState.CONNECTED) {
             setUpAudioServiceBind();
+        } else {
+            getAudioController().getView().setVisibility(View.GONE);
+            getFrameLayout().setVisibility(View.VISIBLE);
         }
     }
 
@@ -629,7 +693,12 @@ public class ServerFilesActivity extends AppCompatActivity implements
         return (AudioControllerFragment) getSupportFragmentManager().findFragmentById(R.id.audio_controller_fragment);
     }
 
+    private FrameLayout getFrameLayout() {
+        return (FrameLayout) findViewById(R.id.controller);
+    }
+
     private void showAudioControls() {
+        getFrameLayout().setVisibility(View.VISIBLE);
         getSupportFragmentManager().beginTransaction()
             .show(getAudioController())
             .commit();
@@ -715,5 +784,10 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
         private State() {
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

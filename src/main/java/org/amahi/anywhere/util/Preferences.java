@@ -59,7 +59,7 @@ public final class Preferences {
     }
 
     public static SharedPreferences getPreference(Context context) {
-        return context.getSharedPreferences(context.getString(R.string.preference), Context.MODE_PRIVATE);
+        return context.getSharedPreferences(Constants.preference, Context.MODE_PRIVATE);
     }
 
     public static void setLight(Context context, SharedPreferences preferences) {
@@ -79,23 +79,47 @@ public final class Preferences {
     }
 
     public static boolean getFirstRun(Context context) {
-        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getBoolean(context.getString(R.string.is_first_run), true);
+        return context.getSharedPreferences(Constants.preference, MODE_PRIVATE).getBoolean(Constants.isFirstRun, true);
     }
 
     public static void setFirstRun(Context context) {
-        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putBoolean(context.getString(R.string.is_first_run), false).apply();
+        context.getSharedPreferences(Constants.preference, MODE_PRIVATE).edit().putBoolean(Constants.isFirstRun, false).apply();
     }
 
     public static void setServerName(Context context, String serverName) {
-        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.pref_server_select_key), serverName).apply();
+        context.getSharedPreferences(Constants.preference, MODE_PRIVATE).edit().putString(context.getString(R.string.pref_server_select_key), serverName).apply();
     }
 
     public static String getServerName(Context context) {
-        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.pref_server_select_key), null);
+        return context.getSharedPreferences(Constants.preference, MODE_PRIVATE).getString(context.getString(R.string.pref_server_select_key), null);
     }
 
     public static Preferences ofCookie(Context context) {
         return new Preferences(context, Locations.COOKIE);
+    }
+
+    public static int getSortOption(Context context) {
+        return getPreference(context).getInt(Defaults.SORTING_OPTION, ServerFilesFragment.SORT_MODIFICATION_TIME);
+    }
+
+    public static void setSortOption(Context context, int filesSort) {
+        getPreference(context).edit().putInt(Defaults.SORTING_OPTION, filesSort).apply();
+    }
+
+    public static void setAudioShuffleMode(Context context, boolean mode) {
+        getPreference(context).edit().putBoolean(Defaults.AUDIO_SHUFFLE, mode).apply();
+    }
+
+    public static boolean getAudioShuffleMode(Context context) {
+        return getPreference(context).getBoolean(Defaults.AUDIO_SHUFFLE, false);
+    }
+
+    public static void setAudioRepeatMode(Context context, int mode) {
+        getPreference(context).edit().putInt(Defaults.AUDIO_REPEAT, mode).apply();
+    }
+
+    public static int getAudioRepeatMode(Context context) {
+        return getPreference(context).getInt(Defaults.AUDIO_REPEAT, 0);
     }
 
     public String getAppCookies(String appHost) {
@@ -114,14 +138,6 @@ public final class Preferences {
         preferences.edit().putString(key, value).apply();
     }
 
-    public static int getSortOption(Context context) {
-        return getPreference(context).getInt(Defaults.SORTING_OPTION, ServerFilesFragment.SORT_MODIFICATION_TIME);
-    }
-
-    public static void setSortOption(Context context, int filesSort) {
-        getPreference(context).edit().putInt(Defaults.SORTING_OPTION, filesSort).apply();
-    }
-
     private static final class Locations {
         public static final String COOKIE = "cookie";
 
@@ -132,6 +148,8 @@ public final class Preferences {
     private static final class Defaults {
         public static final String STRING = "";
         public static final String SORTING_OPTION = "sorting_option";
+        public static final String AUDIO_SHUFFLE = "audio_shuffle";
+        public static final String AUDIO_REPEAT = "audio_repeat";
 
         private Defaults() {
         }

@@ -26,6 +26,8 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -91,9 +93,21 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     ServerClient serverClient;
     View view;
     private Intent tvIntent;
+    private Context mContext;
+    private Activity mActivity;
 
     private boolean areServersVisible;
     private List<Server> serversList;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+
+        if (context instanceof Activity) {
+            mActivity = (Activity) context;
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -118,7 +132,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpInjections() {
-        AmahiApplication.from(getActivity()).inject(this);
+        AmahiApplication.from(mActivity).inject(this);
     }
 
     private void setUpSettingsMenu() {
@@ -130,13 +144,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private AccountManager getAccountManager() {
-        return AccountManager.get(getActivity());
+        return AccountManager.get(mContext);
     }
 
     @Override
     public void onAccountsUpdated(Account[] accounts) {
 
-        if (Preferences.getFirstRun(getContext())) {
+        if (Preferences.getFirstRun(mContext)) {
             launchIntro();
         }
 
@@ -146,8 +160,8 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void launchIntro() {
-        startActivity(new Intent(getContext(), IntroductionActivity.class));
-        getActivity().finishAffinity();
+        startActivity(new Intent(mContext, IntroductionActivity.class));
+        mActivity.finishAffinity();
     }
 
     private void setUpContentRefreshing() {
@@ -160,7 +174,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
             android.R.color.holo_red_light);
 
         refreshLayout.setOnRefreshListener(() -> {
-            ViewDirector.of(getActivity(), R.id.animator_content).show(R.id.empty_view);
+            ViewDirector.of(mActivity, R.id.animator_content).show(R.id.empty_view);
             setUpServers(new Bundle());
         });
     }
@@ -170,13 +184,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpAccount() {
-        getAccountManager().addAccount(AmahiAccount.TYPE, AmahiAccount.TYPE_TOKEN, null, null, getActivity(), this, null);
+        getAccountManager().addAccount(AmahiAccount.TYPE, AmahiAccount.TYPE_TOKEN, null, null, mActivity, this, null);
     }
 
     private void setUpAuthenticationToken() {
         Account account = getAccounts().get(0);
 
-        getAccountManager().getAuthToken(account, AmahiAccount.TYPE, null, getActivity(), this, null);
+        getAccountManager().getAuthToken(account, AmahiAccount.TYPE, null, mActivity, this, null);
     }
 
     @Override
@@ -199,7 +213,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void tearDownActivity() {
-        getActivity().finish();
+        mActivity.finish();
     }
 
     private void setUpServers(Bundle state) {
@@ -237,11 +251,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpServersContent(List<Server> servers) {
-        if (!CheckTV.isATV(getContext())) {
+        if (!CheckTV.isATV(mContext)) {
             replaceServersList(filterActiveServers(servers));
         } else {
             serversList = filterActiveServers(servers);
-            String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), serversList.get(0).getName());
+            String serverName = Preferences.getPreference(mContext).getString(getString(R.string.pref_server_select_key), serversList.get(0).getName());
 
             if (serversList.get(0).getName().matches(serverName))
                 replaceServersList(serversList);
@@ -259,7 +273,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private int findTheServer(List<Server> serverList) {
-        String serverName = Preferences.getPreference(getContext()).getString(getString(R.string.pref_server_select_key), serverList.get(0).getName());
+        String serverName = Preferences.getPreference(mContext).getString(getString(R.string.pref_server_select_key), serverList.get(0).getName());
 
         for (int i = 0; i < serverList.size(); i++) {
             if (serverName.matches(serverList.get(i).getName()))
@@ -300,7 +314,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (getAccounts().isEmpty()) {
             setUpAccount();
         } else {
-            if (Preferences.getFirstRun(getActivity()) && !CheckTV.isATV(getActivity())) {
+            if (Preferences.getFirstRun(mActivity) && !CheckTV.isATV(mActivity)) {
                 launchIntro();
             }
             setUpAuthenticationToken();
@@ -318,7 +332,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpServersContent(String authenticationToken) {
-        amahiClient.getServers(getContext(), authenticationToken);
+        amahiClient.getServers(mContext, authenticationToken);
     }
 
     @Subscribe
@@ -331,9 +345,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         showContent();
 
-        tvIntent = new Intent(getContext(), MainTVActivity.class);
+        tvIntent = new Intent(mContext, MainTVActivity.class);
 
-        tvIntent.putParcelableArrayListExtra(getString(R.string.intent_servers), new ArrayList<>(filterActiveServers(event.getServers())));
+        tvIntent.putParcelableArrayListExtra("INTENT_SERVERS", new ArrayList<>(filterActiveServers(event.getServers())));
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
@@ -350,7 +364,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void setUpNavigationList() {
         getNavigationListView().setVisibility(View.VISIBLE);
-        getNavigationListView().setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        getNavigationListView().setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
 
         if (!areServersVisible) {
             showNavigationItems();
@@ -374,14 +388,14 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         //Setting the layout of a vertical list dynamically.
 
         if (!serverClient.isConnected()) {
-            getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(getActivity()));
+            getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(mActivity));
             return;
         }
 
         if (serverClient.isConnectedLocal()) {
-            getNavigationListView().setAdapter(NavigationDrawerAdapter.newLocalAdapter(getActivity()));
+            getNavigationListView().setAdapter(NavigationDrawerAdapter.newLocalAdapter(mActivity));
         } else {
-            getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(getActivity()));
+            getNavigationListView().setAdapter(NavigationDrawerAdapter.newRemoteAdapter(mActivity));
         }
     }
 
@@ -406,7 +420,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpNavigationListener() {
-        getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(getContext(), (view, position) -> {
+        getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(mContext, (view, position) -> {
             getNavigationListView().dispatchSetActivated(false);
 
             view.setActivated(true);
@@ -536,11 +550,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         areServersVisible = false;
         setUpNavigationList();
         getLinearLayoutSelectedServer().setOnClickListener((v) -> {
-            Toast.makeText(getContext(), R.string.message_connection_error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.message_connection_error, Toast.LENGTH_SHORT).show();
         });
 
         showContent();
-        Toast.makeText(getContext(), R.string.message_connection_error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, R.string.message_connection_error, Toast.LENGTH_SHORT).show();
     }
 
     @Subscribe
@@ -552,16 +566,16 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (serverClient.isConnected(server)) {
             setUpServerConnection();
         } else {
-            serverClient.connect(getContext(), server);
+            serverClient.connect(mContext, server);
         }
     }
 
     private void storeServerName(Server server) {
-        Preferences.setServerName(getContext(), server.getName());
+        Preferences.setServerName(mContext, server.getName());
     }
 
     private String getServerName() {
-        return Preferences.getServerName(getContext());
+        return Preferences.getServerName(mContext);
     }
 
     @Subscribe
@@ -570,7 +584,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         setUpNavigationList();
         showContent();
 
-        if (CheckTV.isATV(getContext())) launchTV();
+        if (CheckTV.isATV(mContext)) launchTV();
     }
 
     private void setUpServerConnection() {
@@ -591,20 +605,20 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private boolean isConnectionAvailable() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
 
         return preferences.contains(getString(R.string.preference_key_server_connection));
     }
 
     private boolean isConnectionAuto() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
         String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
         return preferenceConnection.equals(getString(R.string.preference_key_server_connection_auto));
     }
 
     private boolean isConnectionLocal() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
         String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
         return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
@@ -691,7 +705,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     public void showServers() {
         areServersVisible = true;
         getNavigationListView().setAdapter(null);
-        getNavigationListView().setAdapter(new NavigationDrawerAdapter(getContext(), getServerNames()));
+        getNavigationListView().setAdapter(new NavigationDrawerAdapter(mContext, getServerNames()));
         getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
             0, 0, R.drawable.nav_arrow_up, 0);
     }

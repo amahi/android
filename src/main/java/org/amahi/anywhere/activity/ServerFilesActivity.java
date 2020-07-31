@@ -33,10 +33,8 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -100,7 +98,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import hotchemi.android.rate.AppRate;
-import hotchemi.android.rate.OnClickButtonListener;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 import timber.log.Timber;
@@ -150,25 +147,15 @@ public class ServerFilesActivity extends AppCompatActivity implements
         setUpFiles(savedInstanceState);
     }
 
-    public void setUpRateApp()
-    {
+    public void setUpRateApp() {
         AppRate.with(this)
-            .setInstallDays(7) // Specifies the number of days after installation, the dialog popup shows.
-            .setLaunchTimes(2) // Specifies the number of times the app must launch by user for the dialog popup to show.
-            .setRemindInterval(3) // Specifies the number of days after "Remind Me Later" is clicked, the dialog popup will show.
+            .setInstallDays(7)
+            .setLaunchTimes(2)
+            .setRemindInterval(3)
             .setShowLaterButton(true)
-            .setDebug(false) // IMPORTANT: Set true only for testing purposes. DO NOT set true for release-app.
-            .setOnClickButtonListener(new OnClickButtonListener() { // callback listener.
-                @Override
-                public void onClickButton(int which) {
-
-                    // Space to alter the entire functionality of the "dialog popup" for future purposes.
-
-                }
-            })
+            .setDebug(false)
             .monitor();
 
-        //To show the dialog popup only if meets ALL specified conditions.
         AppRate.showRateDialogIfMeetsConditions(this);
     }
 
@@ -397,7 +384,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     private void showErrorSnackbar(String message, boolean showAction) {
         Snackbar snackbar = Snackbar.make(getParentView(), message, Snackbar.LENGTH_LONG);
-        if(showAction) {
+        if (showAction) {
             snackbar.setAction(R.string.menu_settings, view -> startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), ACTION_SETTINGS));
         }
         snackbar.show();

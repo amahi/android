@@ -99,6 +99,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import hotchemi.android.rate.AppRate;
+import hotchemi.android.rate.OnClickButtonListener;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 import timber.log.Timber;
@@ -137,6 +139,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_files);
 
+        setUpRateApp();
+
         setUpInjections();
 
         setUpCast();
@@ -144,6 +148,28 @@ public class ServerFilesActivity extends AppCompatActivity implements
         setUpHomeNavigation();
 
         setUpFiles(savedInstanceState);
+    }
+
+    public void setUpRateApp()
+    {
+        AppRate.with(this)
+            .setInstallDays(7) // Specifies the number of days after installation, the dialog popup shows.
+            .setLaunchTimes(2) // Specifies the number of times the app must launch by user for the dialog popup to show.
+            .setRemindInterval(3) // Specifies the number of days after "Remind Me Later" is clicked, the dialog popup will show.
+            .setShowLaterButton(true)
+            .setDebug(false) // IMPORTANT: Set true only for testing purposes. DO NOT set true for release-app.
+            .setOnClickButtonListener(new OnClickButtonListener() { // callback listener.
+                @Override
+                public void onClickButton(int which) {
+
+                    // Space to alter the entire functionality of the "dialog popup" for future purposes.
+
+                }
+            })
+            .monitor();
+
+        //To show the dialog popup only if meets ALL specified conditions.
+        AppRate.showRateDialogIfMeetsConditions(this);
     }
 
     private void setUpInjections() {

@@ -56,7 +56,8 @@
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:allowBackup,android:label">
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="org.amahi.anywhere.fileprovider"

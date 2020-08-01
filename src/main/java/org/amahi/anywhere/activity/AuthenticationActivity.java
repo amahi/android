@@ -66,6 +66,23 @@ public class AuthenticationActivity extends AccountAuthenticatorActivity impleme
         setUpInjections();
 
         setUpAuthentication();
+
+        avoidLeadingSpaceInUsername();
+    }
+
+    private void avoidLeadingSpaceInUsername(){
+        getUsernameEdit().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2){}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2){}
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!getUsernameEdit().getText().toString().isEmpty())
+                    if (editable.toString().trim().isEmpty())
+                        getUsernameEdit().setText("");
+            }
+        });
     }
 
     private void setUpInjections() {

@@ -15,8 +15,8 @@ apply plugin: "com.android.application"
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '27.0.1'
+    compileSdkVersion 30
+    buildToolsVersion '30.0.0'
 
     signingConfigs {
         release {

@@ -25,7 +25,6 @@ import android.os.Build;
 import android.os.StrictMode;
 import android.support.annotation.RequiresApi;
 
-import com.crashlytics.android.BuildConfig;
 import com.crashlytics.android.Crashlytics;
 
 import org.amahi.anywhere.job.NetConnectivityJob;

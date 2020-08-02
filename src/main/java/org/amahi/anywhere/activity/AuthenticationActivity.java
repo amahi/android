@@ -93,6 +93,11 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
             public void afterTextChanged(Editable editable) {
                 if (!getUsername().isEmpty() && getUsername().trim().isEmpty())
                     getUsernameEdit().setText("");
+                else if (!getUsername().isEmpty()) {
+                    while (getUsername().charAt(0) == ' ') {
+                        getUsernameEdit().setText(getUsername().substring(1));
+                    }
+                }
             }
         });
     }

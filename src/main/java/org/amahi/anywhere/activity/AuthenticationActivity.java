@@ -97,7 +97,7 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
                     getUsernameEdit().setText("");
                 else if (!getUsername().isEmpty()) {
                     while (getUsername().charAt(0) == ' ') {
-                        getUsernameEdit().setText(getUsernameEdit().getText().toString().substring(1));
+                        getUsernameEdit().setText(getUsername().substring(1));
                     }
                 }
             }

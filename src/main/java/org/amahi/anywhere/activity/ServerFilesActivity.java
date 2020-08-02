@@ -50,6 +50,7 @@ import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.otto.Subscribe;
+import com.vorlonsoft.android.rate.AppRate;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -97,7 +98,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import hotchemi.android.rate.AppRate;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 import timber.log.Timber;
@@ -149,9 +149,10 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     public void setUpRateApp() {
         AppRate.with(this)
-            .setInstallDays(7)
-            .setLaunchTimes(2)
-            .setRemindInterval(3)
+            .setInstallDays((byte) 7)
+            .setLaunchTimes((byte) 5)
+            .setRemindInterval((byte) 7)
+            .setRemindLaunchesNumber((byte) 5)
             .setShowLaterButton(true)
             .setDebug(false)
             .monitor();

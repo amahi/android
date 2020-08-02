@@ -47,4 +47,8 @@ public final class Api {
     public static String getAcraEmail() {
         return BuildConfig.ACRA_EMAIL;
     }
+
+    public static boolean toSendMail() {
+        return Boolean.parseBoolean(BuildConfig.ACRA_SEND);
+    }
 }

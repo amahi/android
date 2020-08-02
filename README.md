@@ -38,6 +38,7 @@ This is something to keep **private** and you obtain it by sending a message to 
   ```
   ```
   mailto.email = myemail@mydomain.com
+  mail.send = true
   ```
 
 Enter your personal email in place of `myemail@mydomain.com`

@@ -37,7 +37,7 @@
                     android:layoutAnimation="@anim/recycler_list_anim"
                     android:scrollbarStyle="insideOverlay"
                     android:scrollbars="vertical"
-                    android:scrollbarSize="18sp"
+                    android:scrollbarSize="10sp"
                     android:scrollbarThumbVertical="@color/accent"
                     android:scrollbarAlwaysDrawVerticalTrack="false"
                     android:fadeScrollbars="true" />

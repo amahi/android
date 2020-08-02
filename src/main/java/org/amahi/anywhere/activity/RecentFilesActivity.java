@@ -64,7 +64,6 @@ import javax.inject.Inject;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
-import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
 import static org.amahi.anywhere.fragment.ServerFilesFragment.EXTERNAL_STORAGE_PERMISSION;
 

@@ -21,15 +21,16 @@ package org.amahi.anywhere.fragment;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.squareup.otto.Subscribe;
 
@@ -44,7 +45,6 @@ import org.amahi.anywhere.bus.ServerSharesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerSharesLoadedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.util.MultiSwipeRefreshLayout;
 import org.amahi.anywhere.util.ViewDirector;
 
 import java.util.ArrayList;
@@ -68,15 +68,14 @@ public class ServerSharesFragment extends Fragment implements
 
     private LinearLayout mErrorLinearLayout;
 
-    private MultiSwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
 
-        mSwipeRefreshLayout = (MultiSwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh);
-        mSwipeRefreshLayout.setSwipeableChildren(R.id.layout_content);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
 

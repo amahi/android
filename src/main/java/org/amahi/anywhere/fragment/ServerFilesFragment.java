@@ -30,18 +30,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -54,11 +42,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.IntroductoryOverlay;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -88,7 +88,6 @@ import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.Mimes;
-import org.amahi.anywhere.util.MultiSwipeRefreshLayout;
 import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.ServerFileClickListener;
 import org.amahi.anywhere.util.ViewDirector;
@@ -710,9 +709,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
-        MultiSwipeRefreshLayout multiSwipeRefreshLayout = getView().findViewById(R.id.layout_refresh);
-        multiSwipeRefreshLayout.setSwipeableChildren(R.id.layout_content);
-        return multiSwipeRefreshLayout;
+        return getView().findViewById(R.id.layout_refresh);
     }
 
     @Subscribe
@@ -987,7 +984,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void tearDownFilesState(Bundle state) {
         if (areFilesLoaded()) {
-            if(state!=null) {
+            if (state != null) {
                 state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFiles()));
             }
         }

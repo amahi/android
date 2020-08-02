@@ -54,7 +54,6 @@ import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
-import org.amahi.anywhere.util.MultiSwipeRefreshLayout;
 import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.ServerFileClickListener;
 
@@ -190,9 +189,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
-        MultiSwipeRefreshLayout multiSwipeRefreshLayout = findViewById(R.id.layout_refresh);
-        multiSwipeRefreshLayout.setSwipeableChildren(R.id.layout_content);
-        return multiSwipeRefreshLayout;
+        return findViewById(R.id.layout_refresh);
     }
 
     @Override

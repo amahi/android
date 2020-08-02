@@ -64,6 +64,7 @@ import javax.inject.Inject;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
+import xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller;
 
 import static org.amahi.anywhere.fragment.ServerFilesFragment.EXTERNAL_STORAGE_PERMISSION;
 
@@ -148,10 +149,18 @@ public class RecentFilesActivity extends AppCompatActivity implements
     }
 
     private RecyclerView getRecentFileRView() {
+        /*VerticalRecyclerViewFastScroller fastScroller = (VerticalRecyclerViewFastScroller) findViewById(R.id.fast_scroller);
+        //fastScroller.setRecyclerView(recyclerView);
+        fastScroller.setRecyclerView(getRecentFileRView());
+        getRecentFileRView().setOnScrollListener(fastScroller.getOnScrollListener()); */
         return findViewById(R.id.recent_list);
     }
 
     private void setUpListAdapter() {
+        VerticalRecyclerViewFastScroller fastScroller = (VerticalRecyclerViewFastScroller) findViewById(R.id.fast_scroller);
+        //fastScroller.setRecyclerView(recyclerView);
+        fastScroller.setRecyclerView(getRecentFileRView());
+        getRecentFileRView().setOnScrollListener(fastScroller.getOnScrollListener());
         recentFiles = getRecentFilesList();
         getRecentFileRView().setAdapter(new RecentFilesAdapter(this, recentFiles));
         showList(!recentFiles.isEmpty());

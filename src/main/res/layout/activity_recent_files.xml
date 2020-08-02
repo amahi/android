@@ -31,6 +31,13 @@
                 android:layoutAnimation="@anim/recycler_list_anim"
                 android:scrollbarStyle="outsideOverlay" />
 
+            <xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller
+                android:id="@+id/fast_scroller"
+                android:layout_width="20sp"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                />
+
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <LinearLayout

@@ -25,25 +25,30 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recent_list"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layoutAnimation="@anim/recycler_list_anim"
-                android:scrollbarStyle="insideOverlay"
-                android:scrollbars="vertical"
-                android:scrollbarSize="18sp"
-                android:scrollbarThumbVertical="@color/accent"
-                android:scrollIndicators="right"
-                android:scrollbarAlwaysDrawVerticalTrack="false"
-                android:fadeScrollbars="true" />
+                android:orientation="horizontal">
 
-            <xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller
-                android:id="@+id/fast_scroller"
-                android:layout_width="20sp"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recent_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layoutAnimation="@anim/recycler_list_anim"
+                    android:scrollbarStyle="insideOverlay"
+                    android:scrollbars="vertical"
+                    android:scrollbarSize="18sp"
+                    android:scrollbarThumbVertical="@color/accent"
+                    android:scrollbarAlwaysDrawVerticalTrack="false"
+                    android:fadeScrollbars="true" />
+
+                <xyz.danoz.recyclerviewfastscroller.vertical.VerticalRecyclerViewFastScroller
+                    android:id="@+id/fast_scroller"
+                    android:layout_width="20sp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"/>
+
+            </RelativeLayout>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

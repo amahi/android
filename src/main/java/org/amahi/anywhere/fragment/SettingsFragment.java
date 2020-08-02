@@ -75,6 +75,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         super.onCreate(savedInstanceState);
         setUpInjections();
     }
+    
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {

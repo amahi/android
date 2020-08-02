@@ -24,11 +24,6 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-
-import com.google.android.material.textfield.TextInputLayout;
-
-import androidx.appcompat.app.AppCompatDelegate;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
@@ -37,7 +32,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.dd.processbutton.iml.ActionProcessButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -95,11 +93,6 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
             public void afterTextChanged(Editable editable) {
                 if (!getUsername().isEmpty() && getUsername().trim().isEmpty())
                     getUsernameEdit().setText("");
-                else if (!getUsername().isEmpty()) {
-                    while (getUsername().charAt(0) == ' ') {
-                        getUsernameEdit().setText(getUsername().substring(1));
-                    }
-                }
             }
         });
     }

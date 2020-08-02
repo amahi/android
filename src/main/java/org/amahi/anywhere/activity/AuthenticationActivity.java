@@ -24,11 +24,6 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-
-import com.google.android.material.textfield.TextInputLayout;
-
-import androidx.appcompat.app.AppCompatDelegate;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
@@ -37,7 +32,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.dd.processbutton.iml.ActionProcessButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -79,17 +77,22 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
         avoidLeadingSpaceInUsername();
     }
 
-    private void avoidLeadingSpaceInUsername(){
+    private void avoidLeadingSpaceInUsername() {
         getUsernameEdit().addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!getUsernameEdit().getText().toString().isEmpty())
-                    if (editable.toString().trim().isEmpty())
-                        getUsernameEdit().setText("");
+                if (!getUsername().isEmpty() && getUsername().trim().isEmpty())
+                    getUsernameEdit().setText("");
             }
         });
     }
@@ -212,7 +215,7 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
     }
 
     private void authenticate() {
-        amahiClient.authenticate(getUsername().trim(), getPassword());
+        amahiClient.authenticate(getUsername(), getPassword());
     }
 
     @Subscribe

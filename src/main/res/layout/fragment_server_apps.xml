@@ -43,7 +43,7 @@
             android:paddingRight="16dp"
             android:scrollbarStyle="insideOverlay"
             android:scrollbars="vertical"
-            android:scrollbarSize="18sp"
+            android:scrollbarSize="10sp"
             android:scrollbarThumbVertical="@color/accent"
             android:scrollIndicators="right"
             android:scrollbarAlwaysDrawVerticalTrack="false"

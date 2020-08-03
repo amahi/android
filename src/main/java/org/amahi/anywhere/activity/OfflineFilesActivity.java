@@ -1,7 +1,9 @@
 package org.amahi.anywhere.activity;
 
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,6 +35,7 @@ import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 
 import java.io.File;
 import java.util.List;
@@ -179,7 +182,23 @@ public class OfflineFilesActivity extends AppCompatActivity {
 
     @Subscribe
     public void onFileDeleting(OfflineFileDeleteEvent event) {
-        deleteFileFromOfflineStorage(event.getFile());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.alert_delete_dialog);
+        builder.setMessage(R.string.alert_delete_confirm);
+        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteFileFromOfflineStorage(event.getFile());
+            }
+        });
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     private void deleteFileFromOfflineStorage(ServerFile serverFile) {
@@ -234,5 +253,10 @@ public class OfflineFilesActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(menuItem);
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }

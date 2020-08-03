@@ -31,6 +31,7 @@ import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.FileManager;
 import org.amahi.anywhere.util.Intents;
@@ -238,7 +239,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void notifyDownloadStart() {
-        Intent intent = new Intent("DownloadStarted");
+        Intent intent = new Intent(Constants.downloadStartedIntent);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -254,8 +255,8 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void updateOfflineActivityUI(int progress) {
-        Intent intent = new Intent("DownloadProgress");
-        intent.putExtra("progress", progress);
+        Intent intent = new Intent(Constants.downloadProgressIntent);
+        intent.putExtra(Constants.progressIntentExtra, progress);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -284,8 +285,8 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
     }
 
     private void notifyDownloadFinish(boolean isSuccess) {
-        Intent intent = new Intent("DownloadFinished");
-        intent.putExtra("success", isSuccess);
+        Intent intent = new Intent(Constants.downloadFinishedIntent);
+        intent.putExtra(Constants.successIntentExtra, isSuccess);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

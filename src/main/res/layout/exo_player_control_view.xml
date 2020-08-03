@@ -23,7 +23,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_gravity="bottom"
     android:layoutDirection="ltr"
-    android:background="@color/background_secondary"
+    android:background="@android:color/transparent"
     android:orientation="vertical"
     tools:targetApi="28">
 
@@ -71,21 +71,13 @@
         android:padding="8dp"
         android:orientation="horizontal">
 
+        <ImageButton android:id="@id/exo_shuffle"
+            android:tint="@color/primary_text"
+            style="@style/ExoMediaButton.Shuffle" />
+
         <ImageButton android:id="@id/exo_prev"
             android:tint="@color/primary_text"
             style="@style/ExoMediaButton.Previous"/>
-
-        <ImageButton android:id="@id/exo_rew"
-            android:tint="@color/primary_text"
-            style="@style/ExoMediaButton.Rewind"/>
-
-        <ImageButton android:id="@id/exo_shuffle"
-            android:tint="@color/primary_text"
-            style="@style/ExoMediaButton.Shuffle"/>
-
-        <ImageButton android:id="@id/exo_repeat_toggle"
-            android:tint="@color/primary_text"
-            style="@style/ExoMediaButton"/>
 
         <ImageButton android:id="@id/exo_play"
             android:tint="@color/accent"
@@ -97,13 +89,14 @@
             style="@style/ExoMediaButton.Pause"
             android:src="@drawable/ic_pause_circle"/>
 
-        <ImageButton android:id="@id/exo_ffwd"
-            android:tint="@color/primary_text"
-            style="@style/ExoMediaButton.FastForward"/>
-
         <ImageButton android:id="@+id/m_exo_next"
             android:tint="@color/primary_text"
             style="@style/ExoMediaButton.Next"/>
+
+        <ImageButton android:id="@+id/m_exo_repeat_toggle"
+            android:tint="@color/primary_text"
+            android:src="@drawable/exo_controls_repeat_all"
+            style="@style/ExoMediaButton" />
 
     </LinearLayout>
 

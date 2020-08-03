@@ -1,6 +1,7 @@
 # Gradle
 .gradle/
 build/
+release/
 
 # Android Studio
 .idea/
@@ -20,6 +21,10 @@ fabric.properties
 
 # Key
 signing.properties
-amahi-release-key.keystore
+*.keystore
+*.jks
 
 .DS*
+
+# Acra
+acra.properties

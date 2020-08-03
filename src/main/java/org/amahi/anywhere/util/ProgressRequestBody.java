@@ -19,9 +19,13 @@
 
 package org.amahi.anywhere.util;
 
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.bumptech.glide.load.engine.Resource;
+
+import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFileUploadProgressEvent;
 
@@ -51,7 +55,7 @@ public class ProgressRequestBody extends RequestBody {
     @Override
     public MediaType contentType() {
         // Only for uploading images
-        return MediaType.parse("image/*");
+        return MediaType.parse(Constants.imageMediaType);
     }
 
     @Override

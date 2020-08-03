@@ -23,17 +23,20 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
+
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.snackbar.Snackbar;
+
 import androidx.appcompat.app.AppCompatDelegate;
+
 import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -45,7 +48,10 @@ import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.Constants;
+import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
+import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 
 import java.util.Arrays;
@@ -56,9 +62,10 @@ import javax.inject.Inject;
 /**
  * Settings fragment. Shows application's settings.
  */
-public class SettingsFragment extends PreferenceFragment implements
+public class SettingsFragment extends PreferenceFragmentCompat implements
     SharedPreferences.OnSharedPreferenceChangeListener,
-    AccountManagerCallback<Boolean> {
+    AccountManagerCallback<Boolean>,
+    AlertDialogFragment.SignOutDialogCallback {
     @Inject
     ServerClient serverClient;
     public static final int RESULT_THEME_UPDATED = 3;
@@ -67,6 +74,10 @@ public class SettingsFragment extends PreferenceFragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setUpInjections();
+    }
+
+    @Override
+    public void onCreatePreferences(Bundle bundle, String s) {
         setUpSettings();
     }
 
@@ -90,12 +101,20 @@ public class SettingsFragment extends PreferenceFragment implements
 
     private void setUpSettingsSummary() {
         ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
         Preference applicationVersion = getPreference(R.string.preference_key_about_version);
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
+        language.setSummary(getLanguageSummary());
         serverConnection.setSummary(getServerConnectionSummary());
         applicationVersion.setSummary(getApplicationVersionSummary());
         autoUpload.setSummary(getAutoUploadSummary());
+    }
+
+    private String getLanguageSummary() {
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
+
+        return String.format("%s", language.getEntry());
     }
 
     private String getServerConnectionSummary() {
@@ -135,7 +154,7 @@ public class SettingsFragment extends PreferenceFragment implements
         Preference lightTheme = getPreference(R.string.pref_key_light_theme);
 
         accountSignOut.setOnPreferenceClickListener(preference -> {
-            setConfirmationDialog();
+            setUpSignOutDialogFragment();
             return true;
         });
         applicationIntro.setOnPreferenceClickListener(preference -> {
@@ -194,12 +213,23 @@ public class SettingsFragment extends PreferenceFragment implements
         startActivity(getActivity().getIntent());
     }
 
-    private void setConfirmationDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getString(R.string.sign_out_title))
-            .setMessage(getString(R.string.sign_out_message))
-            .setPositiveButton(getString(R.string.sign_out_title), (dialog, which) -> tearDownAccount())
-            .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss()).show();
+    private void setUpSignOutDialogFragment() {
+        AlertDialogFragment signOutDialogFragment = new AlertDialogFragment();
+        signOutDialogFragment.setTargetFragment(this, 1);
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.SIGN_OUT_DIALOG);
+        signOutDialogFragment.setArguments(bundle);
+        signOutDialogFragment.show(getFragmentManager(), "sign_out_dialog");
+    }
+
+    @Override
+    public void dialogPositiveButtonOnClick() {
+        tearDownAccount();
+    }
+
+    @Override
+    public void dialogNegativeButtonOnClick() {
+
     }
 
     private void tearDownAccount() {
@@ -208,6 +238,7 @@ public class SettingsFragment extends PreferenceFragment implements
 
             getAccountManager().removeAccount(account, this, null);
         } else {
+            Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
             tearDownActivity();
         }
     }
@@ -222,11 +253,11 @@ public class SettingsFragment extends PreferenceFragment implements
 
     @Override
     public void run(AccountManagerFuture<Boolean> accountManagerFuture) {
+        Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
         tearDownActivity();
     }
 
     private void tearDownActivity() {
-        Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
         Intent myIntent = new Intent(getActivity().getApplicationContext(), NavigationActivity.class);
         myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(myIntent);
@@ -238,7 +269,7 @@ public class SettingsFragment extends PreferenceFragment implements
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_subject));
         sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message));
-        sendIntent.setType("text/plain");
+        sendIntent.setType(Constants.emailTextPlainType);
         startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)));
     }
 
@@ -271,7 +302,22 @@ public class SettingsFragment extends PreferenceFragment implements
             setUpSettingsSummary();
 
             setUpServerConnection();
+        } else if (key.equals(getString(R.string.preference_key_language))) {
+            setUpSettingsSummary();
+
+            setUpLanguage();
         }
+    }
+
+    private void setUpLanguage() {
+        LocaleHelper.setLocale(getContext(), getLanguage());
+        tearDownActivity();
+    }
+
+    private String getLanguage() {
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
+
+        return language.getValue();
     }
 
     private void setUpServerConnection() {

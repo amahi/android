@@ -33,6 +33,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
 
     <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
@@ -54,6 +55,7 @@
         android:label="@string/application_name"
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -109,7 +111,7 @@
         <activity
             android:name=".activity.ExpandedControlsActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
+            android:screenOrientation="fullSensor"
             android:theme="@style/Theme.CastVideosDark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -122,7 +124,8 @@
         <activity android:name=".activity.ServerFileWebActivity" />
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_settings" />
+            android:label="@string/title_settings"
+            android:theme="@style/Theme.Amahi.Settings"/>
         <activity
             android:name=".activity.IntroductionActivity"
             android:label="@string/intro_desc_phone_1"

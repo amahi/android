@@ -47,6 +47,7 @@ import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.util.ViewDirector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,9 +61,9 @@ public class ServerAppsFragment extends Fragment {
     @Inject
     ServerClient serverClient;
     View rootView;
+
     private ServerAppsAdapter mServerAppsAdapter;
     private RecyclerView mRecyclerView;
-    private LinearLayout mEmptyLinearLayout;
     private LinearLayout mErrorLinearLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -71,41 +72,45 @@ public class ServerAppsFragment extends Fragment {
         rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
 
         mSwipeRefreshLayout = rootView.findViewById(R.id.layout_refresh_apps);
-
         mRecyclerView = rootView.findViewById(R.id.list_server_apps);
 
         mServerAppsAdapter = new ServerAppsAdapter(getActivity());
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-        mEmptyLinearLayout = rootView.findViewById(R.id.empty_server_apps);
-
         mErrorLinearLayout = rootView.findViewById(R.id.error);
 
-        check();
+        setVisibilityIfNetworkConnected();
 
         mSwipeRefreshLayout.setOnRefreshListener(this::setUpAppsContent);
 
-
-        mRecyclerView.addItemDecoration(new
-            DividerItemDecoration(getActivity(),
-            DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         return rootView;
     }
 
-    private void check() {
+    private void setVisibilityIfNetworkConnected() {
         if (!isNetworkConnected()) {
-            rootView.findViewById(R.id.empty2).setVisibility(View.GONE);
-            rootView.findViewById(R.id.empty1).setVisibility(View.GONE);
-            rootView.findViewById(R.id.MessageError1).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.MessageError2).setVisibility(View.VISIBLE);
+            setNoAppsMsgVisibility(View.GONE);
+            setConnErrorMsgVisibility(View.VISIBLE);
         } else {
-            rootView.findViewById(R.id.empty2).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.empty1).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.MessageError1).setVisibility(View.GONE);
-            rootView.findViewById(R.id.MessageError2).setVisibility(View.GONE);
+            setNoAppsMsgVisibility(View.VISIBLE);
+            setConnErrorMsgVisibility(View.GONE);
         }
         mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void setNoAppsMsgVisibility(int visibility) {
+        if (rootView != null) {
+            rootView.findViewById(R.id.empty1).setVisibility(visibility);
+            rootView.findViewById(R.id.empty2).setVisibility(visibility);
+        }
+    }
+
+    private void setConnErrorMsgVisibility(int visibility) {
+        if (rootView != null) {
+            rootView.findViewById(R.id.MessageError1).setVisibility(visibility);
+            rootView.findViewById(R.id.MessageError2).setVisibility(visibility);
+        }
     }
 
     private boolean isNetworkConnected() {
@@ -141,6 +146,10 @@ public class ServerAppsFragment extends Fragment {
         mRecyclerView.setAdapter(mServerAppsAdapter);
     }
 
+    private boolean isAppsStateValid(Bundle state) {
+        return (state != null) && state.containsKey(State.APPS);
+    }
+
     private void setUpAppsContent(Bundle state) {
         if (isAppsStateValid(state)) {
             setUpAppsState(state);
@@ -149,24 +158,25 @@ public class ServerAppsFragment extends Fragment {
         }
     }
 
-    private boolean isAppsStateValid(Bundle state) {
-        return (state != null) && state.containsKey(State.APPS);
+    private void setUpAppsContent(List<ServerApp> apps) {
+        getAppsAdapter().replaceWith(apps);
+    }
+
+    private void setUpAppsContent() {
+        if (serverClient.isConnected()) {
+            serverClient.getApps();
+        }
     }
 
     private void setUpAppsState(Bundle state) {
         List<ServerApp> apps = state.getParcelableArrayList(State.APPS);
-        if (apps != null) {
-            mEmptyLinearLayout.setVisibility(View.GONE);
+        if (apps != null && apps.size() != 0) {
             setUpAppsContent(apps);
             showAppsContent();
         } else {
-            check();
-            mErrorLinearLayout.setVisibility(View.VISIBLE);
+            setVisibilityIfNetworkConnected();
+            showAppsError();
         }
-    }
-
-    private void setUpAppsContent(List<ServerApp> apps) {
-        getAppsAdapter().replaceWith(apps);
     }
 
     private ServerAppsAdapter getAppsAdapter() {
@@ -175,12 +185,6 @@ public class ServerAppsFragment extends Fragment {
 
     private void showAppsContent() {
         ViewDirector.of(this, R.id.animator).show(R.id.content);
-    }
-
-    private void setUpAppsContent() {
-        if (serverClient.isConnected()) {
-            serverClient.getApps();
-        }
     }
 
     @Subscribe
@@ -193,7 +197,11 @@ public class ServerAppsFragment extends Fragment {
         mSwipeRefreshLayout.setRefreshing(false);
         setUpAppsContent(event.getServerApps());
 
-        showAppsContent();
+        if (event.getServerApps() != null && event.getServerApps().size() != 0) {
+            showAppsContent();
+        } else {
+            showAppsError();
+        }
     }
 
     @Subscribe
@@ -203,7 +211,7 @@ public class ServerAppsFragment extends Fragment {
 
     private void showAppsError() {
         mSwipeRefreshLayout.setRefreshing(false);
-        check();
+        setVisibilityIfNetworkConnected();
         ViewDirector.of(this, R.id.animator).show(R.id.error);
         mErrorLinearLayout.setOnClickListener(view -> {
             ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
@@ -226,7 +234,7 @@ public class ServerAppsFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         tearDownAppsState(outState);

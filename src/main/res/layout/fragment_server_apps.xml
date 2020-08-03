@@ -28,7 +28,6 @@
         android:inAnimation="@android:anim/fade_in"
         android:outAnimation="@android:anim/fade_out">
 
-
         <ProgressBar
             android:id="@android:id/progress"
             android:layout_width="wrap_content"
@@ -40,8 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical">
-
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <TextView
                 android:id="@+id/empty1"
@@ -62,7 +61,6 @@
                 android:textSize="@dimen/text_large"
                 android:textStyle="bold"
                 android:visibility="gone" />
-
 
             <Space
                 android:layout_width="match_parent"
@@ -87,36 +85,6 @@
                 android:visibility="gone" />
 
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/empty_server_apps"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/message_empty_apps"
-                android:textSize="@dimen/text_large"
-                android:textStyle="bold" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="8dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/message_notice_create_some"
-                android:textSize="@dimen/text_small" />
-
-        </LinearLayout>
-
 
         <FrameLayout
             android:id="@+id/content"

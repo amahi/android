@@ -16,32 +16,77 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
-
-<ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/animator"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_refresh_apps"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:inAnimation="@android:anim/fade_in"
-    android:outAnimation="@android:anim/fade_out">
+    android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@android:id/progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-
-    <FrameLayout
-        android:id="@+id/content"
+    <ViewAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/animator"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:inAnimation="@android:anim/fade_in"
+        android:outAnimation="@android:anim/fade_out">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list_server_apps"
+
+        <ProgressBar
+            android:id="@android:id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <LinearLayout
+            android:id="@+id/error"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:scrollbarStyle="outsideOverlay" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/empty1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/message_empty_apps"
+                android:textSize="@dimen/text_large"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/MessageError1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/message_connection_error"
+                android:textSize="@dimen/text_large"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:id="@+id/empty2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/message_notice_create_some"
+                android:textSize="@dimen/text_small"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/MessageError2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/message_tap_to_retry"
+                android:textSize="@dimen/text_small"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/empty_server_apps"
@@ -49,7 +94,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <TextView
                 android:layout_width="match_parent"
@@ -72,34 +117,21 @@
 
         </LinearLayout>
 
-    </FrameLayout>
 
-    <LinearLayout
-        android:id="@+id/error"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical">
-
-        <TextView
+        <FrameLayout
+            android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/message_error_connection"
-            android:textSize="@dimen/text_large"
-            android:textStyle="bold" />
+            android:layout_height="match_parent">
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list_server_apps"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:scrollbarStyle="outsideOverlay" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/message_tap_to_retry"
-            android:textSize="@dimen/text_small" />
+        </FrameLayout>
 
-    </LinearLayout>
-
-</ViewAnimator>
+    </ViewAnimator>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

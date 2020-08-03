@@ -19,16 +19,22 @@
 
 package org.amahi.anywhere.fragment;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ViewAnimator;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.squareup.otto.Subscribe;
 
@@ -54,17 +60,19 @@ import javax.inject.Inject;
 public class ServerAppsFragment extends Fragment {
     @Inject
     ServerClient serverClient;
+    ViewAnimator viewAnimator;
+    View rootView;
     private ServerAppsAdapter mServerAppsAdapter;
-
     private RecyclerView mRecyclerView;
-
     private LinearLayout mEmptyLinearLayout;
-
     private LinearLayout mErrorLinearLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
+        rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh_apps);
 
         mRecyclerView = rootView.findViewById(R.id.list_server_apps);
 
@@ -76,16 +84,52 @@ public class ServerAppsFragment extends Fragment {
 
         mErrorLinearLayout = rootView.findViewById(R.id.error);
 
+        check();
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                setUpAppsContent();
+            }
+        });
+
+
         mRecyclerView.addItemDecoration(new
             DividerItemDecoration(getActivity(),
             DividerItemDecoration.VERTICAL));
         return rootView;
     }
 
+    private void check() {
+        if (!isNetworkConnected()) {
+            rootView.findViewById(R.id.empty2).setVisibility(View.GONE);
+            rootView.findViewById(R.id.empty1).setVisibility(View.GONE);
+            rootView.findViewById(R.id.MessageError1).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.MessageError2).setVisibility(View.VISIBLE);
+        } else {
+            rootView.findViewById(R.id.empty2).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.empty1).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.MessageError1).setVisibility(View.GONE);
+            rootView.findViewById(R.id.MessageError2).setVisibility(View.GONE);
+        }
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    private boolean isNetworkConnected() {
+        try {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            return mNetworkInfo != null;
+
+        } catch (NullPointerException e) {
+            return false;
+
+        }
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         setUpInjections();
 
         setUpApps(savedInstanceState);
@@ -121,10 +165,10 @@ public class ServerAppsFragment extends Fragment {
         if (apps != null) {
             mEmptyLinearLayout.setVisibility(View.GONE);
             setUpAppsContent(apps);
-
             showAppsContent();
         } else {
-            mEmptyLinearLayout.setVisibility(View.VISIBLE);
+            check();
+            mErrorLinearLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -153,6 +197,7 @@ public class ServerAppsFragment extends Fragment {
 
     @Subscribe
     public void onAppsLoaded(ServerAppsLoadedEvent event) {
+        mSwipeRefreshLayout.setRefreshing(false);
         setUpAppsContent(event.getServerApps());
 
         showAppsContent();
@@ -164,6 +209,8 @@ public class ServerAppsFragment extends Fragment {
     }
 
     private void showAppsError() {
+        mSwipeRefreshLayout.setRefreshing(false);
+        check();
         ViewDirector.of(this, R.id.animator).show(R.id.error);
         mErrorLinearLayout.setOnClickListener(view -> {
             ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);

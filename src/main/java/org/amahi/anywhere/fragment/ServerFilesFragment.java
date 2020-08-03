@@ -580,14 +580,6 @@ public class ServerFilesFragment extends Fragment implements
 
     }
 
-    private void setUpFilesContent(List<ServerFile> files) {
-        if (!isMetadataAvailable()) {
-            getFilesAdapter().replaceWith(getShare(), files);
-        } else {
-            getFilesMetadataAdapter().replaceWith(getShare(), getMetadataFiles(files));
-        }
-    }
-
     private List<ServerFile> getMetadataFiles(List<ServerFile> files) {
         List<ServerFile> metadataFiles = new ArrayList<>();
 

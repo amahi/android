@@ -28,7 +28,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ViewAnimator;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -60,7 +59,6 @@ import javax.inject.Inject;
 public class ServerAppsFragment extends Fragment {
     @Inject
     ServerClient serverClient;
-    ViewAnimator viewAnimator;
     View rootView;
     private ServerAppsAdapter mServerAppsAdapter;
     private RecyclerView mRecyclerView;
@@ -72,7 +70,7 @@ public class ServerAppsFragment extends Fragment {
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh_apps);
+        mSwipeRefreshLayout = rootView.findViewById(R.id.layout_refresh_apps);
 
         mRecyclerView = rootView.findViewById(R.id.list_server_apps);
 
@@ -86,12 +84,7 @@ public class ServerAppsFragment extends Fragment {
 
         check();
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                setUpAppsContent();
-            }
-        });
+        mSwipeRefreshLayout.setOnRefreshListener(this::setUpAppsContent);
 
 
         mRecyclerView.addItemDecoration(new

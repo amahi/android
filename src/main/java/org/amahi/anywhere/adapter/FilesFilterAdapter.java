@@ -36,6 +36,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.Preferences;
@@ -138,7 +139,7 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     private Uri getImageUri(Context context, ServerFile file) {
-        if (!Preferences.getServerName(context).equals("Welcome to Amahi")) {
+        if (!Preferences.getServerName(context).equals(Constants.welcomeToAmahiServerName)) {
             return serverClient.getFileThumbnailUri(serverShare, file);
         }
         return serverClient.getFileUri(serverShare, file);

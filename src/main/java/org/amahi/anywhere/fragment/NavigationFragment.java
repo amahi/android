@@ -569,8 +569,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         getRecentFilesLayout().setVisibility(View.VISIBLE);
 
         getOfflineFilesLayout().setOnClickListener(
-            view ->
-                showOfflineFiles()
+            view -> showOfflineFiles()
         );
 
         areServersVisible = false;

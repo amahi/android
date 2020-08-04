@@ -32,6 +32,8 @@
         android:id="@+id/menu_sort"
         android:orderInCategory="101"
         android:title="@string/menu_sort"
+        android:icon="@drawable/ic_sort"
+        android:iconTintMode="@color/primary_text"
         app:showAsAction="always" />
 
     <item

@@ -22,12 +22,13 @@ package org.amahi.anywhere.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -137,7 +138,7 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     private Uri getImageUri(Context context, ServerFile file) {
-        if(!Preferences.getServerName(context).equals("Welcome to Amahi")) {
+        if (!Preferences.getServerName(context).equals("Welcome to Amahi")) {
             return serverClient.getFileThumbnailUri(serverShare, file);
         }
         return serverClient.getFileUri(serverShare, file);

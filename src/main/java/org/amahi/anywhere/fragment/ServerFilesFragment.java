@@ -55,11 +55,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.IntroductoryOverlay;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -723,7 +735,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
-        return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
+        return getView().findViewById(R.id.layout_refresh);
     }
 
     @Subscribe
@@ -966,7 +978,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void tearDownFilesState(Bundle state) {
         if (areFilesLoaded()) {
-            if(state!=null) {
+            if (state != null) {
                 state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFiles()));
             }
         }

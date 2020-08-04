@@ -74,32 +74,6 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
 
         setUpAuthentication();
 
-        avoidLeadingSpaceInUsername();
-    }
-
-    private void avoidLeadingSpaceInUsername() {
-        getUsernameEdit().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (!getUsername().isEmpty() && getUsername().trim().isEmpty())
-                    getUsernameEdit().setText("");
-                else if (!getUsername().isEmpty()) {
-                    while (getUsername().charAt(0) == ' ') {
-                        getUsernameEdit().setText(getUsername().substring(1));
-                    }
-                }
-            }
-        });
     }
 
     private void setUpInjections() {
@@ -220,7 +194,7 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
     }
 
     private void authenticate() {
-        amahiClient.authenticate(getUsername(), getPassword());
+        amahiClient.authenticate(getUsername().trim(), getPassword());
     }
 
     @Subscribe

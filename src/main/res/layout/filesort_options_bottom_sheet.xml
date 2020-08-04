@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SORT BY"
+        android:textSize="12sp"
+        android:paddingRight="0dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:paddingLeft="16dp"/>
+
+    <TextView
+        android:id="@+id/text_sort_name_asc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="File name (A to Z)"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/text_sort_name_des"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="File name (Z to A)"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/text_sort_time_des"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Date (newest first)"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/text_sort_time_asc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Date (oldest first)"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/text_sort_size_des"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Size (largest first)"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/text_sort_size_asc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Size (smallest first)"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:padding="16dp"/>
+
+    <TextView
+        android:id="@+id/text_sort_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="File Type"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:padding="16dp"/>
+
+</LinearLayout>

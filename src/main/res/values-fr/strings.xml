@@ -234,4 +234,10 @@
     <string name="message_connect_and_try_again">Veuillez vous connecter à Internet et réessayer.</string>
     <string name="message_connect_to_server_and_try_again">Veuillez vous connecter à votre serveur et réessayer.</string>
 
+    <string name="rate_dialog_title">Notez Amahi</string>
+    <string name="rate_dialog_message">Si vous aimez utiliser Amahi, pourriez-vous prendre un moment pour le noter? Merci pour votre aide!</string>
+    <string name="rate_dialog_ok">Évaluer Maintenant</string>
+    <string name="rate_dialog_cancel">Me le rappeler plus tard</string>
+    <string name="rate_dialog_no">Non, Merci</string>
+
 </resources>

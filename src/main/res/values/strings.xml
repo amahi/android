@@ -325,4 +325,10 @@
 
     <string name="acra_report_toast" translatable="false">ACRA Log Report Sent!</string>
 
+    <string name="rate_dialog_title">Rate Amahi</string>
+    <string name="rate_dialog_message">If you enjoy using Amahi, would you mind taking a moment to rate it? Thanks for your support!</string>
+    <string name="rate_dialog_ok">Rate It Now</string>
+    <string name="rate_dialog_cancel">Remind Me Later</string>
+    <string name="rate_dialog_no">No, Thanks</string>
+
 </resources>

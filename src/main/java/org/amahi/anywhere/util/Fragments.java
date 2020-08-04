@@ -21,13 +21,16 @@ package org.amahi.anywhere.util;
 
 import android.content.Context;
 import android.os.Bundle;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.FileOptionsDialogFragment;
+import org.amahi.anywhere.fragment.FileSortOptionsDialogFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
@@ -186,6 +189,13 @@ public final class Fragments {
             bundle.putBoolean(Arguments.IS_OFFLINE_FRAGMENT, true);
             fragment.setArguments(bundle);
             return fragment;
+        }
+
+        public static BottomSheetDialogFragment buildFileSortOptionsDialogFragment() {
+
+            BottomSheetDialogFragment fragment = new FileSortOptionsDialogFragment();
+            return fragment;
+
         }
 
     }

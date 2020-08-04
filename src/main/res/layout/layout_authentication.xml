@@ -19,10 +19,10 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_gravity="center"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     android:orientation="vertical"
     android:paddingLeft="32dp"
     android:paddingRight="32dp">
@@ -30,17 +30,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:gravity="center"
-        tools:ignore="contentDescription"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="contentDescription">
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:ignore="contentDescription"
             android:paddingLeft="32dp"
             android:paddingRight="32dp"
-            android:src="@drawable/ic_banner" />
+            android:src="@drawable/ic_banner"
+            tools:ignore="contentDescription" />
 
         <Space
             android:layout_width="match_parent"
@@ -48,9 +49,9 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/username_layout"
+            style="@style/LoginTextInputLayoutStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/LoginTextInputLayoutStyle">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -67,11 +68,11 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_layout"
+            style="@style/LoginTextInputLayoutStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/accent"
-            style="@style/LoginTextInputLayoutStyle">
+            app:passwordToggleTint="@color/accent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -93,21 +94,41 @@
             android:layout_height="wrap_content"
             android:gravity="end"
             android:text="@string/forgot_password"
-            android:textColorLink="@color/accent"/>
+            android:textColorLink="@color/accent" />
 
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="16dp" />
 
-        <com.dd.processbutton.iml.ActionProcessButton
-            android:contentDescription="@string/sign_in"
-            android:id="@+id/button_authentication"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/button_sign_in"
-            android:textColor="@android:color/white"
-            app:pb_colorNormal="@color/sign_in_button"/>
+            android:orientation="horizontal">
+
+            <com.dd.processbutton.iml.ActionProcessButton
+                android:id="@+id/button_authentication"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="3"
+                android:contentDescription="@string/sign_in"
+                android:text="@string/button_sign_in"
+                android:textColor="@android:color/white"
+                app:pb_colorNormal="@color/sign_in_button" />
+
+            <Button
+                android:id="@+id/button_pin_access"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:background="@color/holo_orange_light"
+                android:text="@string/button_pin_access"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
@@ -129,41 +150,31 @@
                 android:id="@+id/text_message_authentication"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_error_24dp"
                 android:gravity="center_horizontal"
                 android:text="@string/message_error_authentication"
-                android:textColor="@color/error_red"
-                android:drawableStart="@drawable/ic_error_24dp"/>
+                android:textColor="@color/error_red" />
 
             <TextView
                 android:id="@+id/text_message_authentication_connection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_error_24dp"
                 android:gravity="center_horizontal"
                 android:text="@string/message_error_authentication_connection"
-                android:textColor="@color/error_red"
-                android:drawableStart="@drawable/ic_error_24dp"/>
+                android:textColor="@color/error_red" />
 
             <TextView
                 android:id="@+id/text_message_authentication_empty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_error_24dp"
                 android:gravity="center_horizontal"
                 android:text="@string/message_error_authentication_field_empty"
-                android:textColor="@color/error_red"
-                android:drawableStart="@drawable/ic_error_24dp"/>
+                android:textColor="@color/error_red" />
 
         </ViewAnimator>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/button_pin_access"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="16dp"
-        android:background="@color/holo_orange_light"
-        android:text="@string/button_pin_access"
-        android:textColor="@android:color/white" />
 
 </FrameLayout>

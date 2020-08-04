@@ -116,6 +116,7 @@ public class MainLoginFragment extends Fragment implements TextWatcher,
     private void setUpAuthenticationTextListener() {
         getUsernameEditText().addTextChangedListener(this);
         getPasswordEditText().addTextChangedListener(this);
+
         getPasswordEditText().setOnEditorActionListener((v, actionId, event) -> {
             boolean handled = false;
             if (actionId == EditorInfo.IME_ACTION_GO) {

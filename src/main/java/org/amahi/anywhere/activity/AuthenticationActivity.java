@@ -49,8 +49,6 @@ import org.amahi.anywhere.util.Preferences;
  */
 public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivity {
 
-    private String accountType = AmahiAccount.TYPE;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (AmahiApplication.getInstance().isLightThemeEnabled()) {
@@ -67,11 +65,11 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        accountType = savedInstanceState.getString(State.ACCOUNT_TYPE, AmahiAccount.TYPE);
+        AmahiAccount.accountType = savedInstanceState.getString(State.ACCOUNT_TYPE, AmahiAccount.TYPE);
     }
 
     private void setUpAuthenticationFragment() {
-        if (accountType.equals(AmahiAccount.TYPE)) {
+        if (AmahiAccount.accountType.equals(AmahiAccount.TYPE)) {
             MainLoginFragment f = (MainLoginFragment) getSupportFragmentManager().findFragmentByTag(MainLoginFragment.TAG);
             if (f == null) {
                 showMainLoginFragment();
@@ -94,7 +92,7 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
 
     @Subscribe
     public void onAuthenticationSucceed(AuthenticationSucceedEvent event) {
-        if (accountType.equals(AmahiAccount.TYPE)) {
+        if (AmahiAccount.accountType.equals(AmahiAccount.TYPE)) {
             MainLoginFragment fragment = (MainLoginFragment) getSupportFragmentManager().findFragmentByTag(MainLoginFragment.TAG);
 
             finishAuthentication(event.getAuthentication().getToken(), fragment.getUsername(), fragment.getPassword());
@@ -111,7 +109,7 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
         Bundle authenticationBundle = new Bundle();
 
         Account account = new AmahiAccount(username);
-        if (accountType.equals(AmahiAccount.TYPE_LOCAL)) {
+        if (AmahiAccount.accountType.equals(AmahiAccount.TYPE_LOCAL)) {
             authenticationBundle.putString("ip", Preferences.getLocalServerIP(this));
             authenticationBundle.putString("is_local", "T");
         } else {
@@ -135,7 +133,7 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
 
     @Subscribe
     public void onPINAccess(PINAccessEvent event) {
-        accountType = AmahiAccount.TYPE_LOCAL;
+        AmahiAccount.accountType = AmahiAccount.TYPE_LOCAL;
         showPINAccessFragment();
     }
 
@@ -152,7 +150,7 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(State.ACCOUNT_TYPE, accountType);
+        outState.putString(State.ACCOUNT_TYPE, AmahiAccount.accountType);
     }
 
     @Override

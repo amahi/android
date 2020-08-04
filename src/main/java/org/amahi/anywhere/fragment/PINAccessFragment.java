@@ -40,6 +40,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.bus.AuthenticationConnectionFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationFailedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -149,6 +150,7 @@ public class PINAccessFragment extends Fragment {
     }
 
     private void startAuthentication(String pin) {
+        AmahiAccount.accountType = AmahiAccount.TYPE_LOCAL;
         new LocalServerProbingTask(getActivity(), pin).execute();
     }
 

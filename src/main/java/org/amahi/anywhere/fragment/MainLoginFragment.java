@@ -42,6 +42,7 @@ import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.account.AmahiAccount;
 import org.amahi.anywhere.bus.AuthenticationConnectionFailedEvent;
 import org.amahi.anywhere.bus.AuthenticationFailedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -206,6 +207,7 @@ public class MainLoginFragment extends Fragment implements TextWatcher,
     }
 
     private void authenticate() {
+        AmahiAccount.accountType = AmahiAccount.TYPE;
         amahiClient.authenticate(getUsername(), getPassword());
     }
 

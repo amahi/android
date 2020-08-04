@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -66,7 +65,7 @@ public class MainLoginFragment extends Fragment implements TextWatcher,
     AmahiClient amahiClient;
     TextInputLayout username_layout, password_layout;
     ActionProcessButton signInButton;
-    Button pinLoginButton;
+    TextView pinLoginButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,7 +91,7 @@ public class MainLoginFragment extends Fragment implements TextWatcher,
         username_layout = view.findViewById(R.id.username_layout);
         password_layout = view.findViewById(R.id.password_layout);
         signInButton = view.findViewById(R.id.button_authentication);
-        pinLoginButton = view.findViewById(R.id.button_pin_access);
+        pinLoginButton = view.findViewById(R.id.text_pin_access);
     }
 
     private void setUpAuthentication(View view) {
@@ -250,9 +249,7 @@ public class MainLoginFragment extends Fragment implements TextWatcher,
     }
 
     private void setUpPINAccessListener() {
-        pinLoginButton.setOnClickListener((v) -> {
-            BusProvider.getBus().post(new PINAccessEvent());
-        });
+        pinLoginButton.setOnClickListener((v) -> BusProvider.getBus().post(new PINAccessEvent()));
     }
 
     @Override

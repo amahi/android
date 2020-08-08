@@ -1018,7 +1018,7 @@ public class ServerFilesFragment extends Fragment implements
             Fragments.Builder.buildFileOptionsDialogFragment(getContext(), getCheckedFile())
                 .show(getChildFragmentManager(), "file_options_dialog");
         } else {
-            Fragments.Builder.buildOfflineFileOptionsDialogFragment()
+            Fragments.Builder.buildOfflineFileOptionsDialogFragment(getCheckedFile())
                 .show(getChildFragmentManager(), "file_options_dialog");
         }
     }

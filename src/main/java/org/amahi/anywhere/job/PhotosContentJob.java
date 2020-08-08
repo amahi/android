@@ -105,7 +105,7 @@ public class PhotosContentJob extends JobService {
                     }
                 }
                 Intent intent = Intents.Builder.with(this).buildUploadServiceIntent(uris);
-                startService(intent);
+                startForegroundService(intent);
             } else {
                 // We don't have any details about URIs (because too many changed at once)
                 Log.i(TAG, "Photos rescan needed!");

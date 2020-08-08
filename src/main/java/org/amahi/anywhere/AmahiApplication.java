@@ -128,7 +128,7 @@ public class AmahiApplication extends Application {
 
     private void setUpDetecting() {
         if (isDebugging()) {
-            StrictMode.enableDefaults();
+//            StrictMode.enableDefaults();
         }
     }
 

@@ -70,6 +70,7 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
             }
         } else {
             offlineLayout.setVisibility(View.GONE);
+            downloadLayout.setVisibility(View.GONE);
         }
     }
 

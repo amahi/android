@@ -50,13 +50,13 @@ public class NetConnectivityJob extends JobService {
         JOB_INFO = builder.build();
     }
 
-    private final String TAG = this.getClass().getName();
+    private static final String TAG = NetConnectivityJob.class.getName();
 
     // Schedule this job, replace any existing one.
     public static void scheduleJob(Context context) {
         JobScheduler js = context.getSystemService(JobScheduler.class);
         js.schedule(JOB_INFO);
-        Log.i("NetworkConnectivityJob", "JOB SCHEDULED!");
+        Log.i(TAG, "JOB SCHEDULED!");
     }
 
     // Check whether this job is currently scheduled.

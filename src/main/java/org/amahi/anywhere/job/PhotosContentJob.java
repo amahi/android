@@ -63,14 +63,14 @@ public class PhotosContentJob extends JobService {
         JOB_INFO = builder.build();
     }
 
-    private final String TAG = this.getClass().getName();
+    private static final String TAG = PhotosContentJob.class.getName();
     JobParameters mRunningParams;
 
     // Schedule this job, replace any existing one.
     public static void scheduleJob(Context context) {
         JobScheduler js = context.getSystemService(JobScheduler.class);
         js.schedule(JOB_INFO);
-        Log.i("PhotosContentJob", "JOB SCHEDULED!");
+        Log.i(TAG, "JOB SCHEDULED!");
     }
 
     // Check whether this job is currently scheduled.
@@ -88,7 +88,7 @@ public class PhotosContentJob extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        Log.i("PhotosContentJob", "JOB STARTED!");
+        Log.i(TAG, "JOB STARTED!");
         mRunningParams = params;
 
         // Did we trigger due to a content change?

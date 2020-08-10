@@ -31,8 +31,6 @@ import android.preference.PreferenceManager;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.crashlytics.android.Crashlytics;
-
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.config.CoreConfigurationBuilder;
@@ -44,7 +42,6 @@ import org.amahi.anywhere.job.PhotosContentJob;
 import org.amahi.anywhere.server.Api;
 
 import dagger.ObjectGraph;
-import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 /**
@@ -76,7 +73,6 @@ public class AmahiApplication extends Application {
 
         instance = this;
         setUpLogging();
-        setUpReporting();
         setUpDetecting();
 
         setUpInjections();
@@ -118,12 +114,6 @@ public class AmahiApplication extends Application {
 
     private boolean isDebugging() {
         return BuildConfig.DEBUG;
-    }
-
-    private void setUpReporting() {
-        if (!isDebugging()) {
-            Fabric.with(this, new Crashlytics());
-        }
     }
 
     private void setUpDetecting() {
@@ -178,7 +168,7 @@ public class AmahiApplication extends Application {
         super.attachBaseContext(base);
         if (isDebugging()) {
 
-            if(Api.toSendMail()) {
+            if (Api.toSendMail()) {
                 CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
                     .setBuildConfigClass(BuildConfig.class)
                     .setReportFormat(StringFormat.JSON)

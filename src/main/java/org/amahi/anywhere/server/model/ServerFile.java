@@ -19,15 +19,14 @@
 
 package org.amahi.anywhere.server.model;
 
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.amahi.anywhere.R;
 import org.amahi.anywhere.util.Constants;
 
 import java.security.MessageDigest;

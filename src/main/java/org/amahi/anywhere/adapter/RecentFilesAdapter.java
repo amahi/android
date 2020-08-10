@@ -83,9 +83,8 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
     }
 
     private void setUpViewHolderListeners(RecentFilesViewHolder fileHolder) {
-        fileHolder.moreOptions.setOnClickListener(view -> {
-            mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-        });
+        fileHolder.itemView.setOnClickListener(view -> mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition()));
+        fileHolder.moreOptions.setOnClickListener(view -> mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition()));
     }
 
     private void setImageIcon(RecentFile file, ImageView fileIconView) {

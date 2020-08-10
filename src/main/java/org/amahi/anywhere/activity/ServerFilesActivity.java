@@ -33,6 +33,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -100,7 +101,6 @@ import javax.inject.Inject;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
-import timber.log.Timber;
 
 /**
  * Files activity. Shows files navigation and operates basic file actions,
@@ -112,6 +112,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
     ServiceConnection,
     CastStateListener,
     AlertDialogFragment.DuplicateFileDialogCallback {
+
+    public static final String TAG = ServerFilesActivity.class.getSimpleName();
 
     private static final int FILE_UPLOAD_PERMISSION = 102;
     private static final int CAMERA_PERMISSION = 103;
@@ -438,7 +440,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(cameraIntent, REQUEST_CAMERA_IMAGE);
             } catch (IOException ex) {
-                Timber.d(ex);
+                Log.d(TAG, ex.getMessage());
             }
         }
     }

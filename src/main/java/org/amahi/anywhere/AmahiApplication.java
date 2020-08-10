@@ -42,7 +42,6 @@ import org.amahi.anywhere.job.PhotosContentJob;
 import org.amahi.anywhere.server.Api;
 
 import dagger.ObjectGraph;
-import timber.log.Timber;
 
 /**
  * Application declaration. Basically sets things up at the startup time,
@@ -72,7 +71,7 @@ public class AmahiApplication extends Application {
         super.onCreate();
 
         instance = this;
-        setUpLogging();
+
         setUpDetecting();
 
         setUpInjections();
@@ -83,12 +82,6 @@ public class AmahiApplication extends Application {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             setUpJobs();
-        }
-    }
-
-    private void setUpLogging() {
-        if (isDebugging()) {
-            Timber.plant(new Timber.DebugTree());
         }
     }
 

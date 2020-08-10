@@ -47,7 +47,6 @@ import org.amahi.anywhere.bus.ServerConnectionChangedEvent;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.util.ViewDirector;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -234,7 +233,7 @@ public class ServerAppsFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(@NotNull Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         tearDownAppsState(outState);

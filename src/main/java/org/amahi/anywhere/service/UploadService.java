@@ -273,7 +273,6 @@ public class UploadService extends ServiceNotifier implements UploadManager.Uplo
 
     private void uploadComplete(int id, String title) {
         stopForegroundService(this, this, false);
-//        stopForeground(false);
         NotificationManager notificationManager = (NotificationManager) getApplicationContext()
             .getSystemService(Context.NOTIFICATION_SERVICE);
 

@@ -25,6 +25,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.RequiresApi;
@@ -127,7 +128,7 @@ public class AmahiApplication extends Application {
 
     private void setUpDetecting() {
         if (isDebugging()) {
-//            StrictMode.enableDefaults();
+            StrictMode.enableDefaults();
         }
     }
 

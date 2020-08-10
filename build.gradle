@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/public' }
         google()
         jcenter()
     }
@@ -8,16 +7,14 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.1'
-        classpath 'io.fabric.tools:gradle:1.28.1'
     }
 }
 
 apply plugin: "com.android.application"
-apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
 
     signingConfigs {
         release {
@@ -50,7 +47,7 @@ android {
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
 
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
 
         def apiFile = file("api.properties")
         def acraFile = file("acra.properties")
@@ -128,7 +125,6 @@ dependencies {
         google()
         mavenCentral()
         mavenLocal()
-        maven { url 'https://maven.fabric.io/public' }
         maven { url 'http://dl.bintray.com/megabitdragon/maven' }
         maven { url 'https://jitpack.io' }
         jcenter()
@@ -146,9 +142,6 @@ dependencies {
     implementation "androidx.media:media:${SUPPORT_LIBRARY_VERSION}"
     implementation "androidx.cardview:cardview:${SUPPORT_LIBRARY_VERSION}"
     implementation 'com.google.android.gms:play-services-cast-framework:11.6.0'
-    implementation('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
-        transitive = true
-    }
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
 

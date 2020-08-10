@@ -1,13 +1,15 @@
 package org.amahi.anywhere.fragment;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import androidx.appcompat.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
@@ -68,6 +70,7 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
             }
         } else {
             offlineLayout.setVisibility(View.GONE);
+            downloadLayout.setVisibility(View.GONE);
         }
     }
 

@@ -21,7 +21,6 @@ package org.amahi.anywhere.service;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,6 +30,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -58,7 +58,7 @@ import javax.inject.Inject;
 /**
  * File upload service
  */
-public class UploadService extends Service implements UploadManager.UploadCallbacks {
+public class UploadService extends ServiceNotifier implements UploadManager.UploadCallbacks {
 
     private static final String UPLOAD_CHANNEL_ID = "file_upload";
 
@@ -83,6 +83,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
         setUpBus();
         setUpDbHelper();
         setUpNetworkUtils();
+        startForegroundNotif(UPLOAD_CHANNEL_ID);
     }
 
     private void setUpInjections() {
@@ -243,7 +244,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)
             .setContentTitle(getString(R.string.notification_upload_title))
-            .setContentText(getString(R.string.notification_upload_message, fileName))
+            .setContentText(fileName)
             .setProgress(100, 0, false)
             .build();
         Notification notification = notificationBuilder.build();
@@ -271,7 +272,8 @@ public class UploadService extends Service implements UploadManager.UploadCallba
     }
 
     private void uploadComplete(int id, String title) {
-        stopForeground(false);
+        stopForegroundService(this, this, false);
+//        stopForeground(false);
         NotificationManager notificationManager = (NotificationManager) getApplicationContext()
             .getSystemService(Context.NOTIFICATION_SERVICE);
 

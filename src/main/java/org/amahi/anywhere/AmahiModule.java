@@ -48,6 +48,7 @@ import org.amahi.anywhere.fragment.UploadSettingsFragment;
 import org.amahi.anywhere.server.ApiModule;
 import org.amahi.anywhere.service.AudioService;
 import org.amahi.anywhere.service.DownloadService;
+import org.amahi.anywhere.service.ServiceNotifier;
 import org.amahi.anywhere.service.UploadService;
 import org.amahi.anywhere.service.VideoService;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
@@ -104,6 +105,7 @@ import dagger.Provides;
         ServerFileTvFragment.class,
         UploadService.class,
         DownloadService.class,
+        ServiceNotifier.class,
         UploadManager.class,
         TvPlaybackVideoFragment.class,
         TvPlaybackVideoActivity.class,

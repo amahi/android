@@ -25,7 +25,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.RequiresApi;
@@ -178,7 +177,7 @@ public class AmahiApplication extends Application {
         super.attachBaseContext(base);
         if (isDebugging()) {
 
-            if(Api.toSendMail()) {
+            if (Api.toSendMail()) {
                 CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
                     .setBuildConfigClass(BuildConfig.class)
                     .setReportFormat(StringFormat.JSON)

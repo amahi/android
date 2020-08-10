@@ -70,6 +70,7 @@ import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.activity.MainTVActivity;
 import org.amahi.anywhere.util.CheckTV;
+import org.amahi.anywhere.util.MultiSwipeRefreshLayout;
 import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.RecyclerItemClickListener;
 import org.amahi.anywhere.util.ViewDirector;
@@ -350,7 +351,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
-        return getView().findViewById(R.id.layout_refresh);
+        MultiSwipeRefreshLayout multiSwipeRefreshLayout = getView().findViewById(R.id.layout_refresh);
+        multiSwipeRefreshLayout.setSwipeableChildren(R.id.layout_content);
+        return multiSwipeRefreshLayout;
     }
 
     private void setUpNavigation() {

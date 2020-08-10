@@ -34,7 +34,7 @@
         android:title="@string/preference_title_upload_share" />
 
     <org.amahi.anywhere.util.CustomEditTextPreference
-        android:icon="@drawable/ic_location"
+        android:icon="@drawable/ic_upload_location"
         android:defaultValue="/"
         android:inputType="text"
         android:key="@string/preference_key_upload_location"

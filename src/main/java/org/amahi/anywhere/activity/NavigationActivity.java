@@ -23,19 +23,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import com.squareup.otto.Subscribe;
 
@@ -69,7 +70,7 @@ import javax.inject.Inject;
  * The navigation itself is done via {@link org.amahi.anywhere.fragment.NavigationFragment},
  * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
-    public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
+public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
     @Inject
     ServerClient serverClient;
     private ActionBarDrawerToggle navigationDrawerToggle;
@@ -149,7 +150,7 @@ import javax.inject.Inject;
     }
 
     private void hideActionBar() {
-        if (getSupportActionBar()!=null) getSupportActionBar().hide();
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
     }
 
     private void setUpInjections() {

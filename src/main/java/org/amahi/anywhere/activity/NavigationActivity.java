@@ -69,7 +69,7 @@ import javax.inject.Inject;
  * The navigation itself is done via {@link org.amahi.anywhere.fragment.NavigationFragment},
  * {@link org.amahi.anywhere.fragment.ServerSharesFragment} and {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
-public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
+    public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
     @Inject
     ServerClient serverClient;
     private ActionBarDrawerToggle navigationDrawerToggle;

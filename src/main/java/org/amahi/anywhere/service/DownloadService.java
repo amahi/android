@@ -1,5 +1,6 @@
 package org.amahi.anywhere.service;
 
+import android.app.ActivityManager;
 import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -10,11 +11,12 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.squareup.otto.Subscribe;
 
@@ -139,8 +141,23 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
             isDownloading = true;
         } else {
             stopDownloading();
-            stopForeground(true);
+            if (isServiceRunningInForeground(this, DownloadService.class)) {
+                stopForeground(true);
+            }
         }
+    }
+
+    public static boolean isServiceRunningInForeground(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                if (service.foreground) {
+                    return true;
+                }
+
+            }
+        }
+        return false;
     }
 
     private void stopDownloading() {
@@ -151,7 +168,7 @@ public class DownloadService extends Service implements Downloader.DownloadCallb
         offlineFile.setDownloadId(downloadId);
         offlineFileRepository.update(offlineFile);
     }
-
+    
     private void resumeDownload(long downloadId, String fileName) {
         notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), DOWNLOAD_CHANNEL_ID);
         notificationBuilder

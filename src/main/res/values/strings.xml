@@ -232,7 +232,7 @@
 
     <string name="preference_title_upload_server">Server</string>
     <string name="preference_title_upload_share">Share</string>
-    <string name="preference_title_upload_location">Location</string>
+    <string name="preference_title_upload_location">Upload location</string>
     <string name="preference_title_upload_data">Allow on cellular data</string>
 
     <string name="preference_summary_server">Select Server</string>

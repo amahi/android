@@ -196,10 +196,10 @@
     <string name="preference_title_tell_a_friend">Dire à un ami</string>
     <string name="preference_title_upload_settings">Téléchargement automatique de photos</string>
     <string name="preference_title_language">Langue</string>
-    <string name="preference_title_upload_server">Serveur</string>
-    <string name="preference_title_upload_share">Partager</string>
-    <string name="preference_title_upload_location">Emplacement</string>
-    <string name="preference_title_upload_data">Autoriser les données cellulaires</string>
+    <string name="preference_title_upload_server">Sélectionnez un Serveur</string>
+    <string name="preference_title_upload_share">Sélectionnez Partager</string>
+    <string name="preference_title_upload_location">Télécharger l\'emplacement</string>
+    <string name="preference_title_upload_data">Autoriser sur les données cellulaires</string>
     <string name="preference_summary_server">Select Server</string>
     <string name="preference_summary_share">Sélectionnez Partager</string>
     <string name="preference_summary_location">Sélectionnez l\'emplacement</string>

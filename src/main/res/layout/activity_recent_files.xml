@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activity.RecentFilesActivity">
 
     <fragment
@@ -29,7 +30,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layoutAnimation="@anim/recycler_list_anim"
-                android:scrollbarStyle="outsideOverlay" />
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbars="vertical"
+                android:scrollbarSize="10sp"
+                android:scrollbarThumbVertical="@color/accent"
+                android:scrollIndicators="right"
+                android:scrollbarAlwaysDrawVerticalTrack="false"
+                android:fadeScrollbars="true" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

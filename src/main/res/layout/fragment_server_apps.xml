@@ -28,11 +28,19 @@
         android:inAnimation="@android:anim/fade_in"
         android:outAnimation="@android:anim/fade_out">
 
-        <ProgressBar
-            android:id="@android:id/progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_server_apps"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:scrollbarStyle="insideOverlay"
+            android:scrollbars="vertical"
+            android:scrollbarSize="10sp"
+            android:scrollbarThumbVertical="@color/accent"
+            android:scrollIndicators="right"
+            android:scrollbarAlwaysDrawVerticalTrack="false"
+            android:fadeScrollbars="true"/>
 
         <LinearLayout
             android:id="@+id/error"

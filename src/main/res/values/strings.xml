@@ -214,11 +214,11 @@
 
 <!--    Preferences-->
 
-    <string name="preference_category_about" android:size="20">About</string>
-    <string name="preference_category_account" android:size="20">Account</string>
-    <string name="preference_category_settings" android:size="20">Settings</string>
-    <string name="preference_category_upload" android:size="20">Auto Upload</string>
-    <string name="preference_category_general" android:size="20">General</string>
+    <string name="preference_category_about" android:textSize="20">About</string>
+    <string name="preference_category_account" android:textSize="20">Account</string>
+    <string name="preference_category_settings" android:textSize="20">Settings</string>
+    <string name="preference_category_upload" android:textSize="20">Auto Upload</string>
+    <string name="preference_category_general" android:textSize="20">General</string>
 
     <string name="preference_title_about_feedback">Feedback</string>
     <string name="preference_title_about_rating">Rate</string>

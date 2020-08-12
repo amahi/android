@@ -1,0 +1,226 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+        google()
+        jcenter()
+    }
+
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath 'io.fabric.tools:gradle:1.28.1'
+    }
+}
+
+apply plugin: "com.android.application"
+apply plugin: 'io.fabric'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+
+    signingConfigs {
+        release {
+            def signingFile = file("signing.properties")
+            def fakeSigningFile = file("fakeSigning.properties")
+            def signingProperties = new Properties()
+
+            if (signingFile.exists()) {
+                signingProperties.load(signingFile.newInputStream())
+            } else {
+                signingProperties.load(fakeSigningFile.newInputStream())
+            }
+            storeFile file(signingProperties["keystore.file"])
+            storePassword signingProperties["keystore.password"]
+            keyAlias signingProperties["key.alias"]
+            keyPassword signingProperties["key.password"]
+        }
+    }
+
+    dexOptions {
+        jumboMode true
+    }
+
+    defaultConfig {
+        def versionMajor = 3
+        def versionMinor = 0
+        def versionPatch = 0
+
+        versionName buildVersionName(versionMajor, versionMinor, versionPatch)
+        versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
+
+        minSdkVersion 21
+        targetSdkVersion 28
+
+        def apiFile = file("api.properties")
+        def acraFile = file("acra.properties")
+        def apiProperties = new Properties()
+        def acraProperties = new Properties()
+
+        // NOTE-cpg: this fakeApi and fakeAcra is here for the tests to pass
+        def fakeApiFile = file("fakeApi.properties")
+        def fakeAcraFile = file("fakeAcra.properties")
+
+        if (apiFile.exists()) {
+            apiProperties.load(apiFile.newInputStream())
+        } else {
+            apiProperties.load(fakeApiFile.newInputStream())
+        }
+
+        if (acraFile.exists()) {
+            acraProperties.load(acraFile.newInputStream())
+        } else {
+            acraProperties.load(fakeAcraFile.newInputStream())
+        }
+
+        buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
+        buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
+        buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
+        buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
+        buildConfigField "String", "CHROMECAST_APP_ID", formatStringField(apiProperties["chromecast.app.id"])
+        buildConfigField "String", "ACRA_EMAIL", formatStringField(acraProperties["mailto.email"])
+        buildConfigField "String", "ACRA_SEND", formatStringField(acraProperties["mail.send"])
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        betaRelease {
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+ext {
+    archRoomVersion = "1.1.0"
+}
+
+static def buildVersionName(versionMajor, versionMinor, versionPatch) {
+    return "${versionMajor}.${versionMinor}.${versionPatch}"
+}
+
+static def buildVersionCode(versionMajor, versionMinor, versionPatch) {
+    return versionMajor * 10**2 + versionMinor * 10**1 + versionPatch * 10**0
+}
+
+static def formatStringField(field) {
+    return "\"${field}\""
+}
+
+dependencies {
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.airbnb.android:lottie:3.4.1'
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+        maven { url 'https://maven.fabric.io/public' }
+        maven { url 'http://dl.bintray.com/megabitdragon/maven' }
+        maven { url 'https://jitpack.io' }
+        jcenter()
+    }
+    def SUPPORT_LIBRARY_VERSION = "1.0.0"
+    implementation "androidx.legacy:legacy-support-v4:${SUPPORT_LIBRARY_VERSION}"
+    implementation "androidx.legacy:legacy-support-v13:${SUPPORT_LIBRARY_VERSION}"
+    implementation "androidx.appcompat:appcompat:${SUPPORT_LIBRARY_VERSION}"
+    implementation "com.google.android.material:material:${SUPPORT_LIBRARY_VERSION}"
+    implementation "androidx.preference:preference:${SUPPORT_LIBRARY_VERSION}"
+    implementation "androidx.legacy:legacy-preference-v14:${SUPPORT_LIBRARY_VERSION}"
+    implementation "androidx.browser:browser:${SUPPORT_LIBRARY_VERSION}"
+    implementation "androidx.leanback:leanback:${SUPPORT_LIBRARY_VERSION}"
+    implementation "androidx.mediarouter:mediarouter:${SUPPORT_LIBRARY_VERSION}"
+    implementation "androidx.media:media:${SUPPORT_LIBRARY_VERSION}"
+    implementation "androidx.cardview:cardview:${SUPPORT_LIBRARY_VERSION}"
+    implementation 'com.google.android.gms:play-services-cast-framework:11.6.0'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
+        transitive = true
+    }
+    implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    implementation 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+//    Otto and Retrofit
+    implementation 'com.squareup:otto:1.3.8'
+    implementation 'com.github.apl-devs:appintro:v4.2.3'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+
+    implementation "com.vorlonsoft:androidrate:1.2.1"
+
+    implementation 'org.videolan:libvlc:2.1.16'
+    implementation 'pub.devrel:easypermissions:3.0.0'
+    testImplementation 'org.robolectric:robolectric:3.1.2'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.robolectric:shadows-multidex:3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation "androidx.annotation:annotation:${SUPPORT_LIBRARY_VERSION}"
+
+//    Dagger
+    implementation 'com.squareup.dagger:dagger:1.2.5'
+    compileOnly 'com.squareup.dagger:dagger-compiler:1.2.5'
+    annotationProcessor 'com.squareup.dagger:dagger-compiler:1.2.5'
+
+    implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
+
+    def EXOPLAYER_VERSION = "2.7.2"
+    implementation "com.google.android.exoplayer:exoplayer-core:${EXOPLAYER_VERSION}"
+    implementation "com.google.android.exoplayer:exoplayer-ui:${EXOPLAYER_VERSION}"
+
+    implementation 'android.arch.persistence.room:runtime:' + rootProject.archRoomVersion
+    annotationProcessor 'android.arch.persistence.room:compiler:' + rootProject.archRoomVersion
+
+    def acraVersion = '5.6.1'
+    implementation "ch.acra:acra-mail:$acraVersion"
+    implementation "ch.acra:acra-dialog:$acraVersion"
+    implementation "ch.acra:acra-notification:$acraVersion"
+    implementation "ch.acra:acra-toast:$acraVersion"
+
+    // Uncomment the dependencies below to enable Chuck Interceptor for logging
+/*
+    debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
+    releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
+    betaReleaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
+*/
+
+}
+
+task generateWrapper(type: Wrapper) {
+    description "Generates Gradle wrapper."
+
+    gradleVersion = "2.2.1"
+}
+
+android.applicationVariants.all { variant ->
+    def variantName = variant.name.capitalize()
+
+    task("generate${variantName}Javadoc", type: Javadoc) {
+        description "Generates ${variantName} documentation."
+
+        source = files(variant.javaCompiler.source)
+
+        ext.androidClasspath = android.getBootClasspath().join(File.pathSeparator)
+        classpath = files(variant.javaCompiler.classpath, ext.androidClasspath)
+
+        options {
+            linksOffline "http://d.android.com/reference", "${android.sdkDirectory}/docs/reference"
+        }
+    }
+}

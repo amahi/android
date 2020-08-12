@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2014 Amahi
+  ~
+  ~ This file is part of Amahi.
+  ~
+  ~ Amahi is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Amahi is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/preference_category_account">
+
+        <Preference
+            android:icon="@drawable/ic_settings_logout"
+            android:key="@string/preference_key_account_sign_out"
+            android:title="@string/preference_title_account_sign_out" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/preference_category_general">
+
+        <ListPreference
+            android:defaultValue="@string/language_en_key"
+            android:entries="@array/preference_entries_language"
+            android:entryValues="@array/preference_entries_keys_language"
+            android:icon="@drawable/ic_settings_translate"
+            android:key="@string/preference_key_language"
+            android:title="@string/preference_title_language" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/preference_category_settings">
+
+        <ListPreference
+            android:defaultValue="@string/preference_key_server_connection_auto"
+            android:entries="@array/preference_entries_server_connection"
+            android:entryValues="@array/preference_entries_keys_server_connection"
+            android:icon="@drawable/ic_settings_connection"
+            android:key="@string/preference_key_server_connection"
+            android:title="@string/preference_title_server_connection" />
+
+        <Preference
+            android:icon="@drawable/ic_settings_upload_photo"
+            android:key="@string/preference_screen_key_upload"
+            android:title="@string/preference_title_upload_settings" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_settings_app_theme"
+            android:key="@string/pref_key_light_theme"
+            android:title="@string/pref_title_light_theme" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/preference_category_about">
+
+
+        <Preference
+            android:icon="@drawable/ic_settings_version"
+            android:key="@string/preference_key_about_version"
+            android:title="@string/preference_title_about_version" />
+
+        <Preference
+            android:icon="@drawable/ic_settings_intro"
+            android:key="@string/preference_key_about_intro"
+            android:title="@string/preference_title_about_intro" />
+
+        <Preference
+            android:icon="@drawable/ic_settings_feedback"
+            android:key="@string/preference_key_about_feedback"
+            android:title="@string/preference_title_about_feedback" />
+
+        <Preference
+            android:icon="@drawable/ic_settings_rate"
+            android:key="@string/preference_key_about_rating"
+            android:title="@string/preference_title_about_rating" />
+
+        <Preference
+            android:icon="@drawable/ic_settings_friend"
+            android:key="@string/preference_key_tell_a_friend"
+            android:title="@string/preference_title_tell_a_friend" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

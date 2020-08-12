@@ -1,0 +1,15 @@
+digraph download_states {
+        rankdir=LR;
+        size="8,5"
+        node [shape = circle];
+        offline_disabled -> downloading [ label = "offline_toggle_on" color=blue];
+        downloading -> offline_disabled [ label = "dl_failed" ];
+        downloading -> downloaded [ label = "dl_completed" ];
+        downloaded -> out_of_date [ label = "hda_updated" ];
+        downloaded -> offline_disabled [ label = "local_removed" ];
+        downloaded -> downloaded [ label = "remote_removed" ];
+        downloading -> offline_disabled [ label = "offline_toggle_off" color=blue];
+        downloaded -> offline_disabled [ label = "offline_toggle_off" color=blue];
+        out_of_date -> offline_disabled [ label = "offline_toggle_off" color=blue];
+        out_of_date -> downloading [ label = "auto_update" ];
+}

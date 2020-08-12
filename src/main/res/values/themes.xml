@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2014 Amahi
+  ~
+  ~ This file is part of Amahi.
+  ~
+  ~ Amahi is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Amahi is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+    <style name="Theme.Amahi" parent="@style/Theme.AppCompat.DayNight">
+        <item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
+        <item name="android:windowBackground">@color/background_primary</item>
+        <item name="android:textColorPrimaryInverse">@color/primary_text_material_light</item>
+        <!--Adding Support for the Support Library-->
+        <item name="actionBarStyle">@style/Theme.Amahi.ActionBar</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/primary_text</item>
+        <item name="android:textColorSecondary">@color/secondary_text</item>
+        <item name="alertDialogStyle">@style/AlertDialogTheme</item>
+
+    </style>
+
+    <style name="AppPreferenceTheme" parent="PreferenceThemeOverlay">
+        <item name="android:divider">@color/divider</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+
+    <style name="Theme.Amahi.Settings" parent="Theme.AppCompat.DayNight">
+        <item name="android:divider">@color/divider</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
+        <item name="android:windowBackground">@color/background_primary</item>
+        <item name="android:textColorPrimaryInverse">@color/primary_text_material_light</item>
+        <item name="android:tint">@color/accent</item>
+        <!--Adding Support for the Support Library-->
+        <item name="actionBarStyle">@style/Theme.Amahi.ActionBar</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/primary_text</item>
+        <item name="android:textColorSecondary">@color/secondary_text</item>
+
+    </style>
+
+
+    <style name="Theme.Amahi.Fullscreen.ActionBar" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/background_transparent_primary</item>
+        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
+        <!--Adding Support for the Support Library-->
+        <item name="background">@color/background_transparent_primary</item>
+        <item name="displayOptions">showHome|homeAsUp|showTitle</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="Theme.Amahi.Fullscreen" parent="@style/Theme.AppCompat.DayNight">
+        <item name="android:actionBarStyle">@style/Theme.Amahi.Fullscreen.ActionBar</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@color/background_primary</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <!--Adding Support for the Support Library-->
+        <item name="actionBarStyle">@style/Theme.Amahi.Fullscreen.ActionBar</item>
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.DayNight.Dialog">
+        <item name="android:background">@color/background_secondary</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textColorPrimary">@color/primary_text</item>
+        <item name="android:textColorSecondary">@color/secondary_text</item>
+    </style>
+
+    <style name="Theme.Amahi.ActionBar" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/background_toolbar</item>
+        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
+        <!--Adding Support for the Support Library-->
+        <item name="background">@color/background_toolbar</item>
+        <item name="displayOptions">showHome|homeAsUp|showTitle</item>
+        <item name="elevation">8dp</item>
+    </style>
+
+    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@color/primary_text</item>
+    </style>
+
+    <style name="Theme.Amahi.Authentication" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:actionBarStyle">@style/Theme.Amahi.ActionBar</item>
+        <item name="android:windowBackground">@color/background_primary</item>
+        <item name="android:textColorPrimaryInverse">@color/primary_text_material_light</item>
+        <item name="android:editTextColor">@color/primary_text_material_light</item>
+        <item name="android:textColorHint">@color/secondary_text</item>
+        <item name="passwordToggleTint">@color/secondary_text</item>
+        <item name="colorControlNormal">@color/secondary_text</item>
+        <item name="colorControlActivated">@color/accent</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/primary_dark</item>
+        <item name="android:textColorPrimary">@color/primary_text</item>
+        <item name="android:textColorSecondary">@color/secondary_text</item>
+    </style>
+
+    <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/text_input_box_stroke</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_page</item>
+    </style>
+
+    <style name="Theme.CastVideosDark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimaryDark">@android:color/black</item>
+    </style>
+
+    <style name="FileActionTheme">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:clickable">true</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">?android:attr/activatedBackgroundIndicator</item>
+    </style>
+
+    <style name="Theme.Amahi.NoActionBar">
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:textColor">@color/primary_text</item>
+    </style>
+
+    <style name="Theme.Amahi.NoActionBar.Audio">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:textColor">@color/primary_text</item>
+    </style>
+
+
+
+</resources>

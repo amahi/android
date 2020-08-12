@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2014 Amahi
+  ~
+  ~ This file is part of Amahi.
+  ~
+  ~ Amahi is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Amahi is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+    package="org.amahi.anywhere"
+    android:installLocation="auto">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
+
+    <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <application
+        android:name=".AmahiApplication"
+        android:allowBackup="false"
+        android:banner="@drawable/tv_banner"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/application_name"
+        android:resizeableActivity="true"
+        android:theme="@style/Theme.Amahi"
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:icon">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="org.amahi.anywhere.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".tv.activity.MainTVActivity"
+            android:theme="@style/Theme.Leanback.Browse">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.SplashActivity"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.max_aspect"
+                android:value="2.1" />
+        </activity>
+        <activity
+            android:name=".activity.NavigationActivity"
+            android:theme="@style/Theme.Amahi.NoActionBar" />
+        <activity android:name=".activity.ServerAppActivity" />
+        <activity android:name=".activity.ServerFilesActivity">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name=".activity.ServerFileAudioActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Amahi.NoActionBar.Audio" />
+        <activity
+            android:name=".activity.ServerFileImageActivity"
+            android:theme="@style/Theme.Amahi.Fullscreen" />
+        <activity
+            android:name=".activity.ServerFileVideoActivity"
+            android:theme="@style/Theme.Amahi.Fullscreen" />
+        <activity
+            android:name=".activity.ExpandedControlsActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/Theme.CastVideosDark">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.NativeVideoActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize|screenLayout|uiMode"
+            android:theme="@style/Theme.Amahi.Fullscreen" />
+        <activity android:name=".activity.ServerFileWebActivity" />
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_settings"
+            android:theme="@style/Theme.Amahi.Settings"/>
+        <activity
+            android:name=".activity.IntroductionActivity"
+            android:label="@string/intro_desc_phone_1"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".activity.AuthenticationActivity"
+            android:theme="@style/Theme.Amahi.Authentication"
+            android:windowSoftInputMode="adjustResize" />
+
+        <service
+            android:name=".account.AmahiAuthenticatorService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service
+            android:name=".service.AudioService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+        <service android:name=".service.VideoService" />
+        <service android:name=".service.UploadService" />
+        <service android:name=".service.DownloadService" />
+
+        <receiver android:name=".receiver.AudioReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="androidx.media.session.MediaButtonReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.NetworkReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".receiver.CameraReceiver"
+            android:enabled="true">
+            <intent-filter>
+
+                <!-- <action android:name="com.android.camera.NEW_PICTURE" /> -->
+                <action android:name="android.hardware.action.NEW_PICTURE" />
+
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".job.PhotosContentJob"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".job.NetConnectivityJob"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="d7b65346d3cf0028328f006bff447501d70f8996" />
+
+        <activity
+            android:name=".activity.WebViewActivity"
+            android:label="@string/title_version_settings" />
+        <activity
+            android:name=".tv.activity.IntroActivity"
+            android:theme="@style/Theme.Leanback.Onboarding" />
+        <activity
+            android:name=".tv.activity.SettingsActivity"
+            android:theme="@style/Theme.Leanback.GuidedStep" />
+        <activity
+            android:name=".tv.activity.ServerFileTvActivity"
+            android:theme="@style/Theme.Leanback.VerticalGrid" />
+        <activity
+            android:name=".tv.activity.TVWebViewActivity"
+            android:theme="@style/Theme.Design.NoActionBar" />
+        <activity
+            android:name=".tv.activity.TvPlaybackVideoActivity"
+            android:theme="@style/Theme.Leanback" />
+        <activity
+            android:name=".tv.activity.TvPlaybackAudioActivity"
+            android:theme="@style/Theme.Leanback" />
+
+        <meta-data
+            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="org.amahi.anywhere.util.CastOptionsProvider" />
+
+        <activity android:name=".activity.OfflineFilesActivity" />
+        <activity android:name=".activity.RecentFilesActivity"></activity>
+    </application>
+
+</manifest>

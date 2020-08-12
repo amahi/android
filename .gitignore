@@ -1,0 +1,30 @@
+# Gradle
+.gradle/
+build/
+release/
+
+# Android Studio
+.idea/
+*.iml
+
+# Android SDK
+local.properties
+
+# API
+api.properties
+
+# Crashlytics
+crashlytics.properties
+crashlytics-build.properties
+com_crashlytics_export_strings.xml
+fabric.properties
+
+# Key
+signing.properties
+*.keystore
+*.jks
+
+.DS*
+
+# Acra
+acra.properties

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="preference_category_about">के बारे में</string>
-    <string name="preference_category_account">लेखा</string>
-    <string name="preference_category_settings">सेटिंग्स</string>
-    <string name="preference_category_upload">ऑटो अपलोड</string>
+    <string name="preference_category_about"><font size="20">के बारे में</font></string>
+    <string name="preference_category_account"><font size="20">लेखा</font></string>
+    <string name="preference_category_settings"><font size="20">सेटिंग्स</font></string>
+    <string name="preference_category_upload"><font size="20">ऑटो अपलोड</font></string>
     <string name="preference_title_about_feedback">प्रतिक्रिया</string>
     <string name="preference_title_about_rating">मूल्यांकन करें</string>
     <string name="preference_title_about_version">संस्करण</string>

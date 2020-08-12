@@ -169,11 +169,11 @@
     <string name="alert_delete_confirm">Êtes-vous sûr?</string>
     <string name="language_en">Anglais</string>
     <string name="language_fr">Français</string>
-    <string name="preference_category_about">À propos</string>
-    <string name="preference_category_account">Compte</string>
-    <string name="preference_category_settings">Paramètres</string>
-    <string name="preference_category_upload">Téléchargement automatique</string>
-    <string name="preference_category_general">Général</string>
+    <string name="preference_category_about"><font size="20">À propos</font></string>
+    <string name="preference_category_account"><font size="20">Compte</font></string>
+    <string name="preference_category_settings"><font size="20">Paramètres</font></string>
+    <string name="preference_category_upload"><font size="20">Téléchargement automatique</font></string>
+    <string name="preference_category_general"><font size="20">Général</font></string>
     <string name="preference_title_about_feedback">Retour d\'information</string>
     <string name="preference_title_about_rating">Taux</string>
     <string name="preference_title_about_version">Version</string>

@@ -119,10 +119,10 @@
     <string name="intro_desc_phone_5">എവിടെനിന്നും നിങ്ങളുടെ വീഡിയോ, മൂവി ലൈബ്രറി എന്നിവ നിങ്ങളുടെ ഫോണിൽ കാണുക.</string>
     <string name="intro_title_6">തയ്യാറാണ്</string>
     <string name="intro_desc_6">നിങ്ങൾ എല്ലാം തയ്യാറായിക്കഴിഞ്ഞു. അമാഹി ഉപയോഗിച്ചതിന് നന്ദി.</string>
-    <string name="preference_category_about">ആമുഖം</string>
-    <string name="preference_category_account">അക്കൗണ്ട്</string>
-    <string name="preference_category_settings">ക്രമീകരണങ്ങൾ</string>
-    <string name="preference_category_upload">യാന്ത്രിക അപ്ലോഡ്</string>
+    <string name="preference_category_about"><font size="20">ആമുഖം</font></string>
+    <string name="preference_category_account"><font size="20">അക്കൗണ്ട്</font></string>
+    <string name="preference_category_settings"><font size="20">ക്രമീകരണങ്ങൾ</font></string>
+    <string name="preference_category_upload"><font size="20">യാന്ത്രിക അപ്ലോഡ്</font></string>
     <string name="preference_title_about_feedback">ഫീഡ്ബാക്ക്</string>
     <string name="preference_title_about_rating">റേറ്റുചെയ്യുക</string>
     <string name="preference_title_about_version">പതിപ്പ്</string>

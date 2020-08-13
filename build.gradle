@@ -154,6 +154,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 
     implementation "com.vorlonsoft:androidrate:1.2.1"
+    implementation 'com.google.android.play:core:1.7.3'
 
     implementation 'org.videolan:libvlc:2.1.16'
     implementation 'pub.devrel:easypermissions:3.0.0'

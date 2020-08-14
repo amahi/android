@@ -146,6 +146,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
         setUpRateApp();
 
+        setUpUpdatePrompt();
+
         setUpInjections();
 
         setUpCast();
@@ -153,16 +155,20 @@ public class ServerFilesActivity extends AppCompatActivity implements
         setUpHomeNavigation();
 
         setUpFiles(savedInstanceState);
+    }
 
+    public void setUpUpdatePrompt() {
         AppUpdater appUpdater = new AppUpdater(this);
-        appUpdater.start();
+
         new AppUpdater(this)
             .setUpdateFrom(UpdateFrom.GOOGLE_PLAY)
             .setDisplay(Display.DIALOG)
             .setTitleOnUpdateAvailable("Update available")
             .setContentOnUpdateAvailable("Check out the latest version available of Amahi Android App!")
             .setButtonUpdate("Update")//Updates the App
-	        .setButtonDoNotShowAgain("Don't show again");//Never shows the prompt again
+            .setButtonDoNotShowAgain("Don't show again");//Never shows the prompt again
+
+        appUpdater.start();
     }
 
     public void setUpRateApp() {

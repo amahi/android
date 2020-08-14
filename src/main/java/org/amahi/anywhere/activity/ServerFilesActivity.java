@@ -48,21 +48,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.github.javiersantos.appupdater.AppUpdater;
+import com.github.javiersantos.appupdater.enums.Display;
+import com.github.javiersantos.appupdater.enums.UpdateFrom;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.play.core.appupdate.AppUpdateInfo;
-import com.google.android.play.core.appupdate.AppUpdateManager;
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
-import com.google.android.play.core.install.InstallState;
-import com.google.android.play.core.install.InstallStateUpdatedListener;
-import com.google.android.play.core.install.model.AppUpdateType;
-import com.google.android.play.core.install.model.InstallStatus;
-import com.google.android.play.core.install.model.UpdateAvailability;
-import com.google.android.play.core.tasks.OnSuccessListener;
-import com.google.android.play.core.tasks.Task;
 import com.squareup.otto.Subscribe;
 import com.vorlonsoft.android.rate.AppRate;
 
@@ -146,8 +139,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     private CastContext mCastContext;
 
-    private int REQUEST_CODE=11;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,51 +154,15 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
         setUpFiles(savedInstanceState);
 
-        // Creates instance of the Update manager.
-        AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(this);
-
-        // Returns an intent object that you use to check for an update.
-        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
-
-        // Checks that the platform will allow the specified type of update.
-        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                // For a flexible update, use AppUpdateType.FLEXIBLE
-                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
-            }
-
-            try {
-                appUpdateManager.startUpdateFlowForResult(
-                    // Pass the intent that is returned by 'getAppUpdateInfo()'.
-                    appUpdateInfo,
-                    // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
-                    AppUpdateType.FLEXIBLE,
-                    // The current activity making the update request.
-                    this,
-                    // Include a request code to later monitor this update request(Optional).
-                    REQUEST_CODE);
-            } catch (IntentSender.SendIntentException e) {
-                e.printStackTrace();
-            }
-        });
-
-        // Create a listener to track request state updates.
-        InstallStateUpdatedListener listener = state -> {
-            // (Optional) Provide a download progress bar.
-            if (state.installStatus() == InstallStatus.DOWNLOADING) {
-                long bytesDownloaded = state.bytesDownloaded();
-                long totalBytesToDownload = state.totalBytesToDownload();
-                // Implement progress bar.
-            }
-
-        };
-
-// Before starting an update, register a listener for updates.
-        appUpdateManager.registerListener(listener);
-
-// When status updates are no longer needed, unregister the listener.
-        appUpdateManager.unregisterListener(listener);
-
+        AppUpdater appUpdater = new AppUpdater(this);
+        appUpdater.start();
+        new AppUpdater(this)
+            .setUpdateFrom(UpdateFrom.GOOGLE_PLAY)
+            .setDisplay(Display.DIALOG)
+            .setTitleOnUpdateAvailable("Update available")
+            .setContentOnUpdateAvailable("Check out the latest version available of Amahi Android App!")
+            .setButtonUpdate("Update")//Updates the App
+	        .setButtonDoNotShowAgain("Don't show again");//Never shows the prompt again
     }
 
     public void setUpRateApp() {

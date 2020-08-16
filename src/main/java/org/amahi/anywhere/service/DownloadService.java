@@ -1,6 +1,5 @@
 package org.amahi.anywhere.service;
 
-import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -48,7 +47,6 @@ import static org.amahi.anywhere.util.Downloader.OFFLINE_PATH;
 public class DownloadService extends ServiceNotifier implements Downloader.DownloadCallbacks {
 
     private static final int NOTIFICATION_OFFLINE_ID = 101;
-    private static final String DOWNLOAD_CHANNEL_ID = "file_download";
 
     @Inject
     ServerClient serverClient;
@@ -74,7 +72,7 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
         setUpNetworkUtils();
         setDatabaseRepository();
         downloader.setDownloadCallbacks(this);
-        notificationBuilder = startForegroundNotif(DOWNLOAD_CHANNEL_ID);
+        notificationBuilder = startForegroundNotif(AmahiApplication.DOWNLOAD_CHANNEL_ID);
         Log.i("DownloadService", "Download Service created");
     }
 
@@ -154,7 +152,7 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
     }
 
     private void resumeDownload(long downloadId, String fileName) {
-        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), DOWNLOAD_CHANNEL_ID);
+        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), AmahiApplication.DOWNLOAD_CHANNEL_ID);
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)
@@ -227,7 +225,7 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
 
     @Override
     public void downloadStarted(int id, String fileName) {
-        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), DOWNLOAD_CHANNEL_ID);
+        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), AmahiApplication.DOWNLOAD_CHANNEL_ID);
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)

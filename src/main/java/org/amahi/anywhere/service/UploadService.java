@@ -60,8 +60,6 @@ import javax.inject.Inject;
  */
 public class UploadService extends ServiceNotifier implements UploadManager.UploadCallbacks {
 
-    private static final String UPLOAD_CHANNEL_ID = "file_upload";
-
     @Inject
     ServerClient serverClient;
 
@@ -83,7 +81,7 @@ public class UploadService extends ServiceNotifier implements UploadManager.Uplo
         setUpBus();
         setUpDbHelper();
         setUpNetworkUtils();
-        startForegroundNotif(UPLOAD_CHANNEL_ID);
+        startForegroundNotif(AmahiApplication.UPLOAD_CHANNEL_ID);
     }
 
     private void setUpInjections() {
@@ -239,7 +237,7 @@ public class UploadService extends ServiceNotifier implements UploadManager.Uplo
 
     @Override
     public void uploadStarted(int id, String fileName) {
-        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), UPLOAD_CHANNEL_ID);
+        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), AmahiApplication.UPLOAD_CHANNEL_ID);
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)

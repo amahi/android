@@ -55,8 +55,8 @@ import timber.log.Timber;
 public class AmahiApplication extends Application {
     private ObjectGraph injector;
 
-    private static final String UPLOAD_CHANNEL_ID = "file_upload";
-    private static final String DOWNLOAD_CHANNEL_ID = "file_download";
+    public static final String UPLOAD_CHANNEL_ID = "file_upload";
+    public static final String DOWNLOAD_CHANNEL_ID = "file_download";
 
     private Boolean isLightThemeEnabled = false;
     private static AmahiApplication instance = null;

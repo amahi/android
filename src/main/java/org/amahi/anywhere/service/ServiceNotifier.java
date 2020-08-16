@@ -37,7 +37,6 @@ abstract public class ServiceNotifier extends Service {
             .setSmallIcon(R.drawable.ic_app_logo)
             .setContentTitle(getString(R.string.application_name))
             .setShowWhen(false)
-            .setPriority(Notification.PRIORITY_MIN)
             .build();
         Notification notification = notificationBuilder.build();
         int nID = (int) System.currentTimeMillis() % 10000;

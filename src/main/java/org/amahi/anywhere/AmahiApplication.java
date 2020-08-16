@@ -159,12 +159,13 @@ public class AmahiApplication extends Application {
     private void createNotificationChannel() {
 
         // Creating NotificationChannel only for API 26+
-        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        int importanceDownload = NotificationManager.IMPORTANCE_LOW;
+        int importanceUpload = NotificationManager.IMPORTANCE_LOW;
 
-        NotificationChannel uploadChannel = new NotificationChannel(UPLOAD_CHANNEL_ID, getString(R.string.upload_channel), importance);
+        NotificationChannel uploadChannel = new NotificationChannel(UPLOAD_CHANNEL_ID, getString(R.string.upload_channel), importanceUpload);
         uploadChannel.setDescription(getString(R.string.upload_channel_desc));
 
-        NotificationChannel downloadChannel = new NotificationChannel(DOWNLOAD_CHANNEL_ID, getString(R.string.download_channel), importance);
+        NotificationChannel downloadChannel = new NotificationChannel(DOWNLOAD_CHANNEL_ID, getString(R.string.download_channel), importanceDownload);
         downloadChannel.setDescription(getString(R.string.download_channel_desc));
 
         // Once the channel is registered, it's importance and behaviour can't be changed

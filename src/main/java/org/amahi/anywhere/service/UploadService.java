@@ -185,6 +185,7 @@ public class UploadService extends ServiceNotifier implements UploadManager.Uplo
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
+        assert preferenceConnection != null;
         return preferenceConnection.equals(getString(R.string.preference_key_server_connection_auto));
     }
 
@@ -192,6 +193,7 @@ public class UploadService extends ServiceNotifier implements UploadManager.Uplo
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
+        assert preferenceConnection != null;
         return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
     }
 
@@ -256,7 +258,9 @@ public class UploadService extends ServiceNotifier implements UploadManager.Uplo
         notificationBuilder
             .setProgress(100, progress, false);
         Notification notification = notificationBuilder.build();
-        notificationManager.notify(id, notification);
+        if (progress == 100) {
+            notificationManager.notify(id, notification);
+        }
     }
 
     @Override
@@ -270,16 +274,17 @@ public class UploadService extends ServiceNotifier implements UploadManager.Uplo
     }
 
     private void uploadComplete(int id, String title) {
-        stopForegroundService(this, this, false);
+        stopForegroundService(this, this, true);
         NotificationManager notificationManager = (NotificationManager) getApplicationContext()
             .getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationBuilder
             .setContentTitle(title)
-            .setOngoing(false)
-            .setProgress(0, 0, false);
+            .setContentText(getString(R.string.message_file_upload_complete))
+            .setOngoing(false);
 
         Notification notification = notificationBuilder.build();
+        notificationManager.cancel(id);
         notificationManager.notify(id, notification);
     }
 

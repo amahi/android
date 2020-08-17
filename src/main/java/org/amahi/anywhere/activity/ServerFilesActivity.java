@@ -163,10 +163,10 @@ public class ServerFilesActivity extends AppCompatActivity implements
         new AppUpdater(this)
             .setUpdateFrom(UpdateFrom.GOOGLE_PLAY)
             .setDisplay(Display.DIALOG)
-            .setTitleOnUpdateAvailable("Update available")
-            .setContentOnUpdateAvailable("Check out the latest version available of Amahi Android App!")
+            .setTitleOnUpdateAvailable("Update available")//Title of the Dialog Prompt
+            .setContentOnUpdateAvailable("Check out the latest version available of Amahi Android App!")//Description of the Dialog Prompt
             .setButtonUpdate("Update")//Updates the App
-            .setButtonDoNotShowAgain("Don't show again");//Never shows the prompt again
+            .setButtonDoNotShowAgain("Don't show again");//Never shows the prompt again until next release
 
         appUpdater.start();
     }

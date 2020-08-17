@@ -4,11 +4,12 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.l4digital.fastscroll.FastScrollView;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -35,7 +36,7 @@ public class AudioListFragment extends Fragment implements RecyclerViewItemClick
     @Inject
     public ServerClient serverClient;
 
-    private RecyclerView recyclerView;
+    private FastScrollView fastScrollView;
     private AudioFilesAdapter adapter;
 
     @Nullable
@@ -49,7 +50,7 @@ public class AudioListFragment extends Fragment implements RecyclerViewItemClick
         super.onViewCreated(view, savedInstanceState);
 
         setUpInjections();
-        recyclerView = view.findViewById(R.id.audio_list_r_view);
+        fastScrollView = view.findViewById(R.id.audio_list_r_view);
         setUpAudioList();
 
         BusProvider.getBus().register(this);
@@ -60,13 +61,13 @@ public class AudioListFragment extends Fragment implements RecyclerViewItemClick
     }
 
     private void setUpAudioList() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        fastScrollView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         adapter = new AudioFilesAdapter(serverClient,
             getFiles(), getShare(), getContext(), this);
         adapter.setSelectedPosition(getFiles().indexOf(getAudioFile()));
 
-        recyclerView.setAdapter(adapter);
+        fastScrollView.setAdapter(adapter);
     }
 
     private ServerFile getAudioFile() {
@@ -129,7 +130,7 @@ public class AudioListFragment extends Fragment implements RecyclerViewItemClick
     public void onDestroy() {
         super.onDestroy();
 
-        AudioFilesAdapter adapter = (AudioFilesAdapter) recyclerView.getAdapter();
+        AudioFilesAdapter adapter = (AudioFilesAdapter) fastScrollView.getRecyclerView().getAdapter();
         adapter.tearDownCallbacks();
         BusProvider.getBus().unregister(this);
     }

@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.l4digital.fastscroll.FastScrollView;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -60,7 +61,7 @@ public class ServerSharesFragment extends Fragment implements
 
     @Inject
     ServerClient serverClient;
-    private RecyclerView mRecyclerView;
+    private FastScrollView mRecyclerView;
 
     private ServerSharesAdapter mServerSharesAdapter;
 
@@ -77,7 +78,7 @@ public class ServerSharesFragment extends Fragment implements
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh);
 
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
+        mRecyclerView = (FastScrollView) rootView.findViewById(R.id.list);
 
         mServerSharesAdapter = new ServerSharesAdapter(getActivity());
 

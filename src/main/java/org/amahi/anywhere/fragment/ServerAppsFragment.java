@@ -32,9 +32,9 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.l4digital.fastscroll.FastScrollView;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -62,7 +62,7 @@ public class ServerAppsFragment extends Fragment {
     View rootView;
 
     private ServerAppsAdapter mServerAppsAdapter;
-    private RecyclerView mRecyclerView;
+    private FastScrollView mFastScrollView;
     private LinearLayout mErrorLinearLayout;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -71,11 +71,11 @@ public class ServerAppsFragment extends Fragment {
         rootView = layoutInflater.inflate(R.layout.fragment_server_apps, container, false);
 
         mSwipeRefreshLayout = rootView.findViewById(R.id.layout_refresh_apps);
-        mRecyclerView = rootView.findViewById(R.id.list_server_apps);
+        mFastScrollView = rootView.findViewById(R.id.list_server_apps);
 
         mServerAppsAdapter = new ServerAppsAdapter(getActivity());
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        mFastScrollView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
         mErrorLinearLayout = rootView.findViewById(R.id.error);
 
@@ -83,7 +83,7 @@ public class ServerAppsFragment extends Fragment {
 
         mSwipeRefreshLayout.setOnRefreshListener(this::setUpAppsContent);
 
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        mFastScrollView.getRecyclerView().addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         return rootView;
     }
 
@@ -142,7 +142,7 @@ public class ServerAppsFragment extends Fragment {
     }
 
     private void setUpAppsAdapter() {
-        mRecyclerView.setAdapter(mServerAppsAdapter);
+        mFastScrollView.setAdapter(mServerAppsAdapter);
     }
 
     private boolean isAppsStateValid(Bundle state) {

@@ -39,14 +39,7 @@
         <FrameLayout
             android:id="@+id/container_files"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbarStyle="insideOverlay"
-            android:scrollbars="vertical"
-            android:scrollbarSize="10sp"
-            android:scrollbarThumbVertical="@color/accent"
-            android:scrollIndicators="right"
-            android:scrollbarAlwaysDrawVerticalTrack="false"
-            android:fadeScrollbars="true"/>
+            android:layout_height="match_parent" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </RelativeLayout>

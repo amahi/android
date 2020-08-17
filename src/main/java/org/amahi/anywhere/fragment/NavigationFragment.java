@@ -251,20 +251,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpServersContent(List<Server> servers) {
-        if (!CheckTV.isATV(mContext)) {
-            replaceServersList(filterActiveServers(servers));
-        } else {
-            serversList = filterActiveServers(servers);
-            String serverName = Preferences.getPreference(mContext).getString(getString(R.string.pref_server_select_key), serversList.get(0).getName());
-
-            if (serversList.get(0).getName().matches(serverName))
-                replaceServersList(serversList);
-
-            else {
-                int index = findTheServer(serversList);
-                replaceServersList(swappedServers(index, serversList));
-            }
-        }
+        replaceServersList(filterActiveServers(servers));
     }
 
     private void replaceServersList(List<Server> servers) {

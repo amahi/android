@@ -26,4 +26,5 @@
         android:layout_marginEnd="0dp"
         android:textColor="@color/primary_text"/>
 
+
 </LinearLayout>

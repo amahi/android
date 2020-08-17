@@ -28,8 +28,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Build;
-import androidx.annotation.RequiresApi;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import org.amahi.anywhere.AmahiApplication.JobIds;
 import org.amahi.anywhere.service.DownloadService;
@@ -50,13 +51,13 @@ public class NetConnectivityJob extends JobService {
         JOB_INFO = builder.build();
     }
 
-    private final String TAG = this.getClass().getName();
+    private static final String TAG = NetConnectivityJob.class.getName();
 
     // Schedule this job, replace any existing one.
     public static void scheduleJob(Context context) {
         JobScheduler js = context.getSystemService(JobScheduler.class);
         js.schedule(JOB_INFO);
-        Log.i("NetworkConnectivityJob", "JOB SCHEDULED!");
+        Log.i(TAG, "JOB SCHEDULED!");
     }
 
     // Check whether this job is currently scheduled.
@@ -76,7 +77,11 @@ public class NetConnectivityJob extends JobService {
     public boolean onStartJob(JobParameters params) {
         Log.i(TAG, "JOB STARTED!");
         Intent intent = new Intent(this, UploadService.class);
-        startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
         startDownloadService(this);
         return false;
     }
@@ -84,7 +89,11 @@ public class NetConnectivityJob extends JobService {
     private void startDownloadService(Context context) {
         Intent downloadService = new Intent(context, DownloadService.class);
         downloadService.setAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        context.startService(downloadService);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(downloadService);
+        } else {
+            context.startService(downloadService);
+        }
     }
 
     @Override

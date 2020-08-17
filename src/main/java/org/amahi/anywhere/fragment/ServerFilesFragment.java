@@ -423,7 +423,11 @@ public class ServerFilesFragment extends Fragment implements
 
     private void startDownloadService(ServerFile file) {
         Intent downloadService = Intents.Builder.with(getContext()).buildDownloadServiceIntent(file, getShare());
-        getContext().startService(downloadService);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getContext().startForegroundService(downloadService);
+        } else {
+            getContext().startService(downloadService);
+        }
     }
 
     private void updateCurrentFileOfflineState(boolean enable) {

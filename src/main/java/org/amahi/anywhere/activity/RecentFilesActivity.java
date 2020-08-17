@@ -526,7 +526,11 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void startDownloadService(ServerFile file) {
         Intent downloadService = Intents.Builder.with(this).buildDownloadServiceIntent(file, null);
-        startService(downloadService);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(downloadService);
+        } else {
+            startService(downloadService);
+        }
     }
 
     private static final class State {

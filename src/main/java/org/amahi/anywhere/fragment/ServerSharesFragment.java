@@ -167,6 +167,7 @@ public class ServerSharesFragment extends Fragment implements
 
     @Subscribe
     public void onServerConnectionFailed(ServerConnectionFailedEvent event) {
+        mSwipeRefreshLayout.setRefreshing(false);
         Toast.makeText(getContext(), getResources()
             .getString(R.string.message_error_amahi_anywhere_app), Toast.LENGTH_LONG).show();
         showConnectionError();
@@ -174,12 +175,9 @@ public class ServerSharesFragment extends Fragment implements
 
     private void showConnectionError() {
         ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
-        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-                retryServerConnection();
-            }
+        mErrorLinearLayout.setOnClickListener(view -> {
+            ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+            retryServerConnection();
         });
     }
 
@@ -189,6 +187,9 @@ public class ServerSharesFragment extends Fragment implements
 
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+        if (mRecyclerView != null)
+            mRecyclerView.removeAllViews();
         setUpSharesContent();
     }
 
@@ -207,12 +208,9 @@ public class ServerSharesFragment extends Fragment implements
     private void showSharesError() {
         mSwipeRefreshLayout.setRefreshing(false);
         ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
-        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-                setUpSharesContent();
-            }
+        mErrorLinearLayout.setOnClickListener(view -> {
+            ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+            setUpSharesContent();
         });
     }
 

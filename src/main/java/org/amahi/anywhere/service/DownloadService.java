@@ -3,18 +3,18 @@ package org.amahi.anywhere.service;
 import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.squareup.otto.Subscribe;
 
@@ -44,9 +44,11 @@ import javax.inject.Inject;
 
 import static org.amahi.anywhere.util.Downloader.OFFLINE_PATH;
 
-public class DownloadService extends ServiceNotifier implements Downloader.DownloadCallbacks {
+public class DownloadService extends Service implements Downloader.DownloadCallbacks {
 
     private static final int NOTIFICATION_OFFLINE_ID = 101;
+    private static final int NOTIFICATION_ERROR_ID = 101;
+    private static final String DOWNLOAD_CHANNEL_ID = "file_download";
 
     @Inject
     ServerClient serverClient;
@@ -72,7 +74,6 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
         setUpNetworkUtils();
         setDatabaseRepository();
         downloader.setDownloadCallbacks(this);
-        notificationBuilder = startForegroundNotif(AmahiApplication.DOWNLOAD_CHANNEL_ID);
         Log.i("DownloadService", "Download Service created");
     }
 
@@ -138,7 +139,7 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
             isDownloading = true;
         } else {
             stopDownloading();
-            stopForegroundService(this, this, true);
+            stopForeground(true);
         }
     }
 
@@ -152,12 +153,12 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
     }
 
     private void resumeDownload(long downloadId, String fileName) {
-        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), AmahiApplication.DOWNLOAD_CHANNEL_ID);
+        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), DOWNLOAD_CHANNEL_ID);
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)
             .setContentTitle(getString(R.string.notification_download_offline_title))
-            .setContentText(fileName)
+            .setContentText(getString(R.string.notification_upload_message, fileName))
             .setProgress(100, 0, false)
             .build();
         Notification notification = notificationBuilder.build();
@@ -225,12 +226,12 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
 
     @Override
     public void downloadStarted(int id, String fileName) {
-        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), AmahiApplication.DOWNLOAD_CHANNEL_ID);
+        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), DOWNLOAD_CHANNEL_ID);
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)
             .setContentTitle(getString(R.string.notification_download_offline_title))
-            .setContentText(fileName)
+            .setContentText(getString(R.string.notification_upload_message, fileName))
             .setProgress(100, 0, false)
             .build();
         Notification notification = notificationBuilder.build();
@@ -249,9 +250,7 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
         notificationBuilder
             .setProgress(100, progress, false);
         Notification notification = notificationBuilder.build();
-        if (progress == 100) {
-            notificationManager.notify(NOTIFICATION_OFFLINE_ID, notification);
-        }
+        notificationManager.notify(NOTIFICATION_OFFLINE_ID, notification);
         updateOfflineActivityUI(progress);
     }
 
@@ -267,7 +266,7 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
         if (offlineFile != null) {
             moveFileInOfflineDirectory(offlineFile.getName());
         } else {
-            stopForegroundService(this, this, true);
+            stopForeground(true);
         }
     }
 
@@ -277,7 +276,7 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
 
         notificationBuilder
             .setContentTitle(getString(R.string.notification_offline_download_complete))
-            .setContentText(offlineFile.getName())
+            .setContentText(getString(R.string.notification_upload_message, offlineFile.getName()))
             .setOngoing(false);
 
         Notification notification = notificationBuilder.build();
@@ -299,7 +298,7 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
             offlineFile.setDownloadId(-1);
             offlineFileRepository.update(offlineFile);
 
-            stopForegroundService(this, this, true);
+            stopForeground(true);
 
             showDownloadedNotification(offlineFile);
             notifyDownloadFinish(true);
@@ -345,7 +344,7 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
 
             notificationBuilder
                 .setContentTitle(getString(R.string.notification_offline_download_error))
-                .setContentText(offlineFile.getName())
+                .setContentText(getString(R.string.notification_upload_message, offlineFile.getName()))
                 .setOngoing(false);
 
             Notification notification = notificationBuilder.build();
@@ -354,12 +353,12 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
     }
 
     private void stopNotification() {
-        stopForegroundService(this, this, true);
+        stopForeground(true);
     }
 
     @Override
     public void downloadPaused(long downloadId, int progress) {
-        stopForegroundService(this, this, false);
+        stopForeground(false);
         NotificationManager notificationManager = (NotificationManager) getApplicationContext()
             .getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -389,7 +388,7 @@ public class DownloadService extends ServiceNotifier implements Downloader.Downl
 
     @Subscribe
     public void onDownloadCanceled(OfflineCanceledEvent event) {
-        stopForegroundService(this, this, true);
+        stopForeground(true);
         List<OfflineFile> offlineFiles = offlineFileRepository.getAllOfflineFiles();
         if (offlineFiles.isEmpty()) {
             stopDownloading();

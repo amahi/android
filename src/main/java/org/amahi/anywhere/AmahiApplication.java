@@ -51,8 +51,8 @@ import dagger.ObjectGraph;
 public class AmahiApplication extends Application {
     private ObjectGraph injector;
 
-    public static final String UPLOAD_CHANNEL_ID = "file_upload";
-    public static final String DOWNLOAD_CHANNEL_ID = "file_download";
+    private static final String UPLOAD_CHANNEL_ID = "file_upload";
+    private static final String DOWNLOAD_CHANNEL_ID = "file_download";
 
     private Boolean isLightThemeEnabled = false;
     private static AmahiApplication instance = null;
@@ -142,13 +142,12 @@ public class AmahiApplication extends Application {
     private void createNotificationChannel() {
 
         // Creating NotificationChannel only for API 26+
-        int importanceDownload = NotificationManager.IMPORTANCE_LOW;
-        int importanceUpload = NotificationManager.IMPORTANCE_LOW;
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
 
-        NotificationChannel uploadChannel = new NotificationChannel(UPLOAD_CHANNEL_ID, getString(R.string.upload_channel), importanceUpload);
+        NotificationChannel uploadChannel = new NotificationChannel(UPLOAD_CHANNEL_ID, getString(R.string.upload_channel), importance);
         uploadChannel.setDescription(getString(R.string.upload_channel_desc));
 
-        NotificationChannel downloadChannel = new NotificationChannel(DOWNLOAD_CHANNEL_ID, getString(R.string.download_channel), importanceDownload);
+        NotificationChannel downloadChannel = new NotificationChannel(DOWNLOAD_CHANNEL_ID, getString(R.string.download_channel), importance);
         downloadChannel.setDescription(getString(R.string.download_channel_desc));
 
         // Once the channel is registered, it's importance and behaviour can't be changed

@@ -63,14 +63,14 @@ public class PhotosContentJob extends JobService {
         JOB_INFO = builder.build();
     }
 
-    private static final String TAG = PhotosContentJob.class.getName();
+    private final String TAG = this.getClass().getName();
     JobParameters mRunningParams;
 
     // Schedule this job, replace any existing one.
     public static void scheduleJob(Context context) {
         JobScheduler js = context.getSystemService(JobScheduler.class);
         js.schedule(JOB_INFO);
-        Log.i(TAG, "JOB SCHEDULED!");
+        Log.i("PhotosContentJob", "JOB SCHEDULED!");
     }
 
     // Check whether this job is currently scheduled.
@@ -88,7 +88,7 @@ public class PhotosContentJob extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        Log.i(TAG, "JOB STARTED!");
+        Log.i("PhotosContentJob", "JOB STARTED!");
         mRunningParams = params;
 
         // Did we trigger due to a content change?
@@ -105,7 +105,7 @@ public class PhotosContentJob extends JobService {
                     }
                 }
                 Intent intent = Intents.Builder.with(this).buildUploadServiceIntent(uris);
-                startForegroundService(intent);
+                startService(intent);
             } else {
                 // We don't have any details about URIs (because too many changed at once)
                 Log.i(TAG, "Photos rescan needed!");

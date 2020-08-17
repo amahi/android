@@ -28,9 +28,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Build;
-import android.util.Log;
-
 import androidx.annotation.RequiresApi;
+import android.util.Log;
 
 import org.amahi.anywhere.AmahiApplication.JobIds;
 import org.amahi.anywhere.service.DownloadService;
@@ -51,13 +50,13 @@ public class NetConnectivityJob extends JobService {
         JOB_INFO = builder.build();
     }
 
-    private static final String TAG = NetConnectivityJob.class.getName();
+    private final String TAG = this.getClass().getName();
 
     // Schedule this job, replace any existing one.
     public static void scheduleJob(Context context) {
         JobScheduler js = context.getSystemService(JobScheduler.class);
         js.schedule(JOB_INFO);
-        Log.i(TAG, "JOB SCHEDULED!");
+        Log.i("NetworkConnectivityJob", "JOB SCHEDULED!");
     }
 
     // Check whether this job is currently scheduled.
@@ -77,11 +76,7 @@ public class NetConnectivityJob extends JobService {
     public boolean onStartJob(JobParameters params) {
         Log.i(TAG, "JOB STARTED!");
         Intent intent = new Intent(this, UploadService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
+        startService(intent);
         startDownloadService(this);
         return false;
     }
@@ -89,11 +84,7 @@ public class NetConnectivityJob extends JobService {
     private void startDownloadService(Context context) {
         Intent downloadService = new Intent(context, DownloadService.class);
         downloadService.setAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(downloadService);
-        } else {
-            context.startService(downloadService);
-        }
+        context.startService(downloadService);
     }
 
     @Override

@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.NetworkChangedEvent;
@@ -61,11 +60,7 @@ public class NetworkReceiver extends BroadcastReceiver {
 
     private void startUploadService(Context context) {
         Intent uploadService = new Intent(context, UploadService.class);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(uploadService);
-        } else {
-            context.startService(uploadService);
-        }
+        context.startService(uploadService);
     }
 
     private void stopUploadService(Context context) {
@@ -76,11 +71,7 @@ public class NetworkReceiver extends BroadcastReceiver {
     private void startDownloadService(Context context) {
         Intent downloadService = new Intent(context, DownloadService.class);
         downloadService.setAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(downloadService);
-        } else {
-            context.startService(downloadService);
-        }
+        context.startService(downloadService);
     }
 
 }

@@ -65,7 +65,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
 
     private void buildDeleteDialog() {
         builder.setTitle(getString(R.string.message_delete_file_title))
-            setIcon(R.drawable.ic_delete_dialog)
+            .setIcon(R.drawable.ic_delete_dialog)
             .setMessage(getString(R.string.message_delete_file_body))
             .setPositiveButton(getString(R.string.button_yes), this)
             .setNegativeButton(getString(R.string.button_no), this);

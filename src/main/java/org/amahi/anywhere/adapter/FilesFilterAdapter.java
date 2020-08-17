@@ -22,15 +22,17 @@ package org.amahi.anywhere.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.l4digital.fastscroll.FastScroller;
 
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
@@ -49,7 +51,7 @@ import java.util.List;
  * for the {@link ServerFilesAdapter}
  * and the {@link ServerFilesMetadataAdapter}.
  */
-public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
+public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable, FastScroller.SectionIndexer {
 
     static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
     static String queryString;
@@ -109,6 +111,11 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         return filesFilter;
     }
 
+    @Override
+    public CharSequence getSectionText(int selectedPosition) {
+        return getItem(selectedPosition).getName().subSequence(0, 1);
+    }
+
     public List<ServerFile> getItems() {
         return files;
     }
@@ -137,7 +144,7 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     private Uri getImageUri(Context context, ServerFile file) {
-        if(!Preferences.getServerName(context).equals("Welcome to Amahi")) {
+        if (!Preferences.getServerName(context).equals("Welcome to Amahi")) {
             return serverClient.getFileThumbnailUri(serverShare, file);
         }
         return serverClient.getFileUri(serverShare, file);

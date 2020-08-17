@@ -39,6 +39,9 @@
     <color name="primary_text_material_light">#deffffff</color>
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/secondary_text</color>
 
+<!--    RecyclerView Fast Scroller-->
+    <color name="handle_color">#999999</color>
+
     <!--ATV COLORS-->
     <color name="intro_1">#0277bd</color>
     <color name="intro_2">#3949ab</color>

@@ -17,6 +17,7 @@
   ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
   -->
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_refresh_apps"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -27,20 +28,6 @@
         android:layout_height="match_parent"
         android:inAnimation="@android:anim/fade_in"
         android:outAnimation="@android:anim/fade_out">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list_server_apps"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:scrollbarStyle="insideOverlay"
-            android:scrollbars="vertical"
-            android:scrollbarSize="10sp"
-            android:scrollbarThumbVertical="@color/accent"
-            android:scrollIndicators="right"
-            android:scrollbarAlwaysDrawVerticalTrack="false"
-            android:fadeScrollbars="true"/>
 
         <LinearLayout
             android:id="@+id/error"
@@ -99,13 +86,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
+            <com.l4digital.fastscroll.FastScrollView
                 android:id="@+id/list_server_apps"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:scrollbarStyle="outsideOverlay" />
+                app:bubbleColor="@color/accent"
+                app:bubbleTextColor="@color/primary_text"
+                app:handleColor="@color/handle_color"
+                app:bubbleSize="small"/>
 
         </FrameLayout>
 

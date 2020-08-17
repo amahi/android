@@ -188,8 +188,8 @@ public class ServerSharesFragment extends Fragment implements
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
         ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-        if (mRecyclerView != null)
-            mRecyclerView.removeAllViews();
+        if (mFastScrollView!=null)
+            mFastScrollView.getRecyclerView().removeAllViews();
         setUpSharesContent();
     }
 

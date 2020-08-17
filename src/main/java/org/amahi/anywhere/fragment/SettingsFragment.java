@@ -229,6 +229,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     @Override
     public void dialogNegativeButtonOnClick() {
+
     }
 
     private void tearDownAccount() {

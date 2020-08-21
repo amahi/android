@@ -152,7 +152,6 @@
     <string name="pref_title_server_select_desc">നിങ്ങൾ ആക്സസ് ചെയ്യാൻ ആഗ്രഹിക്കുന്ന സെർവറിനെ തിരഞ്ഞെടുക്കുക.</string>
     <string name="pref_title_server_active_list">സജീവ സെർവറുകളുടെ ലിസ്റ്റ്</string>
     <string name="pref_server_active_list_desc">നിങ്ങൾ ആക്സസ് ചെയ്യാൻ ആഗ്രഹിക്കുന്ന സജീവ സെർവർ തിരഞ്ഞെടുക്കുക.</string>
-    <string name="pref_server_select_key">select_server</string>
     <string name="pref_title_sign_out">സൈൻ ഔട്ട്</string>
     <string name="pref_title_account">അക്കൗണ്ട്</string>
     <string name="pref_sign_out_desc">അമാഹി ടിവിയിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക</string>

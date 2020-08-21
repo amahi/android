@@ -33,7 +33,6 @@
     <string name="pref_title_server_select_desc">वह सर्वर चुनें जिसके शेयरों को आप एक्सेस करना चाहते हैं</string>
     <string name="pref_title_server_active_list">सक्रिय सर्वरों की सूची</string>
     <string name="pref_server_active_list_desc">सक्रिय सर्वर चुनें, जिसके शेयर आप एक्सेस करना चाहते हैं</string>
-    <string name="pref_server_select_key">सर्वर का चयन करें</string>
     <string name="pref_title_sign_out">साइन आउट</string>
     <string name="pref_title_account">लेखा</string>
     <string name="pref_sign_out_desc">अमाही टीवी से साइन आउट करें</string>

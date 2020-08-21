@@ -21,7 +21,6 @@ package org.amahi.anywhere.service;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,6 +30,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -58,9 +58,7 @@ import javax.inject.Inject;
 /**
  * File upload service
  */
-public class UploadService extends Service implements UploadManager.UploadCallbacks {
-
-    private static final String UPLOAD_CHANNEL_ID = "file_upload";
+public class UploadService extends ServiceNotifier implements UploadManager.UploadCallbacks {
 
     @Inject
     ServerClient serverClient;
@@ -83,6 +81,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
         setUpBus();
         setUpDbHelper();
         setUpNetworkUtils();
+        startForegroundNotif(AmahiApplication.UPLOAD_CHANNEL_ID);
     }
 
     private void setUpInjections() {
@@ -186,6 +185,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
+        assert preferenceConnection != null;
         return preferenceConnection.equals(getString(R.string.preference_key_server_connection_auto));
     }
 
@@ -193,6 +193,7 @@ public class UploadService extends Service implements UploadManager.UploadCallba
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String preferenceConnection = preferences.getString(getString(R.string.preference_key_server_connection), null);
 
+        assert preferenceConnection != null;
         return preferenceConnection.equals(getString(R.string.preference_key_server_connection_local));
     }
 
@@ -238,12 +239,12 @@ public class UploadService extends Service implements UploadManager.UploadCallba
 
     @Override
     public void uploadStarted(int id, String fileName) {
-        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), UPLOAD_CHANNEL_ID);
+        notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), AmahiApplication.UPLOAD_CHANNEL_ID);
         notificationBuilder
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_app_logo)
             .setContentTitle(getString(R.string.notification_upload_title))
-            .setContentText(getString(R.string.notification_upload_message, fileName))
+            .setContentText(fileName)
             .setProgress(100, 0, false)
             .build();
         Notification notification = notificationBuilder.build();
@@ -257,7 +258,9 @@ public class UploadService extends Service implements UploadManager.UploadCallba
         notificationBuilder
             .setProgress(100, progress, false);
         Notification notification = notificationBuilder.build();
-        notificationManager.notify(id, notification);
+        if (progress == 100) {
+            notificationManager.notify(id, notification);
+        }
     }
 
     @Override
@@ -271,16 +274,17 @@ public class UploadService extends Service implements UploadManager.UploadCallba
     }
 
     private void uploadComplete(int id, String title) {
-        stopForeground(false);
+        stopForegroundService(this, this, true);
         NotificationManager notificationManager = (NotificationManager) getApplicationContext()
             .getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationBuilder
             .setContentTitle(title)
-            .setOngoing(false)
-            .setProgress(0, 0, false);
+            .setContentText(getString(R.string.message_file_upload_complete))
+            .setOngoing(false);
 
         Notification notification = notificationBuilder.build();
+        notificationManager.cancel(id);
         notificationManager.notify(id, notification);
     }
 

@@ -249,7 +249,11 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
     private void setUpVideoService() {
         Intent intent = new Intent(this, VideoService.class);
-        startService(intent);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
     }
 
     private void setUpVideoServiceBind() {

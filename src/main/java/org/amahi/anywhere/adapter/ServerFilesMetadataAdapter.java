@@ -1,7 +1,6 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -10,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -91,6 +92,11 @@ public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
             selectedPosition = fileHolder.getAdapterPosition();
             mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
         });
+    }
+
+    @Override
+    public CharSequence getSectionText(int selectedPosition) {
+        return getItem(selectedPosition).getName().subSequence(0, 1);
     }
 
     private void unbindFileView(ServerFile file, ServerFileMetadataViewHolder holder) {

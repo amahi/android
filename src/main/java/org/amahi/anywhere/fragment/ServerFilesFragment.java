@@ -1,23 +1,23 @@
-    /*
-     * Copyright (c) 2014 Amahi
-     *
-     * This file is part of Amahi.
-     *
-     * Amahi is free software: you can redistribute it and/or modify
-     * it under the terms of the GNU General Public License as published by
-     * the Free Software Foundation, either version 3 of the License, or
-     * (at your option) any later version.
-     *
-     * Amahi is distributed in the hope that it will be useful,
-     * but WITHOUT ANY WARRANTY; without even the implied warranty of
-     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-     * GNU General Public License for more details.
-     *
-     * You should have received a copy of the GNU General Public License
-     * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
-     */
+/*
+ * Copyright (c) 2014 Amahi
+ *
+ * This file is part of Amahi.
+ *
+ * Amahi is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Amahi is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+ */
 
-    package org.amahi.anywhere.fragment;
+package org.amahi.anywhere.fragment;
 
 import android.Manifest;
 import android.app.DownloadManager;
@@ -30,19 +30,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,7 +42,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
@@ -72,6 +58,7 @@ import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.l4digital.fastscroll.FastScrollView;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -246,8 +233,8 @@ public class ServerFilesFragment extends Fragment implements
         getListAdapter().setOnClickListener(this);
     }
 
-    private RecyclerView getRecyclerView() {
-        return (RecyclerView) getView().findViewById(android.R.id.list);
+    private FastScrollView getFastScrollView() {
+        return (FastScrollView) getView().findViewById(android.R.id.list);
     }
 
     @Subscribe
@@ -408,7 +395,7 @@ public class ServerFilesFragment extends Fragment implements
                 file.delete();
             }
             mOfflineFileRepo.delete(offlineFile);
-            Snackbar.make(getRecyclerView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
+            Snackbar.make(getFastScrollView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
                 .show();
         }
     }
@@ -423,7 +410,11 @@ public class ServerFilesFragment extends Fragment implements
 
     private void startDownloadService(ServerFile file) {
         Intent downloadService = Intents.Builder.with(getContext()).buildDownloadServiceIntent(file, getShare());
-        getContext().startService(downloadService);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getContext().startForegroundService(downloadService);
+        } else {
+            getContext().startService(downloadService);
+        }
     }
 
     private void updateCurrentFileOfflineState(boolean enable) {
@@ -490,12 +481,12 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private FilesFilterAdapter getListAdapter() {
-        return (FilesFilterAdapter) getRecyclerView().getAdapter();
+        return (FilesFilterAdapter) getFastScrollView().getRecyclerView().getAdapter();
     }
 
     private void setListAdapter(FilesFilterAdapter adapter) {
         adapter.setFilterListChangeListener(this);
-        getRecyclerView().setAdapter(adapter);
+        getFastScrollView().setAdapter(adapter);
     }
 
     private void setUpFilesAdapter() {
@@ -510,12 +501,12 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpRecyclerLayout() {
         if (!isMetadataAvailable()) {
-            getRecyclerView().setLayoutManager(new LinearLayoutManager(getActivity()));
+            getFastScrollView().setLayoutManager(new LinearLayoutManager(getActivity()));
         } else {
             if (isLandscapeOrientation()) {
-                getRecyclerView().setLayoutManager(new GridLayoutManager(getActivity(), calculateNoOfColumns(getActivity())));
+                getFastScrollView().setLayoutManager(new GridLayoutManager(getActivity(), calculateNoOfColumns(getActivity())));
             } else {
-                getRecyclerView().setLayoutManager(new GridLayoutManager(getActivity(), 2));
+                getFastScrollView().setLayoutManager(new GridLayoutManager(getActivity(), 2));
             }
         }
 
@@ -523,7 +514,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void hideFloatingActionButtonOnScroll() {
-        getRecyclerView().addOnScrollListener(new RecyclerView.OnScrollListener() {
+        getFastScrollView().getRecyclerView().addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);

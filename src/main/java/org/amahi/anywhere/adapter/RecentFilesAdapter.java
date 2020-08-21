@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.l4digital.fastscroll.FastScroller;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
@@ -32,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.RecentFilesViewHolder> {
+public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.RecentFilesViewHolder> implements FastScroller.SectionIndexer {
 
     private Context context;
     private ServerFileClickListener mListener;
@@ -55,6 +56,11 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
     public void onBindViewHolder(@NonNull RecentFilesViewHolder holder, int position) {
         RecentFile file = recentFiles.get(position);
         setUpViewHolder(file, holder);
+    }
+
+    @Override
+    public CharSequence getSectionText(int selectedPosition) {
+        return recentFiles.get(selectedPosition).getName().subSequence(0, 1);
     }
 
     private void setUpViewHolder(RecentFile file, RecentFilesViewHolder fileHolder) {

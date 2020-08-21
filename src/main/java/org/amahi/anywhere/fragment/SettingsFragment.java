@@ -34,6 +34,7 @@ import androidx.preference.PreferenceManager;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.muddzdev.styleabletoast.StyleableToast;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -238,7 +239,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
             getAccountManager().removeAccount(account, this, null);
         } else {
-            Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
+            StyleableToast.makeText(getActivity(), "Logged out successfully", Toast.LENGTH_LONG, R.style.loggoutToast).show();
             tearDownActivity();
         }
     }
@@ -253,7 +255,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     @Override
     public void run(AccountManagerFuture<Boolean> accountManagerFuture) {
-        Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
+        StyleableToast.makeText(getActivity(), "Logged out successfully", Toast.LENGTH_LONG, R.style.loggoutToast).show();
         tearDownActivity();
     }
 

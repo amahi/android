@@ -148,6 +148,18 @@
         <item name="android:textColor">@color/primary_text</item>
     </style>
 
+    <style name="loggoutToast">
+        <item name="stTextBold">true</item>
+        <item name="stTextColor">#ffffff</item>
+        <item name="stTextSize">15sp</item>
+        <item name="stColorBackground">@color/accent</item>
+        <item name="stSolidBackground">true</item>
+        <item name="stStrokeWidth">0sp</item>
+        <item name="stStrokeColor">@color/accent</item>
+        <item name="stIconStart">@drawable/ic_loggout_toast</item>
+        <item name="stLength">LONG</item> LONG or SHORT
+        <item name="stRadius">30sp</item>
+    </style>
 
 
 </resources>

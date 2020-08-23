@@ -23,6 +23,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -90,6 +92,7 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
     }
 
     private EditText getUsernameEdit() {
+
         TextInputLayout username_layout = findViewById(R.id.username_layout);
         return username_layout.getEditText();
     }
@@ -157,14 +160,45 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
         if (getUsername().trim().isEmpty() || getPassword().trim().isEmpty()) {
             ViewDirector.of(this, R.id.animator_message).show(R.id.text_message_authentication_empty);
 
-            if (getUsername().trim().isEmpty())
-                getUsernameEdit().requestFocus();
 
-            if (getPassword().trim().isEmpty())
+            if (getUsername().trim().isEmpty()){
+
+                getWindow().setStatusBarColor(getResources().getColor(R.color.error_red));
+
+                TextInputLayout username_layout = findViewById(R.id.username_layout);
+                TextInputLayout password_layout = findViewById(R.id.password_layout);
+
+                username_layout.setBoxStrokeColor(getResources().getColor(R.color.error_red));
+                password_layout.setBoxStrokeColor(getResources().getColor(R.color.error_red));
+
+                getUsernameEdit().requestFocus();
+            }
+
+            if (getPassword().trim().isEmpty()){
+
+                getWindow().setStatusBarColor(getResources().getColor(R.color.error_red));
+
+                TextInputLayout username_layout = findViewById(R.id.username_layout);
+                TextInputLayout password_layout = findViewById(R.id.password_layout);
+
+                username_layout.setBoxStrokeColor(getResources().getColor(R.color.error_red));
+                password_layout.setBoxStrokeColor(getResources().getColor(R.color.error_red));
+
                 getPasswordEdit().requestFocus();
+            }
 
-            if (getUsername().trim().isEmpty() && getPassword().trim().isEmpty())
+            if (getUsername().trim().isEmpty() && getPassword().trim().isEmpty()){
+
+                getWindow().setStatusBarColor(getResources().getColor(R.color.error_red));
+
+                TextInputLayout username_layout = findViewById(R.id.username_layout);
+                TextInputLayout password_layout = findViewById(R.id.password_layout);
+
+                username_layout.setBoxStrokeColor(getResources().getColor(R.color.error_red));
+                password_layout.setBoxStrokeColor(getResources().getColor(R.color.error_red));
+
                 getUsernameEdit().requestFocus();
+        }
 
         } else {
             startAuthentication();

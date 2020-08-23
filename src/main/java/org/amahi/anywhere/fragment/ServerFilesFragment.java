@@ -30,18 +30,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -54,11 +42,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.IntroductoryOverlay;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.l4digital.fastscroll.FastScrollView;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -70,6 +70,7 @@ import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.FileOptionClickEvent;
+import org.amahi.anywhere.bus.FileSortOptionClickEvent;
 import org.amahi.anywhere.bus.OfflineCanceledEvent;
 import org.amahi.anywhere.bus.OfflineFileDeleteEvent;
 import org.amahi.anywhere.bus.ServerFileDeleteEvent;
@@ -80,6 +81,7 @@ import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
 import org.amahi.anywhere.model.FileOption;
+import org.amahi.anywhere.model.FileSortOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -118,9 +120,6 @@ public class ServerFilesFragment extends Fragment implements
     AlertDialogFragment.DeleteFileDialogCallback {
     public final static int EXTERNAL_STORAGE_PERMISSION = 101;
 
-    public static final int SORT_MODIFICATION_TIME = 0;
-    public static final int SORT_NAME = 1;
-    public static final int SORT_SIZE = 2;
 
     @Inject
     ServerClient serverClient;
@@ -135,8 +134,8 @@ public class ServerFilesFragment extends Fragment implements
     private int lastSelectedFilePosition = -1;
     private CharSequence searchQuery = null;
 
-    @Types
-    private int filesSort = SORT_MODIFICATION_TIME;
+    @FileSortOption.Types
+    private int filesSort = FileSortOption.TIME_DES;
 
     private OfflineFileRepository mOfflineFileRepo;
     private @FileOption.Types
@@ -234,8 +233,8 @@ public class ServerFilesFragment extends Fragment implements
         getListAdapter().setOnClickListener(this);
     }
 
-    private RecyclerView getRecyclerView() {
-        return (RecyclerView) getView().findViewById(android.R.id.list);
+    private FastScrollView getFastScrollView() {
+        return (FastScrollView) getView().findViewById(android.R.id.list);
     }
 
     @Subscribe
@@ -396,7 +395,7 @@ public class ServerFilesFragment extends Fragment implements
                 file.delete();
             }
             mOfflineFileRepo.delete(offlineFile);
-            Snackbar.make(getRecyclerView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
+            Snackbar.make(getFastScrollView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
                 .show();
         }
     }
@@ -411,7 +410,11 @@ public class ServerFilesFragment extends Fragment implements
 
     private void startDownloadService(ServerFile file) {
         Intent downloadService = Intents.Builder.with(getContext()).buildDownloadServiceIntent(file, getShare());
-        getContext().startService(downloadService);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getContext().startForegroundService(downloadService);
+        } else {
+            getContext().startService(downloadService);
+        }
     }
 
     private void updateCurrentFileOfflineState(boolean enable) {
@@ -478,12 +481,12 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private FilesFilterAdapter getListAdapter() {
-        return (FilesFilterAdapter) getRecyclerView().getAdapter();
+        return (FilesFilterAdapter) getFastScrollView().getRecyclerView().getAdapter();
     }
 
     private void setListAdapter(FilesFilterAdapter adapter) {
         adapter.setFilterListChangeListener(this);
-        getRecyclerView().setAdapter(adapter);
+        getFastScrollView().setAdapter(adapter);
     }
 
     private void setUpFilesAdapter() {
@@ -498,12 +501,12 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpRecyclerLayout() {
         if (!isMetadataAvailable()) {
-            getRecyclerView().setLayoutManager(new LinearLayoutManager(getActivity()));
+            getFastScrollView().setLayoutManager(new LinearLayoutManager(getActivity()));
         } else {
             if (isLandscapeOrientation()) {
-                getRecyclerView().setLayoutManager(new GridLayoutManager(getActivity(), calculateNoOfColumns(getActivity())));
+                getFastScrollView().setLayoutManager(new GridLayoutManager(getActivity(), calculateNoOfColumns(getActivity())));
             } else {
-                getRecyclerView().setLayoutManager(new GridLayoutManager(getActivity(), 2));
+                getFastScrollView().setLayoutManager(new GridLayoutManager(getActivity(), 2));
             }
         }
 
@@ -511,7 +514,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private void hideFloatingActionButtonOnScroll() {
-        getRecyclerView().addOnScrollListener(new RecyclerView.OnScrollListener() {
+        getFastScrollView().getRecyclerView().addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -601,7 +604,8 @@ public class ServerFilesFragment extends Fragment implements
         return metadataFiles;
     }
 
-    private void setUpFilesContentSort(@Types int filesSort) {
+    private void setUpFilesContentSort(@FileSortOption.Types int filesSort) {
+
         this.filesSort = filesSort;
 
         getActivity().invalidateOptionsMenu();
@@ -689,15 +693,28 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private Comparator<ServerFile> getFilesComparator() {
+
         switch (filesSort) {
-            case SORT_NAME:
-                return new FileNameComparator();
+            case FileSortOption.NAME_ASC:
+                return new FileNameAscComparator();
 
-            case SORT_MODIFICATION_TIME:
-                return new FileModificationTimeComparator();
+            case FileSortOption.NAME_DES:
+                return new FileNameDesComparator();
 
-            case SORT_SIZE:
-                return new FileSizeComparator();
+            case FileSortOption.TIME_ASC:
+                return new FileModificationTimeAscComparator();
+
+            case FileSortOption.TIME_DES:
+                return new FileModificationTimeDesComparator();
+
+            case FileSortOption.SIZE_ASC:
+                return new FileSizeAscComparator();
+
+            case FileSortOption.SIZE_DES:
+                return new FileSizeDesComparator();
+
+            case FileSortOption.FILE_TYPE:
+                return new FileTypeComparator();
 
             default:
                 return null;
@@ -709,7 +726,7 @@ public class ServerFilesFragment extends Fragment implements
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
-        return (SwipeRefreshLayout) getView().findViewById(R.id.layout_refresh);
+        return getView().findViewById(R.id.layout_refresh);
     }
 
     @Subscribe
@@ -815,9 +832,6 @@ public class ServerFilesFragment extends Fragment implements
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        setUpFilesContentSortIcon(menu.findItem(R.id.menu_sort));
-
-
         setUpSearchView();
         setSearchCursor();
     }
@@ -840,63 +854,34 @@ public class ServerFilesFragment extends Fragment implements
         }
     }
 
-    private void setUpFilesContentSortIcon(MenuItem menuItem) {
-        switch (filesSort) {
-            case SORT_NAME:
-                menuItem.setIcon(R.drawable.ic_menu_sort_name);
-                break;
-
-            case SORT_MODIFICATION_TIME:
-                menuItem.setIcon(R.drawable.ic_menu_sort_modification_time);
-                break;
-
-            case SORT_SIZE:
-                menuItem.setIcon(R.drawable.ic_menu_sort_size);
-                break;
-
-            default:
-                break;
-        }
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
 
             case R.id.menu_sort:
-                setUpFilesContentSortSwitched();
-                setUpFilesContentSortIcon(menuItem);
+                showSortOptions();
                 return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
         }
     }
 
-    private void setUpFilesContentSortSwitched() {
-        switch (filesSort) {
-            case SORT_NAME:
-                filesSort = SORT_MODIFICATION_TIME;
-                break;
-
-            case SORT_MODIFICATION_TIME:
-                filesSort = SORT_SIZE;
-                break;
-
-            case SORT_SIZE:
-                filesSort = SORT_NAME;
-                break;
-
-            default:
-                break;
-        }
-
-        saveSortOption();
-
-        setUpFilesContentSort();
+    private void showSortOptions() {
+        Fragments.Builder.buildFileSortOptionsDialogFragment()
+            .show(getChildFragmentManager(), "file_sort_options_dialog");
     }
 
-    private void saveSortOption() {
-        Preferences.setSortOption(getContext(), filesSort);
+    @Subscribe
+    public void onFileSortOptionSelected(FileSortOptionClickEvent event) {
+
+        filesSort = event.getSortOption();
+        saveSortOption(filesSort);
+        setUpFilesContentSort();
+
+    }
+
+    private void saveSortOption(int sortOption) {
+        Preferences.setSortOption(getContext(), sortOption);
     }
 
     private void setUpFilesContentSort() {
@@ -984,7 +969,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void tearDownFilesState(Bundle state) {
         if (areFilesLoaded()) {
-            if(state!=null) {
+            if (state != null) {
                 state.putParcelableArrayList(State.FILES, new ArrayList<Parcelable>(getFiles()));
             }
         }
@@ -1024,7 +1009,7 @@ public class ServerFilesFragment extends Fragment implements
             Fragments.Builder.buildFileOptionsDialogFragment(getContext(), getCheckedFile())
                 .show(getChildFragmentManager(), "file_options_dialog");
         } else {
-            Fragments.Builder.buildOfflineFileOptionsDialogFragment()
+            Fragments.Builder.buildOfflineFileOptionsDialogFragment(getCheckedFile())
                 .show(getChildFragmentManager(), "file_options_dialog");
         }
     }
@@ -1035,9 +1020,6 @@ public class ServerFilesFragment extends Fragment implements
             getView().findViewById(R.id.none_text).setVisibility(empty ? View.VISIBLE : View.GONE);
     }
 
-    @IntDef({SORT_MODIFICATION_TIME, SORT_NAME, SORT_SIZE})
-    public @interface Types {
-    }
 
     private static final class State {
         public static final String FILES = "files";
@@ -1048,24 +1030,59 @@ public class ServerFilesFragment extends Fragment implements
         }
     }
 
-    private static final class FileNameComparator implements Comparator<ServerFile> {
+    private static final class FileNameAscComparator implements Comparator<ServerFile> {
         @Override
         public int compare(ServerFile firstFile, ServerFile secondFile) {
             return firstFile.getName().compareTo(secondFile.getName());
         }
     }
 
-    private static final class FileModificationTimeComparator implements Comparator<ServerFile> {
+    private static final class FileNameDesComparator implements Comparator<ServerFile> {
+
+        @Override
+        public int compare(ServerFile firstFile, ServerFile secondFile) {
+            return -firstFile.getName().compareTo(secondFile.getName());
+        }
+    }
+
+    private static final class FileModificationTimeAscComparator implements Comparator<ServerFile> {
+
+        @Override
+        public int compare(ServerFile firstFile, ServerFile secondFile) {
+            return firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
+        }
+    }
+
+    private static final class FileModificationTimeDesComparator implements Comparator<ServerFile> {
+
         @Override
         public int compare(ServerFile firstFile, ServerFile secondFile) {
             return -firstFile.getModificationTime().compareTo(secondFile.getModificationTime());
         }
     }
 
-    private static final class FileSizeComparator implements Comparator<ServerFile> {
+    private static final class FileSizeAscComparator implements Comparator<ServerFile> {
+
+        @Override
+        public int compare(ServerFile firstFile, ServerFile secondFile) {
+            return Long.compare(firstFile.getSize(), secondFile.getSize());
+        }
+    }
+
+    private static final class FileSizeDesComparator implements Comparator<ServerFile> {
+
         @Override
         public int compare(ServerFile firstFile, ServerFile secondFile) {
             return -Long.compare(firstFile.getSize(), secondFile.getSize());
         }
+    }
+
+    private static final class FileTypeComparator implements Comparator<ServerFile> {
+
+        @Override
+        public int compare(ServerFile firstFile, ServerFile secondFile) {
+            return firstFile.getMime().compareTo(secondFile.getMime());
+        }
+
     }
 }

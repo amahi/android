@@ -21,15 +21,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background_secondary"
     android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.l4digital.fastscroll.FastScrollView
         android:id="@+id/audio_list_r_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:listitem="@layout/view_audio_file_item"
         android:background="@color/background_primary"
-        android:padding="8dp"/>
+        android:padding="8dp"
+        app:bubbleColor="@color/accent"
+        app:bubbleTextColor="@color/primary_text"
+        app:handleColor="@color/handle_color"
+        app:bubbleSize="small"/>
 
 </LinearLayout>

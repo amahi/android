@@ -21,14 +21,17 @@ package org.amahi.anywhere.util;
 
 import android.content.Context;
 import android.os.Bundle;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.FileOptionsDialogFragment;
 import org.amahi.anywhere.fragment.MainLoginFragment;
+import org.amahi.anywhere.fragment.FileSortOptionsDialogFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.PINAccessFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
@@ -189,13 +192,21 @@ public final class Fragments {
             return fragment;
         }
 
-        public static BottomSheetDialogFragment buildOfflineFileOptionsDialogFragment() {
+        public static BottomSheetDialogFragment buildOfflineFileOptionsDialogFragment(ServerFile file) {
             BottomSheetDialogFragment fragment = new FileOptionsDialogFragment();
 
             Bundle bundle = new Bundle();
             bundle.putBoolean(Arguments.IS_OFFLINE_FRAGMENT, true);
+            bundle.putParcelable(Arguments.SERVER_FILE, file);
             fragment.setArguments(bundle);
             return fragment;
+        }
+
+        public static BottomSheetDialogFragment buildFileSortOptionsDialogFragment() {
+
+            BottomSheetDialogFragment fragment = new FileSortOptionsDialogFragment();
+            return fragment;
+
         }
 
     }

@@ -2,6 +2,8 @@ package org.amahi.anywhere.util;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
+
 import androidx.core.content.FileProvider;
 
 import org.amahi.anywhere.bus.BusProvider;
@@ -10,13 +12,10 @@ import org.amahi.anywhere.bus.FileMovedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import io.fabric.sdk.android.services.concurrency.AsyncTask;
 
 public class FileManager {
 
@@ -74,8 +73,6 @@ public class FileManager {
                 in.close();
                 out.close();
 
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }

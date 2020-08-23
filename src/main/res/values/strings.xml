@@ -241,10 +241,10 @@
     <string name="preference_title_upload_settings">Auto Upload Photos</string>
     <string name="preference_title_language">Language</string>
 
-    <string name="preference_title_upload_server">Server</string>
-    <string name="preference_title_upload_share">Share</string>
-    <string name="preference_title_upload_location">Location</string>
-    <string name="preference_title_upload_data">Allow on Cellular Data</string>
+    <string name="preference_title_upload_server">Select server</string>
+    <string name="preference_title_upload_share">Select share</string>
+    <string name="preference_title_upload_location">Upload location</string>
+    <string name="preference_title_upload_data">Allow on cellular data</string>
 
     <string name="preference_summary_server">Select Server</string>
     <string name="preference_summary_share">Select Share</string>
@@ -335,5 +335,11 @@
     <string name="pref_connection_desc">Select the type of connection you want. You can set it as Auto detect, remote or local area network.</string>
 
     <string name="acra_report_toast" translatable="false">ACRA Log Report Sent!</string>
+
+    <string name="rate_dialog_title">Rate Amahi</string>
+    <string name="rate_dialog_message">If you enjoy using Amahi, would you mind taking a moment to rate it? Thanks for your support!</string>
+    <string name="rate_dialog_ok">Rate It Now</string>
+    <string name="rate_dialog_cancel">Remind Me Later</string>
+    <string name="rate_dialog_no">No, Thanks</string>
 
 </resources>

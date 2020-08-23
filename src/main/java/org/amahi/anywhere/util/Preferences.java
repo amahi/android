@@ -24,7 +24,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import org.amahi.anywhere.R;
-import org.amahi.anywhere.fragment.ServerFilesFragment;
+import org.amahi.anywhere.model.FileSortOption;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -107,7 +107,7 @@ public final class Preferences {
     }
 
     public static int getSortOption(Context context) {
-        return getPreference(context).getInt(Defaults.SORTING_OPTION, ServerFilesFragment.SORT_MODIFICATION_TIME);
+        return getPreference(context).getInt(Defaults.SORTING_OPTION, FileSortOption.TIME_DES);
     }
 
     public static void setSortOption(Context context, int filesSort) {

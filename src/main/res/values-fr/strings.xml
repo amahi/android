@@ -196,10 +196,10 @@
     <string name="preference_title_tell_a_friend">Dire à un ami</string>
     <string name="preference_title_upload_settings">Téléchargement automatique de photos</string>
     <string name="preference_title_language">Langue</string>
-    <string name="preference_title_upload_server">Serveur</string>
-    <string name="preference_title_upload_share">Partager</string>
-    <string name="preference_title_upload_location">Emplacement</string>
-    <string name="preference_title_upload_data">Autoriser les données cellulaires</string>
+    <string name="preference_title_upload_server">Sélectionnez un Serveur</string>
+    <string name="preference_title_upload_share">Sélectionnez Partager</string>
+    <string name="preference_title_upload_location">Télécharger l\'emplacement</string>
+    <string name="preference_title_upload_data">Autoriser sur les données cellulaires</string>
     <string name="preference_summary_server">Select Server</string>
     <string name="preference_summary_share">Sélectionnez Partager</string>
     <string name="preference_summary_location">Sélectionnez l\'emplacement</string>
@@ -240,5 +240,11 @@
     <string name="message_error_pin_field_empty">Le champ PIN ne peut pas être laissé vide.</string>
     <string name="message_error_pin">Le code PIN n\'est pas correct. Veuillez réessayer.</string>
     <string name="message_error_local_connection">Il semble que vous n\'êtes pas connecté au même Wifi que votre serveur.</string>
+  
+    <string name="rate_dialog_title">Notez Amahi</string>
+    <string name="rate_dialog_message">Si vous aimez utiliser Amahi, pourriez-vous prendre un moment pour le noter? Merci pour votre aide!</string>
+    <string name="rate_dialog_ok">Évaluer Maintenant</string>
+    <string name="rate_dialog_cancel">Me le rappeler plus tard</string>
+    <string name="rate_dialog_no">Non, Merci</string>
 
 </resources>

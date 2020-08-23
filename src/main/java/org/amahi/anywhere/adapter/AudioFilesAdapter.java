@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.l4digital.fastscroll.FastScroller;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
@@ -30,7 +31,7 @@ import org.amahi.anywhere.util.RecyclerViewItemClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.AudioFileViewHolder> {
+public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.AudioFileViewHolder> implements FastScroller.SectionIndexer {
 
     private final Context context;
     private ServerClient serverClient;
@@ -62,6 +63,11 @@ public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.Au
             AudioFile audioFile = new AudioFile();
             audioFiles.add(audioFile);
         }
+    }
+
+    @Override
+    public CharSequence getSectionText(int selectedPosition) {
+        return audioFiles.get(selectedPosition).getTitle().subSequence(0, 1);
     }
 
     @Override

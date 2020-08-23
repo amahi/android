@@ -177,7 +177,7 @@ dependencies {
     implementation "com.google.android.exoplayer:exoplayer-core:${EXOPLAYER_VERSION}"
     implementation "com.google.android.exoplayer:exoplayer-ui:${EXOPLAYER_VERSION}"
 
-    def room_version = "2.2.5"
+    def room_version = "2.3.0-alpha01"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
 

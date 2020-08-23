@@ -173,7 +173,7 @@ dependencies {
 
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
 
-    def EXOPLAYER_VERSION = "2.7.2"
+    def EXOPLAYER_VERSION = "2.8.1"
     implementation "com.google.android.exoplayer:exoplayer-core:${EXOPLAYER_VERSION}"
     implementation "com.google.android.exoplayer:exoplayer-ui:${EXOPLAYER_VERSION}"
 

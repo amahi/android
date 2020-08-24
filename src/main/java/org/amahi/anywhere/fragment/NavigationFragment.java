@@ -27,9 +27,11 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OnAccountsUpdateListener;
 import android.accounts.OperationCanceledException;
 import android.app.Activity;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -69,7 +71,8 @@ import org.amahi.anywhere.server.client.AmahiClient;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.activity.MainTVActivity;
-import org.amahi.anywhere.util.CheckTV;
+import org.amahi.anywhere.util.Constants;
+import org.amahi.anywhere.util.Intents;
 import org.amahi.anywhere.util.MultiSwipeRefreshLayout;
 import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.RecyclerItemClickListener;
@@ -81,6 +84,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static android.content.Context.UI_MODE_SERVICE;
 
 /**
  * Navigation fragments. Shows main application sections and servers list as well.
@@ -256,16 +261,20 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         setUpServersContent(servers);
 
+        if (checkIsATV()) {
+            launchTV(servers);
+        }
+
         showContent();
     }
 
     private void setUpServersContent(List<Server> servers) {
-        if (!CheckTV.isATV(mContext)) {
+        if (!checkIsATV()) {
             replaceServersList(filterActiveServers(servers));
         } else {
             serversList = filterActiveServers(servers);
             String serverName = Preferences.getPreference(mContext).getString(getString(R.string.pref_server_select_key), serversList.get(0).getName());
-
+            if (serverName == null) serverName = Constants.welcomeToAmahi;
             if (serversList.get(0).getName().matches(serverName))
                 replaceServersList(serversList);
 
@@ -319,6 +328,15 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         ViewDirector.of(this, R.id.animator_content).show(R.id.layout_content);
     }
 
+    private boolean checkIsATV() {
+        if (mContext == null)
+            return false;
+        UiModeManager uiModeManager = (UiModeManager) mContext.getSystemService(UI_MODE_SERVICE);
+        if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION)
+            return true;
+        return false;
+    }
+
     private void setUpAuthentication() {
         if (getAccounts().isEmpty()) {
             setUpAccount();
@@ -351,9 +369,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
         showContent();
 
-        tvIntent = new Intent(mContext, MainTVActivity.class);
-
-        tvIntent.putParcelableArrayListExtra("INTENT_SERVERS", new ArrayList<>(filterActiveServers(event.getServers())));
+        if (checkIsATV() && serverClient.isConnected()) {
+            launchTV(event.getServers());
+        }
     }
 
     private SwipeRefreshLayout getRefreshLayout() {
@@ -552,15 +570,17 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         getOfflineFilesLayout().setVisibility(View.VISIBLE);
         getRecentFilesLayout().setVisibility(View.VISIBLE);
 
-        getOfflineFilesLayout().setOnClickListener(
-            view -> showOfflineFiles()
-        );
+        getOfflineFilesLayout().setOnClickListener(view -> showOfflineFiles());
 
         areServersVisible = false;
         setUpNavigationList();
         getLinearLayoutSelectedServer().setOnClickListener((v) -> {
             Toast.makeText(mContext, R.string.message_connection_error, Toast.LENGTH_SHORT).show();
         });
+
+        if (checkIsATV()) {
+            launchTV(new ArrayList<>()); // Offline Navigation. No Server Available
+        }
 
         showContent();
         Toast.makeText(mContext, R.string.message_connection_error, Toast.LENGTH_SHORT).show();
@@ -590,10 +610,13 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     @Subscribe
     public void onServerConnected(ServerConnectedEvent event) {
         setUpServerConnection();
-        setUpNavigationList();
-        showContent();
 
-        if (CheckTV.isATV(mContext)) launchTV();
+        if (checkIsATV()) {
+            launchTV(getServersList());
+        } else {
+            setUpNavigationList();
+            showContent();
+        }
     }
 
     private void setUpServerConnection() {
@@ -609,8 +632,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         }
     }
 
-    private void launchTV() {
+    private void launchTV(List<Server> serversList) {
+        tvIntent = new Intent(mContext, MainTVActivity.class);
+        tvIntent.putParcelableArrayListExtra(Intents.Extras.INTENT_SERVERS, new ArrayList<>(filterActiveServers(serversList)));
         startActivity(tvIntent);
+        mActivity.finish();
     }
 
     private boolean isConnectionAvailable() {

@@ -95,6 +95,9 @@ public class ServerSharesFragment extends Fragment implements
 
     private void setSwipeToRefresh() {
         mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.accent);
+        mSwipeRefreshLayout.setColorSchemeResources(
+            android.R.color.white);
     }
 
     @Override

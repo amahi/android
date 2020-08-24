@@ -19,7 +19,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
     package="org.amahi.anywhere"
-    android:installLocation="auto">
+    android:installLocation="auto"
+    tools:ignore="MissingLeanbackLauncher">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -71,13 +72,7 @@
 
         <activity
             android:name=".tv.activity.MainTVActivity"
-            android:theme="@style/Theme.Leanback.Browse">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.Leanback.Browse" />
         <activity
             android:name=".activity.SplashActivity"
             android:theme="@style/SplashTheme">

@@ -27,6 +27,7 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.activity.NavigationActivity;
 import org.amahi.anywhere.server.model.Server;
 import org.amahi.anywhere.tv.fragment.MainTVFragment;
+import org.amahi.anywhere.util.Intents;
 
 import java.util.ArrayList;
 
@@ -48,7 +49,7 @@ public class MainTVActivity extends Activity {
     }
 
     private ArrayList<Server> getServers() {
-        return getIntent().getParcelableArrayListExtra("INTENT_SERVERS");
+        return getIntent().getParcelableArrayListExtra(Intents.Extras.INTENT_SERVERS);
     }
 
     private void replaceFragment() {
@@ -57,18 +58,5 @@ public class MainTVActivity extends Activity {
 
     private void launchNav() {
         startActivity(new Intent(this, NavigationActivity.class));
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        startHomeIntent();
-    }
-
-    private void startHomeIntent() {
-        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-        homeIntent.addCategory(Intent.CATEGORY_HOME);
-        homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(homeIntent);
     }
 }

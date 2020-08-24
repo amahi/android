@@ -256,7 +256,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     @Override
     public void run(AccountManagerFuture<Boolean> accountManagerFuture) {
         //Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
-        StyleableToast.makeText(getActivity(), "Logged out successfully", Toast.LENGTH_LONG, R.style.loggoutToast).show();
+        StyleableToast.makeText(getActivity(), "Logged out successfully", Toast.LENGTH_LONG, R.style.loggoutToast).show()
         tearDownActivity();
     }
 

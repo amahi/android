@@ -43,5 +43,7 @@ public class Constants {
 
     public static final String sharesPathAppendLoc = "shares";
 
+    public static final String welcomeToAmahi = "Welcome to Amahi";
+
     public static final String amahiAndroidUrl = "https://www.amahi.org/android";
 }

@@ -40,10 +40,14 @@ public class IconHeaderPresenter extends RowHeaderPresenter {
 
     private float mUnselectedAlpha;
 
+    private Context ctx;
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         mUnselectedAlpha = parent.getResources()
             .getFraction(R.fraction.lb_browse_header_unselect_alpha, 1, 1);
+
+        ctx = parent.getContext();
 
         LayoutInflater inflater = (LayoutInflater) parent.getContext()
             .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -60,7 +64,7 @@ public class IconHeaderPresenter extends RowHeaderPresenter {
         rootView.setFocusable(true);
         ImageView imageView = rootView.findViewById(R.id.header_icon);
 
-        if (headerItem.getName().matches(Resources.getSystem().getString(R.string.settings))) {
+        if (headerItem.getName().matches(ctx.getString(R.string.settings))) {
             imageView.setVisibility(View.VISIBLE);
             Drawable icon = ContextCompat.getDrawable(rootView.getContext(), R.drawable.ic_menu_settings);
             imageView.setImageDrawable(icon);

@@ -1,5 +1,7 @@
 package org.amahi.anywhere.activity;
 
+import android.content.Intent;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
@@ -24,6 +26,8 @@ public class AuthenticationActivityTest {
 
     @Test
     public void testIsErrorMessageDisplayed_UsernameOrPasswordIsEmpty() {
+        authenticationActivityTestRule.getActivity().sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+
         onView(withId(R.id.username_layout)).check(matches(isDisplayed()));
         onView(withId(R.id.password_layout)).check(matches(isDisplayed()));
 

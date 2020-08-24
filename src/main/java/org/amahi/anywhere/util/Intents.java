@@ -70,6 +70,7 @@ public final class Intents {
         public static final String IMAGE_URIS = "image_uris";
         public static final String UNIQUE_KEY = "unique_key";
         public static final String FILE_TYPE = "file_type";
+        public static final String INTENT_SERVERS = "INTENT_SERVERS";
 
         private Extras() {
         }

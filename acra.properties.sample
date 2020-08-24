@@ -1,7 +1,0 @@
-# Set ACRA mailing information in acra.properties.
-# This is something to keep private and can be created by following steps in README.md
-# "mail.send = false" won't send a crash report
-# "mail.send = true" will enable sending crash reports
-
-mailto.email = myemail@mydomain.com
-mail.send = true

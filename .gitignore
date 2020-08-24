@@ -25,6 +25,3 @@ signing.properties
 *.jks
 
 .DS*
-
-# Acra
-acra.properties

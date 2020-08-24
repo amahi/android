@@ -31,15 +31,8 @@ import android.preference.PreferenceManager;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import org.acra.ACRA;
-import org.acra.ReportField;
-import org.acra.config.CoreConfigurationBuilder;
-import org.acra.config.MailSenderConfigurationBuilder;
-import org.acra.config.ToastConfigurationBuilder;
-import org.acra.data.StringFormat;
 import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.job.PhotosContentJob;
-import org.amahi.anywhere.server.Api;
 import org.amahi.anywhere.util.AmahiLifeCycleCallback;
 
 import dagger.ObjectGraph;
@@ -164,36 +157,5 @@ public class AmahiApplication extends Application {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(uploadChannel);
         notificationManager.createNotificationChannel(downloadChannel);
-    }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        if (isDebugging()) {
-
-            if (Api.toSendMail()) {
-                CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
-                    .setBuildConfigClass(BuildConfig.class)
-                    .setReportFormat(StringFormat.JSON)
-                    .setAlsoReportToAndroidFramework(true)
-                    .setReportContent(ReportField.APP_VERSION_CODE)
-                    .setReportContent(ReportField.APP_VERSION_NAME)
-                    .setReportContent(ReportField.ANDROID_VERSION)
-                    .setReportContent(ReportField.PHONE_MODEL)
-                    .setReportContent(ReportField.CUSTOM_DATA)
-                    .setReportContent(ReportField.STACK_TRACE)
-                    .setReportContent(ReportField.LOGCAT);
-
-                builder.getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
-                    .setMailTo(Api.getAcraEmail())
-                    .setEnabled(true);
-
-                builder.getPluginConfigurationBuilder(ToastConfigurationBuilder.class)
-                    .setResText(R.string.acra_report_toast)
-                    .setEnabled(true);
-
-                ACRA.init(this, builder);
-            }
-        }
     }
 }

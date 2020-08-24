@@ -40,7 +40,7 @@ android {
 
     defaultConfig {
         def versionMajor = 3
-        def versionMinor = 0
+        def versionMinor = 2
         def versionPatch = 0
 
         versionName buildVersionName(versionMajor, versionMinor, versionPatch)
@@ -50,13 +50,10 @@ android {
         targetSdkVersion 29
 
         def apiFile = file("api.properties")
-        def acraFile = file("acra.properties")
         def apiProperties = new Properties()
-        def acraProperties = new Properties()
 
-        // NOTE-cpg: this fakeApi and fakeAcra is here for the tests to pass
+        // NOTE-cpg: this fakeApi is here for the tests to pass
         def fakeApiFile = file("fakeApi.properties")
-        def fakeAcraFile = file("fakeAcra.properties")
 
         if (apiFile.exists()) {
             apiProperties.load(apiFile.newInputStream())
@@ -64,19 +61,11 @@ android {
             apiProperties.load(fakeApiFile.newInputStream())
         }
 
-        if (acraFile.exists()) {
-            acraProperties.load(acraFile.newInputStream())
-        } else {
-            acraProperties.load(fakeAcraFile.newInputStream())
-        }
-
         buildConfigField "String", "API_URL_AMAHI", formatStringField(apiProperties["url.amahi"])
         buildConfigField "String", "API_URL_PROXY", formatStringField(apiProperties["url.proxy"])
         buildConfigField "String", "API_CLIENT_ID", formatStringField(apiProperties["client.id"])
         buildConfigField "String", "API_CLIENT_SECRET", formatStringField(apiProperties["client.secret"])
         buildConfigField "String", "CHROMECAST_APP_ID", formatStringField(apiProperties["chromecast.app.id"])
-        buildConfigField "String", "ACRA_EMAIL", formatStringField(acraProperties["mailto.email"])
-        buildConfigField "String", "ACRA_SEND", formatStringField(acraProperties["mail.send"])
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -180,12 +169,6 @@ dependencies {
     def room_version = "2.2.5"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
-
-    def acraVersion = '5.7.0'
-    implementation "ch.acra:acra-mail:$acraVersion"
-    implementation "ch.acra:acra-dialog:$acraVersion"
-    implementation "ch.acra:acra-notification:$acraVersion"
-    implementation "ch.acra:acra-toast:$acraVersion"
 
     // Uncomment the dependencies below to enable Chuck Interceptor for logging
 /*

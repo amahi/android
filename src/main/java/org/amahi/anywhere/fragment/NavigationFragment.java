@@ -426,7 +426,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpNavigationListener() {
-        if(checkIfLocalUser().equals("F")) {
+        if (checkIfLocalUser().equals("F")) {
             getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(mContext, (view, position) -> {
                 getNavigationListView().dispatchSetActivated(false);
 
@@ -527,7 +527,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         areServersVisible = false;
         setUpNavigationAdapter();
 
-        if(checkIfLocalUser().equals("F")) {
+        if (checkIfLocalUser().equals("F")) {
             getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
                 0, 0, R.drawable.nav_arrow_down, 0);
         }
@@ -714,7 +714,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     private void tearDownAuthenticationListener() {
         getAccountManager().removeOnAccountsUpdatedListener(this);
     }
-    
+
     public void showServers() {
         areServersVisible = true;
         getNavigationListView().setAdapter(null);

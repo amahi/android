@@ -23,6 +23,7 @@ import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -85,6 +86,7 @@ public class LocalServerProbingTask extends AsyncTask<Void, Void, BusEvent> {
                 try {
                     InetAddress ipAddress = InetAddress.getByName(testIp);
                     String hostName = ipAddress.getCanonicalHostName();
+                    Log.v(TAG, "Trying Connection: " + hostName);
                     if (ipAddress.isReachable(200)) {
                         Request httpRequest = new Request.Builder()
                             .url(getConnectionUrl(hostName))

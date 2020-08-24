@@ -187,6 +187,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpAccount() {
+        lodNavig("set account");
         getAccountManager().addAccount(AmahiAccount.TYPE, AmahiAccount.TYPE_TOKEN, null, null, mActivity, this, null);
     }
 
@@ -208,7 +209,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
             String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
 
+            lodNavig("run");
+
             if (authenticationToken != null) {
+                lodNavig(isLocalUser + " " + authenticationToken);
                 if (isLocalUser.equals("F")) {
                     setUpServers(authenticationToken);
                 } else {
@@ -338,6 +342,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpAuthentication() {
+        lodNavig("setupauth");
         if (getAccounts().isEmpty()) {
             setUpAccount();
         } else {
@@ -448,17 +453,19 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpNavigationListener() {
-        getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(mContext, (view, position) -> {
-            getNavigationListView().dispatchSetActivated(false);
+        if(checkIfLocalUser().equals("F")) {
+            getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(mContext, (view, position) -> {
+                getNavigationListView().dispatchSetActivated(false);
 
-            view.setActivated(true);
+                view.setActivated(true);
 
-            if (!areServersVisible) {
-                selectedServerListener(position);
-            } else {
-                serverClicked(position);
-            }
-        }));
+                if (!areServersVisible) {
+                    selectedServerListener(position);
+                } else {
+                    serverClicked(position);
+                }
+            }));
+        }
 
         getOfflineFilesLayout().setOnClickListener(view -> showOfflineFiles());
 
@@ -547,8 +554,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         areServersVisible = false;
         setUpNavigationAdapter();
 
-        getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
-            0, 0, R.drawable.nav_arrow_down, 0);
+        if(checkIfLocalUser().equals("F")) {
+            getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
+                0, 0, R.drawable.nav_arrow_down, 0);
+        }
 
         getOfflineFilesLayout().setVisibility(View.VISIBLE);
         getRecentFilesLayout().setVisibility(View.VISIBLE);
@@ -556,6 +565,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Subscribe
     public void onServersLoadFailed(ServersLoadFailedEvent event) {
+        lodNavig("server load failed");
         showOfflineNavigation();
     }
 
@@ -587,6 +597,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Subscribe
     public void onServerConnectionFailed(ServerConnectionFailedEvent event) {
+        lodNavig("server connection failed");
         showOfflineNavigation();
     }
 
@@ -608,6 +619,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Subscribe
     public void onServerConnected(ServerConnectedEvent event) {
+        lodNavig("servers connected");
         setUpServerConnection();
         setUpNavigationList();
         showContent();
@@ -662,10 +674,12 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     private void setUpLocalServerApi(String auth, String ip) {
         serverClient.connectLocalServer(auth, ip);
+        setUpServersContent(auth);
     }
 
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        lodNavig("server connection changed");
         areServersVisible = false;
         setUpNavigationList();
     }

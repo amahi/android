@@ -238,8 +238,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             Account account = getAccounts().get(0);
 
             getAccountManager().removeAccount(account, this, null);
-        } else {
-            //Toast.makeText(getActivity(), R.string.message_logout, Toast.LENGTH_SHORT).show();
+        } else {            
             StyleableToast.makeText(getActivity(), "Logged out successfully", Toast.LENGTH_LONG, R.style.loggoutToast).show();
             tearDownActivity();
         }

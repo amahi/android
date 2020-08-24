@@ -40,6 +40,7 @@ import org.acra.data.StringFormat;
 import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.job.PhotosContentJob;
 import org.amahi.anywhere.server.Api;
+import org.amahi.anywhere.util.AmahiLifeCycleCallback;
 
 import dagger.ObjectGraph;
 
@@ -73,6 +74,8 @@ public class AmahiApplication extends Application {
         instance = this;
 
         setUpDetecting();
+
+        setUpActivityCallbacks();
 
         setUpInjections();
 
@@ -112,6 +115,12 @@ public class AmahiApplication extends Application {
     private void setUpDetecting() {
         if (isDebugging()) {
             StrictMode.enableDefaults();
+        }
+    }
+
+    private void setUpActivityCallbacks() {
+        if (isDebugging()) {
+            registerActivityLifecycleCallbacks(new AmahiLifeCycleCallback());
         }
     }
 

@@ -65,6 +65,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
 
     private void buildDeleteDialog() {
         builder.setTitle(getString(R.string.message_delete_file_title))
+            .setIcon(R.drawable.ic_delete_dialog)
             .setMessage(getString(R.string.message_delete_file_body))
             .setPositiveButton(getString(R.string.button_yes), this)
             .setNegativeButton(getString(R.string.button_no), this);
@@ -73,6 +74,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     private void buildDuplicateDialog() {
         file = (File) getArguments().getSerializable("file");
         builder.setTitle(getString(R.string.message_duplicate_file_upload))
+            .setIcon(R.drawable.ic_duplicate_dialog)
             .setMessage(getString(R.string.message_duplicate_file_upload_body, file.getName()))
             .setPositiveButton(getString(R.string.button_yes), this)
             .setNegativeButton(getString(R.string.button_no), this);
@@ -82,6 +84,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
         TextView lastOpened = view.findViewById(R.id.text_last_opened);
         lastOpened.setText(getFileLastOpened());
         builder.setTitle(getString(R.string.title_file_info))
+            .setIcon(R.drawable.ic_info_dialog)
             .setPositiveButton(getString(R.string.text_ok), this);
         builder.setView(view);
     }
@@ -96,6 +99,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
 
     private void buildSignOutDialog() {
         builder.setTitle(getString(R.string.sign_out_title))
+            .setIcon(R.drawable.ic_settings_logout)
             .setMessage(getString(R.string.sign_out_message))
             .setPositiveButton(getString(R.string.sign_out_title), this)
             .setNegativeButton(getString(R.string.cancel), this);

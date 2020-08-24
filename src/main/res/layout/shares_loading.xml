@@ -4,13 +4,10 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Loading Component -->
     <com.airbnb.lottie.LottieAnimationView
-        <!-- Mandatory Properties -->                                   
         android:layout_width="300dp"
         android:layout_height="300dp"
-    
-        <!-- Positioning Properties -->
+
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
@@ -19,8 +16,7 @@
         android:layout_marginTop="200dp"
         android:layout_marginEnd="50dp"
         android:layout_marginBottom="215dp"
-    
-        <!-- Functional Properties -->
+
         app:lottie_rawRes="@raw/loading_shares"
         app:lottie_loop="true"
         app:lottie_autoPlay="true"

@@ -48,7 +48,6 @@
     <string name="menu_offline">Hors ligne</string>
     <string name="menu_sort">Trier</string>
     <string name="menu_search">Chercher</string>
-    <string name="menu_file_upload">Télécharger un fichier</string>
     <string name="menu_open">OUVRIR</string>
     <string name="menu_audio_files">Fichiers</string>
     <string name="menu_video_subtitle">Sous-titres</string>
@@ -70,9 +69,6 @@
     <string name="message_error_amahi_anywhere_app">L\'application Amahi Anywhere n\'est pas atteignable sur votre serveur. Veuillez vous assurer que l\'application Amahi Anywhere est installée, en fonction et atteignable sur votre réseau.</string>
     <string name="message_resume_last_position">Voulez-vous reprendre à l\'endroit où vous aviez arrêté</string>
 
-
-    <string name="message_notice_check_settings">Vérifiez vos paramètres et réessayez</string>
-
     <string name="message_notice_create_some">Créez-en et essayez à nouveau</string>
     <string name="message_notice_visit_some">Visitez-en et essayez encore</string>
 
@@ -93,12 +89,10 @@
     <string name="message_duplicate_file_upload">Écraser le fichier existant?</string>
     <string name="message_duplicate_file_upload_body">Le fichier %1$s existe déjà.\nÊtes-vous sûr de vouloir remplacer le fichier existant?</string>
     <string name="notification_upload_title">Envoi d\'une nouvelle image</string>
-    <string name="notification_upload_message">Fichier %1$s</string>
     <string name="message_upload_success">Envoi complété</string>
     <string name="message_upload_error">Échec de l\'envoi</string>
     <string name="message_file_download_complete">Fichier téléchargé avec succès</string>
     <string name="message_offline_file_deleted">Fichier hors-ligne retiré avec succès</string>
-    <string name="notification_download_title">Téléchargement du fichier</string>
     <string name="notification_download_offline_title">Rendu disponible hors-ligne</string>
     <string name="notification_offline_download_complete">Fichier disponible hors-ligne</string>
     <string name="notification_offline_download_paused">Attente de connexion Internet</string>
@@ -119,8 +113,6 @@
     <string name="file_upload_permission">La permission de lecture de fichiers et requise pour accéder aux fichier sur votre appareil</string>
     <string name="file_upload_permission_denied">Vous avez refusé la permission pour lire les fichiers. Activez la permission pour continuer</string>
     <string name="camera_permission">L\'accès à la caméra est requis pour prendre des photos et des vidéos</string>
-    <string name="camera_permission_denied">Impossible d\'accéder à la caméra. Permission refusée</string>
-
 
     <string name="label_previous">Précédent</string>
     <string name="label_next">Suivant</string>
@@ -136,11 +128,6 @@
     <string name="exit_message">Êtes-vous sûr de quitter?</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
-
-    <string name="row_servers">Serveurs</string>
-    <string name="row_shares">Partages</string>
-    <string name="row_apps">Apps</string>
-    <string name="row_preferences">Préférences</string>
 
     <!--Introduction TV activity strings-->
     <string name="intro_tv_1">Bienvenue à Amahi pour Android TV</string>
@@ -175,7 +162,6 @@
     <string name="preference_category_about">À propos</string>
     <string name="preference_category_account">Compte</string>
     <string name="preference_category_settings">Paramètres</string>
-    <string name="preference_category_upload">Téléchargement automatique</string>
     <string name="preference_category_general">Général</string>
     <string name="preference_title_about_feedback">Retour d\'information</string>
     <string name="preference_title_about_rating">Taux</string>
@@ -226,10 +212,6 @@
     <string name="pref_theme_dark">Amahi sombre</string>
     <string name="pref_theme_light">Amahi light</string>
     <string name="pref_title_connection">Lien</string>
-    <string name="pref_connection_detail">Sélectionnez parmi Détection automatique, À distance ou LAN.</string>
-    <string name="pref_option_autodetect">Détection automatique</string>
-    <string name="pref_option_lan">Réseau local</string>
-    <string name="pref_option_remote">Éloigné</string>
     <string name="pref_option_go_back">Retourner</string>
     <string name="pref_connection_desc">Sélectionnez le type de connexion souhaité. Vous pouvez le définir comme Détection automatique, réseau local ou distant.</string>
     <string name="preference_entry_server_connection_local">LAN</string>

@@ -151,7 +151,7 @@ public class VideoSwipeGestures implements View.OnTouchListener {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             int width = displayMetrics.widthPixels;
-            if (e.getX() >= width / 2) {
+            if (e.getX() >= width / (float) 2) {
                 xPosition = Direction.RIGHT;
             } else {
                 xPosition = Direction.LEFT;

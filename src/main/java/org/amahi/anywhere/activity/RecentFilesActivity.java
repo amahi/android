@@ -263,12 +263,6 @@ public class RecentFilesActivity extends AppCompatActivity implements
         selectedFileOption = event.getFileOption();
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
-                if (Android.isPermissionRequired()) {
-                    checkWritePermissions();
-                } else {
-                    prepareDownload();
-                }
-                break;
             case FileOption.SHARE:
                 if (Android.isPermissionRequired()) {
                     checkWritePermissions();
@@ -305,8 +299,6 @@ public class RecentFilesActivity extends AppCompatActivity implements
     private void handleFileOptionsWithPermissionGranted() {
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
-                prepareDownload();
-                break;
             case FileOption.SHARE:
                 prepareDownload();
                 break;

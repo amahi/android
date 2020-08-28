@@ -75,18 +75,18 @@ public class ServerSharesFragment extends Fragment implements
 
         View rootView = layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh);
+        mSwipeRefreshLayout = rootView.findViewById(R.id.layout_refresh);
 
-        mFastScrollView = (FastScrollView) rootView.findViewById(R.id.list);
+        mFastScrollView = rootView.findViewById(R.id.list);
 
         mServerSharesAdapter = new ServerSharesAdapter(getActivity());
 
         mFastScrollView.setLayoutManager(new LinearLayoutManager(getActivity()
             , LinearLayoutManager.VERTICAL, false));
 
-        mEmptyLinearLayout = (LinearLayout) rootView.findViewById(R.id.empty);
+        mEmptyLinearLayout = rootView.findViewById(R.id.empty);
 
-        mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
+        mErrorLinearLayout = rootView.findViewById(R.id.error);
 
         setSwipeToRefresh();
 

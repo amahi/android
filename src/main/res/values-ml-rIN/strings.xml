@@ -29,13 +29,11 @@
     <string name="menu_open">തുറക്കുക</string>
     <string name="menu_audio_files">ഫയലുകൾ</string>
     <string name="menu_video_subtitle">സബ്ടൈറ്റിലുകൾ</string>
-    <string name="media_route_menu_item">കാസ്റ്റുചെയ്യുക</string>
     <string name="message_empty_apps">അപ്ലിക്കേഷനുകളൊന്നുമില്ല</string>
     <string name="message_empty_files">ഫയലുകളൊന്നുമില്ല</string>
     <string name="message_empty_shares">ഷെയറുകൾ ഇല്ല</string>
     <string name="message_empty_recent_files">അടുത്തിടെയുള്ള ഫയലുകളൊന്നുമില്ല</string>
     <string name="message_error_account_exists">അക്കൗണ്ട് ഇതിനകം നിലവിലുണ്ട്</string>
-    <string name="message_error_search_application">ഈ ഫയലിനായി പിന്തുണയ്ക്കുന്ന അപ്ലിക്കേഷനുകളൊന്നും ഞങ്ങൾ കണ്ടെത്തിയില്ല.</string>
     <string name="forgot_password"> <a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
     <string name="message_error_authentication">ഉപയോക്തൃനാമമോ പാസ്വേഡോ തെറ്റാണ്. വീണ്ടും ശ്രമിക്കുക.</string>
     <string name="message_error_authentication_connection">കണക്ഷൻ തകരാറ്. നിങ്ങളുടെ ക്രമീകരണങ്ങൾ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</string>
@@ -94,7 +92,6 @@
     <string name="media_route_menu_title">പ്ലേ ചെയ്യുക&#8230;</string>
     <string name="upload_camera">ക്യാമറ ഉപയോഗിക്കുക</string>
     <string name="upload_file">ഫയൽ അപ്ലോഡുചെയ്യുക</string>
-    <string name="app_title">അമാഹി ടിവി</string>
     <string name="exit_title">പുറത്ത്</string>
     <string name="exit_message">നിങ്ങള് വിട്ടു പോകുകയാണ് എന്ന് ഉറപ്പാണോ?</string>
     <string name="yes">അതെ</string>
@@ -143,11 +140,6 @@
     <string name="preference_entry_server_connection_auto">ഓട്ടോഡിറ്റക്റ്റ്</string>
     <string name="preference_entry_server_connection_remote">റിമോട്ട്</string>
     <string name="preference_entry_server_connection_local">LAN</string>
-    <string name="preference_key_upload_switch">യാന്ത്രിക അപ്ലോഡ് സ്വിച്ചുചെയ്യുക</string>
-    <string name="preference_key_upload_server">ഓട്ടോ അപ്ലോഡ് സെർവർ</string>
-    <string name="preference_key_upload_share">ഓട്ടോ അപ്ലോഡ് പങ്കിടൽ</string>
-    <string name="preference_key_upload_location">സ്വയം അപ്ലോഡ് സ്ഥലം</string>
-    <string name="preference_key_upload_data">ഓട്ടോ അപ്ലോഡുചെയ്യൽ ഡാറ്റ</string>
     <string name="pref_title_server_select">സെർവർ തിരഞ്ഞെടുക്കുക</string>
     <string name="pref_title_server_select_desc">നിങ്ങൾ ആക്സസ് ചെയ്യാൻ ആഗ്രഹിക്കുന്ന സെർവറിനെ തിരഞ്ഞെടുക്കുക.</string>
     <string name="pref_title_server_active_list">സജീവ സെർവറുകളുടെ ലിസ്റ്റ്</string>
@@ -156,7 +148,6 @@
     <string name="pref_title_account">അക്കൗണ്ട്</string>
     <string name="pref_sign_out_desc">അമാഹി ടിവിയിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക</string>
     <string name="pref_action_not_defined">പ്രവർത്തനം നിർവചിച്ചിട്ടില്ല</string>
-    <string name="pref_key_theme">തീം തിരഞ്ഞെടുത്തു</string>
     <string name="pref_title_select_theme">തീം തിരഞ്ഞെടുക്കുക</string>
     <string name="pref_title_theme">തീം</string>
     <string name="pref_theme_desc">വെളിച്ചത്തിൽ നിന്നോ ഇരുണ്ടനിൽ നിന്നോ തിരഞ്ഞെടുക്കുക</string>

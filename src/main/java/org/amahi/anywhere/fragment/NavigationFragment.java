@@ -173,11 +173,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     private void setUpContentRefreshing() {
         SwipeRefreshLayout refreshLayout = getRefreshLayout();
 
+        refreshLayout.setProgressBackgroundColorSchemeResource(R.color.accent);
         refreshLayout.setColorSchemeResources(
-            android.R.color.holo_blue_light,
-            android.R.color.holo_orange_light,
-            android.R.color.holo_green_light,
-            android.R.color.holo_red_light);
+            android.R.color.white);
 
         refreshLayout.setOnRefreshListener(() -> {
             ViewDirector.of(mActivity, R.id.animator_content).show(R.id.empty_view);

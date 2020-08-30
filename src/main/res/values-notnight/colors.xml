@@ -37,7 +37,7 @@
     <color name="background_transparent_primary">#FFFFFF</color>
     <color name="background_transparent_secondary">#deffffff</color>
     <color name="primary_text_material_light">#000000</color>
-    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/accent</color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/secondary_text</color>
 
     <!--ATV COLORS-->
     <color name="intro_1">#0277bd</color>

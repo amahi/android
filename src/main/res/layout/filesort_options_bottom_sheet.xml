@@ -21,7 +21,9 @@
         android:text="File name (A to Z)"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_alphabetical_increase"
+        android:drawablePadding="16dp"/>
 
     <TextView
         android:id="@+id/text_sort_name_des"
@@ -30,7 +32,9 @@
         android:text="File name (Z to A)"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_alphabetical_decrease"
+        android:drawablePadding="16dp"/>
 
     <TextView
         android:id="@+id/text_sort_time_des"
@@ -39,7 +43,9 @@
         android:text="Date (newest first)"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_date_newest"
+        android:drawablePadding="16dp"/>
 
     <TextView
         android:id="@+id/text_sort_time_asc"
@@ -48,7 +54,9 @@
         android:text="Date (oldest first)"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_date_oldest"
+        android:drawablePadding="16dp"/>
 
     <TextView
         android:id="@+id/text_sort_size_des"
@@ -57,7 +65,9 @@
         android:text="Size (largest first)"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_size_largest"
+        android:drawablePadding="16dp"/>
 
     <TextView
         android:id="@+id/text_sort_size_asc"
@@ -66,7 +76,9 @@
         android:text="Size (smallest first)"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_size_smallest"
+        android:drawablePadding="16dp"/>
 
     <TextView
         android:id="@+id/text_sort_type"
@@ -75,6 +87,8 @@
         android:text="File Type"
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:padding="16dp"/>
+        android:padding="16dp"
+        android:drawableLeft="@drawable/ic_file_type"
+        android:drawablePadding="16dp"/>
 
 </LinearLayout>

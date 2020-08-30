@@ -748,7 +748,7 @@ public class ServerFilesFragment extends Fragment implements
         SwipeRefreshLayout refreshLayout = getRefreshLayout();
 
         refreshLayout.setProgressBackgroundColorSchemeResource(R.color.accent);
-        refreshLayout.setColorSchemeResources(       
+        refreshLayout.setColorSchemeResources(
             android.R.color.white);
 
         refreshLayout.setOnRefreshListener(this);

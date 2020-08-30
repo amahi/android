@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -111,9 +112,10 @@ public class FileSortOptionsDialogFragment extends BottomSheetDialogFragment {
 
     public void setItemChecked(TextView textView) {
 
-        Drawable dw = getResources().getDrawable(R.drawable.ic_check);
-        textView.setCompoundDrawablesWithIntrinsicBounds(null, null, dw, null);
-        textView.setTextColor(getResources().getColor(R.color.primary_dark));
+        /*Drawable dw = getResources().getDrawable(R.drawable.ic_check);
+        textView.setCompoundDrawablesWithIntrinsicBounds(dw, null, dw, null);
+        textView.setTextColor(getResources().getColor(R.color.primary_dark)); */
+        textView.setBackgroundResource(R.color.accent);
 
     }
 

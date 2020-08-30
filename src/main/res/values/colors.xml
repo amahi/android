@@ -26,7 +26,7 @@
     <color name="accent">#FF9800</color>
     <color name="primary_text">#FFFFFFFF</color>
     <color name="secondary_text">#B3FFFFFF</color>
-    <color name="icons">#FF9800</color>
+    <color name="icons">#FFFFFF</color>
     <color name="divider">#757575</color>
     <color name="error_red">#ff0033</color>
     <color name="sign_in_button">#19B4F4</color>

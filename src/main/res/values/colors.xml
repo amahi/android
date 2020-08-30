@@ -40,7 +40,7 @@
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/secondary_text</color>
 
 <!--    RecyclerView Fast Scroller-->
-    <color name="handle_color">#999999</color>
+    <color name="handle_color">@color/accent</color>
 
     <!--ATV COLORS-->
     <color name="intro_1">#0277bd</color>

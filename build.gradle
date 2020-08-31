@@ -94,7 +94,7 @@ android {
 }
 
 ext {
-    archRoomVersion = "1.1.0"
+    archRoomVersion = "2.2.5"
 }
 
 static def buildVersionName(versionMajor, versionMinor, versionPatch) {
@@ -130,7 +130,7 @@ dependencies {
     implementation "androidx.mediarouter:mediarouter:${SUPPORT_LIBRARY_VERSION}"
     implementation "androidx.media:media:${SUPPORT_LIBRARY_VERSION}"
     implementation "androidx.cardview:cardview:${SUPPORT_LIBRARY_VERSION}"
-    implementation 'com.google.android.gms:play-services-cast-framework:12.0.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:11.6.0'
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
     implementation 'com.l4digital.fastscroll:fastscroll:2.0.1'

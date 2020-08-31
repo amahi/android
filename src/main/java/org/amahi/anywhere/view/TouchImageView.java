@@ -147,7 +147,7 @@ public class TouchImageView extends AppCompatImageView {
         if (saveScale < doubleClickScale) {
             mScaleFactor = doubleClickScale / saveScale;
             saveScale = doubleClickScale;
-            matrix.postScale(mScaleFactor, mScaleFactor, curr.x, viewHeight / (float) 2);
+            matrix.postScale(mScaleFactor, mScaleFactor, curr.x, viewHeight / 2.0f);
         } else {
             mScaleFactor = minScale / saveScale;
             saveScale = minScale;
@@ -239,8 +239,8 @@ public class TouchImageView extends AppCompatImageView {
                 - (scale * (float) bmHeight);
             float redundantXSpace = (float) viewWidth
                 - (scale * (float) bmWidth);
-            redundantYSpace /= (float) 2;
-            redundantXSpace /= (float) 2;
+            redundantYSpace /= 2.0;
+            redundantXSpace /= 2.0;
 
             matrix.postTranslate(redundantXSpace, redundantYSpace);
 
@@ -280,8 +280,8 @@ public class TouchImageView extends AppCompatImageView {
 
             if (origWidth * saveScale <= viewWidth
                 || origHeight * saveScale <= viewHeight)
-                matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / (float) 2,
-                    viewHeight / (float) 2);
+                matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2.0f,
+                    viewHeight / 2.0f);
             else
                 matrix.postScale(mScaleFactor, mScaleFactor,
                     detector.getFocusX(), detector.getFocusY());

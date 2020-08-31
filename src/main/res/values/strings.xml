@@ -195,8 +195,10 @@
 
     <string name="language_en">English</string>
     <string name="language_fr">French</string>
+    <string name="language_es">Spanish</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
+    <string name="language_es_key" translatable="false">es</string>
 
 <!--    Preferences-->
 
@@ -266,11 +268,13 @@
     <string-array name="preference_entries_language" translatable="false">
         <item>@string/language_en</item>
         <item>@string/language_fr</item>
+        <item>@string/language_es</item>
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
         <item>@string/language_en_key</item>
         <item>@string/language_fr_key</item>
+        <item>@string/language_es_key</item>
     </string-array>
 
     <!-- String related to server selection preference-->

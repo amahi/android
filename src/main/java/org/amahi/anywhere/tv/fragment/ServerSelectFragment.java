@@ -134,7 +134,6 @@ public class ServerSelectFragment extends GuidedStepFragment {
 
     private void setFalseChecked() {
         if (OPTION_CHECKED != null) {
-            OPTION_CHECKED.clear();
             setFalse();
         }
     }

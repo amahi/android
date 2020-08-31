@@ -178,20 +178,10 @@ public class IntroFragment extends OnboardingFragment {
                 mContentView.setImageResource(CONTENT_IMAGES[newPage]);
                 switch (newPage) {
                     case 0:
-                        mBackgroundView.setBackground(new ColorDrawable(mColors.get(newPage)));
-                        break;
                     case 1:
-                        mBackgroundView.setBackground(new ColorDrawable(mColors.get(newPage)));
-                        break;
                     case 2:
-                        mBackgroundView.setBackground(new ColorDrawable(mColors.get(newPage)));
-                        break;
                     case 3:
-                        mBackgroundView.setBackground(new ColorDrawable(mColors.get(newPage)));
-                        break;
                     case 4:
-                        mBackgroundView.setBackground(new ColorDrawable(mColors.get(newPage)));
-                        break;
                     case 5:
                         mBackgroundView.setBackground(new ColorDrawable(mColors.get(newPage)));
                         break;

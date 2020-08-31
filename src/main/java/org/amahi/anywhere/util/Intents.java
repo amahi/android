@@ -287,8 +287,7 @@ public final class Intents {
         }
 
         public Intent buildIntroductionIntent() {
-            Intent introduction = new Intent(context, IntroductionActivity.class);
-            return introduction;
+            return new Intent(context, IntroductionActivity.class);
         }
 
         public Intent buildDownloadServiceIntent(ServerFile serverFile, ServerShare serverShare) {

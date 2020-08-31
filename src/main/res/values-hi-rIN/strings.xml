@@ -24,11 +24,6 @@
     <string name="preference_entry_server_connection_auto">स्वयंं पता लगाना</string>
     <string name="preference_entry_server_connection_remote">रिमोट</string>
     <string name="preference_entry_server_connection_local">लैन</string>
-    <string name="preference_key_upload_switch">ऑटो अपलोड स्विच</string>
-    <string name="preference_key_upload_server">ऑटो अपलोड सर्वर</string>
-    <string name="preference_key_upload_share">ऑटो अपलोड शेयर</string>
-    <string name="preference_key_upload_location">ऑटो अपलोड स्थान</string>
-    <string name="preference_key_upload_data">ऑटो अपलोड डेटा</string>
     <string name="pref_title_server_select">सर्वर का चयन करें</string>
     <string name="pref_title_server_select_desc">वह सर्वर चुनें जिसके शेयरों को आप एक्सेस करना चाहते हैं</string>
     <string name="pref_title_server_active_list">सक्रिय सर्वरों की सूची</string>
@@ -37,7 +32,6 @@
     <string name="pref_title_account">लेखा</string>
     <string name="pref_sign_out_desc">अमाही टीवी से साइन आउट करें</string>
     <string name="pref_action_not_defined">कार्रवाई परिभाषित नहीं है</string>
-    <string name="pref_key_theme">विषय चुना गया</string>
     <string name="pref_title_select_theme">चुनिंदा विषय</string>
     <string name="pref_title_theme">विषय</string>
     <string name="pref_theme_desc">लाइट या डार्क में से चुनें</string>
@@ -168,7 +162,4 @@
     <string name="intro_desc_phone_5">कहीं भी किसी भी समय अपने फोन पर अपने वीडियो और मूवी लाइब्रेरी देखें।</string>
     <string name="intro_title_6">तैयार</string>
     <string name="intro_desc_6">आप जाने के लिए पूरी तरह तैयार हैं। अमाही का उपयोग करने के लिए धन्यवाद।</string>
-    <string name="media_route_menu_item">देना</string>
-    <string name="app_title">अमाही टीवी</string>
-    <string name="message_error_search_application" translatable="false">हमें इस फ़ाइल के लिए कोई समर्थित ऐप्स नहीं मिले हैं।</string>
 </resources>

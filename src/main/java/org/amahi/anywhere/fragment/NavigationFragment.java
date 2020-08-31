@@ -322,9 +322,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (mContext == null)
             return false;
         UiModeManager uiModeManager = (UiModeManager) mContext.getSystemService(UI_MODE_SERVICE);
-        if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION)
-            return true;
-        return false;
+        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
     }
 
     private void setUpAuthentication() {

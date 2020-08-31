@@ -20,7 +20,6 @@
 package org.amahi.anywhere.tv.presenter;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import androidx.leanback.widget.HeaderItem;

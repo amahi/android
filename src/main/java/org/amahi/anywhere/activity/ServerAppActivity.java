@@ -21,6 +21,8 @@ package org.amahi.anywhere.activity;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -61,6 +63,8 @@ public class ServerAppActivity extends AppCompatActivity {
     ServerClient serverClient;
 
     Context ctx;
+
+    AsyncTask asyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -289,4 +293,17 @@ public class ServerAppActivity extends AppCompatActivity {
             activity.showApp();
         }
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocationListener.get().unregister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        asyncTask.cancel(true);
+    }
+
 }

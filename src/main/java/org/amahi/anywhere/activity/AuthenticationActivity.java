@@ -23,6 +23,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
+import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -59,6 +61,8 @@ import javax.inject.Inject;
 public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivity implements TextWatcher {
     @Inject
     AmahiClient amahiClient;
+
+    AsyncTask asyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -284,4 +288,17 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocationListener.get().unregister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        asyncTask.cancel(true);
+    }
+
 }

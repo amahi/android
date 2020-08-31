@@ -5,7 +5,9 @@ import android.app.DialogFragment;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -84,6 +86,8 @@ public class RecentFilesActivity extends AppCompatActivity implements
     private CastContext mCastContext;
     private MenuItem mediaRouteMenuItem;
     private IntroductoryOverlay mIntroductoryOverlay;
+
+    AsyncTask asyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -582,7 +586,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        asyncTask.cancel(true);
         getListAdapter().tearDownCallbacks();
     }
 
@@ -594,4 +598,11 @@ public class RecentFilesActivity extends AppCompatActivity implements
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocationListener.get().unregister(this);
+    }
+
 }

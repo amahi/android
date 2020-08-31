@@ -22,7 +22,9 @@ package org.amahi.anywhere.activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -103,6 +105,8 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     private CastSession mCastSession;
     private CastContext mCastContext;
     private int imagePosition;
+
+    AsyncTask asyncTask;
 
     public static boolean supports(String mime_type) {
         return SUPPORTED_FORMATS.contains(mime_type);
@@ -498,4 +502,17 @@ public class ServerFileImageActivity extends AppCompatActivity implements
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocationListener.get().unregister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        asyncTask.cancel(true);
+    }
+
 }

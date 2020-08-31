@@ -26,7 +26,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
+import android.location.LocationListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -119,6 +121,8 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     private SurfaceView mSubtitlesSurface = null;
     private final Runnable mRunnable = this::updateVideoSurfaces;
     private float bufferPercent = 0.0f;
+
+    AsyncTask asyncTask;
 
     //TODO Add feature for changing the screen size
 
@@ -737,6 +741,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     @Override
     protected void onStop() {
         super.onStop();
+        LocationListener.get().unregister(this);
         getSurfaceFrame().removeOnLayoutChangeListener(this);
         getMediaPlayer().getVLCVout().detachViews();
         tearDownVideoServiceBind();
@@ -749,6 +754,7 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        asyncTask.cancel(true);
         if (isFinishing()) {
             tearDownVideoService();
         }

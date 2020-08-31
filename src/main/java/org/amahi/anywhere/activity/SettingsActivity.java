@@ -22,6 +22,8 @@ package org.amahi.anywhere.activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -46,6 +48,8 @@ import org.amahi.anywhere.util.LocaleHelper;
  */
 public class SettingsActivity extends AppCompatActivity {
     public static final int RESULT_THEME_UPDATED = 3;
+
+    AsyncTask asyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,4 +123,17 @@ public class SettingsActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocationListener.get().unregister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        asyncTask.cancel(true);
+    }
+
 }

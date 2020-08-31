@@ -24,7 +24,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
+import android.location.LocationListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -128,6 +130,8 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
     private boolean changeAudio = true;
     private boolean audioControlsAvailable = false;
     private boolean audioListVisible = false;
+
+    AsyncTask asyncTask;
 
     public static boolean supports(String mime_type) {
         return SUPPORTED_FORMATS.contains(mime_type);
@@ -946,4 +950,16 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
         LOCAL,
         REMOTE
     }
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocationListener.get().unregister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        asyncTask.cancel(true);
+    }
+
 }

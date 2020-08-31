@@ -21,7 +21,9 @@ package org.amahi.anywhere.activity;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.location.LocationListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -67,6 +69,8 @@ public class ServerFileWebActivity extends AppCompatActivity {
     CustomTabsIntent mCustomTabsIntent;
     @Inject
     ServerClient serverClient;
+
+    AsyncTask asyncTask;
 
     public static boolean supports(String mime_type) {
         return SUPPORTED_FORMATS.contains(mime_type);
@@ -156,4 +160,17 @@ public class ServerFileWebActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocationListener.get().unregister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        asyncTask.cancel(true);
+    }
+
 }

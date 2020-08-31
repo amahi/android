@@ -22,6 +22,8 @@ package org.amahi.anywhere.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -76,6 +78,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     private ActionBarDrawerToggle navigationDrawerToggle;
     private String navigationTitle;
     final private int SETTINGS_ACTION = 2;
+
+    AsyncTask asyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -452,4 +456,17 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocationListener.get().unregister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        asyncTask.cancel(true);
+    }
+
 }

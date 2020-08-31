@@ -22,6 +22,8 @@ package org.amahi.anywhere.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -36,6 +38,9 @@ import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 
 public class IntroductionActivity extends AppIntro2 {
+
+    AsyncTask asyncTask;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,4 +83,17 @@ public class IntroductionActivity extends AppIntro2 {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocationListener.get().unregister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        asyncTask.cancel(true);
+    }
+
 }

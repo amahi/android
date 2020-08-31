@@ -144,6 +144,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 
     implementation "com.vorlonsoft:androidrate:1.2.1"
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 
     implementation 'org.videolan:libvlc:2.1.16'
     implementation 'pub.devrel:easypermissions:3.0.0'

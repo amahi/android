@@ -26,7 +26,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.location.LocationListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -132,6 +134,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private boolean isControllerShown = false;
 
     private CastContext mCastContext;
+
+    AsyncTask asyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -760,6 +764,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        asyncTask.cancel(true);
 
         if (audioService != null && isFinishing()) {
             tearDownAudioService();
@@ -805,5 +810,11 @@ public class ServerFilesActivity extends AppCompatActivity implements
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocationListener.get().unregister(this);
     }
 }

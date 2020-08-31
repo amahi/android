@@ -80,7 +80,7 @@
     <string name="message_error_video">Error al reproducir el video</string>
     <string name="message_file_download_complete">Archivo descargado correctamente</string>
     <string name="message_file_upload">Selecciona archivos para subir</string>
-    <string name="message_file_upload_complete">Documento cargado con exito</string>
+    <string name="message_file_upload_complete">Documento cargado con éxito</string>
     <string name="message_file_upload_error">Hubo un error al subir el archivo</string>
     <string name="message_file_upload_title">Subir el archivo</string>
     <string name="message_logout">Cerrado la sesión con éxito</string>
@@ -90,7 +90,7 @@
     <string name="message_notice_visit_some">Visita algo y vuelve a intentarlo</string>
     <string name="message_offline_file_deleted">Archivo offline eliminado correctamente</string>
     <string name="message_progress_file_downloading">Descargando archivo …</string>
-    <string name="message_progress_file_preparing">Preparando archivos ...</string>
+    <string name="message_progress_file_preparing">Preparando archivos …</string>
     <string name="message_resume_last_position">¿Quieres reanudará desde donde se quedó?</string>
     <string name="message_tap_to_retry">Toca para reintentarlo</string>
     <string name="message_upload_error">Subida fallida</string>
@@ -153,7 +153,6 @@
     <string name="sign_out_message">¿Seguro que quieres salir?</string>
     <string name="sign_out_title">Salir</string>
     <string name="songs_in">De canciones (s) en</string>
-    <string name="songsin">De canciones (s) en</string>
     <string name="title_apps">Aplicaciones</string>
     <string name="title_no_server">Ningún servidor</string>
     <string name="title_offline_files">Archivos offline</string>
@@ -166,7 +165,6 @@
     <string name="unknown_artist">Artista desconocido</string>
     <string name="upload_camera">Uso de la cámara</string>
     <string name="videos_in">Vídeo(s) en</string>
-    <string name="videosin">Vídeo(s) en</string>
     <string name="upload_file">Subir archivo</string>
     <string name="yes">Si</string>
     <string name="title_file_info">Información del archivo</string>

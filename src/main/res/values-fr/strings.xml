@@ -176,9 +176,7 @@
     <string name="header_settings">Paramètres</string>
     <string name="settings">Paramètres</string>
     <string name="songs_in">Chanson (s) en </string>
-    <string name="songsin">Chanson (s) en </string>
     <string name="videos_in">Vidéo (s) en </string>
-    <string name="videosin">Vidéo (s) en </string>
     <string name="preference_title_about_intro">Intro</string>
     <string name="preference_title_account_sign_out">Déconnexion</string>
     <string name="preference_title_server_connection">Lien</string>

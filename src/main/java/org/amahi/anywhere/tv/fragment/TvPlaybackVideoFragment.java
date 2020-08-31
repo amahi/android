@@ -252,7 +252,7 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
         if (getVideoFile().getParentFile() == null)
             headerItem = new HeaderItem(getString(R.string.videos_in) + getVideoShare().getName());
         else
-            headerItem = new HeaderItem(getString(R.string.videosin) + getVideoFile().getParentFile().getName());
+            headerItem = new HeaderItem(getString(R.string.videos_in) + getVideoFile().getParentFile().getName());
 
         return headerItem;
     }

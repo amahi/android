@@ -83,6 +83,10 @@ public class ServerAppsFragment extends Fragment {
 
         mSwipeRefreshLayout.setOnRefreshListener(this::setUpAppsContent);
 
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.accent);
+        mSwipeRefreshLayout.setColorSchemeResources(
+            android.R.color.white);
+
         mFastScrollView.getRecyclerView().addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         return rootView;
     }

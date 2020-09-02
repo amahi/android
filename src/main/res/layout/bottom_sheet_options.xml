@@ -121,7 +121,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="File info"
+                android:text="@string/file_info"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
 

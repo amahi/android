@@ -25,11 +25,7 @@
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out">
 
-    <ProgressBar
-        android:id="@android:id/progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+    <include layout="@layout/shares_loading"/>
 
     <FrameLayout
         android:id="@+id/content"

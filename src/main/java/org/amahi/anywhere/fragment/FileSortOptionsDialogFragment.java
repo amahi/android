@@ -112,9 +112,6 @@ public class FileSortOptionsDialogFragment extends BottomSheetDialogFragment {
 
     public void setItemChecked(TextView textView) {
 
-        /*Drawable dw = getResources().getDrawable(R.drawable.ic_check);
-        textView.setCompoundDrawablesWithIntrinsicBounds(dw, null, dw, null);
-        textView.setTextColor(getResources().getColor(R.color.primary_dark)); */
         textView.setBackgroundResource(R.color.accent);
 
     }

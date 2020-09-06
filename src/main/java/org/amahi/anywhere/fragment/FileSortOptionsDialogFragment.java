@@ -113,7 +113,7 @@ public class FileSortOptionsDialogFragment extends BottomSheetDialogFragment {
 
         Drawable dw = getResources().getDrawable(R.drawable.ic_check);
         textView.setCompoundDrawablesWithIntrinsicBounds(null, null, dw, null);
-        textView.setTextColor(getResources().getColor(R.color.primary_dark));
+        textView.setTextColor(getResources().getColor(R.color.accent));
 
     }
 

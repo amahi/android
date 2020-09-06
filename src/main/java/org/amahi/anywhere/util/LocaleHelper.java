@@ -79,7 +79,6 @@ public class LocaleHelper{
         return context.createConfigurationContext(configuration);
     }
 
-    @SuppressWarnings("deprecation")
     private static Context updateResourcesLegacy(Context context, String language) {
         Locale locale = new Locale(language);
         Locale.setDefault(locale);
@@ -88,9 +87,7 @@ public class LocaleHelper{
 
         Configuration configuration = resources.getConfiguration();
         configuration.locale = locale;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            configuration.setLayoutDirection(locale);
-        }
+        configuration.setLayoutDirection(locale);
 
         resources.updateConfiguration(configuration, resources.getDisplayMetrics());
 

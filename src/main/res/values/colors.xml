@@ -37,10 +37,10 @@
     <color name="background_transparent_primary">#cc000000</color>
     <color name="background_transparent_secondary">#80000000</color>
     <color name="primary_text_material_light">#deffffff</color>
-    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/secondary_text</color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/primary_text</color>
 
 <!--    RecyclerView Fast Scroller-->
-    <color name="handle_color">#999999</color>
+    <color name="handle_color">@color/accent</color>
 
     <!--ATV COLORS-->
     <color name="intro_1">#0277bd</color>

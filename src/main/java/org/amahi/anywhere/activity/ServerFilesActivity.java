@@ -503,7 +503,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     }
                     break;
                 case ACTION_SETTINGS:
-                    break;
                 case AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE:
                     break;
             }

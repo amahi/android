@@ -194,8 +194,7 @@ public final class Fragments {
 
         public static BottomSheetDialogFragment buildFileSortOptionsDialogFragment() {
 
-            BottomSheetDialogFragment fragment = new FileSortOptionsDialogFragment();
-            return fragment;
+            return new FileSortOptionsDialogFragment();
 
         }
 

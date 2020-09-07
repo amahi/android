@@ -223,5 +223,14 @@
     <string name="rate_dialog_ok">Évaluer Maintenant</string>
     <string name="rate_dialog_cancel">Me le rappeler plus tard</string>
     <string name="rate_dialog_no">Non, Merci</string>
+    <string name="file_info">Informations sur le fichier</string>
+    <string name="sort_by">Trier par</string>
+    <string name="file_name_a_z">Nom de fichier (A à Z)</string>
+    <string name="file_name_z_a">Nom de fichier (Z à A)</string>
+    <string name="date_newest">Date (la plus récente en premier)</string>
+    <string name="date_oldest">Date (la plus ancienne en premier)</string>
+    <string name="size_largest">Taille (la plus grande en premier)</string>
+    <string name="size_smallest">Taille (la plus petite en premier)</string>
+    <string name="file_type">Type de fichier</string>
 
 </resources>

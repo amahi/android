@@ -34,7 +34,7 @@
     <string name="exit_title">Salida</string>
     <string name="file_upload_permission">Es necasario permiso de lectura del archivo para acceder a los archivos en su dispositivo</string>
     <string name="file_upload_permission_denied">Has denegado permisos para leer archivos. Permítelos para continuar</string>
-    <string name="forgot_password">"¿Has olvidado tu contraseña? "</string>
+    <string name="forgot_password"><a href="https://www.amahi.org/forgot">¿Has olvidado tu contraseña?</a></string>
     <string name="header_settings">Ajustes</string>
     <string name="hint_password">Contraseña</string>
     <string name="hint_username">Nombre de usuario</string>
@@ -164,7 +164,7 @@
     <string name="preference_title_upload_settings">Auto subir fotos</string>
     <string name="preference_title_upload_share">Compartir</string>
     <string name="settings">Ajustes</string>
-    <string name="share_message">Yo uso el Amahi Home Server para almacenar, realizar copias de seguridad y la transmisión de todos mis archivos\\n\\nCompruebalo\\n\\n</string>
+    <string name="share_message">Yo uso el Amahi Home Server para almacenar, realizar copias de seguridad y la transmisión de todos mis archivos\n\nCompruebalo\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
     <string name="share_permission">Es necesario el permiso de almacenamiento p[ara descargar el archivo</string>
     <string name="share_permission_denied">Has denegado permisos para almacenamiento. Permitelo para continuar</string>
     <string name="share_screen_title">Comparte utilizando</string>
@@ -195,4 +195,13 @@
     <string name="rate_dialog_title">Califica Amahi</string>
     <string name="message_connect_and_try_again">Conéctese a Internet y vuelva a intentarlo.</string>
     <string name="message_connect_to_server_and_try_again">Conéctese a su servidor y vuelva a intentarlo.</string>
+    <string name="file_info">Información del archivo</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="file_name_a_z">Nombre de archivo (de la A a la Z)</string>
+    <string name="file_name_z_a">Nombre de archivo (de la Z a la A)</string>
+    <string name="date_newest">Fecha (más reciente primero)</string>
+    <string name="date_oldest">Fecha (el más antiguo primero)</string>
+    <string name="size_largest">Tamaño (el más grande primero)</string>
+    <string name="size_smallest">Tamaño (el más pequeño primero)</string>
+    <string name="file_type">Tipo de archivo</string>
 </resources>

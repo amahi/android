@@ -161,7 +161,7 @@ dependencies {
     compileOnly 'com.squareup.dagger:dagger-compiler:1.2.5'
     annotationProcessor 'com.squareup.dagger:dagger-compiler:1.2.5'
 
-    implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.14'
+    implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.15'
 
     def EXOPLAYER_VERSION = "2.8.1"
     implementation "com.google.android.exoplayer:exoplayer-core:${EXOPLAYER_VERSION}"

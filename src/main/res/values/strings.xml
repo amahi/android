@@ -196,9 +196,11 @@
     <string name="language_en">English</string>
     <string name="language_fr">French</string>
     <string name="language_es">Spanish</string>
+    <string name="language_bn_rIN">Bengali</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
+    <string name="langugae_bn_rIN_key" translatable="false">bn-rIN</string>
 
 <!--    Preferences-->
 
@@ -245,8 +247,6 @@
     <string name="preference_key_tell_a_friend" translatable="false">tell_a_friend</string>
     <string name="preference_screen_key_upload" translatable="false">auto_upload_screen</string>
 
-    <string name="preference_key_language" translatable="false">language</string>
-
     <string name="preference_key_upload_switch" translatable="false">auto_upload_switch</string>
     <string name="preference_key_upload_server" translatable="false">auto_upload_server</string>
     <string name="preference_key_upload_share" translatable="false">auto_upload_share</string>
@@ -269,12 +269,14 @@
         <item>@string/language_en</item>
         <item>@string/language_fr</item>
         <item>@string/language_es</item>
+        <item>@string/language_bn_rIN</item>
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
         <item>@string/language_en_key</item>
         <item>@string/language_fr_key</item>
         <item>@string/language_es_key</item>
+        <item>@string/langugae_bn_rIN_key</item>
     </string-array>
 
     <!-- String related to server selection preference-->
@@ -324,5 +326,6 @@
     <string name="size_largest">Size (largest first)</string>
     <string name="size_smallest">Size (smallest first)</string>
     <string name="file_type">File Type</string>
+    <string name="preference_key_language" translatable="false">bn-rIN</string>
 
 </resources>

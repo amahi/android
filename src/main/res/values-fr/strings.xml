@@ -160,7 +160,7 @@
     <string name="language_en">Anglais</string>
     <string name="language_fr">Français</string>
     <string name="language_es">Espagnol</string>
-    <string name="language_bn_rIN">Bengali</string>
+    <string name="language_bn">Bengali</string>
     <string name="preference_category_about">À propos</string>
     <string name="preference_category_account">Compte</string>
     <string name="preference_category_settings">Paramètres</string>

@@ -196,7 +196,7 @@
     <string name="language_en">English</string>
     <string name="language_fr">French</string>
     <string name="language_es">Spanish</string>
-    <string name="language_bn_rIN">Bengali</string>
+    <string name="language_bn">Bengali</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
@@ -252,6 +252,7 @@
     <string name="preference_key_upload_share" translatable="false">auto_upload_share</string>
     <string name="preference_key_upload_location" translatable="false">auto_upload_location</string>
     <string name="preference_key_upload_data" translatable="false">auto_upload_data</string>
+    <string name="preference_key_language" translatable="false">language</string>
 
     <string-array name="preference_entries_server_connection" translatable="false">
         <item>@string/preference_entry_server_connection_auto</item>
@@ -269,7 +270,7 @@
         <item>@string/language_en</item>
         <item>@string/language_fr</item>
         <item>@string/language_es</item>
-        <item>@string/language_bn_rIN</item>
+        <item>@string/language_bn</item>
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
@@ -326,6 +327,5 @@
     <string name="size_largest">Size (largest first)</string>
     <string name="size_smallest">Size (smallest first)</string>
     <string name="file_type">File Type</string>
-    <string name="preference_key_language" translatable="false">bn-rIN</string>
 
 </resources>

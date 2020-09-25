@@ -200,7 +200,7 @@
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
-    <string name="langugae_bn_rIN_key" translatable="false">bn-rIN</string>
+    <string name="language_bn_rIN_key" translatable="false">bn-rIN</string>
 
 <!--    Preferences-->
 
@@ -276,7 +276,7 @@
         <item>@string/language_en_key</item>
         <item>@string/language_fr_key</item>
         <item>@string/language_es_key</item>
-        <item>@string/langugae_bn_rIN_key</item>
+        <item>@string/language_bn_rIN_key</item>
     </string-array>
 
     <!-- String related to server selection preference-->

@@ -196,9 +196,11 @@
     <string name="language_en">English</string>
     <string name="language_fr">French</string>
     <string name="language_es">Spanish</string>
+    <string name="language_bn">Bengali</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
+    <string name="language_bn_key" translatable="false">bn</string>
 
 <!--    Preferences-->
 
@@ -245,13 +247,12 @@
     <string name="preference_key_tell_a_friend" translatable="false">tell_a_friend</string>
     <string name="preference_screen_key_upload" translatable="false">auto_upload_screen</string>
 
-    <string name="preference_key_language" translatable="false">language</string>
-
     <string name="preference_key_upload_switch" translatable="false">auto_upload_switch</string>
     <string name="preference_key_upload_server" translatable="false">auto_upload_server</string>
     <string name="preference_key_upload_share" translatable="false">auto_upload_share</string>
     <string name="preference_key_upload_location" translatable="false">auto_upload_location</string>
     <string name="preference_key_upload_data" translatable="false">auto_upload_data</string>
+    <string name="preference_key_language" translatable="false">language</string>
 
     <string-array name="preference_entries_server_connection" translatable="false">
         <item>@string/preference_entry_server_connection_auto</item>
@@ -269,12 +270,14 @@
         <item>@string/language_en</item>
         <item>@string/language_fr</item>
         <item>@string/language_es</item>
+        <item>@string/language_bn</item>
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
         <item>@string/language_en_key</item>
         <item>@string/language_fr_key</item>
         <item>@string/language_es_key</item>
+        <item>@string/language_bn_key</item>
     </string-array>
 
     <!-- String related to server selection preference-->

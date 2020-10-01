@@ -63,6 +63,7 @@
     <string name="language_fr">Francés</string>
     <string name="language_es">Español</string>
     <string name="language_bn">Bengali</string>
+    <string name="language_hi_rIN">Hindi</string>
     <string name="media_route_menu_title">Reproducir con&#8230;</string>
     <string name="menu_audio_files">Archivos</string>
     <string name="menu_back">Atras</string>

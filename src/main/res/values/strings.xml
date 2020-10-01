@@ -202,7 +202,7 @@
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
     <string name="language_bn_key" translatable="false">bn</string>
-    <string name="language_hi__key" translatable="false">hi</string>
+    <string name="language_hi_key" translatable="false">hi</string>
 
 <!--    Preferences-->
 
@@ -281,7 +281,7 @@
         <item>@string/language_fr_key</item>
         <item>@string/language_es_key</item>
         <item>@string/language_bn_key</item>
-        <item>@string/language_hi__key</item>
+        <item>@string/language_hi_key</item>
     </string-array>
 
     <!-- String related to server selection preference-->

@@ -47,7 +47,7 @@
         <string name="message_notice_create_some">कुछ बनाएं और पुन: प्रयास करें</string>
         <string name="message_notice_visit_some">कुछ पर जाएँ और पुन: प्रयास करें</string>
         <string name="message_progress_file_downloading">फाइल डाउनलोड हो रहा है …</string>
-        <string name="message_progress_file_preparing">फ़ाइल तैयार कर रहा है ...</string>
+        <string name="message_progress_file_preparing">फ़ाइल तैयार कर रहा है …</string>
         <string name="message_no_files">डाउनलोड की गई फ़ाइलें यहां दिखाई देती हैं</string>
         <string name="message_create_and_try_again">डाउनलोड करने के लिए फ़ाइलें खोजें</string>
         <string name="message_connection_error">संपर्क त्रुटि</string>

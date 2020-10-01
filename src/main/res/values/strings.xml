@@ -197,12 +197,12 @@
     <string name="language_fr">French</string>
     <string name="language_es">Spanish</string>
     <string name="language_bn">Bengali</string>
-    <string name="language_hi_rIN">Hindi</string>
+    <string name="language_hi">Hindi</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
     <string name="language_bn_key" translatable="false">bn</string>
-    <string name="language_hi_rIN_key" translatable="false">hi</string>
+    <string name="language_hi_key" translatable="false">hi</string>
 
 <!--    Preferences-->
 
@@ -273,7 +273,7 @@
         <item>@string/language_fr</item>
         <item>@string/language_es</item>
         <item>@string/language_bn</item>
-        <item>@string/language_hi_rIN</item>
+        <item>@string/language_hi</item>
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
@@ -281,7 +281,7 @@
         <item>@string/language_fr_key</item>
         <item>@string/language_es_key</item>
         <item>@string/language_bn_key</item>
-        <item>@string/language_hi_rIN_key</item>
+        <item>@string/language_hi_key</item>
     </string-array>
 
     <!-- String related to server selection preference-->

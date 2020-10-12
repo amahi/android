@@ -35,6 +35,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.dd.processbutton.iml.ActionProcessButton;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.otto.Subscribe;
 
@@ -59,6 +65,13 @@ import javax.inject.Inject;
 public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivity implements TextWatcher {
     @Inject
     AmahiClient amahiClient;
+    
+    public static final String TAG = "AuthenticationActivity";
+    int RC_SIGNIN = 0;
+
+    TextView googleSignInText;
+    ImageButton googleSignIn;
+    GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +86,47 @@ public class AuthenticationActivity extends AccountAuthenticatorAppCompatActivit
         setUpInjections();
 
         setUpAuthentication();
+        
+        googleSignIn = findViewById(R.id.googleSignIn);
+        googleSignInText = findViewById(R.id.googleSignInText);
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        googleSignIn.setOnClickListener(view -> signIn());
+        googleSignInText.setOnClickListener(view -> signIn());
 
     }
+    
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGNIN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGNIN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            Toast.makeText(this, "Signed In", Toast.LENGTH_SHORT).show();
+            //startActivity(new Intent(MainActivity.this, Main2Activity.class));
+        } catch (ApiException e) {
+            Log.w("Google Sign In Error", "signInResult:failed code=" + e.getStatusCode());
+            Toast.makeText(AuthenticationActivity.this, "Failed", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    
 
     private void setUpInjections() {
         AmahiApplication.from(this).inject(this);

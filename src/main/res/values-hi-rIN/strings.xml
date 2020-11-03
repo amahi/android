@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="application_name">Amahi</string>
     <string name="title_apps">एप्स</string>
     <string name="title_settings">सेटिंगस</string>
     <string name="title_shares">शेयरस</string>

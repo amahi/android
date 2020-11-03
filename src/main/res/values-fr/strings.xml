@@ -162,6 +162,7 @@
     <string name="language_es">Espagnol</string>
     <string name="language_bn">Bengali</string>
     <string name="language_te">Telugu</string>
+    <string name="language_pa">Punjabi</string>
     <string name="preference_category_about">À propos</string>
     <string name="preference_category_account">Compte</string>
     <string name="preference_category_settings">Paramètres</string>

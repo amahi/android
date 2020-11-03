@@ -198,12 +198,14 @@
     <string name="language_es">Spanish</string>
     <string name="language_bn">Bengali</string>
     <string name="language_te">Telugu</string>
+    <string name="language_pa">Punjabi</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
     <string name="language_bn_key" translatable="false">bn</string>
     <string name="language_te_key" translatable="false">te</string>
-    
+    <string name="language_pa_key" translatable="false">pa</string>
+
 
 <!--    Preferences-->
 
@@ -275,6 +277,7 @@
         <item>@string/language_es</item>
         <item>@string/language_bn</item>
         <item>@string/language_te</item>
+        <item>@string/language_pa</item>
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
@@ -283,6 +286,7 @@
         <item>@string/language_es_key</item>
         <item>@string/language_bn_key</item>
         <item>@string/language_te_key</item>
+        <item>@string/language_pa_key</item>
     </string-array>
 
     <!-- String related to server selection preference-->

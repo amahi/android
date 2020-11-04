@@ -68,7 +68,7 @@
     <string name="message_error_authentication">The username or password are not correct. Please try again.</string>
     <string name="message_error_authentication_connection">Connection error. Check your settings and try again.</string>
     <string name="message_error_authentication_field_empty">Username or password field cannot be left empty.</string>
-    <string name="message_error_connection">Connection Error</string>
+    <string name="message_error_connection">Connection error</string>
     <string name="message_tap_to_retry">Tap to retry</string>
     <string name="message_error_video">Error playing the video</string>
     <string name="message_error_amahi_anywhere_app">The Amahi Anywhere app in your server is not reachable. Please ensure that Amahi Anywhere app is installed, running and reachable in your network.</string>
@@ -81,7 +81,7 @@
     <string name="message_progress_file_preparing">Preparing file …</string>
     <string name="message_no_files">Files downloaded appear here</string>
     <string name="message_create_and_try_again">Find files to download</string>
-    <string name="message_connection_error">Connection Error</string>
+    <string name="message_connection_error">Connection error</string>
     <string name="message_connect_and_try_again">Please connect to the internet and try again.</string>
     <string name="message_connect_to_server_and_try_again">Please connect to your server and try again.</string>
 

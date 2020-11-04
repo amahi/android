@@ -68,7 +68,7 @@
     <string name="message_error_authentication">The username or password are not correct. Please try again.</string>
     <string name="message_error_authentication_connection">Connection error. Check your settings and try again.</string>
     <string name="message_error_authentication_field_empty">Username or password field cannot be left empty.</string>
-    <string name="message_error_connection">Connection error</string>
+    <string name="message_error_connection">Connection Error</string>
     <string name="message_tap_to_retry">Tap to retry</string>
     <string name="message_error_video">Error playing the video</string>
     <string name="message_error_amahi_anywhere_app">The Amahi Anywhere app in your server is not reachable. Please ensure that Amahi Anywhere app is installed, running and reachable in your network.</string>
@@ -81,7 +81,7 @@
     <string name="message_progress_file_preparing">Preparing file …</string>
     <string name="message_no_files">Files downloaded appear here</string>
     <string name="message_create_and_try_again">Find files to download</string>
-    <string name="message_connection_error">Connection error</string>
+    <string name="message_connection_error">Connection Error</string>
     <string name="message_connect_and_try_again">Please connect to the internet and try again.</string>
     <string name="message_connect_to_server_and_try_again">Please connect to your server and try again.</string>
 
@@ -89,7 +89,7 @@
     <string name="message_delete_file_body">This action cannot be undone.</string>
     <string name="message_delete_progress">Deleting</string>
     <string name="message_delete_file_error">Some error occurred while deleting file.</string>
-    <string name="message_file_upload">Select files to upload</string>
+    <string name="message_file_upload">Select Files to Upload</string>
     <string name="message_file_upload_title">Uploading your file...</string>
     <string name="message_file_upload_complete">File uploaded successfully</string>
     <string name="message_file_upload_error">There was some error in uploading your file.</string>
@@ -323,14 +323,14 @@
     <string name="rate_dialog_no">No, Thanks</string>
 
 <!--    File Options Sheet Dialog-->
-    <string name="file_info">File Info</string>
-    <string name="sort_by">Sort By</string>
+    <string name="file_info">File info</string>
+    <string name="sort_by">Sort bfy</string>
     <string name="file_name_a_z">File name (A to Z)</string>
     <string name="file_name_z_a">File name (Z to A)</string>
     <string name="date_newest">Date (newest first)</string>
     <string name="date_oldest">Date (oldest first)</string>
     <string name="size_largest">Size (largest first)</string>
     <string name="size_smallest">Size (smallest first)</string>
-    <string name="file_type">File Type</string>
+    <string name="file_type">File type</string>
 
 </resources>

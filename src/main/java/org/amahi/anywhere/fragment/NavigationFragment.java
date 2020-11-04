@@ -669,14 +669,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.menu_settings:
-                BusProvider.getBus().post(new SettingsSelectedEvent());
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
+        if (menuItem.getItemId() == R.id.menu_settings) {
+            BusProvider.getBus().post(new SettingsSelectedEvent());
+            return true;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override

@@ -68,7 +68,7 @@
     <string name="message_error_authentication">The username or password are not correct. Please try again.</string>
     <string name="message_error_authentication_connection">Connection error. Check your settings and try again.</string>
     <string name="message_error_authentication_field_empty">Username or password field cannot be left empty.</string>
-    <string name="message_error_connection">Connection error</string>
+    <string name="message_error_connection">Connection Error</string>
     <string name="message_tap_to_retry">Tap to retry</string>
     <string name="message_error_video">Error playing the video</string>
     <string name="message_error_amahi_anywhere_app">The Amahi Anywhere app in your server is not reachable. Please ensure that Amahi Anywhere app is installed, running and reachable in your network.</string>
@@ -95,8 +95,8 @@
     <string name="message_file_upload_error">There was some error in uploading your file.</string>
     <string name="message_duplicate_file_upload">Overwrite existing file?</string>
     <string name="message_duplicate_file_upload_body">The file %1$s already exists.\nAre you sure you want to replace the existing file?</string>
-    <string name="notification_upload_title">Uploading new image...</string>
-    <string name="message_upload_success">Upload completed</string>
+    <string name="notification_upload_title">Uploading new image</string>
+    <string name="message_upload_success">Upload Completed</string>
     <string name="message_upload_error">Upload failed</string>
     <string name="message_file_download_complete">File downloaded successfully</string>
     <string name="message_offline_file_deleted">Offline file removed successfully</string>
@@ -227,9 +227,9 @@
     <string name="preference_title_upload_location">Upload Location</string>
     <string name="preference_title_upload_data">Allow on Cellular Data</string>
 
-    <string name="preference_summary_server">Select Server</string>
-    <string name="preference_summary_share">Select Share</string>
-    <string name="preference_summary_location">Select Location</string>
+    <string name="preference_summary_server">Select server</string>
+    <string name="preference_summary_share">Select share</string>
+    <string name="preference_summary_location">Select location</string>
 
     <string name="preference_message_no_server">"No Server is selected"</string>
     <string name="preference_message_no_share">"No Share is selected"</string>
@@ -314,7 +314,7 @@
     <!--Strings related to Connection Preference -->
     <string name="pref_title_connection">Connection</string>
     <string name="pref_option_go_back">Go back</string>
-    <string name="pref_connection_desc">Select the type of connection you want. You can set it as auto detect, remote or local area network.</string>
+    <string name="pref_connection_desc">Select the type of connection you want. You can set it as Auto detect, remote or Local Area Network.</string>
 
     <string name="rate_dialog_title">Rate Amahi</string>
     <string name="rate_dialog_message">If you enjoy using Amahi, would you mind taking a moment to rate it? Thanks for your support!</string>
@@ -324,7 +324,7 @@
 
 <!--    File Options Sheet Dialog-->
     <string name="file_info">File info</string>
-    <string name="sort_by">Sort by</string>
+    <string name="sort_by">Sort By</string>
     <string name="file_name_a_z">File name (A to Z)</string>
     <string name="file_name_z_a">File name (Z to A)</string>
     <string name="date_newest">Date (newest first)</string>

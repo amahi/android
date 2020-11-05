@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (c) 2014 Amahi
+  ~
+  ~ This file is part of Amahi.
+  ~
+  ~ Amahi is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Amahi is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+  -->
+
 <resources>
+
+    <!--    Please update the Strings here: https://docs.google.com/spreadsheets/d/1NAl8xWGDRj6MmLHKyESONAAyudOHdFnSbaqF1Pr28sE/edit?usp=sharing-->
 
     <string name="title_apps">ਐਪਸ</string>
     <string name="title_settings">ਸੈਟਿੰਗਜ਼</string>
@@ -47,7 +69,7 @@
     <string name="message_error_connection">ਕੁਨੈਕਸ਼ਨ ਗਲਤੀ</string>
     <string name="message_tap_to_retry">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</string>
     <string name="message_error_video">ਵੀਡੀਓ ਚਲਾਉਣ ਦੌਰਾਨ ਗਲਤੀ</string>
-    <string name="message_error_amahi_anywhere_app">Amahi Anywhere ਤੁਹਾਡੇ ਸਰਵਰ ਵਿੱਚ ਐਪ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ. ਕਿਰਪਾ ਕਰਕੇ ਇਹ ਸੁਨਿਸ਼ਚਿਤ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਵਿੱਚ Amahi Anywhere ਐਪ ਸਥਾਪਿਤ, ਚੱਲ ਰਹੀ ਅਤੇ ਪਹੁੰਚਯੋਗ ਹੈ.</string>
+    <string name="message_error_amahi_anywhere_app">ਤੁਹਾਡੇ ਸਰਵਰ ਵਿੱਚ ਅਮਾਹੀ ਕਿਤੇ ਵੀ ਐਪ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ. ਕਿਰਪਾ ਕਰਕੇ ਇਹ ਸੁਨਿਸ਼ਚਿਤ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਨੈਟਵਰਕ ਵਿੱਚ ਅਮਾਹੀ ਕਿਤੇ ਵੀ ਐਪ ਸਥਾਪਿਤ, ਚੱਲ ਰਹੀ ਹੈ ਅਤੇ ਪਹੁੰਚਯੋਗ ਹੈ.</string>
     <string name="message_resume_last_position">ਕੀ ਤੁਸੀਂ ਉਸ ਜਗ੍ਹਾ ਤੋਂ ਮੁੜ ਜਾਣਾ ਚਾਹੁੰਦੇ ਹੋ ਜਿੱਥੋਂ ਤੁਸੀਂ ਰੁਕ ਗਏ ਹੋ</string>
 
     <string name="message_notice_create_some">ਕੁਝ ਬਣਾਓ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</string>
@@ -81,9 +103,9 @@
     <string name="notification_offline_download_paused">ਇੰਟਰਨੈੱਟ ਦੀ ਉਡੀਕ ਕਰ ਰਿਹਾ ਹੈ</string>
     <string name="notification_offline_download_error">ਫਾਈਲ ਉਪਲੱਬਧ ਕਰਨ ਦੌਰਾਨ ਗਲਤੀ ਔਫਲਾਈਨ</string>
 
-    <string name="share_subject">ਮੇਰੇ Amahi ਘਰ ਦੇ ਸਰਵਰ ਦੀ ਜਾਂਚ ਕਰੋ!</string>
-    <string name="share_message">ਮੈਂ ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਫਾਈਲਾਂ ਨੂੰ ਸਟੋਰ ਕਰਨ, ਬੈਕਅਪ ਲੈਣ ਅਤੇ ਸਟ੍ਰੀਮ ਕਰਨ ਲਈ Amahi ਹੋਮ ਸਰਵਰ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹਾਂ.\n\nਇਸ ਦੀ ਜਾਂਚ ਕਰੋ!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
-    <string name="title_version_settings">ਐਂਡਰਾਇਡ ਲਈ Amahi</string>
+    <string name="share_subject">ਮੇਰੇ ਅਮਾਹੀ ਹੋਮ ਸਰਵਰ ਦੀ ਜਾਂਚ ਕਰੋ!</string>
+    <string name="share_message">ਮੈਂ ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਫਾਈਲਾਂ ਨੂੰ ਸਟੋਰ ਕਰਨ, ਬੈਕਅਪ ਅਤੇ ਸਟ੍ਰੀਮਿੰਗ ਲਈ ਅਮਾਹੀ ਹੋਮ ਸਰਵਰ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹਾਂ.\n\n ਇਸ ਨੂੰ ਜਾਂਚੋ!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
+    <string name="title_version_settings">ਐਂਡਰਾਇਡ ਲਈ ਅਮਾਹੀ</string>
     <string name="message_no_search_result">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ.</string>
     <string name="application_not_found">ਕੋਈ ਹੈਂਡਲਰ ਐਪਲੀਕੇਸ਼ਨ ਨਹੀਂ ਮਿਲੀ</string>
     <string name="message_logout">ਸਫਲਤਾਪੂਰਵਕ ਲੌਗ ਆਉਟ</string>
@@ -113,12 +135,12 @@
     <string name="no">ਨਹੀਂ</string>
 
     <!--Introduction TV activity strings-->
-    <string name="intro_tv_1">ਐਂਡਰਾਇਡ ਟੀਵੀ ਲਈ Amahi ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ</string>
-    <string name="intro_phone_1">ਐਂਡਰਾਇਡ ਲਈ Amahi ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ</string>
-    <string name="intro_desc_phone_1">ਇੱਕ ਐਂਡਰਾਇਡ ਐਪ ਜੋ ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ Amahi ਹੋਮ ਸਰਵਰ ਦੀਆਂ ਫਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚਣ ਦਿੰਦੀ ਹੈ.</string>
+    <string name="intro_tv_1">ਐਂਡਰਾਇਡ ਟੀਵੀ ਲਈ ਅਮਾਹੀ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ</string>
+    <string name="intro_phone_1">ਐਂਡਰਾਇਡ ਲਈ ਅਮਾਹੀ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ</string>
+    <string name="intro_desc_phone_1">ਇੱਕ ਐਂਡਰਾਇਡ ਐਪ ਜੋ ਤੁਹਾਡੇ ਅਮਾਹੀ ਹੋਮ ਸਰਵਰ ਦੀਆਂ ਫਾਈਲਾਂ ਨੂੰ ਐਕਸੈਸ ਕਰਨ ਦਿੰਦੀ ਹੈ.</string>
 
     <string name="intro_title_2">ਆਪਣੇ ਐਚਡੀਏ ਤੱਕ ਪਹੁੰਚ ਕਰੋ</string>
-    <string name="intro_desc_2">Amahi ਤੁਹਾਨੂੰ ਆਪਣੇ ਵਿਡੀਓਜ਼ ਚਲਾਉਣ, ਤੁਹਾਡੀਆਂ ਫੋਟੋਆਂ ਵੇਖਣ, ਤੁਹਾਡੇ ਸੰਗੀਤ ਨੂੰ ਸੁਣਨ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ!</string>
+    <string name="intro_desc_2">ਅਮਾਹੀ ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ ਵੀਡਿਓ ਖੇਡਣ, ਆਪਣੀਆਂ ਫੋਟੋਆਂ ਵੇਖਣ, ਤੁਹਾਡੇ ਸੰਗੀਤ ਸੁਣਨ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ!</string>
 
     <string name="intro_title_3">ਆਪਣੀਆਂ ਫੋਟੋਆਂ ਬ੍ਰਾ .ਜ਼ ਕਰੋ</string>
     <string name="intro_desc_tv_3">ਆਪਣੀ ਫੋਟੋ ਲਾਇਬ੍ਰੇਰੀ ਨੂੰ ਆਪਣੇ ਟੀਵੀ ਵਿਚ ਤੇਜ਼ ਅਤੇ ਅਸਚਰਜ ਰੈਜ਼ੋਲਿ .ਸ਼ਨ ਤੇ ਬ੍ਰਾ .ਜ਼ ਕਰੋ.</string>
@@ -212,17 +234,17 @@
     <string name="pref_title_select_theme">ਥੀਮ ਚੁਣੋ</string>
     <string name="pref_title_theme">ਥੀਮ</string>
     <string name="pref_theme_desc">ਲਾਈਟ ਜਾਂ ਡਾਰਕ ਤੋਂ ਚੁਣੋ</string>
-    <string name="pref_theme_detail_desc">ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ ਸੰਬੰਧ ਦੀ ਕਿਸਮ ਦੀ ਚੋਣ ਕਰੋ. ਤੁਸੀਂ ਇਸਨੂੰ Amahi ਲਾਈਟ ਜਾਂ Amahi ਡਾਰਕ ਦੇ ਤੌਰ ਤੇ ਸੈਟ ਕਰ ਸਕਦੇ ਹੋ</string>
-    <string name="pref_theme_light">Amahi ਰੋਸ਼ਨੀ</string>
-    <string name="pref_theme_dark">Amahi ਹਨੇਰ</string>
+    <string name="pref_theme_detail_desc">ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ ਸੰਬੰਧ ਦੀ ਕਿਸਮ ਦੀ ਚੋਣ ਕਰੋ. ਤੁਸੀਂ ਇਸਨੂੰ ਅਮਾਹੀ ਲਾਈਟ ਜਾਂ ਅਮਾਹੀ ਡਾਰਕ ਦੇ ਤੌਰ ਤੇ ਸੈਟ ਕਰ ਸਕਦੇ ਹੋ</string>
+    <string name="pref_theme_light">ਅਮਾਹੀ ਰੋਸ਼ਨੀ</string>
+    <string name="pref_theme_dark">ਅਮਹੀ ਹਨੇਰਾ</string>
 
     <!--Strings related to Connection Preference -->
     <string name="pref_title_connection">ਕੁਨੈਕਸ਼ਨ</string>
     <string name="pref_option_go_back">ਵਾਪਸ ਜਾਓ</string>
     <string name="pref_connection_desc">ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ ਸੰਬੰਧ ਦੀ ਕਿਸਮ ਦੀ ਚੋਣ ਕਰੋ. ਤੁਸੀਂ ਇਸਨੂੰ ਆਟੋ ਡਿਟੈਕਟ, ਰਿਮੋਟ ਜਾਂ ਸਥਾਨਕ ਏਰੀਆ ਨੈਟਵਰਕ ਦੇ ਤੌਰ ਤੇ ਸੈਟ ਕਰ ਸਕਦੇ ਹੋ.</string>
 
-    <string name="rate_dialog_title">ਰੇਟ Amahi</string>
-    <string name="rate_dialog_message">ਜੇ ਤੁਸੀਂ Amahi ਇਸਤੇਮਾਲ ਕਰਨ ਦਾ ਅਨੰਦ ਲੈਂਦੇ ਹੋ, ਤਾਂ ਕੀ ਤੁਸੀਂ ਇਸ ਨੂੰ ਦਰਜਾ ਦੇਣ ਲਈ ਕੁਝ ਸਮਾਂ ਕੱ toਣ ਲਈ ਮਨ ਬਣਾਓਗੇ? ਤੁਹਾਡੇ ਸਾਥ ਲੲੀ ਧੰਨਵਾਦ!</string>
+    <string name="rate_dialog_title">ਰੇਟ ਅਮਾਹੀ</string>
+    <string name="rate_dialog_message">ਜੇ ਤੁਸੀਂ ਅਮਾਹੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਾ ਅਨੰਦ ਲੈਂਦੇ ਹੋ, ਤਾਂ ਕੀ ਤੁਸੀਂ ਇਸ ਨੂੰ ਦਰਜਾ ਦੇਣ ਲਈ ਇੱਕ ਪਲ ਕੱ ?ੋਗੇ? ਤੁਹਾਡੇ ਸਾਥ ਲੲੀ ਧੰਨਵਾਦ!</string>
     <string name="rate_dialog_ok">ਹੁਣੇ ਇਸ ਨੂੰ ਦਰਜਾ ਦਿਓ</string>
     <string name="rate_dialog_cancel">ਮੈਨੂੰ ਬਾਅਦ ਵਿੱਚ ਚੇਤੇ ਕਰਵਾਓ</string>
     <string name="rate_dialog_no">ਨਹੀਂ ਧੰਨਵਾਦ</string>

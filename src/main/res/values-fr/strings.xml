@@ -234,6 +234,5 @@
     <string name="size_smallest">Taille (la plus petite en premier)</string>
     <string name="file_type">Type de fichier</string>
     <string name="language_gem">German</string>
-    <string name="language_gem_key" translatable="false">gem</string>
 
 </resources>

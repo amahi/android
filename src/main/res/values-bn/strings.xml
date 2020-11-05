@@ -188,5 +188,4 @@
     <string name="notification_offline_download_paused">ইন্টারনেটের জন্য অপেক্ষা করা  হচ্ছে</string>
     <string name="preference_entry_server_connection_local">LAN</string>
     <string name="language_gem">German</string>
-    <string name="language_gem_key" translatable="false">gem</string>
 </resources>

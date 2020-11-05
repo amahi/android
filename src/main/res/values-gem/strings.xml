@@ -180,7 +180,6 @@
     <string name="language_es">Spanisch</string>
     <string name="language_bn">Bengalisch</string>
     <string name="language_gem">Deutsche</string>
-    <string name="language_gem_key" translatable="false">gem</string>
 
     <!--    Preferences-->
 

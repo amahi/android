@@ -57,10 +57,10 @@
 
     <string name="media_route_menu_item" translatable="false">cast</string>
 
-    <string name="message_empty_apps">No apps</string>
-    <string name="message_empty_files">No files</string>
-    <string name="message_empty_shares">No shares</string>
-    <string name="message_empty_recent_files">No recent files</string>
+    <string name="message_empty_apps">No Apps</string>
+    <string name="message_empty_files">No Files</string>
+    <string name="message_empty_shares">No Shares</string>
+    <string name="message_empty_recent_files">No Recent Files</string>
 
     <string name="message_error_account_exists">Account already exists.</string>
     <string name="message_error_search_application">We haven’t found any supported apps for this file.</string>
@@ -81,7 +81,7 @@
     <string name="message_progress_file_preparing">Preparing file …</string>
     <string name="message_no_files">Files downloaded appear here</string>
     <string name="message_create_and_try_again">Find files to download</string>
-    <string name="message_connection_error">Connection error</string>
+    <string name="message_connection_error">Connection Error</string>
     <string name="message_connect_and_try_again">Please connect to the internet and try again.</string>
     <string name="message_connect_to_server_and_try_again">Please connect to your server and try again.</string>
 
@@ -96,7 +96,7 @@
     <string name="message_duplicate_file_upload">Overwrite existing file?</string>
     <string name="message_duplicate_file_upload_body">The file %1$s already exists.\nAre you sure you want to replace the existing file?</string>
     <string name="notification_upload_title">Uploading new image</string>
-    <string name="message_upload_success">Upload Completed</string>
+    <string name="message_upload_success">Upload completed</string>
     <string name="message_upload_error">Upload failed</string>
     <string name="message_file_download_complete">File downloaded successfully</string>
     <string name="message_offline_file_deleted">Offline file removed successfully</string>
@@ -231,8 +231,8 @@
     <string name="preference_summary_share">Select share</string>
     <string name="preference_summary_location">Select location</string>
 
-    <string name="preference_message_no_server">"No Server is selected"</string>
-    <string name="preference_message_no_share">"No Share is selected"</string>
+    <string name="preference_message_no_server">"No server is selected"</string>
+    <string name="preference_message_no_share">"No share is selected"</string>
 
     <string name="preference_entry_server_connection_auto">Autodetect</string>
     <string name="preference_entry_server_connection_remote">Remote</string>

@@ -324,7 +324,7 @@
 
 <!--    File Options Sheet Dialog-->
     <string name="file_info">File info</string>
-    <string name="sort_by">Sort bfy</string>
+    <string name="sort_by">Sort by</string>
     <string name="file_name_a_z">File name (A to Z)</string>
     <string name="file_name_z_a">File name (Z to A)</string>
     <string name="date_newest">Date (newest first)</string>

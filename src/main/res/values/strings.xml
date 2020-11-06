@@ -90,7 +90,7 @@
     <string name="message_delete_progress">Deleting</string>
     <string name="message_delete_file_error">Some error occurred while deleting file.</string>
     <string name="message_file_upload">Select Files to Upload</string>
-    <string name="message_file_upload_title">Uploading your file...</string>
+    <string name="message_file_upload_title">Uploading your file …</string>
     <string name="message_file_upload_complete">File uploaded successfully</string>
     <string name="message_file_upload_error">There was some error in uploading your file.</string>
     <string name="message_duplicate_file_upload">Overwrite existing file?</string>
@@ -102,7 +102,7 @@
     <string name="message_offline_file_deleted">Offline file removed successfully</string>
     <string name="notification_download_offline_title">Making available offline</string>
     <string name="notification_offline_download_complete">File available offline</string>
-    <string name="notification_offline_download_paused">Waiting for internet...</string>
+    <string name="notification_offline_download_paused">Waiting for internet</string>
     <string name="notification_offline_download_error">Error while making file available offline</string>
 
     <string name="share_subject">Check out my Amahi home server!</string>
@@ -314,7 +314,7 @@
     <!--Strings related to Connection Preference -->
     <string name="pref_title_connection">Connection</string>
     <string name="pref_option_go_back">Go back</string>
-    <string name="pref_connection_desc">Select the type of connection you want. You can set it as Auto detect, remote or Local Area Network.</string>
+    <string name="pref_connection_desc">Select the type of connection you want. You can set it as Auto detect, remote or local area network.</string>
 
     <string name="rate_dialog_title">Rate Amahi</string>
     <string name="rate_dialog_message">If you enjoy using Amahi, would you mind taking a moment to rate it? Thanks for your support!</string>

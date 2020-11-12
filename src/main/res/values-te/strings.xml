@@ -45,6 +45,7 @@
    <string name="language_fr">ఫ్రెంచ్</string>
    <string name="language_es">స్పానిష్</string>
    <string name="language_bn">బెంగాలీ</string>
+   <string name="language_te">తెలుగు</string>
    <string name="media_route_menu_title">ఆన్ చేయండి</string>
    <string name="menu_audio_files">ఫైల్</string>
    <string name="menu_back">తిరిగి వెళ్ళు</string>
@@ -67,7 +68,7 @@
    <string name="message_delete_file_title">తొలగింపును నిర్ధారించాలా?</string>
    <string name="message_delete_progress">సాధ్యం కాదు.</string>
    <string name="message_duplicate_file_upload">ప్రస్తుత ఫైల్‌కు వ్రాయాలనుకుంటున్నారా?</string>
-   <string name="message_duplicate_file_upload_body">ఈ ఫైల్% 1 $ s ఇప్పటికే ఉంది. ఖచ్చితంగా మీరు ఇప్పటికే ఉన్న ఫైల్‌ను భర్తీ చేయాలనుకుంటున్నారా?</string>
+   <string name="message_duplicate_file_upload_body">ఈ ఫైల్ %1$s ఇప్పటికే ఉంది. ఖచ్చితంగా మీరు ఇప్పటికే ఉన్న ఫైల్‌ను భర్తీ చేయాలనుకుంటున్నారా?</string>
    <string name="message_empty_apps">తప్పిపోయిన అనువర్తనాలు</string>
    <string name="message_empty_files">తప్పిపోయిన ఫైల్</string>
    <string name="message_empty_recent_files">ఇటీవలి ఫైల్ లేదు</string>

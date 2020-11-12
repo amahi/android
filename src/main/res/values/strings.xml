@@ -173,6 +173,8 @@
 
     <string name="alert_delete_dialog">Delete file</string>
     <string name="alert_delete_confirm">Are you sure?</string>
+    <string name="never_opened">Never Opened</string>
+    <string name="last_opened">Last Opened</string>
 
     <string name="title_file_info">File Info</string>
     <string name="text_ok">OK</string>
@@ -203,7 +205,7 @@
     <string name="language_es_key" translatable="false">es</string>
     <string name="language_bn_key" translatable="false">bn</string>
     <string name="language_te_key" translatable="false">te</string>
-    
+
 
 <!--    Preferences-->
 

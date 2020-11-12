@@ -29,7 +29,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     public static final int DUPLICATE_FILE_DIALOG = 1;
     public static final int SIGN_OUT_DIALOG = 3;
     public static final int FILE_INFO_DIALOG = 2;
-    public static final String LAST_OPENED_NULL = "Never opened";
+    public final String LAST_OPENED_NULL = getString(R.string.never_opened);
 
 
     @NonNull

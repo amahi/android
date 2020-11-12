@@ -188,5 +188,6 @@
     <string name="notification_offline_download_error">ফাইল অফলাইনে উপলব্ধ করায় ত্রুটি</string>
     <string name="notification_offline_download_paused">ইন্টারনেটের জন্য অপেক্ষা করা  হচ্ছে</string>
     <string name="preference_entry_server_connection_local">LAN</string>
-
+    <string name="never_opened">কখনও খোলা হয়নি</string>
+    <string name="last_opened">সর্বশেষ খোলা</string>
 </resources>

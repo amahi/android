@@ -59,6 +59,27 @@
         android:layout_height="8dp" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        app:passwordToggleTint="@color/accent"
+        style="@style/LoginTextInputLayoutStyle">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_email"
+            android:imeOptions="actionGo"
+            android:inputType="textEmailAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="8dp" />
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -94,11 +115,11 @@
         android:layout_height="16dp" />
 
     <com.dd.processbutton.iml.ActionProcessButton
-        android:contentDescription="@string/sign_in"
+        android:contentDescription="@string/sign_up"
         android:id="@+id/button_authentication"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_sign_in"
+        android:text="@string/button_sign_up"
         android:textColor="@android:color/white"
         android:backgroundTint="@color/sign_in_button"/>
 
@@ -147,4 +168,12 @@
 
     </ViewAnimator>
 
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#3485C5"
+        android:onClick="login"
+        android:text="  Already signed in? LOGIN HERE  "
+        android:textColor="@color/common_google_signin_btn_text_dark" />
 </LinearLayout>

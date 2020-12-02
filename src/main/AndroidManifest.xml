@@ -1,23 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2014 Amahi
-  ~
-  ~ This file is part of Amahi.
-  ~
-  ~ Amahi is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ Amahi is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
--->
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.amahi.anywhere"
     android:installLocation="auto"
     tools:ignore="MissingLeanbackLauncher">
@@ -33,7 +16,7 @@
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
@@ -58,6 +41,8 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon">
+        <activity android:name=".activity_login"></activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="org.amahi.anywhere.fileprovider"
@@ -120,7 +105,7 @@
         <activity
             android:name=".activity.SettingsActivity"
             android:label="@string/title_settings"
-            android:theme="@style/Theme.Amahi.Settings"/>
+            android:theme="@style/Theme.Amahi.Settings" />
         <activity
             android:name=".activity.IntroductionActivity"
             android:label="@string/intro_desc_phone_1"
@@ -173,7 +158,6 @@
             android:name=".receiver.CameraReceiver"
             android:enabled="true">
             <intent-filter>
-
                 <action android:name="android.hardware.action.NEW_PICTURE" />
 
                 <data android:mimeType="image/*" />

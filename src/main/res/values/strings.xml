@@ -64,7 +64,7 @@
 
     <string name="message_error_account_exists">Account already exists.</string>
     <string name="message_error_search_application">We haven’t found any supported apps for this file.</string>
-    <string name="forgot_password"> <a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
+    <string name="forgot_password"><a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
     <string name="message_error_authentication">The username or password are not correct. Please try again.</string>
     <string name="message_error_authentication_connection">Connection error. Check your settings and try again.</string>
     <string name="message_error_authentication_field_empty">Username or password field cannot be left empty.</string>
@@ -197,12 +197,20 @@
     <string name="language_fr">French</string>
     <string name="language_es">Spanish</string>
     <string name="language_bn">Bengali</string>
+
+    <string name="language_de">German</string>
+
     <string name="language_te">Telugu</string>
+
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
     <string name="language_bn_key" translatable="false">bn</string>
+
+    <string name="language_de_key" translatable="false">gem</string>
+
     <string name="language_te_key" translatable="false">te</string>
+
 
 
 <!--    Preferences-->
@@ -274,7 +282,11 @@
         <item>@string/language_fr</item>
         <item>@string/language_es</item>
         <item>@string/language_bn</item>
+
+        <item>@string/language_de</item>
+
         <item>@string/language_te</item>
+
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
@@ -282,7 +294,11 @@
         <item>@string/language_fr_key</item>
         <item>@string/language_es_key</item>
         <item>@string/language_bn_key</item>
+
+        <item>@string/language_de_key</item>
+
         <item>@string/language_te_key</item>
+
     </string-array>
 
     <!-- String related to server selection preference-->

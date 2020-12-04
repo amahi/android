@@ -324,11 +324,11 @@
 
 <!--    File Options Sheet Dialog-->
     <string name="file_info">File info</string>
-    <string name="sort_by">Sort By</string>
+    <string name="sort_by">SORT BY</string>
     <string name="file_name_a_z">File name (A to Z)</string>
     <string name="file_name_z_a">File name (Z to A)</string>
-    <string name="date_newest">Date (newest first)</string>
-    <string name="date_oldest">Date (oldest first)</string>
+    <string name="date_newest">Modified (newest first)</string>
+    <string name="date_oldest">Modified (oldest first)</string>
     <string name="size_largest">Size (largest first)</string>
     <string name="size_smallest">Size (smallest first)</string>
     <string name="file_type">File Type</string>

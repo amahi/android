@@ -180,6 +180,9 @@
     <string name="language_es">Spanisch</string>
     <string name="language_bn">Bengalisch</string>
     <string name="language_de">Deutsche</string>
+    <string name="language_te">Telugu</string>
+    <string name="language_hi">Hindi</string>
+
 
     <!--    Preferences-->
 

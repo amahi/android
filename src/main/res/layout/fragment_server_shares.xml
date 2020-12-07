@@ -18,6 +18,7 @@
   -->
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -54,7 +55,7 @@
                 android:visibility="gone">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="@string/message_empty_shares"
@@ -66,7 +67,7 @@
                     android:layout_height="8dp" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="@string/message_notice_create_some"
@@ -84,9 +85,9 @@
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
                 android:text="@string/message_error_connection"
                 android:textSize="@dimen/text_large"
                 android:textStyle="bold" />
@@ -96,9 +97,9 @@
                 android:layout_height="8dp" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
                 android:text="@string/message_tap_to_retry"
                 android:textSize="@dimen/text_small" />
 

@@ -18,7 +18,9 @@
             android:paddingRight="0dp"
             android:paddingBottom="4dp"
             android:text="@string/sort_by"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/text_sort_name_asc"
@@ -27,7 +29,8 @@
             android:padding="16dp"
             android:text="@string/file_name_a_z"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/text_sort_name_des"
@@ -36,7 +39,8 @@
             android:padding="16dp"
             android:text="@string/file_name_z_a"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/text_sort_time_des"
@@ -45,7 +49,8 @@
             android:padding="16dp"
             android:text="@string/date_newest"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/text_sort_time_asc"
@@ -54,7 +59,8 @@
             android:padding="16dp"
             android:text="@string/date_oldest"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/text_sort_size_des"
@@ -63,7 +69,8 @@
             android:padding="16dp"
             android:text="@string/size_largest"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/text_sort_size_asc"
@@ -72,7 +79,8 @@
             android:padding="16dp"
             android:text="@string/size_smallest"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/text_sort_type"
@@ -81,7 +89,8 @@
             android:padding="16dp"
             android:text="@string/file_type"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

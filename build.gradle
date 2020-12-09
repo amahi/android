@@ -13,7 +13,7 @@ buildscript {
 apply plugin: "com.android.application"
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion '30.0.0'
 
     signingConfigs {
@@ -47,7 +47,7 @@ android {
         versionCode buildVersionCode(versionMajor, versionMinor, versionPatch)
 
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
 
         def apiFile = file("api.properties")
         def apiProperties = new Properties()

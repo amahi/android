@@ -10,7 +10,7 @@ env:
         - ANDROID_ABI=armeabi-v7a
 
 before_install:
-    - yes | sdkmanager "platforms;android-29"
+    - yes | sdkmanager "platforms;android-30"
 
 android:
     components:

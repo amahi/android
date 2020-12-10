@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.l4digital.fastscroll.FastScroller;
 
+import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -54,7 +55,6 @@ import java.util.List;
  */
 public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable, FastScroller.SectionIndexer {
 
-    static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
     static String queryString;
     protected ServerFileClickListener mListener;
     protected int selectedPosition = RecyclerView.NO_POSITION;
@@ -95,6 +95,14 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         this.serverShare = serverShare;
 
         notifyDataSetChanged();
+    }
+
+    public ForegroundColorSpan getFcs() {
+        if (AmahiApplication.getInstance().isLightThemeEnabled()) {
+            return new ForegroundColorSpan(Color.parseColor("#328ce7"));
+        } else {
+            return new ForegroundColorSpan(Color.parseColor("#FF9800"));
+        }
     }
 
     public void removeFile(int position) {

@@ -112,7 +112,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
         if (queryString != null && !TextUtils.isEmpty(queryString)) {
             int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
             if (searchMatchPosition != -1)
-                sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                sb.setSpan(getFcs(), searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         }
         holder.fileTitle.setText(sb);
         holder.fileTitle.setBackgroundResource(R.color.background_transparent_secondary);

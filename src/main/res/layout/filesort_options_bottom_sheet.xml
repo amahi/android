@@ -19,7 +19,8 @@
             android:paddingBottom="4dp"
             android:text="@string/sort_by"
             android:textColor="@android:color/black"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/text_sort_name_asc"
@@ -37,8 +38,7 @@
             android:padding="16dp"
             android:text="@string/file_name_z_a"
             android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/text_sort_time_des"

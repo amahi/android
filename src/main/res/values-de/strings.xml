@@ -51,8 +51,6 @@
     <string name="menu_audio_files">Dateien</string>
     <string name="menu_video_subtitle">Untertitel</string>
 
-    <string name="media_route_menu_item" translatable="false">cast</string>
-
     <string name="message_empty_apps">Keine Apps</string>
     <string name="message_empty_files">Keine Dateien</string>
     <string name="message_empty_shares">Keine Aktien</string>
@@ -124,7 +122,6 @@
     <string name="upload_file">Datei hochladen</string>
 
     <!--ANDROID TV RELATED STRINGS-->
-    <string name="app_title" translatable="false">Amahi Fernsehen</string>
     <string name="exit_title">Verlassen Sie</string>
     <string name="exit_message">Sind Sie sicher, dass Sie aufhören wollen?</string>
     <string name="sign_out_title">Abmeldung</string>
@@ -159,7 +156,6 @@
     <string name="introducing_cast">Einführende Besetzung</string>
 
     <string name="unknown_artist">Unbekannter Künstler</string>
-    <string name="android_amahi_anywhere" translatable="false">Android Amahi Anywhere</string>
     <string name="enable">Aktivieren Sie</string>
     <string name="disable">Deaktivieren Sie</string>
     <string name="settings">Einstellungen</string>

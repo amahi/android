@@ -19,7 +19,7 @@
 
 <resources>
 
-    <!--    Please update the Strings here: https://docs.google.com/spreadsheets/d/1NAl8xWGDRj6MmLHKyESONAAyudOHdFnSbaqF1Pr28sE/edit?usp=sharing-->
+<!--    Please update the Strings here: https://docs.google.com/spreadsheets/d/1NAl8xWGDRj6MmLHKyESONAAyudOHdFnSbaqF1Pr28sE/edit?usp=sharing-->
 
     <string name="application_name" translatable="false">Amahi</string>
 
@@ -343,12 +343,5 @@
     <string name="size_largest">Size (largest first)</string>
     <string name="size_smallest">Size (smallest first)</string>
     <string name="file_type">File type</string>
-
-    <!--    File Options Sheet Dialog-->
-    <string name="title_file_name">File Name</string>
-    <string name="title_file_type">File Type</string>
-    <string name="title_file_size">File Size</string>
-    <string name="title_last_modified">Last Modified</string>
-    <string name="title_last_opened">Last Opened</string>
 
 </resources>

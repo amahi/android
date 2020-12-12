@@ -51,12 +51,11 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
         LinearLayout fileInfoLayout = view.findViewById(R.id.file_info_layout);
 
         String uniqueKey = getFileUniqueKey();
-        ServerFile serverFile = getServerFile();
 
         shareLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.SHARE, uniqueKey));
         deleteLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DELETE, uniqueKey));
         downloadLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.DOWNLOAD, uniqueKey));
-        fileInfoLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.FILE_INFO, uniqueKey, serverFile));
+        fileInfoLayout.setOnClickListener(v -> setOptionAndDismiss(FileOption.FILE_INFO, uniqueKey));
 
         if (!isOfflineFragment()) {
             SwitchCompat offlineSwitch = view.findViewById(R.id.offline_switch);
@@ -83,10 +82,6 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
         }
     }
 
-    private ServerFile getServerFile() {
-        return getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
-    }
-
     private String getFileUniqueKey() {
         ServerFile file = getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
         return file.getUniqueKey();
@@ -100,17 +95,9 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
         BusProvider.getBus().post(new FileOptionClickEvent(type, uniqueKey));
     }
 
-    public void setOption(@FileOption.Types int type, String uniqueKey, ServerFile serverFile) {
-        BusProvider.getBus().post(new FileOptionClickEvent(type, uniqueKey, serverFile));
-    }
 
     public void setOptionAndDismiss(@FileOption.Types int type, String uniqueKey) {
         setOption(type, uniqueKey);
-        dismiss();
-    }
-
-    public void setOptionAndDismiss(@FileOption.Types int type, String uniqueKey, ServerFile serverFile) {
-        setOption(type, uniqueKey, serverFile);
         dismiss();
     }
 

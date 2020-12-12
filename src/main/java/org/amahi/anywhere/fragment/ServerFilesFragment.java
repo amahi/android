@@ -241,7 +241,6 @@ public class ServerFilesFragment extends Fragment implements
     public void onFileOptionSelected(FileOptionClickEvent event) {
         selectedFileOption = event.getFileOption();
         String uniqueKey = event.getFileUniqueKey();
-        ServerFile serverFile = event.getServerFile();
 
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
@@ -272,7 +271,7 @@ public class ServerFilesFragment extends Fragment implements
                 changeOfflineState(false);
 
             case FileOption.FILE_INFO:
-                showFileInfo(uniqueKey, serverFile);
+                showFileInfo(uniqueKey);
 
         }
     }
@@ -448,12 +447,11 @@ public class ServerFilesFragment extends Fragment implements
         }
     }
 
-    private void showFileInfo(String uniqueKey, ServerFile serverFile) {
+    private void showFileInfo(String uniqueKey) {
         AlertDialogFragment fileInfoDialog = new AlertDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.FILE_INFO_DIALOG);
         bundle.putSerializable("file_unique_key", uniqueKey);
-        bundle.putParcelable(Fragments.Arguments.SERVER_FILE, serverFile);
         fileInfoDialog.setArguments(bundle);
         fileInfoDialog.setTargetFragment(this, 2);
         fileInfoDialog.show(getFragmentManager(), "file_info_dialog");

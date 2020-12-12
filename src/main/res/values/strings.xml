@@ -191,7 +191,7 @@
     <string name="download_channel" translatable="false">File Download</string>
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
 
-    <!--    Languages-->
+<!--    Languages-->
 
     <string name="language_en">English</string>
     <string name="language_fr">French</string>

@@ -854,11 +854,20 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == R.id.menu_sort) {
+        int id = menuItem.getItemId();
+        if (id == R.id.menu_sort) {
             showSortOptions();
+            return true;
+        } else if (id == R.id.menu_filter) {
+            showFilterOptions();
             return true;
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    private void showFilterOptions() {
+        Fragments.Builder.buildFileFilterOptionsDialogFragment()
+            .show(getChildFragmentManager(), "file_filter_options_dialog");
     }
 
     private void showSortOptions() {

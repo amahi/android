@@ -54,6 +54,7 @@
     <string name="menu_open">OPEN</string>
     <string name="menu_audio_files">Files</string>
     <string name="menu_video_subtitle">Subtitles</string>
+    <string name="menu_filter">Filter</string>
 
     <string name="media_route_menu_item" translatable="false">cast</string>
 
@@ -343,7 +344,7 @@
     <string name="rate_dialog_cancel">Remind Me Later</string>
     <string name="rate_dialog_no">No, Thanks</string>
 
-    <!--    File Options Sheet Dialog-->
+    <!--    Files Sort Options Sheet Dialog-->
     <string name="file_info">File info</string>
     <string name="sort_by">SORT BY</string>
     <string name="file_name_a_z">File name (A to Z)</string>
@@ -353,6 +354,15 @@
     <string name="size_largest">Size (largest first)</string>
     <string name="size_smallest">Size (smallest first)</string>
     <string name="file_type">File type</string>
+
+    <!--    Files Filter Options Sheet Dialog-->
+    <string name="filter_by">Filter By</string>
+    <string name="all_files">All</string>
+    <string name="documents_only">Documents</string>
+    <string name="videos_only">Videos</string>
+    <string name="photos_only">Photos</string>
+    <string name="audio_only">Audios</string>
+
 
     <string name="message_toast_press_back_again">Press back again to exit</string>
 

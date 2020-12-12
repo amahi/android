@@ -10,20 +10,15 @@ import android.app.AlertDialog;
 
 import androidx.fragment.app.DialogFragment;
 
-import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.db.repositories.FileInfoRepository;
-import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.util.Fragments;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class AlertDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     File file;
@@ -42,6 +37,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         builder = new android.app.AlertDialog.Builder(getActivity());
+
         if (getArguments() != null) {
             dialogType = getArguments().getInt(Fragments.Arguments.DIALOG_TYPE);
             fileUniqueKey = getArguments().getString(Fragments.Arguments.FILE_UNIQUE_KEY);
@@ -79,18 +75,14 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
         file = (File) getArguments().getSerializable("file");
         builder.setTitle(getString(R.string.message_duplicate_file_upload))
             .setIcon(R.drawable.ic_duplicate_dialog)
-            .setMessage(getString(R.string.message_duplicate_file_upload_body))
+            .setMessage(getString(R.string.message_duplicate_file_upload_body, file.getName()))
             .setPositiveButton(getString(R.string.button_yes), this)
             .setNegativeButton(getString(R.string.button_no), this);
     }
-
     private void buildFileInfoDialog() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.file_info_dialog, null);
-
         TextView lastOpened = view.findViewById(R.id.text_last_opened);
-
         lastOpened.setText(getFileLastOpened());
-
         builder.setTitle(getString(R.string.title_file_info))
             .setIcon(R.drawable.ic_info_dialog)
             .setPositiveButton(getString(R.string.text_ok), this);

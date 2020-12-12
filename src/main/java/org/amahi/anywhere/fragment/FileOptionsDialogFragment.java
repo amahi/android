@@ -95,10 +95,8 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
         BusProvider.getBus().post(new FileOptionClickEvent(type, uniqueKey));
     }
 
-
     public void setOptionAndDismiss(@FileOption.Types int type, String uniqueKey) {
         setOption(type, uniqueKey);
         dismiss();
     }
-
 }

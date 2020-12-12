@@ -241,7 +241,6 @@ public class ServerFilesFragment extends Fragment implements
     public void onFileOptionSelected(FileOptionClickEvent event) {
         selectedFileOption = event.getFileOption();
         String uniqueKey = event.getFileUniqueKey();
-
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
                 if (Android.isPermissionRequired()) {

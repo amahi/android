@@ -358,10 +358,10 @@
     <!--    Files Filter Options Sheet Dialog-->
     <string name="filter_by">Filter By</string>
     <string name="all_files">All</string>
-    <string name="documents_only">Documents</string>
-    <string name="videos_only">Videos</string>
-    <string name="photos_only">Photos</string>
-    <string name="audio_only">Audios</string>
+    <string name="documents_only">Document</string>
+    <string name="videos_only">Video</string>
+    <string name="photos_only">Photo</string>
+    <string name="audio_only">Audio</string>
 
 
     <string name="message_toast_press_back_again">Press back again to exit</string>

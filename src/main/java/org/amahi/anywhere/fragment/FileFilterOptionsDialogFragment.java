@@ -18,13 +18,11 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileFilterOptionClickEvent;
 import org.amahi.anywhere.model.FileFilterOption;
-import org.amahi.anywhere.util.Constants;
+import org.amahi.anywhere.util.Preferences;
 
 public class FileFilterOptionsDialogFragment extends BottomSheetDialogFragment {
 
     private TextView textFilterAllFiles, textFilterDocumentsOnly, textFilterVideosOnly, textFilterAudioOnly, textFilterPhotosOnly;
-    @FileFilterOption.Types
-    private int filesFilter;
 
     @Nullable
     @Override
@@ -47,9 +45,10 @@ public class FileFilterOptionsDialogFragment extends BottomSheetDialogFragment {
 
         setUpClickListeners();
 
-        setUpSelectedItem(savedInstanceState);
+        setUpSelectedItem();
 
     }
+
 
     private void setUpViews(View view) {
 
@@ -80,16 +79,11 @@ public class FileFilterOptionsDialogFragment extends BottomSheetDialogFragment {
         textFilterPhotosOnly.setOnClickListener(v -> setOptionAndDismiss(FileFilterOption.PICS));
     }
 
-    private void setUpSelectedItem(Bundle savedInstanceState) {
-        int type;
+    private void setUpSelectedItem() {
 
-        if (savedInstanceState != null) {
-            type = savedInstanceState.getInt(Constants.FILTERING_OPTION);
-        } else {
-            type = FileFilterOption.All;
-        }
+        int filterOption = Preferences.getFilterOption(getContext());
 
-        switch (type) {
+        switch (filterOption) {
             case FileFilterOption.All:
                 setItemChecked(textFilterAllFiles);
                 break;
@@ -117,16 +111,10 @@ public class FileFilterOptionsDialogFragment extends BottomSheetDialogFragment {
     }
 
     private void setOptionAndDismiss(@FileFilterOption.Types int type) {
-        filesFilter = type;
+
         BusProvider.getBus().post(new FileFilterOptionClickEvent(type));
         dismiss();
 
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(Constants.FILTERING_OPTION, filesFilter);
     }
 
 }

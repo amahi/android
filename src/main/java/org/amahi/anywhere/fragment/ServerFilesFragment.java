@@ -220,6 +220,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpDefaults() {
         filesSort = Preferences.getSortOption(getContext());
+        resetFilter();
     }
 
     private void setUpProgressDialog() {
@@ -780,6 +781,7 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public void onRefresh() {
+        resetFilter();
         if (!isOfflineFragment()) {
             setUpFilesContent();
         } else {
@@ -881,7 +883,7 @@ public class ServerFilesFragment extends Fragment implements
 
     @Subscribe
     public void onFileSortOptionSelected(FileSortOptionClickEvent event) {
-
+        resetFilter();
         filesSort = event.getSortOption();
         saveSortOption(filesSort);
         setUpFilesContentSort();
@@ -892,8 +894,13 @@ public class ServerFilesFragment extends Fragment implements
     public void onFileFilterOptionSelected(FileFilterOptionClickEvent event) {
 
         filesFilter = event.getFilterOption();
+        saveFilterOption(filesFilter);
         setUpFilesContentFilter();
 
+    }
+
+    private void saveFilterOption(int filesFilter) {
+        Preferences.setFilterOption(getContext(), filesFilter);
     }
 
     private void setUpFilesContentFilter() {
@@ -920,12 +927,17 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public boolean onQueryTextChange(String s) {
+        resetFilter();
         if (!isMetadataAvailable()) {
             getFilesAdapter().getFilter().filter(s);
         } else {
             getFilesMetadataAdapter().getFilter().filter(s);
         }
         return true;
+    }
+
+    private void resetFilter() {
+        Preferences.setFilterOption(getContext(), FileFilterOption.All);
     }
 
     private void collapseSearchView() {

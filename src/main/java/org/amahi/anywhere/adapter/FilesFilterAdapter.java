@@ -32,6 +32,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.l4digital.fastscroll.FastScroller;
 
+import org.amahi.anywhere.model.FileFilterOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -209,4 +210,19 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         }
     }
 
+    public void setFilter(@FileFilterOption.Types int filterOption) {
+        filteredFiles = filter(files, filterOption);
+        notifyDataSetChanged();
+    }
+
+    private List<ServerFile> filter(List<ServerFile> dataList, @FileFilterOption.Types int filterOption) {
+        if (filterOption == FileFilterOption.All) return files;
+        List<ServerFile> filteredDataList = new ArrayList<>();
+        for (ServerFile dataFromDataList : dataList) {
+            if (filterOption == Mimes.matchCategory(dataFromDataList.getMime())) {
+                filteredDataList.add(dataFromDataList);
+            }
+        }
+        return filteredDataList;
+    }
 }

@@ -2,14 +2,16 @@ package org.amahi.anywhere.model;
 
 import androidx.annotation.IntDef;
 
+import org.amahi.anywhere.util.Mimes;
+
 public class FileFilterOption {
 
     //Specifying positions to be on the Filtering selection dialog
     public static final int All = 0;
-    public static final int DOCS = 1;
-    public static final int VID = 2;
-    public static final int AUD = 3;
-    public static final int PICS = 4;
+    public static final int DOCS = Mimes.Type.DOCUMENT;
+    public static final int VID = Mimes.Type.VIDEO;
+    public static final int AUD = Mimes.Type.AUDIO;
+    public static final int PICS = Mimes.Type.IMAGE;
 
     @Types
     private int type;

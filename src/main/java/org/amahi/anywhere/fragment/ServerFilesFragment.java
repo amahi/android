@@ -68,6 +68,7 @@ import org.amahi.anywhere.adapter.FilesFilterAdapter;
 import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileFilterOptionClickEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.FileOptionClickEvent;
 import org.amahi.anywhere.bus.FileSortOptionClickEvent;
@@ -80,6 +81,7 @@ import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.model.FileFilterOption;
 import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.model.FileSortOption;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -136,6 +138,8 @@ public class ServerFilesFragment extends Fragment implements
 
     @FileSortOption.Types
     private int filesSort = FileSortOption.TIME_DES;
+    @FileFilterOption.Types
+    private int filesFilter = FileFilterOption.All;
 
     private OfflineFileRepository mOfflineFileRepo;
     private @FileOption.Types
@@ -882,6 +886,19 @@ public class ServerFilesFragment extends Fragment implements
         saveSortOption(filesSort);
         setUpFilesContentSort();
 
+    }
+
+    @Subscribe
+    public void onFileFilterOptionSelected(FileFilterOptionClickEvent event) {
+
+        filesFilter = event.getFilterOption();
+        setUpFilesContentFilter();
+
+    }
+
+    private void setUpFilesContentFilter() {
+
+        getListAdapter().setFilter(filesFilter);
     }
 
     private void saveSortOption(int sortOption) {

@@ -18,10 +18,13 @@ import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileFilterOptionClickEvent;
 import org.amahi.anywhere.model.FileFilterOption;
+import org.amahi.anywhere.util.Constants;
 
 public class FileFilterOptionsDialogFragment extends BottomSheetDialogFragment {
 
     private TextView textFilterAllFiles, textFilterDocumentsOnly, textFilterVideosOnly, textFilterAudioOnly, textFilterPhotosOnly;
+    @FileFilterOption.Types
+    private int filesFilter;
 
     @Nullable
     @Override
@@ -43,6 +46,8 @@ public class FileFilterOptionsDialogFragment extends BottomSheetDialogFragment {
         setUpViews(view);
 
         setUpClickListeners();
+
+        setUpSelectedItem(savedInstanceState);
 
     }
 
@@ -75,15 +80,15 @@ public class FileFilterOptionsDialogFragment extends BottomSheetDialogFragment {
         textFilterPhotosOnly.setOnClickListener(v -> setOptionAndDismiss(FileFilterOption.PICS));
     }
 
-    public void setItemChecked(TextView textView) {
+    private void setUpSelectedItem(Bundle savedInstanceState) {
+        int type;
 
-        Drawable dw = getResources().getDrawable(R.drawable.ic_check);
-        textView.setCompoundDrawablesWithIntrinsicBounds(null, null, dw, null);
-        textView.setTextColor(getResources().getColor(R.color.accent));
+        if (savedInstanceState != null) {
+            type = savedInstanceState.getInt(Constants.FILTERING_OPTION);
+        } else {
+            type = FileFilterOption.All;
+        }
 
-    }
-
-    private void setOptionAndDismiss(@FileFilterOption.Types int type) {
         switch (type) {
             case FileFilterOption.All:
                 setItemChecked(textFilterAllFiles);
@@ -101,8 +106,27 @@ public class FileFilterOptionsDialogFragment extends BottomSheetDialogFragment {
                 setItemChecked(textFilterPhotosOnly);
                 break;
         }
+    }
+
+    public void setItemChecked(TextView textView) {
+
+        Drawable dw = getResources().getDrawable(R.drawable.ic_check);
+        textView.setCompoundDrawablesWithIntrinsicBounds(null, null, dw, null);
+        textView.setTextColor(getResources().getColor(R.color.accent));
+
+    }
+
+    private void setOptionAndDismiss(@FileFilterOption.Types int type) {
+        filesFilter = type;
         BusProvider.getBus().post(new FileFilterOptionClickEvent(type));
         dismiss();
 
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(Constants.FILTERING_OPTION, filesFilter);
+    }
+
 }

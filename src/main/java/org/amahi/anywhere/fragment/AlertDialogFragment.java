@@ -29,7 +29,6 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     File file;
     private int dialogType = -1;
     private String fileUniqueKey;
-    private ServerFile serverFile;
     AlertDialog.Builder builder;
     public static final int DELETE_FILE_DIALOG = 0;
     public static final int DUPLICATE_FILE_DIALOG = 1;
@@ -46,7 +45,6 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
         if (getArguments() != null) {
             dialogType = getArguments().getInt(Fragments.Arguments.DIALOG_TYPE);
             fileUniqueKey = getArguments().getString(Fragments.Arguments.FILE_UNIQUE_KEY);
-            serverFile = getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
         }
 
         switch (dialogType) {
@@ -89,20 +87,9 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     private void buildFileInfoDialog() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.file_info_dialog, null);
 
-        TextView lastOpened = view.findViewById(R.id.text_file_last_opened);
-        TextView lastModified = view.findViewById(R.id.text_file_last_modified);
-        TextView fileName = view.findViewById(R.id.text_file_name);
-        TextView fileSize = view.findViewById(R.id.text_file_size);
-        TextView fileType = view.findViewById(R.id.text_file_type);
-
-        Date d = serverFile.getModificationTime();
-        SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
+        TextView lastOpened = view.findViewById(R.id.text_last_opened);
 
         lastOpened.setText(getFileLastOpened());
-        lastModified.setText(dt.format(d));
-        fileName.setText(serverFile.getName());
-        fileSize.setText(Formatter.formatFileSize(getContext(), serverFile.getSize()));
-        fileType.setText(serverFile.getExtension().toUpperCase());
 
         builder.setTitle(getString(R.string.title_file_info))
             .setIcon(R.drawable.ic_info_dialog)

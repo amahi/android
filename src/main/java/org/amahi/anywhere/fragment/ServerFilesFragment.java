@@ -883,7 +883,7 @@ public class ServerFilesFragment extends Fragment implements
 
     @Subscribe
     public void onFileSortOptionSelected(FileSortOptionClickEvent event) {
-        resetFilter();
+
         filesSort = event.getSortOption();
         saveSortOption(filesSort);
         setUpFilesContentSort();
@@ -905,7 +905,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpFilesContentFilter() {
 
-        getListAdapter().setFilter(filesFilter);
+        getFilesAdapter().setFilter(filesFilter);
     }
 
     private void saveSortOption(int sortOption) {
@@ -914,9 +914,9 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpFilesContentSort() {
         if (!isMetadataAvailable()) {
-            getFilesAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())));
+            getFilesAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())), sortFiles(getFilesAdapter().getFilteredFiles()));
         } else {
-            getFilesMetadataAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())));
+            getFilesMetadataAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())), sortFiles(getFilesAdapter().getFilteredFiles()));
         }
     }
 

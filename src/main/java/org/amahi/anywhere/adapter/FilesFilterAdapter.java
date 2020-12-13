@@ -20,7 +20,9 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -53,6 +55,7 @@ import java.util.List;
  */
 public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable, FastScroller.SectionIndexer {
 
+    static final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.parseColor("#be5e00"));
     static String queryString;
     protected ServerFileClickListener mListener;
     protected int selectedPosition = RecyclerView.NO_POSITION;
@@ -95,12 +98,24 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         notifyDataSetChanged();
     }
 
+    public void replaceWith(ServerShare serverShare, List<ServerFile> files, List<ServerFile> filteredFiles) {
+        this.files = files;
+        this.filteredFiles = filteredFiles;
+        this.serverShare = serverShare;
+
+        notifyDataSetChanged();
+    }
+
 
     public void removeFile(int position) {
         ServerFile serverFile = filteredFiles.get(position);
         this.filteredFiles.remove(serverFile);
         this.files.remove(serverFile);
         notifyDataSetChanged();
+    }
+
+    public List<ServerFile> getFilteredFiles() {
+        return filteredFiles;
     }
 
     @Override

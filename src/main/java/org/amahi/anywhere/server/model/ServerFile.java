@@ -36,7 +36,7 @@ import java.util.Date;
 /**
  * File API resource.
  */
-public class ServerFile implements Parcelable {
+public class ServerFile implements Parcelable, Comparable<ServerFile> {
     public static final Creator<ServerFile> CREATOR = new Creator<ServerFile>() {
         @Override
         public ServerFile createFromParcel(Parcel parcel) {
@@ -234,5 +234,10 @@ public class ServerFile implements Parcelable {
         }
 
         return modificationTime.equals(file.modificationTime);
+    }
+
+    @Override
+    public int compareTo(ServerFile o) {
+        return 0;
     }
 }

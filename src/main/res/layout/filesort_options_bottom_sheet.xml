@@ -13,9 +13,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
             android:paddingTop="4dp"
-            android:paddingEnd="0dp"
+            android:paddingRight="0dp"
             android:paddingBottom="4dp"
             android:text="@string/sort_by"
             android:textColor="@android:color/black"

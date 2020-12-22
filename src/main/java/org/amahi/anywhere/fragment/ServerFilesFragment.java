@@ -748,7 +748,7 @@ public class ServerFilesFragment extends Fragment implements
         SwipeRefreshLayout refreshLayout = getRefreshLayout();
 
         refreshLayout.setProgressBackgroundColorSchemeResource(R.color.accent);
-        refreshLayout.setColorSchemeResources(       
+        refreshLayout.setColorSchemeResources(
             android.R.color.white);
 
         refreshLayout.setOnRefreshListener(this);
@@ -854,14 +854,11 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-
-            case R.id.menu_sort:
-                showSortOptions();
-                return true;
-            default:
-                return super.onOptionsItemSelected(menuItem);
+        if (menuItem.getItemId() == R.id.menu_sort) {
+            showSortOptions();
+            return true;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     private void showSortOptions() {

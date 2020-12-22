@@ -682,18 +682,16 @@ public class ServerFileVideoActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            case R.id.menu_subtitle:
-                menuItem.setChecked(!menuItem.isChecked());
-                enableSubtitles(menuItem.isChecked());
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
+        int itemId = menuItem.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+            return true;
+        } else if (itemId == R.id.menu_subtitle) {
+            menuItem.setChecked(!menuItem.isChecked());
+            enableSubtitles(menuItem.isChecked());
+            return true;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     private void enableSubtitles(boolean enable) {

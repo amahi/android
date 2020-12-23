@@ -169,6 +169,8 @@
 
     <string name="alert_delete_dialog">Datei löschen</string>
     <string name="alert_delete_confirm">Sind Sie sicher?</string>
+    <string name="never_opened">Nie geöffnet</string>
+    <string name="last_opened">Zuletzt geöffnet</string>
 
     <string name="title_file_info">Datei-Info</string>
     <string name="text_ok">OK</string>

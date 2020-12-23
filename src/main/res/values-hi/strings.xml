@@ -123,6 +123,8 @@
     <string name="videos_in">वीडियो(रों)</string>
     <string name="alert_delete_dialog">फ़ाइल को हटाएं</string>
     <string name="alert_delete_confirm">क्या आपको यकीन है?</string>
+    <string name="never_opened">कभी नहीं खोला</string>
+    <string name="last_opened">अंतिम बार खोला गया</string>
     <string name="title_file_info">फाइल के बारे में</string>
     <string name="text_ok">ठीक</string>
     <string name="title_selected_server">सर्वर</string>

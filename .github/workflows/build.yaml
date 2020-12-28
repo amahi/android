@@ -17,6 +17,9 @@ jobs:
         with:
           java-version: 1.8
 
+      - name: Install NDK
+        run: echo "y" | sudo /usr/local/lib/android/sdk/tools/bin/sdkmanager --install "ndk;21.0.6113669" --sdk_root=${ANDROID_SDK_ROOT}
+
       # Step 1: Assemble debug apk 
       - name: Assemble Debug APK
         run: ./gradlew assembleDebug

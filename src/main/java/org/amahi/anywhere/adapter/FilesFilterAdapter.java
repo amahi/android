@@ -66,6 +66,7 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     private FilesFilter filesFilter;
     private onFilterListChange onFilterListChange;
     private AdapterMode adapterMode = AdapterMode.SERVER;
+    public boolean showShimmer = true;
 
     public <T extends onFilterListChange> void setFilterListChangeListener(T t) {
         this.onFilterListChange = t;
@@ -77,7 +78,8 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemCount() {
-        return filteredFiles.size();
+        int SHIMMER_ITEM_NUMBER = 10;
+        return showShimmer ? SHIMMER_ITEM_NUMBER : filteredFiles.size();
     }
 
     public ServerFile getItem(int i) {

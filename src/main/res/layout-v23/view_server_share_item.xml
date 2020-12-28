@@ -19,44 +19,49 @@
 
 
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/share_item_card"
+    style="@style/Widget.MaterialComponents.CardView"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/Widget.MaterialComponents.CardView"
-    android:focusable="true"
+    android:layout_margin="4dp"
     android:clickable="true"
+    android:focusable="true"
     android:foreground="?android:attr/selectableItemBackgroundBorderless"
     android:orientation="horizontal"
-    app:cardElevation="4dp"
     android:padding="8dp"
-    android:layout_margin="4dp"
-    >
+    app:cardElevation="4dp">
 
-    <LinearLayout
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_layout_file"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:layout_gravity="center_vertical">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="8"
-            android:maxLines="1"
-            android:textSize="@dimen/text_medium" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-        <ImageView
-            android:id="@+id/right_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_right_arrow_24dp"
-            tools:ignore="contentDescription" />
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="8"
+                android:background="@color/colorShimmer"
+                android:maxLines="1"
+                android:textSize="@dimen/text_medium" />
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/right_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@color/colorShimmer"
+                tools:ignore="contentDescription" />
 
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
 </androidx.cardview.widget.CardView>

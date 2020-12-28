@@ -146,6 +146,9 @@ dependencies {
     implementation 'com.airbnb.android:lottie:3.4.1'
     implementation "com.vorlonsoft:androidrate:1.2.1"
 
+//    Shimmer Effect
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
     implementation 'org.videolan:libvlc:2.1.16'
     implementation 'pub.devrel:easypermissions:3.0.0'
     testImplementation 'org.robolectric:robolectric:3.1.2'

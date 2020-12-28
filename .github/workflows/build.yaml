@@ -4,7 +4,7 @@ on: [pull_request, push]
 
 jobs:
   testing:
-    name: Lint Check and Testing
+    name: Testing
 
     runs-on: ubuntu-latest
 
@@ -17,18 +17,10 @@ jobs:
         with:
           java-version: 1.8
 
-      # Step 3: Check the code with Android linter
-      - name: Run Android Linter
-        run: ./gradlew lintStagingDebug
-
-      # Step 4: Run your unit tests
-      - name: Run Unit Tests
-        run: ./gradlew testStagingDebugUnitTest
-
-      # Step 4: Assemble debug apk 
+      # Step 1: Assemble debug apk 
       - name: Assemble Debug APK
-        run: ./gradlew assembleStagingDebug
+        run: ./gradlew assembleDebug
 
-      # Step 4: Assemble debug test apk
+      # Step 2: Assemble debug test apk
       - name: Assemble Debug Test APK
-        run: ./gradlew assembleStagingDebugAndroidTest
+        run: ./gradlew connectedDebugAndroidTest

@@ -1,10 +1,38 @@
-name: Build
-on: [pull_request, push]
+name: Testing Workflow
+
+# Step 1: Choose the branch or branches you want to run this workflow
+on:
+  pull_request:
+    branches:
+      - develop
+
 jobs:
-  build:
+  testing:
+    name: Lint Check and Testing
+
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v2
-      - name: Build the app
-        run: ./gradlew build
+      - name: Clone Repo
+        uses: actions/checkout@v1
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      # Step 3: Check the code with Android linter
+      - name: Run Android Linter
+        run: ./gradlew lintStagingDebug
+
+      # Step 4: Run your unit tests
+      - name: Run Unit Tests
+        run: ./gradlew testStagingDebugUnitTest
+
+      # Step 4: Assemble debug apk 
+      - name: Assemble Debug APK
+        run: ./gradlew assembleStagingDebug
+
+      # Step 4: Assemble debug test apk
+      - name: Assemble Debug Test APK
+        run: ./gradlew assembleStagingDebugAndroidTest

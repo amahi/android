@@ -20,9 +20,7 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -34,7 +32,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.l4digital.fastscroll.FastScroller;
 
-import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -97,13 +94,6 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         notifyDataSetChanged();
     }
 
-    public ForegroundColorSpan getFcs() {
-        if (AmahiApplication.getInstance().isLightThemeEnabled()) {
-            return new ForegroundColorSpan(Color.parseColor("#328ce7"));
-        } else {
-            return new ForegroundColorSpan(Color.parseColor("#FF9800"));
-        }
-    }
 
     public void removeFile(int position) {
         ServerFile serverFile = filteredFiles.get(position);

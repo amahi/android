@@ -29,7 +29,6 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     public static final int DUPLICATE_FILE_DIALOG = 1;
     public static final int SIGN_OUT_DIALOG = 3;
     public static final int FILE_INFO_DIALOG = 2;
-    public final String LAST_OPENED_NULL = getString(R.string.never_opened);
 
 
     @NonNull
@@ -92,7 +91,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     private String getFileLastOpened() {
         FileInfoRepository fileInfoRepository = new FileInfoRepository(getContext());
         if (fileInfoRepository.getFileInfo(fileUniqueKey) == null) {
-            return LAST_OPENED_NULL;
+            return getString(R.string.never_opened);
         }
         return fileInfoRepository.getFileInfo(fileUniqueKey).getLastOpened();
     }

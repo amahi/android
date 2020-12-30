@@ -25,19 +25,19 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.ConfigurationCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatDelegate;
-
-import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -310,7 +310,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private void setUpLanguage() {
-        LocaleHelper.setLocale(getContext(), getLanguage());
+        if (getLanguage().equals(getString(R.string.language_def_key))) {
+            LocaleHelper.setLocale(getContext(), ConfigurationCompat.getLocales(Resources.getSystem().getConfiguration()).get(0).getLanguage());
+        } else {
+            LocaleHelper.setLocale(getContext(), getLanguage());
+        }
         tearDownActivity();
     }
 

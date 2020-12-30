@@ -51,7 +51,7 @@
         android:name=".AmahiApplication"
         android:allowBackup="false"
         android:banner="@drawable/tv_banner"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/application_name"
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi"

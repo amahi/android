@@ -45,6 +45,8 @@
     <string name="language_bn">বাংলা</string>
     <string name="language_te">তেলেগু</string>
     <string name="language_pa">পাঞ্জাবি</string>
+    <string name="language_de">জার্মান</string>
+    <string name="language_hi">হিন্দি</string>
     <string name="media_route_menu_title">চালু করুন&amp;#8230</string>
     <string name="menu_audio_files">ফাইল</string>
     <string name="menu_back">পেছনে যান</string>
@@ -189,5 +191,4 @@
     <string name="notification_offline_download_error">ফাইল অফলাইনে উপলব্ধ করায় ত্রুটি</string>
     <string name="notification_offline_download_paused">ইন্টারনেটের জন্য অপেক্ষা করা  হচ্ছে</string>
     <string name="preference_entry_server_connection_local">LAN</string>
-
 </resources>

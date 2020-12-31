@@ -124,7 +124,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final ServerFileViewHolder fileHolder = (ServerFileViewHolder) holder;
 
-        if (showShimmer) {
+        if (isShowShimmer()) {
             fileHolder.shimmerFrameLayout.startShimmer();
         } else {
             final ServerFile file = filteredFiles.get(position);

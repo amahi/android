@@ -217,4 +217,11 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         }
     }
 
+    public void setShowShimmer(boolean showShimmer) {
+        this.showShimmer = showShimmer;
+    }
+
+    public boolean isShowShimmer() {
+        return showShimmer;
+    }
 }

@@ -46,6 +46,7 @@ import java.util.List;
  */
 public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapter.ServerShareViewHolder> implements FastScroller.SectionIndexer {
     private List<ServerShare> shares;
+
     private boolean showShimmer = true;
 
     public ServerSharesAdapter(Context context) {
@@ -120,5 +121,9 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
             textView = itemView.findViewById(R.id.text);
             imageView = itemView.findViewById(R.id.right_arrow);
         }
+    }
+
+    public void setShowShimmer(boolean showShimmer) {
+        this.showShimmer = showShimmer;
     }
 }

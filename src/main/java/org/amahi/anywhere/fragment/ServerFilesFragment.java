@@ -674,7 +674,7 @@ public class ServerFilesFragment extends Fragment implements
     @Subscribe
     public void onFilesLoaded(ServerFilesLoadedEvent event) {
         showFilesContent(event.getServerFiles());
-        getFilesAdapter().showShimmer = false;
+        getFilesAdapter().setShowShimmer(false);
     }
 
     private void showFilesContent(List<ServerFile> files) {

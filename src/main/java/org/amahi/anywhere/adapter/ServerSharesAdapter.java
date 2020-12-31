@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapter.ServerShareViewHolder> implements FastScroller.SectionIndexer {
     private List<ServerShare> shares;
-    public boolean showShimmer = true;
+    private boolean showShimmer = true;
 
     public ServerSharesAdapter(Context context) {
         this.shares = Collections.emptyList();

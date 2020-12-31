@@ -66,7 +66,8 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     private FilesFilter filesFilter;
     private onFilterListChange onFilterListChange;
     private AdapterMode adapterMode = AdapterMode.SERVER;
-    public boolean showShimmer = true;
+
+    private boolean showShimmer = true;
 
     public <T extends onFilterListChange> void setFilterListChangeListener(T t) {
         this.onFilterListChange = t;

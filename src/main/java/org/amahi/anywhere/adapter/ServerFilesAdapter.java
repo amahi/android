@@ -128,15 +128,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             fileHolder.shimmerFrameLayout.startShimmer();
         } else {
             final ServerFile file = filteredFiles.get(position);
-
-            fileHolder.shimmerFrameLayout.stopShimmer();
-            fileHolder.shimmerFrameLayout.setShimmer(null);
-            fileHolder.fileIconView.setBackground(null);
-            fileHolder.fileTextView.setBackground(null);
-            fileHolder.moreOptions.setBackground(null);
-            fileHolder.fileLastModified.setBackground(null);
-            fileHolder.fileSize.setBackground(null);
-
+            stopShimmer(fileHolder);
             if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
                 fileHolder.moreInfo.setVisibility(View.GONE);
                 fileHolder.moreOptions.setVisibility(View.GONE);
@@ -192,6 +184,16 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             });
         }
 
+    }
+
+    private void stopShimmer(ServerFileViewHolder fileHolder) {
+        fileHolder.shimmerFrameLayout.stopShimmer();
+        fileHolder.shimmerFrameLayout.setShimmer(null);
+        fileHolder.fileIconView.setBackground(null);
+        fileHolder.fileTextView.setBackground(null);
+        fileHolder.moreOptions.setBackground(null);
+        fileHolder.fileLastModified.setBackground(null);
+        fileHolder.fileSize.setBackground(null);
     }
 
     private boolean isFileDownloading(ServerFileViewHolder holder, ServerFile file, int position) {

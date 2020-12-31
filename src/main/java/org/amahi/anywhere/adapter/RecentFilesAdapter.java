@@ -26,6 +26,7 @@ import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.ServerFileClickListener;
 
@@ -59,13 +60,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         if (showShimmer) {
             holder.shimmerFrameLayout.startShimmer();
         } else {
-            holder.shimmerFrameLayout.stopShimmer();
-            holder.shimmerFrameLayout.setShimmer(null);
-            holder.fileIconView.setBackground(null);
-            holder.fileTextView.setBackground(null);
-            holder.moreOptions.setBackground(null);
-            holder.fileSize.setBackground(null);
-            holder.fileLastVisited.setBackground(null);
+            stopShimmer(holder);
             RecentFile file = recentFiles.get(position);
             setUpViewHolder(file, holder);
         }
@@ -76,9 +71,19 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         return recentFiles.get(selectedPosition).getName().subSequence(0, 1);
     }
 
+    private void stopShimmer(@NonNull RecentFilesViewHolder holder) {
+        holder.shimmerFrameLayout.stopShimmer();
+        holder.shimmerFrameLayout.setShimmer(null);
+        holder.fileIconView.setBackground(null);
+        holder.fileTextView.setBackground(null);
+        holder.moreOptions.setBackground(null);
+        holder.fileSize.setBackground(null);
+        holder.fileLastVisited.setBackground(null);
+    }
+
     private void setUpViewHolder(RecentFile file, RecentFilesViewHolder fileHolder) {
         Uri uri = Uri.parse(file.getUri());
-        String name = uri.getQueryParameter("p").substring(uri.getQueryParameter("p").lastIndexOf('/')+1);
+        String name = uri.getQueryParameter("p").substring(uri.getQueryParameter("p").lastIndexOf('/') + 1);
         String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(name.lastIndexOf(".") + 1));
         String size = Formatter.formatFileSize(context, file.getSize());
 
@@ -142,8 +147,11 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
 
     @Override
     public int getItemCount() {
-        int SHIMMER_ITEM_NUMBER = 20;
-        return showShimmer ? SHIMMER_ITEM_NUMBER : recentFiles.size();
+        if (showShimmer) {
+            return Constants.SHIMMER_ITEM_NUMBER;
+        } else {
+            return recentFiles.size();
+        }
     }
 
     public void removeFile(int selectedPosition) {

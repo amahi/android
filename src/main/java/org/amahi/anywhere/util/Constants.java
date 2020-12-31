@@ -46,4 +46,6 @@ public class Constants {
     public static final String welcomeToAmahi = "Welcome to Amahi";
 
     public static final String amahiAndroidUrl = "https://www.amahi.org/android";
+
+    public static final int SHIMMER_ITEM_NUMBER = 20;
 }

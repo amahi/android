@@ -71,7 +71,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         return recentFiles.get(selectedPosition).getName().subSequence(0, 1);
     }
 
-    private void stopShimmer(@NonNull RecentFilesViewHolder holder) {
+    private void stopShimmer(RecentFilesViewHolder holder) {
         holder.shimmerFrameLayout.stopShimmer();
         holder.shimmerFrameLayout.setShimmer(null);
         holder.fileIconView.setBackground(null);

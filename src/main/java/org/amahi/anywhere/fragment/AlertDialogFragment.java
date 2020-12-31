@@ -1,18 +1,15 @@
 package org.amahi.anywhere.fragment;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-
-import android.app.AlertDialog;
-
-import androidx.fragment.app.DialogFragment;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.db.repositories.FileInfoRepository;
@@ -78,6 +75,7 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
             .setPositiveButton(getString(R.string.button_yes), this)
             .setNegativeButton(getString(R.string.button_no), this);
     }
+
     private void buildFileInfoDialog() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.file_info_dialog, null);
         TextView lastOpened = view.findViewById(R.id.text_last_opened);

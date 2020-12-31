@@ -37,10 +37,11 @@ import java.util.Locale;
 
 public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.RecentFilesViewHolder> implements FastScroller.SectionIndexer {
 
-    private Context context;
-    private ServerFileClickListener mListener;
+    final private Context context;
+    final private ServerFileClickListener mListener;
     private List<RecentFile> recentFiles;
-    public boolean showShimmer = true;
+
+    private boolean showShimmer = true;
 
     public RecentFilesAdapter(Context context, List<RecentFile> recentFiles) {
         this.context = context;
@@ -177,5 +178,9 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
             moreInfo = itemView.findViewById(R.id.more_info);
             moreOptions = itemView.findViewById(R.id.more_options);
         }
+    }
+
+    public void setShowShimmer(boolean showShimmer) {
+        this.showShimmer = showShimmer;
     }
 }

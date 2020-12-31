@@ -156,7 +156,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
         recentFiles = getRecentFilesList();
         getRecentFileListView().setAdapter(new RecentFilesAdapter(this, recentFiles));
         showList(!recentFiles.isEmpty());
-        getListAdapter().showShimmer = false;
+        getListAdapter().setShowShimmer(false);
     }
 
     private List<RecentFile> getRecentFilesList() {

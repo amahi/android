@@ -78,7 +78,7 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemCount() {
-        int SHIMMER_ITEM_NUMBER = 10;
+        int SHIMMER_ITEM_NUMBER = 20;
         return showShimmer ? SHIMMER_ITEM_NUMBER : filteredFiles.size();
     }
 

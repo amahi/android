@@ -142,7 +142,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
 
     @Override
     public int getItemCount() {
-        int SHIMMER_ITEM_NUMBER = 10;
+        int SHIMMER_ITEM_NUMBER = 20;
         return showShimmer ? SHIMMER_ITEM_NUMBER : recentFiles.size();
     }
 

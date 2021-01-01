@@ -77,7 +77,6 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         holder.shimmerFrameLayout.setShimmer(null);
         holder.fileIconView.setBackground(null);
         holder.fileTextView.setBackground(null);
-        holder.moreOptions.setBackground(null);
         holder.fileSize.setBackground(null);
         holder.fileLastVisited.setBackground(null);
     }

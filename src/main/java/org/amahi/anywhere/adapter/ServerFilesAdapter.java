@@ -191,7 +191,6 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         fileHolder.shimmerFrameLayout.setShimmer(null);
         fileHolder.fileIconView.setBackground(null);
         fileHolder.fileTextView.setBackground(null);
-        fileHolder.moreOptions.setBackground(null);
         fileHolder.fileLastModified.setBackground(null);
         fileHolder.fileSize.setBackground(null);
     }

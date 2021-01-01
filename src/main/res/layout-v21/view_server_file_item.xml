@@ -18,19 +18,19 @@
   -->
 
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.MaterialComponents.CardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+    android:layout_margin="4dp"
     android:clickable="true"
     android:focusable="true"
-    style="@style/Widget.MaterialComponents.CardView"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
     android:orientation="horizontal"
-    app:cardCornerRadius="4dp"
-    app:cardElevation="4dp"
     android:padding="8dp"
-    android:layout_margin="4dp">
+    app:cardCornerRadius="4dp"
+    app:cardElevation="4dp">
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_layout_file"
@@ -47,19 +47,19 @@
                 android:id="@+id/icon"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                tools:ignore="contentDescription"
                 android:layout_marginEnd="8dp"
-                android:scaleType="centerCrop"
                 android:background="@color/colorShimmer"
-                android:tint="@color/icons"/>
+                android:scaleType="centerCrop"
+                android:tint="@color/icons"
+                tools:ignore="contentDescription" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
-                android:paddingEnd="0dp"
-                android:paddingStart="8dp">
+                android:paddingStart="8dp"
+                android:paddingEnd="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -71,32 +71,34 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
-                        android:paddingEnd="0dp"
-                        android:paddingStart="0dp"
+                        android:background="@color/colorShimmer"
                         android:ellipsize="end"
                         android:maxLines="1"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="0dp"
                         android:textColor="@color/primary_text"
-                        tools:text="File Name"
-                        android:background="@color/colorShimmer"
-                        android:textSize="@dimen/text_medium" />
+                        android:textSize="@dimen/text_medium"
+                        tools:text="File Name" />
 
                     <ImageView
                         android:id="@+id/more_options"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="8dp"
-                        tools:ignore="contentDescription"
                         android:paddingStart="8dp"
-                        android:background="@color/colorShimmer" />
+                        android:paddingEnd="8dp"
+                        android:src="@drawable/ic_more_vert"
+                        tools:ignore="contentDescription"
+                        android:visibility="gone" />
 
                     <ImageView
                         android:id="@+id/right_arrow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="8dp"
-                        tools:ignore="contentDescription"
                         android:paddingStart="8dp"
-                        android:visibility="gone"/>
+                        android:paddingEnd="8dp"
+                        android:src="@drawable/ic_right_arrow_24dp"
+                        android:visibility="gone"
+                        tools:ignore="contentDescription" />
 
                 </LinearLayout>
 
@@ -106,8 +108,8 @@
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingEnd="5dp"
                     android:paddingTop="5dp"
+                    android:paddingEnd="5dp"
                     tools:ignore="RtlSymmetry">
 
                     <TextView
@@ -115,20 +117,20 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:background="@color/colorShimmer"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:textColor="@color/secondary_text"
-                        android:background="@color/colorShimmer"
                         android:textSize="@dimen/text_micro" />
 
                     <TextView
                         android:id="@+id/file_size"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@color/colorShimmer"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:textColor="@color/secondary_text"
-                        android:background="@color/colorShimmer"
                         android:textSize="@dimen/text_micro" />
 
                 </LinearLayout>
@@ -139,8 +141,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:indeterminate="false"
-                    android:paddingEnd="8dp"
                     android:paddingStart="0dp"
+                    android:paddingEnd="8dp"
                     android:visibility="gone" />
 
             </LinearLayout>

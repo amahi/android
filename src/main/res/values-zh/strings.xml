@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_apps">应用</string>
+    <string name="title_settings">设定值</string>
+    <string name="title_shares">分享</string>
+    <string name="title_no_server">没有伺服器</string>
+    <string name="title_upload_list">上载</string>
+    <string name="title_offline_files">离线文件</string>
+    <string name="title_recent_files">最近的文件</string>
+
+    <string name="button_search_application">搜索Google Play</string>
+    <string name="button_sign_in">登入</string>
+    <string name="button_yes">是</string>
+    <string name="button_no">没有</string>
+    <string name="button_retry">重试</string>
+
+    <string name="hint_password">密码</string>
+    <string name="hint_username">用户名</string>
+
+    <string name="menu_back">背部</string>
+    <string name="menu_forward">前锋</string>
+    <string name="menu_navigation_close">关闭导航</string>
+    <string name="menu_navigation_open">打开导航</string>
+    <string name="menu_settings">设定值</string>
+    <string name="menu_share">分享</string>
+    <string name="menu_save">保存到设备</string>
+    <string name="menu_delete">删除</string>
+    <string name="menu_offline">离线</string>
+    <string name="menu_sort">分类</string>
+    <string name="menu_search">搜索</string>
+    <string name="menu_open">打开</string>
+    <string name="menu_audio_files">档案</string>
+    <string name="menu_video_subtitle">字幕</string>
+
+    <string name="message_empty_apps">没有应用</string>
+    <string name="message_empty_files">没有文件</string>
+    <string name="message_empty_shares">没有分享</string>
+    <string name="message_empty_recent_files">没有最近的档案</string>
+
+    <string name="message_error_account_exists">账户已存在。</string>
+    <string name="message_error_search_application">我们尚未找到此文件的任何受支持的应用程序。</string>
+    <string name="forgot_password"><a href="https://www.amahi.org/forgot">忘记密码了吗？</a></string>
+    <string name="message_error_authentication">用户名或密码不正确。请重试。</string>
+    <string name="message_error_authentication_connection">连接错误。请检查您的设置，然后重试。</string>
+    <string name="message_error_authentication_field_empty">用户名或密码字段不能为空。</string>
+    <string name="message_error_connection">连接错误</string>
+    <string name="message_tap_to_retry">点按重试</string>
+    <string name="message_error_video">播放视频时出错</string>
+    <string name="message_error_amahi_anywhere_app">服务器中的Amahi Anywhere应用程序无法访问。请确保您的网络中已安装，运行并可以访问Amahi Anywhere应用程序。</string>
+    <string name="message_resume_last_position">您要从停止的地方继续吗？</string>
+
+    <string name="message_notice_create_some">创建一些，然后重试</string>
+    <string name="message_notice_visit_some">造访一些，然后再试一次</string>
+
+    <string name="message_progress_file_downloading">下载文件</string>
+    <string name="message_progress_file_preparing">准备好的文件</string>
+    <string name="message_no_files">文件下载出现在这里</string>
+    <string name="message_create_and_try_again">Find files to download</string>
+    <string name="message_connection_error">连接错误</string>
+    <string name="message_connect_and_try_again">请连接到互联网，然后重试。</string>
+    <string name="message_connect_to_server_and_try_again">请连接到服务器，然后重试。</string>
+
+    <string name="message_delete_file_title">确认删除文件？</string>
+    <string name="message_delete_file_body">此操作无法撤消。</string>
+    <string name="message_delete_progress">删除</string>
+    <string name="message_delete_file_error">删除文件时发生一些错误。</string>
+    <string name="message_file_upload">选择要上传的文件</string>
+    <string name="message_file_upload_title">使用文件...</string>
+    <string name="message_file_upload_complete">文件上传成功</string>
+    <string name="message_file_upload_error">上传文件时出错。</string>
+    <string name="message_duplicate_file_upload">覆盖现有文件？</string>
+    <string name="message_duplicate_file_upload_body">文件％1 $ s已经存在。\ n确定要替换现有文件吗？</string>
+    <string name="notification_upload_title">上传新图片</string>
+    <string name="message_upload_success">上传完成</string>
+    <string name="message_upload_error">上传失败</string>
+    <string name="message_file_download_complete">文件下载成功</string>
+    <string name="message_offline_file_deleted">离线文件删除成功</string>
+    <string name="notification_download_offline_title">使离线可用</string>
+    <string name="notification_offline_download_complete">文件可离线使用</string>
+    <string name="notification_offline_download_paused">等待上网</string>
+    <string name="notification_offline_download_error">使文件脱机可用时出错</string>
+
+    <string name="share_subject">Check out my Amahi home server!</string>
+    <string name="share_message">我使用Amahi Home Server来存储，备份和流式传输所有文件。 \ n \ n看看！\ n \ n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
+    <string name="title_version_settings">Amahi for Android</string>
+    <string name="message_no_search_result">找不到搜索结果</string>
+    <string name="application_not_found">未找到处理程序应用程序</string>
+    <string name="message_logout">成功注销。</string>
+    <string name="share_screen_title">分享使用</string>
+    <string name="share_permission">必须具有存储权限，才能下载文件。</string>
+    <string name="share_permission_denied">您已拒绝存储权限。启用以继续。</string>
+    <string name="file_upload_permission">必须具有文件读取权限才能访问设备上的文件。</string>
+    <string name="file_upload_permission_denied">您已拒绝读取文件的权限。启用以继续。</string>
+    <string name="camera_permission">捕获照片和视频需要使用摄像头。</string>
+
+    <string name="label_previous">以前</string>
+    <string name="label_next">下一个</string>
+    <string name="label_play">玩</string>
+    <string name="label_pause">暂停</string>
+    <string name="media_route_menu_title">继续玩&#8230;</string>
+
+    <string name="upload_camera">使用相机</string>
+    <string name="upload_file">上传文件</string>
+
+    <!--ANDROID TV RELATED STRINGS-->
+    <string name="app_title" translatable="false">阿玛希电视</string>
+    <string name="exit_title">出口</string>
+    <string name="exit_message">你确定你要退出吗？</string>
+    <string name="sign_out_title">登出</string>
+    <string name="sign_out_message">您确定要退出吗？</string>
+    <string name="cancel">取消</string>
+    <string name="yes">是</string>
+    <string name="no">没有</string>
+
+    <!--Introduction TV activity strings-->
+    <string name="intro_tv_1">欢迎使用Amahi进行Android TV</string>
+    <string name="intro_phone_1">欢迎使用Amahi for Android</string>
+    <string name="intro_desc_phone_1">一个Android应用程序，可让您访问Amahi Home Server中的文件。</string>
+
+    <string name="intro_title_2">访问您的HDA</string>
+    <string name="intro_desc_2">Amahi可让您播放视频，查看照片，听音乐等等！</string>
+
+    <string name="intro_title_3">浏览您的照片</string>
+    <string name="intro_desc_tv_3">快速以惊人的分辨率浏览电视中的音乐库。</string>
+    <string name="intro_desc_phone_3">轻松浏览照片库，直接从手机上载照片。</string>
+
+    <string name="intro_title_4">播放音乐</string>
+    <string name="intro_desc_tv_4">在电视上聆听音乐库，非常适合举办聚会或放松自己喜欢的音乐。</string>
+    <string name="intro_desc_phone_4">在家中或路上聆听音乐库。</string>
+
+    <string name="intro_title_5">播放电影和视频库</string>
+    <string name="intro_desc_tv_5">以惊人的全分辨率在大屏幕上观看视频和电影库。</string>
+    <string name="intro_desc_phone_5">随时在手机上观看视频和电影库。</string>
+
+    <string name="intro_title_6">准备</string>
+    <string name="intro_desc_6">一切准备就绪。感谢您使用Amahi。</string>
+
+    <string name="introducing_cast">演员表介绍</string>
+
+    <string name="unknown_artist">未知的艺术家</string>
+    <string name="android_amahi_anywhere" translatable="false">Android Amahi Anywhere</string>
+    <string name="enable">启用</string>
+    <string name="disable">禁用</string>
+    <string name="settings">设定值</string>
+    <string name="header_settings">设定值</string>
+    <string name="songs_in">内有歌曲 </string>
+    <string name="videos_in">中的视频 </string>
+
+    <string name="alert_delete_dialog">删除文件</string>
+    <string name="alert_delete_confirm">你确定吗？</string>
+
+    <string name="title_file_info">文件信息</string>
+    <string name="text_ok">OK</string>
+
+    <string name="title_selected_server">台服务器</string>
+
+    <string name="stop_the_audio" translatable="false">"停止音频"</string>
+    <string name="play_the_audio" translatable="false">"播放音频"</string>
+    <string name="pause_the_audio" translatable="false">"暂停音频"</string>
+    <string name="upload" translatable="false">"上载"</string>
+    <string name="sign_in" translatable="false">"登入"</string>
+
+    <string name="upload_channel" translatable="false">上传文件</string>
+    <string name="upload_channel_desc" translatable="false">显示文件上传进度</string>
+
+    <string name="download_channel" translatable="false">档案下载</string>
+    <string name="download_channel_desc" translatable="false">显示文件下载进度</string>
+
+    <!--    Languages-->
+
+    <string name="language_en">英语</string>
+    <string name="language_fr">法文</string>
+    <string name="language_es">西班牙文</string>
+    <string name="language_bn">孟加拉</string>
+    <string name="language_de">德语</string>
+    <string name="language_te">泰卢固语</string>
+    <string name="language_hi">印地语</string>
+    <string name="preference_category_about">关于</string>
+    <string name="preference_category_account">帐户</string>
+    <string name="preference_category_settings">设定值</string>
+    <string name="preference_category_general">一般</string>
+
+    <string name="preference_title_about_feedback">反馈</string>
+    <string name="preference_title_about_rating">率</string>
+    <string name="preference_title_about_version">版</string>
+    <string name="preference_title_about_intro">介绍</string>
+    <string name="preference_title_account_sign_out">登出</string>
+    <string name="preference_title_server_connection">连接</string>
+    <string name="preference_title_tell_a_friend">告诉一个朋友</string>
+    <string name="preference_title_upload_settings">自动上传照片</string>
+    <string name="preference_title_language">语言</string>
+
+    <string name="preference_title_upload_server">选择服务器</string>
+    <string name="preference_title_upload_share">选择分享</string>
+    <string name="preference_title_upload_location">上传位置</string>
+    <string name="preference_title_upload_data">允许蜂窝数据</string>
+
+    <string name="preference_summary_server">选择服务器</string>
+    <string name="preference_summary_share">选择分享</string>
+    <string name="preference_summary_location">选择地点</string>
+
+    <string name="preference_message_no_server">"未选择服务器"</string>
+    <string name="preference_message_no_share">"未选择共享"</string>
+
+    <string name="preference_entry_server_connection_auto">自动侦测</string>
+    <string name="preference_entry_server_connection_remote">远程</string>
+    <string name="preference_entry_server_connection_local">局域网</string>
+
+    <string name="preference_key_about_feedback" translatable="false">应用反馈</string>
+    <string name="preference_key_about_rating" translatable="false">应用等级</string>
+    <string name="preference_key_about_version" translatable="false">应用版本</string>
+    <string name="preference_key_about_intro" translatable="false">应用介绍</string>
+    <string name="preference_key_account_sign_out" translatable="false">帐户登出</string>
+    <string name="preference_key_server_connection" translatable="false">服务器连接</string>
+    <string name="preference_key_server_connection_auto" translatable="false">汽车</string>
+    <string name="preference_key_server_connection_remote" translatable="false">远程</string>
+    <string name="preference_key_server_connection_local" translatable="false">本地</string>
+    <string name="preference_key_tell_a_friend" translatable="false">告诉一个朋友</string>
+    <string name="preference_screen_key_upload" translatable="false">自动上传画面</string>
+    <string name="preference_key_upload_switch" translatable="false">自动上传开关</string>
+    <string name="preference_key_upload_server" translatable="false">自动上传服务器</string>
+    <string name="preference_key_upload_share" translatable="false">自动上传分享</string>
+    <string name="preference_key_upload_location" translatable="false">自动上传位置</string>
+    <string name="preference_key_upload_data" translatable="false">自动上传数据</string>
+    <string name="preference_key_language" translatable="false">语言</string>
+    <string name="pref_title_server_select">选择服务器</string>
+    <string name="pref_title_server_select_desc">选择要访问其共享的服务器。</string>
+    <string name="pref_title_server_active_list">活动服务器列表</string>
+    <string name="pref_server_active_list_desc">选择要访问其共享的活动服务器。</string>
+    <string name="pref_server_select_key" translatable="false">选择服务器</string>
+
+    <!-- Strings related to SignOut Preference-->
+    <string name="pref_title_sign_out">登出</string>
+    <string name="pref_title_account">帐户</string>
+    <string name="pref_sign_out_desc">从Amahi TV登出</string>
+    <string name="pref_action_not_defined">动作未定义</string>
+
+    <!--Strings related to Theme Preference -->
+    <string name="pref_title_light_theme">轻主题</string>
+    <string name="pref_key_light_theme" translatable="false">启用浅色主题</string>
+
+    <!--Strings related to TV Theme Preference -->
+    <string name="pref_key_theme" translatable="false">选择主题</string>
+    <string name="pref_title_select_theme">选择主题</string>
+    <string name="pref_title_theme">主题</string>
+    <string name="pref_theme_desc">从浅色或深色中选择</string>
+    <string name="pref_theme_detail_desc">选择所需的连接类型。您可以将其设置为Amahi Light或Amahi Dark。</string>
+    <string name="pref_theme_light">天马光</string>
+    <string name="pref_theme_dark">阿马希·达克</string>
+
+    <!--Strings related to Connection Preference -->
+    <string name="pref_title_connection">连接</string>
+    <string name="pref_option_go_back">回去</string>
+    <string name="pref_connection_desc">选择所需的连接类型。您可以将其设置为自动检测，远程或局域网。</string>
+
+    <string name="rate_dialog_title">评价阿马希</string>
+    <string name="rate_dialog_message">如果您喜欢使用Amahi，会介意花点时间对其进行评分吗？谢谢你的支持！</string>
+    <string name="rate_dialog_ok">立即评分</string>
+    <string name="rate_dialog_cancel">稍后提醒我</string>
+    <string name="rate_dialog_no">不用了，谢谢</string>
+
+    <!--    File Options Sheet Dialog-->
+    <string name="file_info">档案资讯</string>
+    <string name="sort_by">排序方式</string>
+    <string name="file_name_a_z">档案名称（A到Z）</string>
+    <string name="file_name_z_a">文件名（Z到A）</string>
+    <string name="date_newest">修改（从新到旧）</string>
+    <string name="date_oldest">修改（最早的）</string>
+    <string name="size_largest">大小（从大到大）</string>
+    <string name="size_smallest">大小（最小的优先）</string>
+    <string name="file_type">文件类型</string>
+</resources>

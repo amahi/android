@@ -32,6 +32,8 @@
     <string name="menu_audio_files">档案</string>
     <string name="menu_video_subtitle">字幕</string>
 
+    <string name="media_route_menu_item" translatable="false">投</string>
+
     <string name="message_empty_apps">没有应用</string>
     <string name="message_empty_files">没有文件</string>
     <string name="message_empty_shares">没有分享</string>
@@ -57,6 +59,8 @@
     <string name="message_no_files">文件下载出现在这里</string>
     <string name="message_create_and_try_again">Find files to download</string>
     <string name="message_connection_error">连接错误</string>
+    <string name="message_connect_and_try_again">请连接到互联网，然后重试。</string>
+    <string name="message_connect_to_server_and_try_again">请连接到服务器，然后重试。</string>
 
     <string name="message_delete_file_title">确认删除文件？</string>
     <string name="message_delete_file_body">此操作无法撤消。</string>
@@ -103,6 +107,9 @@
     <!--ANDROID TV RELATED STRINGS-->
     <string name="exit_title">出口</string>
     <string name="exit_message">你确定你要退出吗？</string>
+    <string name="sign_out_title">登出</string>
+    <string name="sign_out_message">您确定要退出吗？</string>
+    <string name="cancel">取消</string>
     <string name="yes">是</string>
     <string name="no">没有</string>
 
@@ -148,7 +155,6 @@
     <string name="title_selected_server">台服务器</string>
 
     <!--    Languages-->
-
     <string name="language_en">英语</string>
     <string name="language_fr">法文</string>
     <string name="language_es">西班牙文</string>
@@ -160,7 +166,7 @@
     <string name="preference_category_account">帐户</string>
     <string name="preference_category_settings">设定值</string>
     <string name="preference_category_general">一般</string>
-
+    <String name="preference_key_language"></String>
     <string name="preference_title_about_feedback">反馈</string>
     <string name="preference_title_about_rating">率</string>
     <string name="preference_title_about_version">版</string>
@@ -197,10 +203,11 @@
     <string name="pref_title_account">帐户</string>
     <string name="pref_sign_out_desc">从Amahi TV登出</string>
     <string name="pref_action_not_defined">动作未定义</string>
+
+    <!--Strings related to Theme Preference -->
     <string name="pref_title_light_theme">轻主题</string>
 
     <!--Strings related to TV Theme Preference -->
-    <string name="pref_key_theme" translatable="false">选择主题</string>
     <string name="pref_title_select_theme">选择主题</string>
     <string name="pref_title_theme">主题</string>
     <string name="pref_theme_desc">从浅色或深色中选择</string>

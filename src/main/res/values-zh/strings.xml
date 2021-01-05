@@ -8,7 +8,7 @@
     <string name="title_offline_files">离线文件</string>
     <string name="title_recent_files">最近的文件</string>
 
-    <string name="button_search_application">搜索Google Play</string>
+    <string name="button_search_application">搜索谷歌玩</string>
     <string name="button_sign_in">登入</string>
     <string name="button_yes">是</string>
     <string name="button_no">没有</string>
@@ -31,8 +31,6 @@
     <string name="menu_open">打开</string>
     <string name="menu_audio_files">档案</string>
     <string name="menu_video_subtitle">字幕</string>
-
-    <string name="media_route_menu_item" translatable="false">投</string>
 
     <string name="message_empty_apps">没有应用</string>
     <string name="message_empty_files">没有文件</string>
@@ -57,7 +55,7 @@
     <string name="message_progress_file_downloading">下载文件</string>
     <string name="message_progress_file_preparing">准备好的文件</string>
     <string name="message_no_files">文件下载出现在这里</string>
-    <string name="message_create_and_try_again">Find files to download</string>
+    <string name="message_create_and_try_again">查找要下载的文件</string>
     <string name="message_connection_error">连接错误</string>
     <string name="message_connect_and_try_again">请连接到互联网，然后重试。</string>
     <string name="message_connect_to_server_and_try_again">请连接到服务器，然后重试。</string>
@@ -82,9 +80,9 @@
     <string name="notification_offline_download_paused">等待上网</string>
     <string name="notification_offline_download_error">使文件脱机可用时出错</string>
 
-    <string name="share_subject">Check out my Amahi home server!</string>
-    <string name="share_message">我使用Amahi Home Server来存储，备份和流式传输所有文件。 \ n \ n看看！\ n \ n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
-    <string name="title_version_settings">Amahi for Android</string>
+    <string name="share_subject">看看我的Amahi家用服务器！</string>
+    <string name="share_message">我使用 阿玛希 家庭服务器 来存储，备份和流式传输所有文件。 \ n \ n看看！\ n \ n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
+    <string name="title_version_settings">阿玛希 对于 安卓</string>
     <string name="message_no_search_result">找不到搜索结果</string>
     <string name="application_not_found">未找到处理程序应用程序</string>
     <string name="message_logout">成功注销。</string>
@@ -114,8 +112,8 @@
     <string name="no">没有</string>
 
     <!--Introduction TV activity strings-->
-    <string name="intro_tv_1">欢迎使用Amahi进行Android TV</string>
-    <string name="intro_phone_1">欢迎使用Amahi for Android</string>
+    <string name="intro_tv_1">欢迎使用Amahi进行 安卓 电视</string>
+    <string name="intro_phone_1">欢迎使用 阿玛希 对于 安卓</string>
     <string name="intro_desc_phone_1">一个Android应用程序，可让您访问Amahi Home Server中的文件。</string>
 
     <string name="intro_title_2">访问您的HDA</string>
@@ -150,7 +148,7 @@
     <string name="alert_delete_confirm">你确定吗？</string>
 
     <string name="title_file_info">文件信息</string>
-    <string name="text_ok">OK</string>
+    <string name="text_ok">好</string>
 
     <string name="title_selected_server">台服务器</string>
 
@@ -162,13 +160,12 @@
     <string name="language_de">德语</string>
     <string name="language_te">泰卢固语</string>
     <string name="language_hi">印地语</string>
-    <string name="language_zh">Chinese</string>
+    <string name="language_zh">中文</string>
 
     <string name="preference_category_about">关于</string>
     <string name="preference_category_account">帐户</string>
     <string name="preference_category_settings">设定值</string>
     <string name="preference_category_general">一般</string>
-    <String name="preference_key_language"></String>
     <string name="preference_title_about_feedback">反馈</string>
     <string name="preference_title_about_rating">率</string>
     <string name="preference_title_about_version">版</string>

@@ -202,7 +202,7 @@
     <string name="language_hi">Hindi</string>
     <string name="language_zh">Chinese</string>
 
-    <string name="language_zh_key" translatable="false">hi-rIN</string>
+    <string name="language_zh_key" translatable="false">zh-rIN</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>

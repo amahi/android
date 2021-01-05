@@ -26,18 +26,16 @@ import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatDelegate;
-
-import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -109,7 +107,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         for (int i = 0; i < entries.length; i++) {
             entryMap.put(entries[i], values[i]);
         }
-        Arrays.sort(entries);
+        Arrays.sort(entries, 1, entries.length);
         for (int i = 0; i < entries.length; i++) {
             values[i] = entryMap.get(entries[i]);
         }

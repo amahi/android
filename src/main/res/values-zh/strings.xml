@@ -162,6 +162,8 @@
     <string name="language_de">德语</string>
     <string name="language_te">泰卢固语</string>
     <string name="language_hi">印地语</string>
+    <string name="language_zh">Chinese</string>
+
     <string name="preference_category_about">关于</string>
     <string name="preference_category_account">帐户</string>
     <string name="preference_category_settings">设定值</string>

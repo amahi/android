@@ -48,6 +48,8 @@
     <string name="language_de">జర్మన్</string>
     <string name="language_te">తెలుగు</string>
     <string name="language_hi">హిందీ</string>
+    <string name="language_zh">Chinese</string>
+
    <string name="media_route_menu_title">ఆన్ చేయండి</string>
    <string name="menu_audio_files">ఫైల్</string>
    <string name="menu_back">తిరిగి వెళ్ళు</string>

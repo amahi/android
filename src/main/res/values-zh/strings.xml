@@ -81,8 +81,8 @@
     <string name="notification_offline_download_error">使文件脱机可用时出错</string>
 
     <string name="share_subject">看看我的Amahi家用服务器！</string>
-    <string name="share_message">我使用 阿玛希 家庭服务器 来存储，备份和流式传输所有文件。 \ n \ n看看！\ n \ n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
-    <string name="title_version_settings">阿玛希 对于 安卓</string>
+    <string name="share_message">我使用 Amahi 家庭服务器 来存储，备份和流式传输所有文件。 \n\n看看！\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
+    <string name="title_version_settings">Amahi 对于 安卓</string>
     <string name="message_no_search_result">找不到搜索结果</string>
     <string name="application_not_found">未找到处理程序应用程序</string>
     <string name="message_logout">成功注销。</string>
@@ -113,7 +113,7 @@
 
     <!--Introduction TV activity strings-->
     <string name="intro_tv_1">欢迎使用Amahi进行 安卓 电视</string>
-    <string name="intro_phone_1">欢迎使用 阿玛希 对于 安卓</string>
+    <string name="intro_phone_1">欢迎使用 Amahi 对于 安卓</string>
     <string name="intro_desc_phone_1">一个Android应用程序，可让您访问Amahi Home Server中的文件。</string>
 
     <string name="intro_title_2">访问您的HDA</string>

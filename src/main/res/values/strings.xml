@@ -54,7 +54,7 @@
     <string name="menu_open">OPEN</string>
     <string name="menu_audio_files">Files</string>
     <string name="menu_video_subtitle">Subtitles</string>
-
+    <string name="press_back_again_to_exit" translatable="false">Press back Again to exit</string>
     <string name="media_route_menu_item" translatable="false">cast</string>
 
     <string name="message_empty_apps">No Apps</string>

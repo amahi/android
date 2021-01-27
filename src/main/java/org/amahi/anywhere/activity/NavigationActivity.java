@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -73,6 +74,7 @@ import javax.inject.Inject;
 public class NavigationActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
     @Inject
     ServerClient serverClient;
+    private long timeBetweenBackPressed;
     private ActionBarDrawerToggle navigationDrawerToggle;
     private String navigationTitle;
     final private int SETTINGS_ACTION = 2;
@@ -87,7 +89,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
-
+        timeBetweenBackPressed = System.currentTimeMillis();
         if (CheckTV.isATV(this)) {
             handleTvFirstRun();
             showTvLoading();
@@ -452,4 +454,17 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
+    @Override
+    public void onBackPressed(){
+        if(timeBetweenBackPressed + 3000 >= System.currentTimeMillis()){
+            super.onBackPressed();
+        }else{
+            Toast.makeText(this, R.string.press_back_again_to_exit, Toast.LENGTH_SHORT).show();
+        }
+        timeBetweenBackPressed = System.currentTimeMillis();
+    }
+
+
+
 }

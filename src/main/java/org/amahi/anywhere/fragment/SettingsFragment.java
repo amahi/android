@@ -25,19 +25,21 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatDelegate;
-
-import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -93,6 +95,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         setUpSettingsContent();
         setUpSettingsSummary();
         setUpSettingsListeners();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getListView().setVerticalScrollbarThumbDrawable(ContextCompat.getDrawable(getContext(), R.drawable.scrollbar));
+        }
     }
 
     private void setUpSettingsContent() {

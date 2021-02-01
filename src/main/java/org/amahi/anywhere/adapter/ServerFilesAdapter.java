@@ -24,8 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -37,6 +35,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.otto.Subscribe;
 
@@ -248,7 +249,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         this.mListener = mListener;
     }
 
-    public class ServerFileViewHolder extends RecyclerView.ViewHolder {
+    public static class ServerFileViewHolder extends RecyclerView.ViewHolder {
         ImageView fileIconView, moreOptions, rightArrow;
         TextView fileTextView, fileSize, fileLastModified;
         LinearLayout moreInfo;

@@ -55,6 +55,7 @@ import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.activity.IntroActivity;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.AppTheme;
 import org.amahi.anywhere.util.CheckTV;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
@@ -79,10 +80,17 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (AmahiApplication.getInstance().isLightThemeEnabled()) {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+        AppTheme selectedTheme = AmahiApplication.getInstance().getThemeEnabled();
+        switch (selectedTheme) {
+            case DEFAULT:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case LIGHT:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case DARK:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
 
         super.onCreate(savedInstanceState);

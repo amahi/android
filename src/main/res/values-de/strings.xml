@@ -262,6 +262,7 @@
     <string name="size_largest">Größe (größte zuerst)</string>
     <string name="size_smallest">Größe (kleinste zuerst)</string>
     <string name="file_type">Dateityp</string>
+
     <string name="message_toast_press_back_again">" Zum Beenden erneut zurück drücken"</string>
 
 </resources>

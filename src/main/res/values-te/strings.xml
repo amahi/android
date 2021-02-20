@@ -194,4 +194,5 @@
    <string name="preference_entry_server_connection_local">LAN</string>
    <string name="title_no_server">సర్వర్‌లు లేవు</string>
    <string name="file_type">ఫైల్ రకం</string>
+    <string name="message_toast_press_back_again">" నిష్క్రమించడానికి మళ్ళీ తిరిగి నొక్కండి"</string>
 </resources>

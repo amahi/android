@@ -87,6 +87,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         } else {
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
+        
+        backPressedTime = System.currentTimeMillis();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
@@ -459,7 +461,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     @Override
     public void onBackPressed() {
         if (backPressedTime + 2000 > System.currentTimeMillis()) {
-            backToast.cancel();
+            if (backToast != null)
+                backToast.cancel();
             super.onBackPressed();
             return;
         } else {

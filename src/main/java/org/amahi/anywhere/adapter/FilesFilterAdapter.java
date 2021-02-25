@@ -37,10 +37,8 @@ import com.l4digital.fastscroll.FastScroller;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
-import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
-import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.ServerFileClickListener;
 
 import java.io.File;
@@ -145,9 +143,6 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     private Uri getImageUri(Context context, ServerFile file) {
-        if(!Preferences.getServerName(context).equals(Constants.welcomeToAmahi)) {
-            return serverClient.getFileThumbnailUri(serverShare, file);
-        }
         return serverClient.getFileUri(serverShare, file);
     }
 

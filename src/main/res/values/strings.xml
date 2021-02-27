@@ -354,4 +354,6 @@
     <string name="size_smallest">Size (smallest first)</string>
     <string name="file_type">File type</string>
 
+    <string name="message_toast_press_back_again">Press back again to exit</string>
+
 </resources>

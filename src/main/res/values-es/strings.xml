@@ -212,4 +212,6 @@
     <string name="size_smallest">Tamaño (el más pequeño primero)</string>
     <string name="file_type">Tipo de archivo</string>
 
+    <string name="message_toast_press_back_again">" Presione de nuevo para salir"</string>
+
 </resources>

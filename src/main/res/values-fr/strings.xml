@@ -162,6 +162,7 @@
     <string name="language_es">Espagnol</string>
     <string name="language_bn">Bengali</string>
     <string name="language_te">Telugu</string>
+    <string name="language_pa">Punjabi</string>
     <string name="language_de">Allemand</string>
     <string name="language_hi">Hindi</string>
     <string name="preference_category_about">À propos</string>

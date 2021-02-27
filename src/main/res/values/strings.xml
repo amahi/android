@@ -19,7 +19,7 @@
 
 <resources>
 
-<!--    Please update the Strings here: https://docs.google.com/spreadsheets/d/1NAl8xWGDRj6MmLHKyESONAAyudOHdFnSbaqF1Pr28sE/edit?usp=sharing-->
+    <!--    Please update the Strings here: https://docs.google.com/spreadsheets/d/1NAl8xWGDRj6MmLHKyESONAAyudOHdFnSbaqF1Pr28sE/edit?usp=sharing-->
 
     <string name="application_name" translatable="false">Amahi</string>
 
@@ -191,28 +191,31 @@
     <string name="download_channel" translatable="false">File Download</string>
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
 
-<!--    Languages-->
-
+    <!--    Languages-->
+    <string name="language_def">System Default</string>
     <string name="language_en">English</string>
     <string name="language_fr">French</string>
     <string name="language_es">Spanish</string>
     <string name="language_bn">Bengali</string>
     <string name="language_de">German</string>
     <string name="language_te">Telugu</string>
+    <string name="language_pa">Punjabi</string>
     <string name="language_hi">Hindi</string>
+    <string name="language_zh">Chinese</string>
 
+    <string name="language_def_key" translatable="false">def</string>
+    <string name="language_zh_key" translatable="false">zh</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
     <string name="language_bn_key" translatable="false">bn</string>
     <string name="language_de_key" translatable="false">gem</string>
     <string name="language_te_key" translatable="false">te</string>
+    <string name="language_pa_key" translatable="false">pa</string>
     <string name="language_hi_key" translatable="false">hi</string>
 
 
-
-<!--    Preferences-->
-
+    <!--    Preferences-->
     <string name="preference_category_about">About</string>
     <string name="preference_category_account">Account</string>
     <string name="preference_category_settings">Settings</string>
@@ -288,24 +291,30 @@
     </string-array>
 
     <string-array name="preference_entries_language" translatable="false">
+        <item>@string/language_def</item>
         <item>@string/language_en</item>
         <item>@string/language_fr</item>
         <item>@string/language_es</item>
         <item>@string/language_bn</item>
         <item>@string/language_de</item>
         <item>@string/language_te</item>
+        <item>@string/language_pa</item>
         <item>@string/language_hi</item>
+        <item>@string/language_zh</item>
 
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
+        <item>@string/language_def_key</item>
         <item>@string/language_en_key</item>
         <item>@string/language_fr_key</item>
         <item>@string/language_es_key</item>
         <item>@string/language_bn_key</item>
         <item>@string/language_de_key</item>
         <item>@string/language_te_key</item>
+        <item>@string/language_pa_key</item>
         <item>@string/language_hi_key</item>
+        <item>@string/language_zh_key</item>
 
     </string-array>
 
@@ -362,5 +371,7 @@
     <string name="preference_key_system_default_theme" translatable="false">def</string>
     <string name="preference_key_light_theme" translatable="false">light</string>
     <string name="preference_key_dark_theme" translatable="false">dark</string>
+
+    <string name="message_toast_press_back_again">Press back again to exit</string>
 
 </resources>

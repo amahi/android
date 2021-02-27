@@ -24,12 +24,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.format.Formatter;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +36,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.otto.Subscribe;
 
@@ -157,7 +160,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         if (queryString != null && !TextUtils.isEmpty(queryString)) {
             int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
             if (searchMatchPosition != -1)
-                sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                sb.setSpan(getFcs(), searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         }
         fileHolder.fileTextView.setText(sb);
 
@@ -237,6 +240,10 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         }
     }
 
+    public ForegroundColorSpan getFcs() {
+        return new ForegroundColorSpan(ContextCompat.getColor(context, R.color.accent));
+    }
+
     public void tearDownCallbacks() {
         BusProvider.getBus().unregister(this);
         if (isOfflineMode()) {
@@ -248,7 +255,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         this.mListener = mListener;
     }
 
-    public class ServerFileViewHolder extends RecyclerView.ViewHolder {
+    public static class ServerFileViewHolder extends RecyclerView.ViewHolder {
         ImageView fileIconView, moreOptions, rightArrow;
         TextView fileTextView, fileSize, fileLastModified;
         LinearLayout moreInfo;

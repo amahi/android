@@ -192,6 +192,8 @@
 
     <string name="download_channel" translatable="false">File Download</string>
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
+    
+    <string name="message_toast_press_back_again">Press back again to exit.</string>
 
     <!--    Languages-->
 

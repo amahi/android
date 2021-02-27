@@ -199,6 +199,7 @@
     <string name="language_bn">Bengali</string>
     <string name="language_de">German</string>
     <string name="language_te">Telugu</string>
+    <string name="language_pa">Punjabi</string>
     <string name="language_hi">Hindi</string>
 
     <string name="language_def_key" translatable="false">def</string>
@@ -208,11 +209,11 @@
     <string name="language_bn_key" translatable="false">bn</string>
     <string name="language_de_key" translatable="false">gem</string>
     <string name="language_te_key" translatable="false">te</string>
+    <string name="language_pa_key" translatable="false">pa</string>
     <string name="language_hi_key" translatable="false">hi</string>
 
 
     <!--    Preferences-->
-
     <string name="preference_category_about">About</string>
     <string name="preference_category_account">Account</string>
     <string name="preference_category_settings">Settings</string>
@@ -283,6 +284,7 @@
         <item>@string/language_bn</item>
         <item>@string/language_de</item>
         <item>@string/language_te</item>
+        <item>@string/language_pa</item>
         <item>@string/language_hi</item>
 
     </string-array>
@@ -295,6 +297,7 @@
         <item>@string/language_bn_key</item>
         <item>@string/language_de_key</item>
         <item>@string/language_te_key</item>
+        <item>@string/language_pa_key</item>
         <item>@string/language_hi_key</item>
 
     </string-array>

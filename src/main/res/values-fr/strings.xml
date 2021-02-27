@@ -165,6 +165,8 @@
     <string name="language_pa">Punjabi</string>
     <string name="language_de">Allemand</string>
     <string name="language_hi">Hindi</string>
+    <string name="language_zh">Chinois</string>
+
     <string name="preference_category_about">À propos</string>
     <string name="preference_category_account">Compte</string>
     <string name="preference_category_settings">Paramètres</string>

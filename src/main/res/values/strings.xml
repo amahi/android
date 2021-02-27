@@ -283,6 +283,7 @@
         <item>@string/language_bn</item>
         <item>@string/language_de</item>
         <item>@string/language_te</item>
+        <item>@string/language_pa</item>
         <item>@string/language_hi</item>
 
     </string-array>
@@ -294,6 +295,7 @@
         <item>@string/language_bn_key</item>
         <item>@string/language_de_key</item>
         <item>@string/language_te_key</item>
+        <item>@string/language_pa_key</item>
         <item>@string/language_hi_key</item>
 
     </string-array>

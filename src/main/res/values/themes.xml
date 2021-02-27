@@ -46,6 +46,7 @@
         <item name="android:windowBackground">@color/background_primary</item>
         <item name="android:textColorPrimaryInverse">@color/primary_text_material_light</item>
         <item name="android:tint">@color/accent</item>
+        <item name="toolbarNavigationButtonStyle">@style/TintedNavigation</item>
         <!--Adding Support for the Support Library-->
         <item name="actionBarStyle">@style/Theme.Amahi.ActionBar</item>
         <item name="colorPrimary">@color/primary</item>
@@ -56,6 +57,9 @@
 
     </style>
 
+    <style name="TintedNavigation" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="tint">@color/primary_text_material_light</item>
+    </style>
 
     <style name="Theme.Amahi.Fullscreen.ActionBar" parent="@style/Widget.AppCompat.ActionBar">
         <item name="android:background">@color/background_transparent_primary</item>

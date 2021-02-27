@@ -199,15 +199,20 @@
     <string name="language_bn">Bengali</string>
     <string name="language_de">German</string>
     <string name="language_te">Telugu</string>
+    <string name="language_pa">Punjabi</string>
     <string name="language_hi">Hindi</string>
+    <string name="language_zh">Chinese</string>
 
+    <string name="language_zh_key" translatable="false">zh</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
     <string name="language_bn_key" translatable="false">bn</string>
     <string name="language_de_key" translatable="false">gem</string>
     <string name="language_te_key" translatable="false">te</string>
+    <string name="language_pa_key" translatable="false">pa</string>
     <string name="language_hi_key" translatable="false">hi</string>
+
 
 
 
@@ -282,7 +287,9 @@
         <item>@string/language_bn</item>
         <item>@string/language_de</item>
         <item>@string/language_te</item>
+        <item>@string/language_pa</item>
         <item>@string/language_hi</item>
+        <item>@string/language_zh</item>
 
     </string-array>
 
@@ -293,7 +300,9 @@
         <item>@string/language_bn_key</item>
         <item>@string/language_de_key</item>
         <item>@string/language_te_key</item>
+        <item>@string/language_pa_key</item>
         <item>@string/language_hi_key</item>
+        <item>@string/language_zh_key</item>
 
     </string-array>
 
@@ -344,5 +353,7 @@
     <string name="size_largest">Size (largest first)</string>
     <string name="size_smallest">Size (smallest first)</string>
     <string name="file_type">File type</string>
+
+    <string name="message_toast_press_back_again">Press back again to exit</string>
 
 </resources>

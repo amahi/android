@@ -28,6 +28,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.format.Formatter;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,10 +37,12 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
@@ -65,7 +68,9 @@ import java.util.Locale;
  * for the {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
 public class ServerFilesAdapter extends FilesFilterAdapter {
-    private Context context;
+    private 
+      context;
+  
     private int currentDownloadPosition = RecyclerView.NO_POSITION;
     private int progress;
 
@@ -174,6 +179,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
                 fileHolder.fileIconView.setImageResource(Mimes.getFileIcon(file));
             }
 
+
             fileHolder.itemView.setOnClickListener(view -> {
                 mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
             });
@@ -251,6 +257,10 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
                 imageView.setImageResource(R.drawable.ic_file_audio);
             }
         }
+    }
+
+    public ForegroundColorSpan getFcs() {
+        return new ForegroundColorSpan(ContextCompat.getColor(context, R.color.accent));
     }
 
     public void tearDownCallbacks() {

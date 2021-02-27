@@ -28,7 +28,7 @@
 
     <ListPreference
         android:icon="@drawable/ic_share"
-        android:enabled="false"
+        android:enabled="true"
         android:key="@string/preference_key_upload_share"
         android:summary="@string/preference_summary_share"
         android:title="@string/preference_title_upload_share" />

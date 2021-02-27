@@ -26,6 +26,7 @@ import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import android.view.View;
@@ -35,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.ConfigurationCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -339,7 +341,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     }
 
     private void setUpLanguage() {
-        LocaleHelper.setLocale(getContext(), getLanguage());
+        if (getLanguage().equals(getString(R.string.language_def_key))) {
+            LocaleHelper.setLocale(getContext(), ConfigurationCompat.getLocales(Resources.getSystem().getConfiguration()).get(0).getLanguage());
+        } else {
+            LocaleHelper.setLocale(getContext(), getLanguage());
+        }
         tearDownActivity();
     }
 

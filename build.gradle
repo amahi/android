@@ -94,7 +94,7 @@ android {
 }
 
 ext {
-    archRoomVersion = "1.1.0"
+    archRoomVersion = "2.2.5"
 }
 
 static def buildVersionName(versionMajor, versionMinor, versionPatch) {

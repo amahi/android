@@ -25,13 +25,14 @@ package org.amahi.anywhere.view;
 
 import android.content.Context;
 import android.graphics.Color;
-import androidx.annotation.IntDef;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.IntDef;
 
 import org.amahi.anywhere.R;
 
@@ -90,7 +91,7 @@ public class PercentageView {
     @interface TYPE {
     }
 
-    private class ViewHolder {
+    private static class ViewHolder {
         private ProgressBar progressBar;
         private TextView valuePercent;
         private ImageView icon;

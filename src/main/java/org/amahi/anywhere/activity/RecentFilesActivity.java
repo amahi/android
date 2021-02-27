@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -255,6 +256,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     @Subscribe
     public void onFileOptionSelected(FileOptionClickEvent event) {
         selectedFileOption = event.getFileOption();
+        String uniqueKey = event.getFileUniqueKey();
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
             case FileOption.SHARE:
@@ -276,6 +278,9 @@ public class RecentFilesActivity extends AppCompatActivity implements
                 break;
             case FileOption.OFFLINE_DISABLED:
                 changeOfflineState(false);
+                break;
+            case FileOption.FILE_INFO:
+                showFileInfo(uniqueKey);
         }
     }
 
@@ -479,6 +484,16 @@ public class RecentFilesActivity extends AppCompatActivity implements
         } else {
             deleteFileFromOfflineStorage();
         }
+    }
+
+    private void showFileInfo(String uniqueKey) {
+        AlertDialogFragment fileInfoDialog = new AlertDialogFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.FILE_INFO_DIALOG);
+        bundle.putSerializable("file_unique_key", uniqueKey);
+        fileInfoDialog.setArguments(bundle);
+        fileInfoDialog.show(fm, "file_info_dialog");
     }
 
     private void deleteFileFromOfflineStorage() {

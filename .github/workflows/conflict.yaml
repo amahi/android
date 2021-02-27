@@ -24,5 +24,3 @@ jobs:
         commentOnClean: 'Conflicts have been resolved. A maintainer will take a look shortly.'
       env:
         LABELING_TOKEN: ${{secrets.GITHUB_TOKEN }}
-
-# Credits: https://baywet.github.io/pull-request-conflict-github-workflow/

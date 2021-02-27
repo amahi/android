@@ -66,10 +66,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setUpHomeNavigation() {
-        Drawable icon = getResources().getDrawable(R.drawable.arrow_back);
-        icon.setColorFilter(getResources().getColor(R.color.primary_text_material_light), PorterDuff.Mode.SRC_IN);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.arrow_back);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -82,14 +79,11 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
+        if (menuItem.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Subscribe

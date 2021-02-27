@@ -143,9 +143,7 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         playbackControlsRowPresenter.setProgressColor(Color.WHITE);
         playbackControlsRowPresenter.setOnActionClickedListener(action -> {
             if (action.getId() == mPlayPauseAction.getId()) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    togglePlayPause(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
-                }
+                togglePlayPause(mPlayPauseAction.getIndex() == PlaybackControlsRow.PlayPauseAction.PAUSE);
             } else if (action.getId() == mRewindAction.getId()) {
                 rewind();
             } else if (action.getId() == mFastForwardAction.getId()) {
@@ -312,7 +310,7 @@ public class TvPlaybackAudioFragment extends PlaybackFragment {
         if (getAudioFile().getParentFile() == null)
             header = new HeaderItem(0, getString(R.string.songs_in) + getAudioShare().getName());
         else
-            header = new HeaderItem(0, getString(R.string.songsin) + getAudioFile().getParentFile().getName());
+            header = new HeaderItem(0, getString(R.string.songs_in) + getAudioFile().getParentFile().getName());
 
         mRowsAdapter.add(new ListRow(header, adapter));
     }

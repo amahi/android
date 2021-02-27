@@ -248,14 +248,11 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
+        if (menuItem.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Subscribe
@@ -263,12 +260,6 @@ public class RecentFilesActivity extends AppCompatActivity implements
         selectedFileOption = event.getFileOption();
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
-                if (Android.isPermissionRequired()) {
-                    checkWritePermissions();
-                } else {
-                    prepareDownload();
-                }
-                break;
             case FileOption.SHARE:
                 if (Android.isPermissionRequired()) {
                     checkWritePermissions();
@@ -305,8 +296,6 @@ public class RecentFilesActivity extends AppCompatActivity implements
     private void handleFileOptionsWithPermissionGranted() {
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
-                prepareDownload();
-                break;
             case FileOption.SHARE:
                 prepareDownload();
                 break;

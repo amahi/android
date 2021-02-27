@@ -52,7 +52,7 @@
         android:name=".AmahiApplication"
         android:allowBackup="false"
         android:banner="@drawable/tv_banner"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/application_name"
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi"
@@ -175,7 +175,6 @@
             android:enabled="true">
             <intent-filter>
 
-                <!-- <action android:name="com.android.camera.NEW_PICTURE" /> -->
                 <action android:name="android.hardware.action.NEW_PICTURE" />
 
                 <data android:mimeType="image/*" />
@@ -220,7 +219,7 @@
             android:value="org.amahi.anywhere.util.CastOptionsProvider" />
 
         <activity android:name=".activity.OfflineFilesActivity" />
-        <activity android:name=".activity.RecentFilesActivity"></activity>
+        <activity android:name=".activity.RecentFilesActivity" />
     </application>
 
 </manifest>

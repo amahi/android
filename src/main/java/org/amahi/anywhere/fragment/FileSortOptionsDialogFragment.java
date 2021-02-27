@@ -1,5 +1,6 @@
 package org.amahi.anywhere.fragment;
 
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.amahi.anywhere.R;
@@ -25,6 +28,12 @@ public class FileSortOptionsDialogFragment extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        getDialog().setOnShowListener(dialogInterface -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
+            View bottomSheetInternal = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            assert bottomSheetInternal != null;
+            BottomSheetBehavior.from(bottomSheetInternal).setPeekHeight(bottomSheetInternal.getHeight());
+        });
         return inflater.inflate(R.layout.filesort_options_bottom_sheet, container, false);
     }
 
@@ -113,7 +122,7 @@ public class FileSortOptionsDialogFragment extends BottomSheetDialogFragment {
 
         Drawable dw = getResources().getDrawable(R.drawable.ic_check);
         textView.setCompoundDrawablesWithIntrinsicBounds(null, null, dw, null);
-        textView.setTextColor(getResources().getColor(R.color.primary_dark));
+        textView.setTextColor(getResources().getColor(R.color.accent));
 
     }
 

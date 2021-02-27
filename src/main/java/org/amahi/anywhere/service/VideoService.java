@@ -28,7 +28,6 @@ import android.os.IBinder;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
-import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;

@@ -167,11 +167,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     private void setUpContentRefreshing() {
         SwipeRefreshLayout refreshLayout = getRefreshLayout();
 
+        refreshLayout.setProgressBackgroundColorSchemeResource(R.color.accent);
         refreshLayout.setColorSchemeResources(
-            android.R.color.holo_blue_light,
-            android.R.color.holo_orange_light,
-            android.R.color.holo_green_light,
-            android.R.color.holo_red_light);
+            android.R.color.white);
 
         refreshLayout.setOnRefreshListener(() -> {
             ViewDirector.of(mActivity, R.id.animator_content).show(R.id.empty_view);
@@ -332,9 +330,7 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (mContext == null)
             return false;
         UiModeManager uiModeManager = (UiModeManager) mContext.getSystemService(UI_MODE_SERVICE);
-        if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION)
-            return true;
-        return false;
+        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
     }
 
     private void setUpAuthentication() {
@@ -687,14 +683,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.menu_settings:
-                BusProvider.getBus().post(new SettingsSelectedEvent());
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
+        if (menuItem.getItemId() == R.id.menu_settings) {
+            BusProvider.getBus().post(new SettingsSelectedEvent());
+            return true;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override

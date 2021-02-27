@@ -279,8 +279,7 @@
     </string-array>
 
     <string-array name="preference_entries_language" translatable="false">
-        <item>@string/language_
-      </item>
+        <item>@string/language_def</item>
         <item>@string/language_en</item>
         <item>@string/language_fr</item>
         <item>@string/language_es</item>

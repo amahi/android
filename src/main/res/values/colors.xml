@@ -45,8 +45,13 @@
     <!--ATV COLORS-->
     <color name="intro_1">#0277bd</color>
     <color name="intro_2">#3949ab</color>
+
     <!--DARK GRAY USED FOR intro_3-->
     <color name="intro_4">#26a69a</color>
     <color name="intro_5">#ffab00</color>
     <color name="intro_6">#303f9f</color>
+
+    <!--Shimmer Color-->
+    <color name="colorShimmer">#dddddd</color>
+
 </resources>

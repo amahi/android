@@ -10,24 +10,24 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.IntroductoryOverlay;
+import com.google.android.material.snackbar.Snackbar;
 import com.l4digital.fastscroll.FastScrollView;
 import com.squareup.otto.Subscribe;
 
@@ -156,6 +156,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
         recentFiles = getRecentFilesList();
         getRecentFileListView().setAdapter(new RecentFilesAdapter(this, recentFiles));
         showList(!recentFiles.isEmpty());
+        getListAdapter().setShowShimmer(false);
     }
 
     private List<RecentFile> getRecentFilesList() {

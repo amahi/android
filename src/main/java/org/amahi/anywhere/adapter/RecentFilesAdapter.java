@@ -3,9 +3,6 @@ package org.amahi.anywhere.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +12,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.l4digital.fastscroll.FastScroller;
 import com.squareup.otto.Subscribe;
 
@@ -25,6 +26,7 @@ import org.amahi.anywhere.bus.AudioMetadataRetrievedEvent;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.db.entities.RecentFile;
 import org.amahi.anywhere.task.AudioMetadataRetrievingTask;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Mimes;
 import org.amahi.anywhere.util.ServerFileClickListener;
 
@@ -35,9 +37,11 @@ import java.util.Locale;
 
 public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.RecentFilesViewHolder> implements FastScroller.SectionIndexer {
 
-    private Context context;
-    private ServerFileClickListener mListener;
+    final private Context context;
+    final private ServerFileClickListener mListener;
     private List<RecentFile> recentFiles;
+
+    private boolean showShimmer = true;
 
     public RecentFilesAdapter(Context context, List<RecentFile> recentFiles) {
         this.context = context;
@@ -54,8 +58,13 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull RecentFilesViewHolder holder, int position) {
-        RecentFile file = recentFiles.get(position);
-        setUpViewHolder(file, holder);
+        if (showShimmer) {
+            holder.shimmerFrameLayout.startShimmer();
+        } else {
+            stopShimmer(holder);
+            RecentFile file = recentFiles.get(position);
+            setUpViewHolder(file, holder);
+        }
     }
 
     @Override
@@ -63,9 +72,18 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         return recentFiles.get(selectedPosition).getName().subSequence(0, 1);
     }
 
+    private void stopShimmer(RecentFilesViewHolder holder) {
+        holder.shimmerFrameLayout.stopShimmer();
+        holder.shimmerFrameLayout.setShimmer(null);
+        holder.fileIconView.setBackground(null);
+        holder.fileTextView.setBackground(null);
+        holder.fileSize.setBackground(null);
+        holder.fileLastVisited.setBackground(null);
+    }
+
     private void setUpViewHolder(RecentFile file, RecentFilesViewHolder fileHolder) {
         Uri uri = Uri.parse(file.getUri());
-        String name = uri.getQueryParameter("p").substring(uri.getQueryParameter("p").lastIndexOf('/')+1);
+        String name = uri.getQueryParameter("p").substring(uri.getQueryParameter("p").lastIndexOf('/') + 1);
         String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(name.lastIndexOf(".") + 1));
         String size = Formatter.formatFileSize(context, file.getSize());
 
@@ -129,7 +147,11 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
 
     @Override
     public int getItemCount() {
-        return recentFiles.size();
+        if (showShimmer) {
+            return Constants.SHIMMER_ITEM_NUMBER;
+        } else {
+            return recentFiles.size();
+        }
     }
 
     public void removeFile(int selectedPosition) {
@@ -143,9 +165,11 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         ImageView fileIconView, moreOptions;
         TextView fileTextView, fileSize, fileLastVisited;
         LinearLayout moreInfo;
+        ShimmerFrameLayout shimmerFrameLayout;
 
         RecentFilesViewHolder(View itemView) {
             super(itemView);
+            shimmerFrameLayout = itemView.findViewById(R.id.shimmer_layout_file);
             fileIconView = itemView.findViewById(R.id.icon);
             fileTextView = itemView.findViewById(R.id.text);
             fileSize = itemView.findViewById(R.id.file_size);
@@ -153,5 +177,9 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
             moreInfo = itemView.findViewById(R.id.more_info);
             moreOptions = itemView.findViewById(R.id.more_options);
         }
+    }
+
+    public void setShowShimmer(boolean showShimmer) {
+        this.showShimmer = showShimmer;
     }
 }

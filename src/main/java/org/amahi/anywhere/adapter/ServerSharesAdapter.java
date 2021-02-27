@@ -20,18 +20,22 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.l4digital.fastscroll.FastScroller;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.ShareSelectedEvent;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Constants;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +46,8 @@ import java.util.List;
  */
 public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapter.ServerShareViewHolder> implements FastScroller.SectionIndexer {
     private List<ServerShare> shares;
+
+    private boolean showShimmer = true;
 
     public ServerSharesAdapter(Context context) {
         this.shares = Collections.emptyList();
@@ -54,13 +60,30 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
 
     @Override
     public void onBindViewHolder(final ServerShareViewHolder holder, int position) {
-        holder.textView.setText(shares.get(position).getName());
-        holder.itemView.setOnClickListener(view -> BusProvider.getBus().post(new ShareSelectedEvent(shares.get(holder.getAdapterPosition()))));
+        if (showShimmer) {
+            holder.shimmerFrameLayout.startShimmer();
+        } else {
+            stopShimmer(holder);
+            holder.textView.setText(shares.get(position).getName());
+            holder.imageView.setImageResource(R.drawable.ic_right_arrow_24dp);
+            holder.itemView.setOnClickListener(view -> BusProvider.getBus().post(new ShareSelectedEvent(shares.get(holder.getAdapterPosition()))));
+        }
+    }
+
+    private void stopShimmer(ServerShareViewHolder holder) {
+        holder.shimmerFrameLayout.stopShimmer();
+        holder.shimmerFrameLayout.setShimmer(null);
+        holder.textView.setBackground(null);
+        holder.imageView.setBackground(null);
     }
 
     @Override
     public int getItemCount() {
-        return shares.size();
+        if (showShimmer) {
+            return Constants.SHIMMER_ITEM_NUMBER;
+        } else {
+            return shares.size();
+        }
     }
 
     public void replaceWith(List<ServerShare> shares) {
@@ -88,11 +111,19 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
     }
 
     class ServerShareViewHolder extends RecyclerView.ViewHolder {
+        ShimmerFrameLayout shimmerFrameLayout;
         TextView textView;
+        ImageView imageView;
 
         ServerShareViewHolder(View itemView) {
             super(itemView);
+            shimmerFrameLayout = itemView.findViewById(R.id.shimmer_layout_file);
             textView = itemView.findViewById(R.id.text);
+            imageView = itemView.findViewById(R.id.right_arrow);
         }
+    }
+
+    public void setShowShimmer(boolean showShimmer) {
+        this.showShimmer = showShimmer;
     }
 }

@@ -165,6 +165,8 @@
     <string name="language_pa">Punjabi</string>
     <string name="language_de">Allemand</string>
     <string name="language_hi">Hindi</string>
+    <string name="language_zh">Chinois</string>
+
     <string name="preference_category_about">À propos</string>
     <string name="preference_category_account">Compte</string>
     <string name="preference_category_settings">Paramètres</string>
@@ -237,5 +239,7 @@
     <string name="size_largest">Taille (la plus grande en premier)</string>
     <string name="size_smallest">Taille (la plus petite en premier)</string>
     <string name="file_type">Type de fichier</string>
+
+    <string name="message_toast_press_back_again">Appuyez à nouveau pour quitter</string>
 
 </resources>

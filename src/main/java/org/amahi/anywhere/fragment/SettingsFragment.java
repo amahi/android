@@ -55,6 +55,7 @@ import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -97,6 +98,23 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     private void setUpSettingsContent() {
         addPreferencesFromResource(R.xml.settings);
+        setUpLanguageContent();
+    }
+
+    private void setUpLanguageContent() {
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
+        HashMap<CharSequence, CharSequence> entryMap = new HashMap<>();
+        CharSequence[] entries = language.getEntries();
+        CharSequence[] values = language.getEntryValues();
+        for (int i = 0; i < entries.length; i++) {
+            entryMap.put(entries[i], values[i]);
+        }
+        Arrays.sort(entries, 1, entries.length);
+        for (int i = 0; i < entries.length; i++) {
+            values[i] = entryMap.get(entries[i]);
+        }
+        language.setEntries(entries);
+        language.setEntryValues(values);
     }
 
     private void setUpSettingsSummary() {

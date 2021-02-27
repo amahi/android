@@ -151,6 +151,7 @@
     <string name="language_hi">हिंदी</string>
     <string name="language_te">तेलेगु</string>
     <string name="language_de">जर्मन</string>
+    <string name="language_zh">चीनी</string>
 
     <string name="preference_category_about">विषय</string>
     <string name="preference_category_account">अकाउंट</string>
@@ -209,5 +210,7 @@
     <string name="size_largest">आकार (बड़ा पहले)</string>
     <string name="size_smallest">आकार (छोटा पहले)</string>
     <string name="file_type">फाइल का प्रकार</string>
+
+    <string name="message_toast_press_back_again">बाहर निकलने के लिए फिर से दबाएं</string>
 
 </resources>

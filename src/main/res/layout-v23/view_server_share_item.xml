@@ -36,23 +36,22 @@
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_layout_file"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="8dp"
-            android:layout_gravity="center_vertical">
+            android:padding="8dp">
 
             <TextView
                 android:id="@+id/text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="8"
-                android:layout_gravity="center_vertical"
-                android:maxLines="1"
                 android:background="@color/colorShimmer"
+                android:maxLines="1"
                 android:textSize="@dimen/text_medium" />
 
             <ImageView

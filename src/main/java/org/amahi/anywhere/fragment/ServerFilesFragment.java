@@ -410,7 +410,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void startDownloadService(ServerFile file) {
         Intent downloadService = Intents.Builder.with(getContext()).buildDownloadServiceIntent(file, getShare());
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getContext().startForegroundService(downloadService);
         } else {
             getContext().startService(downloadService);
@@ -674,7 +674,7 @@ public class ServerFilesFragment extends Fragment implements
     @Subscribe
     public void onFilesLoaded(ServerFilesLoadedEvent event) {
         showFilesContent(event.getServerFiles());
-        getFilesAdapter().showShimmer = false;
+        getFilesAdapter().setShowShimmer(false);
     }
 
     private void showFilesContent(List<ServerFile> files) {

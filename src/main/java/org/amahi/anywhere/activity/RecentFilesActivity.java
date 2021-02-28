@@ -157,7 +157,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
         recentFiles = getRecentFilesList();
         getRecentFileListView().setAdapter(new RecentFilesAdapter(this, recentFiles));
         showList(!recentFiles.isEmpty());
-        getListAdapter().showShimmer = false;
+        getListAdapter().setShowShimmer(false);
     }
 
     private List<RecentFile> getRecentFilesList() {
@@ -532,7 +532,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void startDownloadService(ServerFile file) {
         Intent downloadService = Intents.Builder.with(this).buildDownloadServiceIntent(file, null);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(downloadService);
         } else {
             startService(downloadService);

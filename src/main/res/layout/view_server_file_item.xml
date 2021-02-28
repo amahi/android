@@ -39,7 +39,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="8dp">
 
@@ -48,8 +48,8 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginEnd="8dp"
-                android:scaleType="centerCrop"
                 android:background="@color/colorShimmer"
+                android:scaleType="centerCrop"
                 app:tint="@color/icons"
                 tools:ignore="contentDescription" />
 
@@ -71,13 +71,13 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
+                        android:background="@color/colorShimmer"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:paddingStart="0dp"
                         android:paddingEnd="0dp"
                         android:textColor="@color/primary_text"
                         android:textSize="@dimen/text_medium"
-                        android:background="@color/colorShimmer"
                         tools:text="File Name" />
 
                     <ImageView
@@ -86,7 +86,8 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
-                        android:background="@color/colorShimmer"
+                        android:src="@drawable/ic_more_vert"
+                        android:visibility="gone"
                         tools:ignore="contentDescription" />
 
                     <ImageView
@@ -95,6 +96,7 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
+                        android:src="@drawable/ic_right_arrow_24dp"
                         android:visibility="gone"
                         tools:ignore="contentDescription" />
 
@@ -115,20 +117,20 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:background="@color/colorShimmer"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:textColor="@color/secondary_text"
-                        android:background="@color/colorShimmer"
                         android:textSize="@dimen/text_micro" />
 
                     <TextView
                         android:id="@+id/file_size"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@color/colorShimmer"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:textColor="@color/secondary_text"
-                        android:background="@color/colorShimmer"
                         android:textSize="@dimen/text_micro" />
 
                 </LinearLayout>

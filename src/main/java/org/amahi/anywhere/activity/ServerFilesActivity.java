@@ -806,3 +806,5 @@ public class ServerFilesActivity extends AppCompatActivity implements
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }
+
+

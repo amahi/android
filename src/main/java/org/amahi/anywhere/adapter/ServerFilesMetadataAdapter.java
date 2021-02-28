@@ -178,7 +178,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
         }
     }
 
-    public class ServerFileMetadataViewHolder extends RecyclerView.ViewHolder {
+    public static class ServerFileMetadataViewHolder extends RecyclerView.ViewHolder {
 
         ImageView fileIcon, moreOptions;
         TextView fileTitle;

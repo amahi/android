@@ -411,6 +411,12 @@ public class UploadSettingsFragment extends PreferenceFragmentCompat implements
         DialogFragment f = null;
         if (preference instanceof CustomEditTextPreference) {
             f = EditTextPreferenceDialog.newInstance(preference.getKey());
+        } else if (preference.getKey().equals(getSharePreference().getKey())) {
+            if (getHdaPreference().getValue() != null) {
+                super.onDisplayPreferenceDialog(preference);
+            } else {
+                Snackbar.make(getView(), getString(R.string.preference_message_no_server), Snackbar.LENGTH_SHORT).show();
+            }
         } else {
             super.onDisplayPreferenceDialog(preference);
         }

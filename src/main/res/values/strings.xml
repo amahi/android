@@ -196,7 +196,7 @@
     <string name="message_toast_press_back_again">Press back again to exit.</string>
 
     <!--    Languages-->
-
+    <string name="language_def">System Default</string>
     <string name="language_en">English</string>
     <string name="language_fr">French</string>
     <string name="language_es">Spanish</string>
@@ -207,6 +207,7 @@
     <string name="language_pa">Punjabi</string>
     <string name="language_zh">Chinese</string>
 
+    <string name="language_def_key" translatable="false">def</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
@@ -219,7 +220,6 @@
 
 
     <!--    Preferences-->
-
     <string name="preference_category_about">About</string>
     <string name="preference_category_account">Account</string>
     <string name="preference_category_settings">Settings</string>
@@ -283,6 +283,7 @@
     </string-array>
 
     <string-array name="preference_entries_language" translatable="false">
+        <item>@string/language_def</item>
         <item>@string/language_en</item>
         <item>@string/language_fr</item>
         <item>@string/language_es</item>
@@ -296,6 +297,7 @@
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
+        <item>@string/language_def_key</item>
         <item>@string/language_en_key</item>
         <item>@string/language_fr_key</item>
         <item>@string/language_es_key</item>

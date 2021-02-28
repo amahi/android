@@ -1,30 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-    ~ Copyright (c) 2014 Amahi
-    ~
-    ~ This file is part of Amahi.
-    ~
-    ~ Amahi is free software: you can redistribute it and/or modify
-    ~ it under the terms of the GNU General Public License as published by
-    ~ the Free Software Foundation, either version 3 of the License, or
-    ~ (at your option) any later version.
-    ~
-    ~ Amahi is distributed in the hope that it will be useful,
-    ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-    ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    ~ GNU General Public License for more details.
-    ~
-    ~ You should have received a copy of the GNU General Public License
-    ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
-    -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_apps">एप्स</string>
-    <string name="title_settings">सेटिंग्स</string>
-    <string name="title_shares">शेयर्स</string>
+    <string name="title_settings">सेटिंगस</string>
+    <string name="title_shares">शेयरस</string>
     <string name="title_no_server">कोई सर्वर नहीं</string>
     <string name="title_upload_list">अपलोड</string>
-    <string name="title_offline_files">ऑफलाइन फाइल्स</string>
-    <string name="title_recent_files">हाल की फाइल्स</string>
+    <string name="title_offline_files">ऑफलाइन फाइलस</string>
+    <string name="title_recent_files">हाल का फाइलस</string>
     <string name="button_search_application">गूगल प्ले में खोजिए</string>
     <string name="button_sign_in">साइन इन</string>
     <string name="button_yes">हां</string>
@@ -36,56 +18,56 @@
     <string name="menu_forward">आगे</string>
     <string name="menu_navigation_close">नेविगेशन बंद करे</string>
     <string name="menu_navigation_open">नेविगेशन खोलें</string>
-    <string name="menu_settings">सेटिंग्स</string>
+    <string name="menu_settings">सेटिंग</string>
     <string name="menu_share">शेयर</string>
     <string name="menu_save">डिवाइस पर सहेजें</string>
-    <string name="menu_delete">हटाएँ</string>
+    <string name="menu_delete">हटाए</string>
     <string name="menu_offline">ऑफलाइन</string>
     <string name="menu_sort">चुनना</string>
     <string name="menu_search">खोज</string>
     <string name="menu_open">खुला</string>
-    <string name="menu_audio_files">फाइल्स</string>
+    <string name="menu_audio_files">फाइलस</string>
     <string name="menu_video_subtitle">सबटाइटल्स</string>
     <string name="message_empty_apps">कोई एप्स नहीं है</string>
-    <string name="message_empty_files">कोई फाइल्स नहीं है</string>
+    <string name="message_empty_files">कोई फाइलस नहीं है</string>
     <string name="message_empty_shares">कोई शेयरस नहीं है</string>
-    <string name="message_empty_recent_files">"कोई हाल की फाइल्स नहीं हैं "</string>
-    <string name="message_error_account_exists">अकाउंट पहले से मौजूद है।</string>
-    <string name="message_error_search_application">हमें इस फाइल के लिए कोई समर्थित एप्स नहीं मिले।</string>
+    <string name="message_empty_recent_files">कहीं हल्का फाइल्स नहीं है</string>
+    <string name="message_error_account_exists">अकाउंट पहले से मौजूद है</string>
+    <string name="message_error_search_application">हमें इस फाइल के लिए कोई समर्थित एप्स नहीं मिला।</string>
     <string name="forgot_password"><a href="https://www.amahi.org/forgot">आप अपनी फ़ाइलों को भूल गए?</a></string>
     <string name="message_error_authentication">उपयोगकर्ता नाम और पासवर्ड सही नहीं हैं। कृपया पुन: प्रयास करें।</string>
-    <string name="message_error_authentication_connection">संपर्क त्रुटि। अपनी सेटिंग्स जांचें और फिर से प्रयास करें।</string>
-    <string name="message_error_authentication_field_empty">उपयोगकर्ता नाम या पासवर्ड फ़ील्ड को खाली नहीं छोड़ा जा सकता है।</string>
+    <string name="message_error_authentication_connection">संपर्क त्रुटि। अपनी सेटिंग जांचें और फिर से प्रयास करें।</string>
+    <string name="message_error_authentication_field_empty">उपयोगकर्ता नाम या पासवर्ड फ़ील्ड को खाली नहीं छोड़ा जा सकता है</string>
     <string name="message_error_connection">संपर्क त्रुटि</string>
-    <string name="message_tap_to_retry">पुन: प्रयास  करने के लिये स्क्रीन को छूइए</string>
+    <string name="message_tap_to_retry">पुन: प्रयास  करने के लिये स्क्रीन को छुइए</string>
     <string name="message_error_video">वीडियो चलाने में त्रुटि</string>
     <string name="message_error_amahi_anywhere_app">आपके सर्वर में Amahi Anywhere एप उपलब्ध नहीं है। कृपया सुनिश्चित करें कि एप्लिकेशन इंस्टॉलड है, चल रहा है और आपके नेटवर्क में उपलब्ध है।</string>
-    <string name="message_resume_last_position">क्या आप वहां से शुरू करना चाहते हैं जहाँ आप पहले छोड़े थे ?</string>
+    <string name="message_resume_last_position">क्या आप फिर से शुरू करना चाहते हैं रोकै थै</string>
     <string name="message_notice_create_some">कुछ बनाएं और पुन: प्रयास करें</string>
     <string name="message_notice_visit_some">कुछ पर जाएँ और पुन: प्रयास करें</string>
-    <string name="message_progress_file_downloading">फाइल डाउनलोड हो रही है …</string>
-    <string name="message_progress_file_preparing">फ़ाइल तैयार हो रही है …</string>
+    <string name="message_progress_file_downloading">फाइल डाउनलोड हो रहा है …</string>
+    <string name="message_progress_file_preparing">फ़ाइल तैयार कर रहा है …</string>
     <string name="message_no_files">डाउनलोड की गई फ़ाइलें यहां दिखाई देती हैं</string>
     <string name="message_create_and_try_again">डाउनलोड करने के लिए फ़ाइलें खोजें</string>
     <string name="message_connection_error">संपर्क त्रुटि</string>
     <string name="message_connect_and_try_again">कृपया इंटरनेट से कनेक्ट करें और फिर प्रयास करें।</string>
-    <string name="message_connect_to_server_and_try_again">कृपया अपने सर्वर से कनेक्ट करें और फिर प्रयास करें।</string>
+    <string name="message_connect_to_server_and_try_again">कृपया अपने सर्वर से कनेक्ट करें और फिर प्रयत्न करें।</string>
     <string name="message_delete_file_title">फ़ाइल हटाने की पुष्टि करें?</string>
-    <string name="message_delete_file_body">यह कार्य दोबारा नहीं हो सकता।</string>
+    <string name="message_delete_file_body">यह कार्य दोबारा से नहीं हो सकता।</string>
     <string name="message_delete_progress">हटाया जा रहा है।</string>
     <string name="message_delete_file_error">फ़ाइल हटाते समय कुछ त्रुटि हुई</string>
     <string name="message_file_upload">अपलोड करने के लिए फ़ाइलों का चयन करें</string>
-    <string name="message_file_upload_title">आपका फाइल अपलोड हो रहा है ...</string>
+    <string name="message_file_upload_title">आपका फाइल अपलोड हो रहा है</string>
     <string name="message_file_upload_complete">फाईल सफलता पूर्वक अपलोड हुई</string>
-    <string name="message_file_upload_error">आपकी फ़ाइल अपलोड करते समय कुछ त्रुटि हो रही है।</string>
+    <string name="message_file_upload_error">आपकी फ़ाइल अपलोड करते समय कुछ त्रुटि हो रहा है</string>
     <string name="message_duplicate_file_upload">मौजूदा लिखी फाइल के ऊपर लिखना चाहते हैं?</string>
     <string name="message_duplicate_file_upload_body">फाइल %1$s पहले से मौजूद है।\\nक्या आप वाकई मौजूदा फ़ाइल को बदलना चाहते हैं?</string>
-    <string name="notification_upload_title">"नया चित्र अपलोड हो रहा है "</string>
+    <string name="notification_upload_title">नई छवि अपलोड कर रहा है</string>
     <string name="message_upload_success">अपलोड पूरा हुआ</string>
     <string name="message_upload_error">अपलोड विफल</string>
     <string name="message_file_download_complete">फ़ाइल सफलतापूर्वक डाउनलोड की गई</string>
     <string name="message_offline_file_deleted">ऑफ़लाइन फ़ाइल सफलतापूर्वक निकाल दी गई</string>
-    <string name="notification_download_offline_title">ऑफ़लाइन उपलब्ध कराई जा रही  है</string>
+    <string name="notification_download_offline_title">ऑफ़लाइन उपलब्ध कराया जा रहा है</string>
     <string name="notification_offline_download_complete">फ़ाइल ऑफ़लाइन उपलब्ध है</string>
     <string name="notification_offline_download_paused">इंटरनेट की प्रतीक्षा में</string>
     <string name="notification_offline_download_error">फ़ाइल को ऑफ़लाइन उपलब्ध कराते समय त्रुटि</string>
@@ -93,19 +75,19 @@
     <string name="share_message">मैं मेरी सभी फ़ाइलों को स्टोर करने, बैकअप लेने और स्ट्रीमिंग करने के लिए Amahi होम सर्वर का उपयोग करता हूं।\n\n इसकी जांच - पड़ताल करें!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
     <string name="title_version_settings">Amahi एंड्रॉयड के लिए</string>
     <string name="message_no_search_result">कोई खोज परिणाम नहीं मिला</string>
-    <string name="application_not_found">कोई हैंडलर एप्लीकेशन नहीं मिला</string>
+    <string name="application_not_found">कोई हैडलर एप्लीकेशन नहीं मिला</string>
     <string name="message_logout">सफलतापूर्वक लॉग आउट किया गया</string>
     <string name="share_screen_title">साझा करने के लिए उपयोग करें</string>
-    <string name="share_permission">फ़ाइल को डाउनलोड करने के लिए स्टोरेज की अनुमति आवश्यक है।</string>
-    <string name="share_permission_denied">आपने स्टोरेज की अनुमति से इनकार कर दिया है। जारी रखने के लिए सक्षम करें।</string>
-    <string name="file_upload_permission">आपके डिवाइस पर फ़ाइलों को एक्सेस करने के लिए फ़ाइल रीड की अनुमति आवश्यक है।</string>
-    <string name="file_upload_permission_denied">आपने फ़ाइलें पढ़ने की अनुमति से इनकार कर दिया है। जारी रखने के लिए सक्षम करें।</string>
-    <string name="camera_permission">तस्वीरों और वीडियो को कैप्चर करने के लिए कैमरा एक्सेस की आवश्यकता है।</string>
+    <string name="share_permission">फ़ाइल को डाउनलोड करने के लिए स्टूडेज की अनुमति आवश्यक है</string>
+    <string name="share_permission_denied">आपने स्टूडेज की अनुमति से इनकार कर दिया है। जारी रखने के लिए सक्षम करें</string>
+    <string name="file_upload_permission">आपके डिवाइस पर फ़ाइलों को एक्सेस करने के लिए फ़ाइल रीड की अनुमति आवश्यक है</string>
+    <string name="file_upload_permission_denied">आपने फ़ाइलें पढ़ने की अनुमति से इनकार कर दिया है। जारी रखने के लिए सक्षम करें</string>
+    <string name="camera_permission">तस्वीरों और वीडियोको कैप्चर करने के लिए कैमरा एक्सेस की आवश्यकता होती है और</string>
     <string name="label_previous">पिछला</string>
     <string name="label_next">आगे</string>
     <string name="label_play">खेल</string>
     <string name="label_pause">ठहराव</string>
-    <string name="media_route_menu_title">खेलो ऑन&amp;#8230</string>
+    <string name="media_route_menu_title">खेलो अन&amp;#8230</string>
     <string name="upload_camera">कैमरा का उपयोग करें</string>
     <string name="upload_file">फाइल अपलोड करें</string>
     <string name="exit_title">बाहर जाएं</string>
@@ -118,10 +100,10 @@
     <string name="intro_tv_1">एंड्राइड टीवी के लिए Amahi मैं आपका स्वागत है</string>
     <string name="intro_phone_1">एंड्राइड के लिए Amahi मैं आपका स्वागत है</string>
     <string name="intro_desc_phone_1">एक एंड्रॉइड ऐप जो आपको अपने फाइल को Amahi होम सर्वर मैं एक्सेस करने देता है।</string>
-    <string name="intro_title_2">अपने HDA को एक्सेस करें</string>
-    <string name="intro_desc_2">Amahi आपको अपने वीडियो चलाने, अपनी तस्वीरों को देखने, अपने संगीत आदि, सुनने की सुविधा देती है!</string>
+    <string name="intro_title_2">अपने hda को एक्सेस करें</string>
+    <string name="intro_desc_2">Amahi आपको अपने वीडियो चलाने, अपनी तस्वीरों को देखने, अपने संगीत और अधिक सुनने की सुविधा देती है!</string>
     <string name="intro_title_3">अपना फोटोस ब्राउज़ करें</string>
-    <string name="intro_desc_tv_3">अपने टीवी में अपनी फोटो लाइब्रेरी ब्राउज़ करें, तेज और अद्भुत रेसोलुशन में।</string>
+    <string name="intro_desc_tv_3">अपने टीवी में अपनी फोटो लाइब्रेरी ब्राउज़ करें, तेज और अद्भुत रिजर्वेशन में।</string>
     <string name="intro_desc_phone_3">अपनी फोटो लाइब्रेरी को आसानी से ब्राउज़ करें, सीधे तस्वीरें अपलोड करें अपने फोन से।</string>
     <string name="intro_title_4">अपना संगीत बजाओ</string>
     <string name="intro_desc_tv_4">अपने टीवी में अपने संगीत पुस्तकालय को सुनें, पार्टियों के लिए बिल्कुल सही, या अपने पसंदीदा धुनों के साथ आराम करने के लिए।</string>
@@ -131,7 +113,7 @@
     <string name="intro_desc_phone_5">किसी भी समय कहीं भी आपके फोन पर अपने वीडियो और मूवी लाइब्रेरी को देखें।</string>
     <string name="intro_title_6">तैयार</string>
     <string name="intro_desc_6">आप जाने के लिए पूरी तरह तैयार हैं। Amahi का उपयोग करने के लिए धन्यवाद।</string>
-    <string name="introducing_cast">इंट्रोडसिंग कास्ट</string>
+    <string name="introducing_cast">इंट्रोड्यूजिंग कास्ट</string>
     <string name="unknown_artist">अनजान कलाकार</string>
     <string name="enable">सक्षम</string>
     <string name="disable">अक्षम</string>
@@ -151,11 +133,10 @@
     <string name="language_hi">हिंदी</string>
     <string name="language_te">तेलेगु</string>
     <string name="language_de">जर्मन</string>
-    <string name="language_zh">चीनी</string>
 
     <string name="preference_category_about">विषय</string>
     <string name="preference_category_account">अकाउंट</string>
-    <string name="preference_category_settings">सेटिंग्स</string>
+    <string name="preference_category_settings">सेटिंगस</string>
     <string name="preference_category_general">साधारण</string>
     <string name="preference_title_about_feedback">प्रतिपुष्टि</string>
     <string name="preference_title_about_rating">मूल्यांकन करें</string>
@@ -181,7 +162,7 @@
     <string name="pref_title_server_select">सर्वर का चयन करें</string>
     <string name="pref_title_server_select_desc">वह सर्वर चुनें जिसके शेयर आप एक्सेस करना चाहते हैं।</string>
     <string name="pref_title_server_active_list">सक्रिय सर्वर की सूची</string>
-    <string name="pref_server_active_list_desc">वह सक्रिय सर्वर चुनें जिसके शेयर आप एक्सेस करना चाहते हैं</string>
+    <string name="pref_server_active_list_desc">वह सक्रियसर्वर चुनें जिसके शेयर आप एक्सेस करना चाहते हैं</string>
     <string name="pref_title_sign_out">साइन आउट</string>
     <string name="pref_title_account">अकाउंट</string>
     <string name="pref_sign_out_desc">टीवी से साइन आउट करें</string>
@@ -210,7 +191,5 @@
     <string name="size_largest">आकार (बड़ा पहले)</string>
     <string name="size_smallest">आकार (छोटा पहले)</string>
     <string name="file_type">फाइल का प्रकार</string>
-
-    <string name="message_toast_press_back_again">बाहर निकलने के लिए फिर से दबाएं</string>
 
 </resources>

@@ -160,7 +160,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         notifyDataSetChanged();
     }
 
-    static class RecentFilesViewHolder extends RecyclerView.ViewHolder {
+    class RecentFilesViewHolder extends RecyclerView.ViewHolder {
 
         ImageView fileIconView, moreOptions;
         TextView fileTextView, fileSize, fileLastVisited;

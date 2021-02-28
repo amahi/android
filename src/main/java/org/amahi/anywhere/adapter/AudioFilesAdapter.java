@@ -2,14 +2,13 @@ package org.amahi.anywhere.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.l4digital.fastscroll.FastScroller;
 import com.squareup.otto.Subscribe;
@@ -159,7 +158,7 @@ public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.Au
         BusProvider.getBus().unregister(this);
     }
 
-    public static class AudioFileViewHolder extends RecyclerView.ViewHolder {
+    public class AudioFileViewHolder extends RecyclerView.ViewHolder {
         TextView audioName, audioSubtitle;
 
         public AudioFileViewHolder(View itemView) {

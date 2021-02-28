@@ -1,22 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!--
-  ~ Copyright (c) 2014 Amahi
-  ~
-  ~ This file is part of Amahi.
-  ~
-  ~ Amahi is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ Amahi is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
-  -->
-
+<?xml version="1.0" encoding="UTF-8"?>
 <resources>
    <string name="alert_delete_confirm">మీకు ఖచ్చితంగా తెలుసా?</string>
    <string name="alert_delete_dialog">ఫైల్‌ను తొలగించు</string>
@@ -63,12 +45,9 @@
    <string name="language_fr">ఫ్రెంచ్</string>
    <string name="language_es">స్పానిష్</string>
    <string name="language_bn">బెంగాలీ</string>
-    <string name="language_pa">పంజాబీ</string>
-    <string name="language_te">తెలుగు</string>
     <string name="language_de">జర్మన్</string>
+    <string name="language_te">తెలుగు</string>
     <string name="language_hi">హిందీ</string>
-    <string name="language_zh">சீனர்கள்</string>
-
    <string name="media_route_menu_title">ఆన్ చేయండి</string>
    <string name="menu_audio_files">ఫైల్</string>
    <string name="menu_back">తిరిగి వెళ్ళు</string>
@@ -215,6 +194,4 @@
    <string name="preference_entry_server_connection_local">LAN</string>
    <string name="title_no_server">సర్వర్‌లు లేవు</string>
    <string name="file_type">ఫైల్ రకం</string>
-    
-    <string name="message_toast_press_back_again">" నిష్క్రమించడానికి మళ్ళీ తిరిగి నొక్కండి"</string>
 </resources>

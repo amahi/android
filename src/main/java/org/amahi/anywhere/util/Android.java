@@ -80,7 +80,11 @@ public final class Android {
 
         WindowManager windows = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
-        windows.getDefaultDisplay().getRealMetrics(screenMetrics);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            windows.getDefaultDisplay().getRealMetrics(screenMetrics);
+        } else {
+            windows.getDefaultDisplay().getMetrics(screenMetrics);
+        }
 
         return screenMetrics;
     }

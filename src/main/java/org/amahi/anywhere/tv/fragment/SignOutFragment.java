@@ -68,7 +68,9 @@ public class SignOutFragment extends GuidedStepFragment implements AccountManage
 
         Drawable icon = null;
 
-        icon = getActivity().getDrawable(R.drawable.ic_app_logo_shadowless);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            icon = getActivity().getDrawable(R.drawable.ic_app_logo_shadowless);
+        }
 
         return new GuidanceStylist.Guidance(title, description, breadcrumb, icon);
     }

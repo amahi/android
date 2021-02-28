@@ -64,11 +64,8 @@
     <string name="language_es">Español</string>
     <string name="language_bn">Bengali</string>
     <string name="language_te">Telugu</string>
-    <string name="language_pa">Punjabi</string>
     <string name="language_de">alemán</string>
     <string name="language_hi">Hindi</string>
-    <string name="language_zh">Chino</string>
-
     <string name="media_route_menu_title">Reproducir con&#8230;</string>
     <string name="menu_audio_files">Archivos</string>
     <string name="menu_back">Atras</string>
@@ -211,7 +208,5 @@
     <string name="size_largest">Tamaño (el más grande primero)</string>
     <string name="size_smallest">Tamaño (el más pequeño primero)</string>
     <string name="file_type">Tipo de archivo</string>
-
-    <string name="message_toast_press_back_again">" Presione de nuevo para salir"</string>
 
 </resources>

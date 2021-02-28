@@ -12,11 +12,12 @@ Use the Sheet and create a xml file for a particular column and corresponding ke
 1. In `strings.xml (en)`, add entries for the new language. For example, for Hindi, add the following lines
 ```xml
 <string>
+
     <string name="language_hi">Hindi</string>
-    <string name="language_hi_key" translatable="false">hi</string>
+    <string name="language_hi_key" translatable="false">hi-rIN</string>
 </string>
 ```
-2. Add `language_hi` key in every strings file, translated into their respective language. For Example, in `strings.xml (hi)` add ```<string name="language_hi">हिंदी </string```
+2. Add `language_hi` key in every strings file.
 3. Add the new language to the strings array in `strings.xml (en)`. This step has to be performed in the English file only.
 ```xml
 <string>

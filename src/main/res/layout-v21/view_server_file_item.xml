@@ -24,9 +24,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
     android:orientation="horizontal"
     android:padding="8dp"
     app:cardCornerRadius="4dp"
@@ -87,8 +87,8 @@
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
                         android:src="@drawable/ic_more_vert"
-                        android:visibility="gone"
-                        tools:ignore="contentDescription" />
+                        tools:ignore="contentDescription"
+                        android:visibility="gone" />
 
                     <ImageView
                         android:id="@+id/right_arrow"

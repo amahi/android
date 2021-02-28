@@ -28,7 +28,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.format.Formatter;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,9 +65,7 @@ import java.util.Locale;
  * for the {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
 public class ServerFilesAdapter extends FilesFilterAdapter {
-    private
-      context;
-
+    private Context context;
     private int currentDownloadPosition = RecyclerView.NO_POSITION;
     private int progress;
 
@@ -177,7 +174,6 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
                 fileHolder.fileIconView.setImageResource(Mimes.getFileIcon(file));
             }
 
-
             fileHolder.itemView.setOnClickListener(view -> {
                 mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
             });
@@ -257,10 +253,6 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         }
     }
 
-    public ForegroundColorSpan getFcs() {
-        return new ForegroundColorSpan(ContextCompat.getColor(context, R.color.accent));
-    }
-
     public void tearDownCallbacks() {
         BusProvider.getBus().unregister(this);
         if (isOfflineMode()) {
@@ -272,7 +264,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         this.mListener = mListener;
     }
 
-    public static class ServerFileViewHolder extends RecyclerView.ViewHolder {
+    public class ServerFileViewHolder extends RecyclerView.ViewHolder {
         ImageView fileIconView, moreOptions, rightArrow;
         TextView fileTextView, fileSize, fileLastModified;
         LinearLayout moreInfo;

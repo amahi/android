@@ -4,14 +4,12 @@ import android.content.Context;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -37,10 +35,9 @@ import java.util.Collections;
 
 public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
 
-    private Context mContext;
     public ServerFilesMetadataAdapter(Context context, ServerClient serverClient) {
         this.layoutInflater = LayoutInflater.from(context);
-        mContext = context;
+
         this.serverClient = serverClient;
 
         this.files = Collections.emptyList();
@@ -115,7 +112,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
         if (queryString != null && !TextUtils.isEmpty(queryString)) {
             int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
             if (searchMatchPosition != -1)
-                sb.setSpan(getFcs(), searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         }
         holder.fileTitle.setText(sb);
         holder.fileTitle.setBackgroundResource(R.color.background_transparent_secondary);
@@ -160,10 +157,6 @@ public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
             .into(holder.fileIcon);
     }
 
-    public ForegroundColorSpan getFcs() {
-        return new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.accent));
-    }
-
     public void tearDownCallbacks() {
         BusProvider.getBus().unregister(this);
     }
@@ -178,7 +171,7 @@ public class ServerFilesMetadataAdapter extends FilesFilterAdapter {
         }
     }
 
-    public static class ServerFileMetadataViewHolder extends RecyclerView.ViewHolder {
+    public class ServerFileMetadataViewHolder extends RecyclerView.ViewHolder {
 
         ImageView fileIcon, moreOptions;
         TextView fileTitle;

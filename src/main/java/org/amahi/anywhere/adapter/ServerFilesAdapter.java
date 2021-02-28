@@ -274,7 +274,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         this.mListener = mListener;
     }
 
-    public class ServerFileViewHolder extends RecyclerView.ViewHolder {
+    public static class ServerFileViewHolder extends RecyclerView.ViewHolder {
         ImageView fileIconView, moreOptions, rightArrow;
         TextView fileTextView, fileSize, fileLastModified;
         LinearLayout moreInfo;

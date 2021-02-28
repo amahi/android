@@ -19,7 +19,7 @@
 
 <resources>
 
-<!--    Please update the Strings here: https://docs.google.com/spreadsheets/d/1NAl8xWGDRj6MmLHKyESONAAyudOHdFnSbaqF1Pr28sE/edit?usp=sharing-->
+    <!--    Please update the Strings here: https://docs.google.com/spreadsheets/d/1NAl8xWGDRj6MmLHKyESONAAyudOHdFnSbaqF1Pr28sE/edit?usp=sharing-->
 
     <string name="application_name" translatable="false">Amahi</string>
 
@@ -191,8 +191,8 @@
     <string name="download_channel" translatable="false">File Download</string>
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
 
-<!--    Languages-->
-
+    <!--    Languages-->
+    <string name="language_def">System Default</string>
     <string name="language_en">English</string>
     <string name="language_fr">French</string>
     <string name="language_es">Spanish</string>
@@ -203,6 +203,7 @@
     <string name="language_hi">Hindi</string>
     <string name="language_zh">Chinese</string>
 
+    <string name="language_def_key" translatable="false">def</string>
     <string name="language_zh_key" translatable="false">zh</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
@@ -214,10 +215,7 @@
     <string name="language_hi_key" translatable="false">hi</string>
 
 
-
-
-<!--    Preferences-->
-
+    <!--    Preferences-->
     <string name="preference_category_about">About</string>
     <string name="preference_category_account">Account</string>
     <string name="preference_category_settings">Settings</string>
@@ -281,6 +279,7 @@
     </string-array>
 
     <string-array name="preference_entries_language" translatable="false">
+        <item>@string/language_def</item>
         <item>@string/language_en</item>
         <item>@string/language_fr</item>
         <item>@string/language_es</item>
@@ -294,6 +293,7 @@
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
+        <item>@string/language_def_key</item>
         <item>@string/language_en_key</item>
         <item>@string/language_fr_key</item>
         <item>@string/language_es_key</item>
@@ -343,7 +343,7 @@
     <string name="rate_dialog_cancel">Remind Me Later</string>
     <string name="rate_dialog_no">No, Thanks</string>
 
-<!--    File Options Sheet Dialog-->
+    <!--    File Options Sheet Dialog-->
     <string name="file_info">File info</string>
     <string name="sort_by">SORT BY</string>
     <string name="file_name_a_z">File name (A to Z)</string>

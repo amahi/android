@@ -25,7 +25,6 @@
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out">
 
-    <include layout="@layout/shares_loading"/>
 
     <FrameLayout
         android:id="@+id/content"

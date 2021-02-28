@@ -23,10 +23,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.l4digital.fastscroll.FastScroller;
 
 import org.amahi.anywhere.R;
@@ -43,6 +45,7 @@ import java.util.List;
  */
 public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapter.ServerShareViewHolder> implements FastScroller.SectionIndexer {
     private List<ServerShare> shares;
+    public boolean showShimmer = true;
 
     public ServerSharesAdapter(Context context) {
         this.shares = Collections.emptyList();
@@ -55,13 +58,24 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
 
     @Override
     public void onBindViewHolder(final ServerShareViewHolder holder, int position) {
-        holder.textView.setText(shares.get(position).getName());
-        holder.itemView.setOnClickListener(view -> BusProvider.getBus().post(new ShareSelectedEvent(shares.get(holder.getAdapterPosition()))));
+        if (showShimmer) {
+            holder.shimmerFrameLayout.startShimmer();
+        } else {
+            holder.shimmerFrameLayout.stopShimmer();
+            holder.shimmerFrameLayout.setShimmer(null);
+
+            holder.textView.setBackground(null);
+            holder.imageView.setBackground(null);
+            holder.textView.setText(shares.get(position).getName());
+            holder.imageView.setImageResource(R.drawable.ic_right_arrow_24dp);
+            holder.itemView.setOnClickListener(view -> BusProvider.getBus().post(new ShareSelectedEvent(shares.get(holder.getAdapterPosition()))));
+        }
     }
 
     @Override
     public int getItemCount() {
-        return shares.size();
+        int SHIMMER_ITEM_NUMBER = 10;
+        return showShimmer ? SHIMMER_ITEM_NUMBER : shares.size();
     }
 
     public void replaceWith(List<ServerShare> shares) {
@@ -90,10 +104,14 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
 
     static class ServerShareViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
+        ShimmerFrameLayout shimmerFrameLayout;
+        ImageView imageView;
 
         ServerShareViewHolder(View itemView) {
             super(itemView);
+            shimmerFrameLayout = itemView.findViewById(R.id.shimmer_layout_file);
             textView = itemView.findViewById(R.id.text);
+            imageView = itemView.findViewById(R.id.right_arrow);
         }
     }
 }

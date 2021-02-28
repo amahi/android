@@ -199,6 +199,7 @@ public class ServerSharesFragment extends Fragment implements
     @Subscribe
     public void onSharesLoaded(ServerSharesLoadedEvent event) {
         mSwipeRefreshLayout.setRefreshing(false);
+        mServerSharesAdapter.showShimmer = false;
         setUpSharesContent(event.getServerShares());
         showSharesContent();
     }

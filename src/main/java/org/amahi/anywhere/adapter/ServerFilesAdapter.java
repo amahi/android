@@ -37,12 +37,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
-
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
@@ -68,9 +66,9 @@ import java.util.Locale;
  * for the {@link org.amahi.anywhere.fragment.ServerFilesFragment}.
  */
 public class ServerFilesAdapter extends FilesFilterAdapter {
-    private 
+    private
       context;
-  
+
     private int currentDownloadPosition = RecyclerView.NO_POSITION;
     private int progress;
 

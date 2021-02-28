@@ -181,9 +181,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     private void setUpFilesContentRefreshing() {
         SwipeRefreshLayout refreshLayout = getRefreshLayout();
         refreshLayout.setProgressBackgroundColorSchemeResource(R.color.accent);
-        refreshLayout.setColorSchemeResources(
-            android.R.color.white);
-
+        refreshLayout.setColorSchemeResources(android.R.color.white);
         refreshLayout.setOnRefreshListener(this);
     }
 

@@ -175,26 +175,22 @@ public class ServerAppActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-
-            case R.id.menu_back:
-                if (getWebView().canGoBack()) {
-                    getWebView().goBack();
-                }
-                return true;
-
-            case R.id.menu_forward:
-                if (getWebView().canGoForward()) {
-                    getWebView().goForward();
-                }
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
+        int itemId = menuItem.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+            return true;
+        } else if (itemId == R.id.menu_back) {
+            if (getWebView().canGoBack()) {
+                getWebView().goBack();
+            }
+            return true;
+        } else if (itemId == R.id.menu_forward) {
+            if (getWebView().canGoForward()) {
+                getWebView().goForward();
+            }
+            return true;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override

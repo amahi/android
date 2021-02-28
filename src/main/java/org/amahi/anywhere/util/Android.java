@@ -29,6 +29,7 @@ import org.amahi.anywhere.R;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Android properties accessor.
@@ -79,11 +80,7 @@ public final class Android {
 
         WindowManager windows = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            windows.getDefaultDisplay().getRealMetrics(screenMetrics);
-        } else {
-            windows.getDefaultDisplay().getMetrics(screenMetrics);
-        }
+        windows.getDefaultDisplay().getRealMetrics(screenMetrics);
 
         return screenMetrics;
     }
@@ -96,7 +93,7 @@ public final class Android {
             byte[] buffer = new byte[size];
             is.read(buffer);
             is.close();
-            json = new String(buffer, "UTF-8");
+            json = new String(buffer, StandardCharsets.UTF_8);
         } catch (IOException ignored) {
         }
         return json;

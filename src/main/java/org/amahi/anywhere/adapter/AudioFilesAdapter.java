@@ -2,14 +2,16 @@ package org.amahi.anywhere.adapter;
 
 import android.content.Context;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.l4digital.fastscroll.FastScroller;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
@@ -30,7 +32,7 @@ import org.amahi.anywhere.util.RecyclerViewItemClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.AudioFileViewHolder> {
+public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.AudioFileViewHolder> implements FastScroller.SectionIndexer {
 
     private final Context context;
     private ServerClient serverClient;
@@ -62,6 +64,11 @@ public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.Au
             AudioFile audioFile = new AudioFile();
             audioFiles.add(audioFile);
         }
+    }
+
+    @Override
+    public CharSequence getSectionText(int selectedPosition) {
+        return audioFiles.get(selectedPosition).getTitle().subSequence(0, 1);
     }
 
     @Override
@@ -152,7 +159,7 @@ public class AudioFilesAdapter extends RecyclerView.Adapter<AudioFilesAdapter.Au
         BusProvider.getBus().unregister(this);
     }
 
-    public class AudioFileViewHolder extends RecyclerView.ViewHolder {
+    public static class AudioFileViewHolder extends RecyclerView.ViewHolder {
         TextView audioName, audioSubtitle;
 
         public AudioFileViewHolder(View itemView) {

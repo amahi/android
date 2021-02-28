@@ -23,10 +23,10 @@
     <color name="primary_dark">#0069c0</color>
     <color name="primary_light">#BBDEFB</color>
     <color name="primary_action_mode">#328ce7</color>
-    <color name="accent">#ef5350</color>
+    <color name="accent">#328ce7</color>
     <color name="primary_text">#DE000000</color>
     <color name="secondary_text">#8A000000</color>
-    <color name="icons">#000000</color>
+    <color name="icons">@color/accent</color>
     <color name="divider">#757575</color>
     <color name="error_red">#ff0033</color>
     <color name="sign_in_button">#1976D2</color>

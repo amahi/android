@@ -30,6 +30,7 @@
 
     <item
         android:id="@+id/media_route_menu_item"
+        android:icon="@drawable/ic_cast"
         android:orderInCategory="101"
         android:title="@string/media_route_menu_item"
         app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"

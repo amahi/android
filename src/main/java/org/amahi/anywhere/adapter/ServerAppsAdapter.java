@@ -20,7 +20,6 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,8 +27,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.l4digital.fastscroll.FastScroller;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.AppSelectedEvent;
@@ -43,7 +45,7 @@ import java.util.List;
  * Apps adapter. Visualizes web apps
  * for the {@link org.amahi.anywhere.fragment.ServerAppsFragment}.
  */
-public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.ServerAppsViewHolder> {
+public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.ServerAppsViewHolder> implements FastScroller.SectionIndexer {
     private List<ServerApp> apps;
     private Context mContext;
 
@@ -80,6 +82,11 @@ public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.Se
         return apps.size();
     }
 
+    @Override
+    public CharSequence getSectionText(int selectedPosition) {
+        return getItem(selectedPosition).getName().subSequence(0, 1);
+    }
+
     public void replaceWith(List<ServerApp> apps) {
         this.apps = apps;
 
@@ -99,7 +106,7 @@ public class ServerAppsAdapter extends RecyclerView.Adapter<ServerAppsAdapter.Se
         return position;
     }
 
-    class ServerAppsViewHolder extends RecyclerView.ViewHolder {
+    static class ServerAppsViewHolder extends RecyclerView.ViewHolder {
         TextView text;
         ImageView logo;
 

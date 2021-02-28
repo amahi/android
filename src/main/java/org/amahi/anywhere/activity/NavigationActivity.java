@@ -23,19 +23,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import com.squareup.otto.Subscribe;
 
@@ -75,6 +77,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     private ActionBarDrawerToggle navigationDrawerToggle;
     private String navigationTitle;
     final private int SETTINGS_ACTION = 2;
+    private long backPressedTime;
+    private Toast backToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +87,8 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
         } else {
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
+        
+        backPressedTime = System.currentTimeMillis();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
@@ -149,7 +155,7 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     }
 
     private void hideActionBar() {
-        if (getSupportActionBar()!=null) getSupportActionBar().hide();
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
     }
 
     private void setUpInjections() {
@@ -450,5 +456,19 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            if (backToast != null)
+                backToast.cancel();
+            super.onBackPressed();
+            return;
+        } else {
+            backToast = Toast.makeText(getBaseContext(), R.string.message_toast_press_back_again, Toast.LENGTH_SHORT);
+            backToast.show();
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 }

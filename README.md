@@ -31,24 +31,13 @@ You will need JDK 1.8+ installed to work with it. Gradle, Android SDK, and proje
 
 This is something to keep **private** and you obtain it by sending a message to <support@amahi.org>.
 
-2. Set ACRA information
-
-  ```
-  $ vim acra.properties
-  ```
-  ```
-  mailto.email = myemail@mydomain.com
-  ```
-
-Enter your personal email in place of `myemail@mydomain.com`
-
-3. Build the application using a command line or using GUI.
+2. Build the application using a command line or using GUI.
 
   ```
   $ ./gradlew clean assembleDebug
   ```
 
-4. Once you have built the application, you will be needing credentials to use the application. Go to Amahi website and create your account, once the account is activated, you will see the description on how to set up the Amahi server. However, this is not strictly needed, as we have a set up of a demo server called "Welcome to Amahi" which you should see even without your own server installed.
+3. Once you have built the application, you will be needing credentials to use the application. Go to Amahi website and create your account, once the account is activated, you will see the description on how to set up the Amahi server. However, this is not strictly needed, as we have a set up of a demo server called "Welcome to Amahi" which you should see even without your own server installed.
 
 ## Code Style Convention
 

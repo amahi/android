@@ -10,24 +10,26 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.IntroductoryOverlay;
+import com.google.android.material.snackbar.Snackbar;
+import com.l4digital.fastscroll.FastScrollView;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -143,17 +145,17 @@ public class RecentFilesActivity extends AppCompatActivity implements
     }
 
     private void setUpRecentFileList() {
-        getRecentFileRView().setLayoutManager(new LinearLayoutManager(this));
+        getRecentFileListView().setLayoutManager(new LinearLayoutManager(this));
         setUpListAdapter();
     }
 
-    private RecyclerView getRecentFileRView() {
+    private FastScrollView getRecentFileListView() {
         return findViewById(R.id.recent_list);
     }
 
     private void setUpListAdapter() {
         recentFiles = getRecentFilesList();
-        getRecentFileRView().setAdapter(new RecentFilesAdapter(this, recentFiles));
+        getRecentFileListView().setAdapter(new RecentFilesAdapter(this, recentFiles));
         showList(!recentFiles.isEmpty());
     }
 
@@ -164,10 +166,10 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void showList(boolean notEmpty) {
         if (notEmpty) {
-            getRecentFileRView().setVisibility(View.VISIBLE);
+            getRecentFileListView().setVisibility(View.VISIBLE);
             getEmptyView().setVisibility(View.GONE);
         } else {
-            getRecentFileRView().setVisibility(View.GONE);
+            getRecentFileListView().setVisibility(View.GONE);
             getEmptyView().setVisibility(View.VISIBLE);
         }
     }
@@ -247,27 +249,19 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
+        if (menuItem.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Subscribe
     public void onFileOptionSelected(FileOptionClickEvent event) {
         selectedFileOption = event.getFileOption();
+        String uniqueKey = event.getFileUniqueKey();
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
-                if (Android.isPermissionRequired()) {
-                    checkWritePermissions();
-                } else {
-                    prepareDownload();
-                }
-                break;
             case FileOption.SHARE:
                 if (Android.isPermissionRequired()) {
                     checkWritePermissions();
@@ -287,6 +281,9 @@ public class RecentFilesActivity extends AppCompatActivity implements
                 break;
             case FileOption.OFFLINE_DISABLED:
                 changeOfflineState(false);
+                break;
+            case FileOption.FILE_INFO:
+                showFileInfo(uniqueKey);
         }
     }
 
@@ -304,8 +301,6 @@ public class RecentFilesActivity extends AppCompatActivity implements
     private void handleFileOptionsWithPermissionGranted() {
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
-                prepareDownload();
-                break;
             case FileOption.SHARE:
                 prepareDownload();
                 break;
@@ -339,7 +334,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     }
 
     private void showPermissionSnackBar(String message) {
-        Snackbar.make(getRecentFileRView(), message, Snackbar.LENGTH_LONG)
+        Snackbar.make(getRecentFileListView(), message, Snackbar.LENGTH_LONG)
             .setAction(R.string.menu_settings, v -> new AppSettingsDialog.Builder(this).build().show())
             .show();
     }
@@ -418,7 +413,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     }
 
     private void showFileDownloadedDialog(RecentFile recentFile, Uri fileUri) {
-        Snackbar.make(getRecentFileRView(), R.string.message_file_download_complete, Snackbar.LENGTH_LONG)
+        Snackbar.make(getRecentFileListView(), R.string.message_file_download_complete, Snackbar.LENGTH_LONG)
             .setAction(R.string.menu_open, view -> startFileOpeningActivity(recentFile, fileUri))
             .show();
     }
@@ -494,6 +489,16 @@ public class RecentFilesActivity extends AppCompatActivity implements
         }
     }
 
+    private void showFileInfo(String uniqueKey) {
+        AlertDialogFragment fileInfoDialog = new AlertDialogFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.FILE_INFO_DIALOG);
+        bundle.putSerializable("file_unique_key", uniqueKey);
+        fileInfoDialog.setArguments(bundle);
+        fileInfoDialog.show(fm, "file_info_dialog");
+    }
+
     private void deleteFileFromOfflineStorage() {
         OfflineFileRepository offlineFileRepository = new OfflineFileRepository(this);
         OfflineFile offlineFile = offlineFileRepository.getOfflineFile(getSelectedRecentFile().getName(), getSelectedRecentFile().getModificationTime());
@@ -507,7 +512,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
             offlineFileRepository.delete(offlineFile);
 
-            Snackbar.make(getRecentFileRView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
+            Snackbar.make(getRecentFileListView(), R.string.message_offline_file_deleted, Snackbar.LENGTH_SHORT)
                 .show();
         }
     }
@@ -526,7 +531,11 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void startDownloadService(ServerFile file) {
         Intent downloadService = Intents.Builder.with(this).buildDownloadServiceIntent(file, null);
-        startService(downloadService);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(downloadService);
+        } else {
+            startService(downloadService);
+        }
     }
 
     private static final class State {
@@ -582,7 +591,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     }
 
     private RecentFilesAdapter getListAdapter() {
-        return (RecentFilesAdapter) getRecentFileRView().getAdapter();
+        return (RecentFilesAdapter) getRecentFileListView().getRecyclerView().getAdapter();
     }
 
     @Override

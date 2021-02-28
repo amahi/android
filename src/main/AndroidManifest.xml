@@ -19,7 +19,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
     package="org.amahi.anywhere"
-    android:installLocation="auto">
+    android:installLocation="auto"
+    tools:ignore="MissingLeanbackLauncher">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
@@ -33,7 +34,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.READ_LOGS"/>
 
     <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
@@ -51,12 +51,13 @@
         android:name=".AmahiApplication"
         android:allowBackup="false"
         android:banner="@drawable/tv_banner"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/application_name"
         android:resizeableActivity="true"
         android:theme="@style/Theme.Amahi"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:icon">
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="org.amahi.anywhere.fileprovider"
@@ -69,13 +70,7 @@
 
         <activity
             android:name=".tv.activity.MainTVActivity"
-            android:theme="@style/Theme.Leanback.Browse">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.Leanback.Browse" />
         <activity
             android:name=".activity.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -179,7 +174,6 @@
             android:enabled="true">
             <intent-filter>
 
-                <!-- <action android:name="com.android.camera.NEW_PICTURE" /> -->
                 <action android:name="android.hardware.action.NEW_PICTURE" />
 
                 <data android:mimeType="image/*" />
@@ -224,7 +218,7 @@
             android:value="org.amahi.anywhere.util.CastOptionsProvider" />
 
         <activity android:name=".activity.OfflineFilesActivity" />
-        <activity android:name=".activity.RecentFilesActivity"></activity>
+        <activity android:name=".activity.RecentFilesActivity" />
     </application>
 
 </manifest>

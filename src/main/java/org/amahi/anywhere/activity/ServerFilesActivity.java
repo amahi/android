@@ -36,7 +36,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -52,6 +51,7 @@ import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.otto.Subscribe;
+import com.vorlonsoft.android.rate.AppRate;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -101,7 +101,6 @@ import javax.inject.Inject;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
-import timber.log.Timber;
 
 /**
  * Files activity. Shows files navigation and operates basic file actions,
@@ -113,6 +112,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
     ServiceConnection,
     CastStateListener,
     AlertDialogFragment.DuplicateFileDialogCallback {
+
+    public static final String TAG = ServerFilesActivity.class.getSimpleName();
 
     private static final int FILE_UPLOAD_PERMISSION = 102;
     private static final int CAMERA_PERMISSION = 103;
@@ -137,6 +138,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_files);
 
+        setUpRateApp();
+
         setUpInjections();
 
         setUpCast();
@@ -144,6 +147,19 @@ public class ServerFilesActivity extends AppCompatActivity implements
         setUpHomeNavigation();
 
         setUpFiles(savedInstanceState);
+    }
+
+    public void setUpRateApp() {
+        AppRate.with(this)
+            .setInstallDays((byte) 7)
+            .setLaunchTimes((byte) 5)
+            .setRemindInterval((byte) 7)
+            .setRemindLaunchesNumber((byte) 5)
+            .setShowLaterButton(true)
+            .setDebug(false)
+            .monitor();
+
+        AppRate.showRateDialogIfMeetsConditions(this);
     }
 
     private void setUpInjections() {
@@ -371,7 +387,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     private void showErrorSnackbar(String message, boolean showAction) {
         Snackbar snackbar = Snackbar.make(getParentView(), message, Snackbar.LENGTH_LONG);
-        if(showAction) {
+        if (showAction) {
             snackbar.setAction(R.string.menu_settings, view -> startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), ACTION_SETTINGS));
         }
         snackbar.show();
@@ -424,7 +440,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(cameraIntent, REQUEST_CAMERA_IMAGE);
             } catch (IOException ex) {
-                Timber.d(ex);
+                Log.d(TAG, ex.getMessage());
             }
         }
     }
@@ -487,7 +503,6 @@ public class ServerFilesActivity extends AppCompatActivity implements
                     }
                     break;
                 case ACTION_SETTINGS:
-                    break;
                 case AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE:
                     break;
             }
@@ -635,14 +650,11 @@ public class ServerFilesActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
+        if (menuItem.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override

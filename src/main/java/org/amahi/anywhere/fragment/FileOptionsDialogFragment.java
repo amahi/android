@@ -1,13 +1,17 @@
 package org.amahi.anywhere.fragment;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import androidx.appcompat.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
@@ -22,6 +26,12 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getDialog().setOnShowListener(dialogInterface -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
+            View bottomSheetInternal = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            assert bottomSheetInternal != null;
+            BottomSheetBehavior.from(bottomSheetInternal).setPeekHeight(bottomSheetInternal.getHeight());
+        });
         return inflater.inflate(R.layout.bottom_sheet_options, container, false);
     }
 
@@ -68,6 +78,7 @@ public class FileOptionsDialogFragment extends BottomSheetDialogFragment {
             }
         } else {
             offlineLayout.setVisibility(View.GONE);
+            downloadLayout.setVisibility(View.GONE);
         }
     }
 

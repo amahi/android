@@ -20,11 +20,14 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.l4digital.fastscroll.FastScroller;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.bus.BusProvider;
@@ -38,7 +41,7 @@ import java.util.List;
  * Shares adapter. Visualizes shares
  * for the {@link org.amahi.anywhere.fragment.ServerSharesFragment}.
  */
-public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapter.ServerShareViewHolder> {
+public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapter.ServerShareViewHolder> implements FastScroller.SectionIndexer {
     private List<ServerShare> shares;
 
     public ServerSharesAdapter(Context context) {
@@ -67,6 +70,11 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
         notifyDataSetChanged();
     }
 
+    @Override
+    public CharSequence getSectionText(int selectedPosition) {
+        return getItem(selectedPosition).getName().subSequence(0, 1);
+    }
+
     public List<ServerShare> getItems() {
         return shares;
     }
@@ -80,7 +88,7 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
         return position;
     }
 
-    class ServerShareViewHolder extends RecyclerView.ViewHolder {
+    static class ServerShareViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
 
         ServerShareViewHolder(View itemView) {

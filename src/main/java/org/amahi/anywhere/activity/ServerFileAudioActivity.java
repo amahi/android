@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
@@ -330,7 +331,11 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     private void setUpAudioService() {
         Intent intent = new Intent(this, AudioService.class);
-        startService(intent);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
     }
 
     private void setUpAudioServiceBind() {
@@ -613,18 +618,16 @@ public class ServerFileAudioActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            case R.id.menu_audio_list:
-                toggleAudioList();
-                toggleAudioListIcon(menuItem);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(menuItem);
+        int itemId = menuItem.getItemId();
+        if (itemId == android.R.id.home) {
+            finish();
+            return true;
+        } else if (itemId == R.id.menu_audio_list) {
+            toggleAudioList();
+            toggleAudioListIcon(menuItem);
+            return true;
         }
+        return super.onOptionsItemSelected(menuItem);
     }
 
     private void toggleAudioList() {

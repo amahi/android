@@ -3,9 +3,6 @@ package org.amahi.anywhere.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +12,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.l4digital.fastscroll.FastScroller;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
@@ -32,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.RecentFilesViewHolder> {
+public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.RecentFilesViewHolder> implements FastScroller.SectionIndexer {
 
     private Context context;
     private ServerFileClickListener mListener;
@@ -55,6 +56,11 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
     public void onBindViewHolder(@NonNull RecentFilesViewHolder holder, int position) {
         RecentFile file = recentFiles.get(position);
         setUpViewHolder(file, holder);
+    }
+
+    @Override
+    public CharSequence getSectionText(int selectedPosition) {
+        return recentFiles.get(selectedPosition).getName().subSequence(0, 1);
     }
 
     private void setUpViewHolder(RecentFile file, RecentFilesViewHolder fileHolder) {
@@ -83,9 +89,8 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
     }
 
     private void setUpViewHolderListeners(RecentFilesViewHolder fileHolder) {
-        fileHolder.moreOptions.setOnClickListener(view -> {
-            mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-        });
+        fileHolder.itemView.setOnClickListener(view -> mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition()));
+        fileHolder.moreOptions.setOnClickListener(view -> mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition()));
     }
 
     private void setImageIcon(RecentFile file, ImageView fileIconView) {
@@ -133,7 +138,7 @@ public class RecentFilesAdapter extends RecyclerView.Adapter<RecentFilesAdapter.
         notifyDataSetChanged();
     }
 
-    class RecentFilesViewHolder extends RecyclerView.ViewHolder {
+    static class RecentFilesViewHolder extends RecyclerView.ViewHolder {
 
         ImageView fileIconView, moreOptions;
         TextView fileTextView, fileSize, fileLastVisited;

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activity.RecentFilesActivity">
 
     <fragment
@@ -24,12 +25,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
+            <com.l4digital.fastscroll.FastScrollView
                 android:id="@+id/recent_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layoutAnimation="@anim/recycler_list_anim"
-                android:scrollbarStyle="outsideOverlay" />
+                app:bubbleColor="@color/accent"
+                app:bubbleTextColor="@color/primary_text"
+                app:handleColor="@color/handle_color"
+                app:bubbleSize="small" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

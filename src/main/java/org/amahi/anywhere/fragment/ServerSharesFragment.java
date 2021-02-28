@@ -21,16 +21,17 @@ package org.amahi.anywhere.fragment;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.l4digital.fastscroll.FastScrollView;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.AmahiApplication;
@@ -59,7 +60,7 @@ public class ServerSharesFragment extends Fragment implements
 
     @Inject
     ServerClient serverClient;
-    private RecyclerView mRecyclerView;
+    private FastScrollView mFastScrollView;
 
     private ServerSharesAdapter mServerSharesAdapter;
 
@@ -74,18 +75,18 @@ public class ServerSharesFragment extends Fragment implements
 
         View rootView = layoutInflater.inflate(R.layout.fragment_server_shares, container, false);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.layout_refresh);
+        mSwipeRefreshLayout = rootView.findViewById(R.id.layout_refresh);
 
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
+        mFastScrollView = rootView.findViewById(R.id.list);
 
         mServerSharesAdapter = new ServerSharesAdapter(getActivity());
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()
+        mFastScrollView.setLayoutManager(new LinearLayoutManager(getActivity()
             , LinearLayoutManager.VERTICAL, false));
 
-        mEmptyLinearLayout = (LinearLayout) rootView.findViewById(R.id.empty);
+        mEmptyLinearLayout = rootView.findViewById(R.id.empty);
 
-        mErrorLinearLayout = (LinearLayout) rootView.findViewById(R.id.error);
+        mErrorLinearLayout = rootView.findViewById(R.id.error);
 
         setSwipeToRefresh();
 
@@ -94,6 +95,9 @@ public class ServerSharesFragment extends Fragment implements
 
     private void setSwipeToRefresh() {
         mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.accent);
+        mSwipeRefreshLayout.setColorSchemeResources(
+            android.R.color.white);
     }
 
     @Override
@@ -116,7 +120,7 @@ public class ServerSharesFragment extends Fragment implements
     }
 
     private void setUpSharesAdapter() {
-        mRecyclerView.setAdapter(mServerSharesAdapter);
+        mFastScrollView.setAdapter(mServerSharesAdapter);
     }
 
     private void setUpSharesContent(Bundle state) {
@@ -166,6 +170,7 @@ public class ServerSharesFragment extends Fragment implements
 
     @Subscribe
     public void onServerConnectionFailed(ServerConnectionFailedEvent event) {
+        mSwipeRefreshLayout.setRefreshing(false);
         Toast.makeText(getContext(), getResources()
             .getString(R.string.message_error_amahi_anywhere_app), Toast.LENGTH_LONG).show();
         showConnectionError();
@@ -173,12 +178,9 @@ public class ServerSharesFragment extends Fragment implements
 
     private void showConnectionError() {
         ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
-        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-                retryServerConnection();
-            }
+        mErrorLinearLayout.setOnClickListener(view -> {
+            ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+            retryServerConnection();
         });
     }
 
@@ -188,6 +190,9 @@ public class ServerSharesFragment extends Fragment implements
 
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
+        ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+        if (mFastScrollView!=null)
+            mFastScrollView.getRecyclerView().removeAllViews();
         setUpSharesContent();
     }
 
@@ -206,12 +211,9 @@ public class ServerSharesFragment extends Fragment implements
     private void showSharesError() {
         mSwipeRefreshLayout.setRefreshing(false);
         ViewDirector.of(getActivity(), R.id.animator).show(R.id.error);
-        mErrorLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
-                setUpSharesContent();
-            }
+        mErrorLinearLayout.setOnClickListener(view -> {
+            ViewDirector.of(getActivity(), R.id.animator).show(android.R.id.progress);
+            setUpSharesContent();
         });
     }
 

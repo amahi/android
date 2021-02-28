@@ -87,7 +87,6 @@
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
                         android:src="@drawable/ic_more_vert"
-                        android:visibility="gone"
                         tools:ignore="contentDescription" />
 
                     <ImageView
@@ -148,7 +147,7 @@
             </LinearLayout>
 
         </LinearLayout>
-        
+
     </com.facebook.shimmer.ShimmerFrameLayout>
 
 </androidx.cardview.widget.CardView>

@@ -205,7 +205,7 @@
     <string name="download_channel_desc" translatable="false">Shows file download progress</string>
 
     <!--    Languages-->
-
+    <string name="language_def">System Default</string>
     <string name="language_en">English</string>
     <string name="language_fr">French</string>
     <string name="language_es">Spanish</string>
@@ -214,7 +214,10 @@
     <string name="language_te">Telugu</string>
     <string name="language_pa">Punjabi</string>
     <string name="language_hi">Hindi</string>
+    <string name="language_zh">Chinese</string>
 
+    <string name="language_def_key" translatable="false">def</string>
+    <string name="language_zh_key" translatable="false">zh</string>
     <string name="language_en_key" translatable="false">en</string>
     <string name="language_fr_key" translatable="false">fr</string>
     <string name="language_es_key" translatable="false">es</string>
@@ -225,10 +228,7 @@
     <string name="language_hi_key" translatable="false">hi</string>
 
 
-
-
     <!--    Preferences-->
-
     <string name="preference_category_about">About</string>
     <string name="preference_category_account">Account</string>
     <string name="preference_category_settings">Settings</string>
@@ -292,6 +292,7 @@
     </string-array>
 
     <string-array name="preference_entries_language" translatable="false">
+        <item>@string/language_def</item>
         <item>@string/language_en</item>
         <item>@string/language_fr</item>
         <item>@string/language_es</item>
@@ -300,10 +301,12 @@
         <item>@string/language_te</item>
         <item>@string/language_pa</item>
         <item>@string/language_hi</item>
+        <item>@string/language_zh</item>
 
     </string-array>
 
     <string-array name="preference_entries_keys_language" translatable="false">
+        <item>@string/language_def_key</item>
         <item>@string/language_en_key</item>
         <item>@string/language_fr_key</item>
         <item>@string/language_es_key</item>
@@ -312,6 +315,7 @@
         <item>@string/language_te_key</item>
         <item>@string/language_pa_key</item>
         <item>@string/language_hi_key</item>
+        <item>@string/language_zh_key</item>
 
     </string-array>
 
@@ -352,7 +356,7 @@
     <string name="rate_dialog_cancel">Remind Me Later</string>
     <string name="rate_dialog_no">No, Thanks</string>
 
-<!--    File Options Sheet Dialog-->
+    <!--    File Options Sheet Dialog-->
     <string name="file_info">File info</string>
     <string name="sort_by">SORT BY</string>
     <string name="file_name_a_z">File name (A to Z)</string>
@@ -362,5 +366,7 @@
     <string name="size_largest">Size (largest first)</string>
     <string name="size_smallest">Size (smallest first)</string>
     <string name="file_type">File type</string>
+
+    <string name="message_toast_press_back_again">Press back again to exit</string>
 
 </resources>

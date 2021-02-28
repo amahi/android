@@ -323,18 +323,14 @@ public class TvPlaybackVideoFragment extends PlaybackFragment {
 
     public void playbackStateChanged() {
         if (mCurrentPlaybackState != PlaybackState.STATE_PLAYING) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mCurrentPlaybackState = PlaybackState.STATE_PLAYING;
-            }
+            mCurrentPlaybackState = PlaybackState.STATE_PLAYING;
             startProgressAutomation();
             setFadingEnabled(true);
             mPlayPauseAction.setIndex(PlaybackControlsRow.PlayPauseAction.PAUSE);
             mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PAUSE));
             notifyChanged(mPlayPauseAction);
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mCurrentPlaybackState = PlaybackState.STATE_PAUSED;
-            }
+            mCurrentPlaybackState = PlaybackState.STATE_PAUSED;
             stopProgressAutomation();
             setFadingEnabled(false);
             mPlayPauseAction.setIndex(PlaybackControlsRow.PlayPauseAction.PLAY);

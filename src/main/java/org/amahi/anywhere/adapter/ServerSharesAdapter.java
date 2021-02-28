@@ -20,11 +20,12 @@
 package org.amahi.anywhere.adapter;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.l4digital.fastscroll.FastScroller;
 
@@ -87,7 +88,7 @@ public class ServerSharesAdapter extends RecyclerView.Adapter<ServerSharesAdapte
         return position;
     }
 
-    class ServerShareViewHolder extends RecyclerView.ViewHolder {
+    static class ServerShareViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
 
         ServerShareViewHolder(View itemView) {

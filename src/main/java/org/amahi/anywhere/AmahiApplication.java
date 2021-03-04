@@ -34,6 +34,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import org.amahi.anywhere.job.NetConnectivityJob;
 import org.amahi.anywhere.job.PhotosContentJob;
 import org.amahi.anywhere.util.AmahiLifeCycleCallback;
+import org.amahi.anywhere.util.AppTheme;
 
 import dagger.ObjectGraph;
 
@@ -48,7 +49,7 @@ public class AmahiApplication extends Application {
     public static final String UPLOAD_CHANNEL_ID = "file_upload";
     public static final String DOWNLOAD_CHANNEL_ID = "file_download";
 
-    private Boolean isLightThemeEnabled = false;
+    private AppTheme themeEnabled = AppTheme.DEFAULT;
     private static AmahiApplication instance = null;
 
     public static AmahiApplication from(Context context) {
@@ -83,22 +84,22 @@ public class AmahiApplication extends Application {
 
     private void setUpTheme() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        this.isLightThemeEnabled = preferences.getBoolean(getString(R.string.pref_key_light_theme), false);
-        if (this.isLightThemeEnabled) {
-            AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_NO);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_YES);
+        String val = preferences.getString(getString(R.string.pref_key_theme_list), getString(R.string.preference_key_system_default_theme));
+
+        if (val.equals(getString(R.string.preference_key_system_default_theme))) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            this.themeEnabled = AppTheme.DEFAULT;
+
+        } else if (val.equals(getString(R.string.preference_key_light_theme))) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            this.themeEnabled = AppTheme.LIGHT;
+
+        } else if (val.equals(getString(R.string.preference_key_dark_theme))) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            this.themeEnabled = AppTheme.DARK;
+
         }
-    }
 
-    public void setIsLightThemeEnabled(Boolean isLightThemeEnabled) {
-        this.isLightThemeEnabled = isLightThemeEnabled;
-    }
-
-    public Boolean isLightThemeEnabled() {
-        return isLightThemeEnabled;
     }
 
     private boolean isDebugging() {
@@ -133,6 +134,14 @@ public class AmahiApplication extends Application {
         if (!NetConnectivityJob.isScheduled(this)) {
             NetConnectivityJob.scheduleJob(this);
         }
+    }
+
+    public AppTheme getThemeEnabled() {
+        return themeEnabled;
+    }
+
+    public void setThemeEnabled(AppTheme themeEnabled) {
+        this.themeEnabled = themeEnabled;
     }
 
     public static class JobIds {

@@ -127,6 +127,7 @@ public class ServerFilesActivity extends AppCompatActivity implements
     private int fileOption;
     private ProgressDialogFragment uploadDialogFragment;
     private File cameraImage;
+    private File fileToBeUploaded;
 
     private AudioService audioService;
     private boolean isControllerShown = false;
@@ -483,15 +484,15 @@ public class ServerFilesActivity extends AppCompatActivity implements
                         Uri selectedImageUri = data.getData();
                         String filePath = PathUtil.getPath(this, selectedImageUri);
                         if (filePath != null) {
-                            File file = new File(filePath);
-                            if (file.exists()) {
+                            fileToBeUploaded = new File(filePath);
+                            if (fileToBeUploaded.exists()) {
                                 ServerFilesFragment fragment = (ServerFilesFragment)
                                     getSupportFragmentManager()
                                         .findFragmentById(R.id.container_files);
-                                if (fragment.checkForDuplicateFile(file.getName())) {
-                                    showDuplicateFileUploadDialog(file);
+                                if (fragment.checkForDuplicateFile(fileToBeUploaded.getName())) {
+                                    showDuplicateFileUploadDialog(fileToBeUploaded);
                                 } else {
-                                    uploadFile(file);
+                                    uploadFile(fileToBeUploaded);
                                 }
                             }
                         }
@@ -566,6 +567,8 @@ public class ServerFilesActivity extends AppCompatActivity implements
                             }
                         }
                     });
+            } else if (fileToBeUploaded != null && fileToBeUploaded.exists()) {
+                snackbar.setAction(R.string.button_retry, v -> uploadFile(fileToBeUploaded));
             }
             snackbar.show();
         }
@@ -803,3 +806,5 @@ public class ServerFilesActivity extends AppCompatActivity implements
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 }
+
+

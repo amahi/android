@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import org.amahi.anywhere.R;
+import org.amahi.anywhere.model.FileFilterOption;
 import org.amahi.anywhere.model.FileSortOption;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -106,6 +107,14 @@ public final class Preferences {
         getPreference(context).edit().putInt(Defaults.SORTING_OPTION, filesSort).apply();
     }
 
+    public static int getFilterOption(Context context) {
+        return getPreference(context).getInt(Defaults.FILTERING_OPTION, FileFilterOption.All);
+    }
+
+    public static void setFilterOption(Context context, int filesFilter) {
+        getPreference(context).edit().putInt(Defaults.FILTERING_OPTION, filesFilter).apply();
+    }
+
     public static void setAudioShuffleMode(Context context, boolean mode) {
         getPreference(context).edit().putBoolean(Defaults.AUDIO_SHUFFLE, mode).apply();
     }
@@ -148,6 +157,7 @@ public final class Preferences {
     private static final class Defaults {
         public static final String STRING = "";
         public static final String SORTING_OPTION = "sorting_option";
+        public static final String FILTERING_OPTION = "filtering_option";
         public static final String AUDIO_SHUFFLE = "audio_shuffle";
         public static final String AUDIO_REPEAT = "audio_repeat";
 

@@ -101,7 +101,7 @@ public class Mimes {
         }
     }
 
-    private static int matchCategory(String mime) {
+    public static int matchCategory(String mime) {
         String type = mime.split("/")[0];
 
         if ("audio".equals(type)) {

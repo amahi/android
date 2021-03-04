@@ -246,6 +246,8 @@ public class ServerFilesFragment extends Fragment implements
     public void onFileOptionSelected(FileOptionClickEvent event) {
         selectedFileOption = event.getFileOption();
         String uniqueKey = event.getFileUniqueKey();
+        ServerFile serverFile = event.getServerFile();
+
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
                 if (Android.isPermissionRequired()) {
@@ -275,7 +277,7 @@ public class ServerFilesFragment extends Fragment implements
                 changeOfflineState(false);
 
             case FileOption.FILE_INFO:
-                showFileInfo(uniqueKey);
+                showFileInfo(uniqueKey, serverFile);
 
         }
     }
@@ -415,7 +417,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void startDownloadService(ServerFile file) {
         Intent downloadService = Intents.Builder.with(getContext()).buildDownloadServiceIntent(file, getShare());
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getContext().startForegroundService(downloadService);
         } else {
             getContext().startService(downloadService);
@@ -451,11 +453,12 @@ public class ServerFilesFragment extends Fragment implements
         }
     }
 
-    private void showFileInfo(String uniqueKey) {
+    private void showFileInfo(String uniqueKey, ServerFile serverFile) {
         AlertDialogFragment fileInfoDialog = new AlertDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.FILE_INFO_DIALOG);
         bundle.putSerializable("file_unique_key", uniqueKey);
+        bundle.putParcelable(Fragments.Arguments.SERVER_FILE, serverFile);
         fileInfoDialog.setArguments(bundle);
         fileInfoDialog.setTargetFragment(this, 2);
         fileInfoDialog.show(getFragmentManager(), "file_info_dialog");

@@ -382,6 +382,13 @@
     <string name="audio_only">Audio</string>
 
 
+    <!--    File Options Sheet Dialog-->
+    <string name="title_file_name">File Name</string>
+    <string name="title_file_type">File Type</string>
+    <string name="title_file_size">File Size</string>
+    <string name="title_last_modified">Last Modified</string>
+    <string name="title_last_opened">Last Opened</string>
+
     <string name="message_toast_press_back_again">Press back again to exit</string>
 
 </resources>

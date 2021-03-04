@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
@@ -62,7 +63,7 @@ public class IntroductionActivity extends AppIntro2 {
     }
 
     private void launchTv() {
-        if(!CheckTV.isATV(this) && Preferences.getFirstRun(this)) {
+        if (!CheckTV.isATV(this) && Preferences.getFirstRun(this)) {
             Preferences.setFirstRun(this);
             launchNavigation();
         }

@@ -69,7 +69,6 @@ import retrofit2.Response;
 
 import static org.amahi.anywhere.util.Android.loadServersFromAsset;
 
-
 /**
  * Server API implementation. Wraps {@link org.amahi.anywhere.server.api.ProxyApi} and
  * {@link org.amahi.anywhere.server.api.ServerApi}. Reacts to network connection changes as well.
@@ -86,6 +85,8 @@ public class ServerClient {
     private ApiConnection serverConnection;
 
     private int network;
+
+    public static final String TAG = ServerClient.class.getSimpleName();
 
     @Inject
     public ServerClient(ApiAdapter apiAdapter) {
@@ -156,7 +157,9 @@ public class ServerClient {
     }
 
     public boolean isConnected(Server server) {
-        return (this.server != null) && (this.serverRoute != null) && (this.server.getSession().equals(server.getSession()));
+        return (this.server != null) && (this.serverRoute != null)
+            && (this.server.getSession().equals(server.getSession())
+            && server.getAuthToken() != null);
     }
 
     public boolean isConnectedLocal() {
@@ -338,5 +341,18 @@ public class ServerClient {
             .appendQueryParameter("session", server.getSession())
             .build();
 
+    }
+
+    public void connectLocalServer(String auth, String ip) {
+        serverRoute = new ServerRoute();
+        serverRoute.setLocalAddress(getLocalAddress(ip));
+        serverAddress = serverRoute.getLocalAddress();
+        server = new Server(auth);
+        server.setAuthToken(auth);
+        serverApi = buildServerApi();
+    }
+
+    private String getLocalAddress(String ip) {
+        return "http://" + ip + ":4563/";
     }
 }

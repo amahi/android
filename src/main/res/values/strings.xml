@@ -40,6 +40,13 @@
     <string name="hint_password">Password</string>
     <string name="hint_username">Username</string>
 
+    <!--    NAU-->
+    <string name="hint_pin">PIN</string>
+    <string name="button_pin_access">PIN Access</string>
+    <string name="message_error_pin_field_empty">PIN field cannot be left empty.</string>
+    <string name="message_error_pin">PIN is not correct. Please try again.</string>
+    <string name="message_error_local_connection">It seems that you are not connected to the same Wifi as your server.</string>
+
     <string name="menu_back">Back</string>
     <string name="menu_forward">Forward</string>
     <string name="menu_navigation_close">Close navigation</string>
@@ -64,8 +71,10 @@
 
     <string name="message_error_account_exists">Account already exists.</string>
     <string name="message_error_search_application">We haven’t found any supported apps for this file.</string>
+
     <string name="forgot_password"><a href="https://www.amahi.org/forgot">Forgot your password?</a></string>
-    <string name="message_error_authentication">The username or password are not correct. Please try again.</string>
+    <string name="message_error_authentication">The username or password is not correct. Please try again.</string>
+  
     <string name="message_error_authentication_connection">Connection error. Check your settings and try again.</string>
     <string name="message_error_authentication_field_empty">Username or password field cannot be left empty.</string>
     <string name="message_error_connection">Connection Error</string>
@@ -127,7 +136,11 @@
     <string name="upload_camera">Use Camera</string>
     <string name="upload_file">Upload File</string>
 
-    <!--ANDROID TV RELATED STRINGS-->
+    <!--    TODO: Check Strings-->
+    <string name="preference">PREFERENCE</string>
+    <string name="local_server_ip">SERVER_IP</string>
+
+    <!--ANDROID TV STRINGS-->
     <string name="app_title" translatable="false">Amahi TV</string>
     <string name="exit_title">Exit</string>
     <string name="exit_message">Are you sure you want to quit?</string>

@@ -17,18 +17,29 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.model;
+package org.amahi.anywhere.fragment;
 
-import com.google.gson.annotations.SerializedName;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.os.Bundle;
 
-/**
- * Authentication API resource.
- */
-public class Authentication {
-    @SerializedName(value = "access_token", alternate = "auth_token")
-    private String token;
+import androidx.fragment.app.DialogFragment;
 
-    public String getToken() {
-        return token;
+public class LocalLoginDialogFragment extends DialogFragment {
+
+    private ProgressDialog dialog;
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        dialog = new ProgressDialog(getActivity());
+        dialog.setTitle("Logging In");
+        dialog.setCancelable(false);
+        dialog.setIndeterminate(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        return dialog;
+    }
+
+    public void setProgress(int progress) {
+        dialog.setProgress(progress);
     }
 }

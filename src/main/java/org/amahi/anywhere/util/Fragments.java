@@ -30,8 +30,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.FileOptionsDialogFragment;
+import org.amahi.anywhere.fragment.MainLoginFragment;
 import org.amahi.anywhere.fragment.FileSortOptionsDialogFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
+import org.amahi.anywhere.fragment.PINAccessFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
 import org.amahi.anywhere.fragment.ServerFileAudioFragment;
 import org.amahi.anywhere.fragment.ServerFileImageFragment;
@@ -67,6 +69,14 @@ public final class Fragments {
 
     public static final class Builder {
         private Builder() {
+        }
+
+        public static Fragment buildMainLoginFragment() {
+            return new MainLoginFragment();
+        }
+
+        public static Fragment buildPINFragment() {
+            return new PINAccessFragment();
         }
 
         public static Fragment buildNavigationFragment() {

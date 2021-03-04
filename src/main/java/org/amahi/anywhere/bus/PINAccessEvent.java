@@ -17,18 +17,7 @@
  * along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package org.amahi.anywhere.server.model;
+package org.amahi.anywhere.bus;
 
-import com.google.gson.annotations.SerializedName;
-
-/**
- * Authentication API resource.
- */
-public class Authentication {
-    @SerializedName(value = "access_token", alternate = "auth_token")
-    private String token;
-
-    public String getToken() {
-        return token;
-    }
+public class PINAccessEvent implements BusEvent {
 }

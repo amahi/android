@@ -94,6 +94,14 @@ public final class Preferences {
         return context.getSharedPreferences(Constants.preference, MODE_PRIVATE).getString(context.getString(R.string.pref_server_select_key), null);
     }
 
+    public static void setLocalServerIP(Context context, String ip) {
+        context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).edit().putString(context.getString(R.string.local_server_ip), ip).apply();
+    }
+
+    public static String getLocalServerIP(Context context) {
+        return context.getSharedPreferences(context.getString(R.string.preference), MODE_PRIVATE).getString(context.getString(R.string.local_server_ip), null);
+    }
+
     public static Preferences ofCookie(Context context) {
         return new Preferences(context, Locations.COOKIE);
     }

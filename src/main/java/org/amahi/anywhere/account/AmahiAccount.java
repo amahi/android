@@ -26,6 +26,9 @@ import android.accounts.Account;
  */
 public class AmahiAccount extends Account {
     public static final String TYPE = "org.amahi";
+    public static final String TYPE_LOCAL = "org.amahi.local";
+
+    public static String accountType = AmahiAccount.TYPE;
 
     public static final String TYPE_TOKEN = String.format("%s.FULL", TYPE);
 

@@ -55,7 +55,6 @@ import com.squareup.otto.Subscribe;
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.account.AmahiAccount;
-import org.amahi.anywhere.activity.IntroductionActivity;
 import org.amahi.anywhere.adapter.NavigationDrawerAdapter;
 import org.amahi.anywhere.bus.AppsSelectedEvent;
 import org.amahi.anywhere.bus.BusProvider;
@@ -91,19 +90,24 @@ import static android.content.Context.UI_MODE_SERVICE;
 /**
  * Navigation fragments. Shows main application sections and servers list as well.
  */
-public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>,
-    OnAccountsUpdateListener {
+public class NavigationFragment extends Fragment implements AccountManagerCallback<Bundle>, OnAccountsUpdateListener {
+
     @Inject
     AmahiClient amahiClient;
+
     @Inject
     ServerClient serverClient;
+
     View view;
+
     private Intent tvIntent;
     private Context mContext;
     private Activity mActivity;
 
     private boolean areServersVisible;
     private List<Server> serversList;
+
+    public static final String TAG = NavigationFragment.class.getSimpleName();
 
     @Override
     public void onAttach(Context context) {
@@ -155,19 +159,9 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
 
     @Override
     public void onAccountsUpdated(Account[] accounts) {
-
-        if (Preferences.getFirstRun(mContext)) {
-            launchIntro();
-        }
-
         if (getAccounts().isEmpty()) {
             setUpAccount();
         }
-    }
-
-    private void launchIntro() {
-        startActivity(new Intent(mContext, IntroductionActivity.class));
-        mActivity.finishAffinity();
     }
 
     private void setUpContentRefreshing() {
@@ -201,11 +195,20 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     public void run(AccountManagerFuture<Bundle> accountManagerFuture) {
         try {
             Bundle accountManagerResult = accountManagerFuture.getResult();
+            Account account = getAccountManager().getAccounts()[0];
+
+            String isLocalUser = checkIfLocalUser();
+            String ip = getAccountManager().getUserData(account, "ip");
 
             String authenticationToken = accountManagerResult.getString(AccountManager.KEY_AUTHTOKEN);
 
             if (authenticationToken != null) {
-                setUpServers(authenticationToken);
+                if (isLocalUser.equals("F")) {
+                    setUpServers(authenticationToken);
+                } else {
+                    BusProvider.getBus().post(new SharesSelectedEvent());
+                    setUpLocalServerApi(authenticationToken, ip);
+                }
             } else {
                 setUpAuthenticationToken();
             }
@@ -214,6 +217,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         } catch (IOException | AuthenticatorException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String checkIfLocalUser() {
+        Account account = getAccountManager().getAccounts()[0];
+        return getAccountManager().getUserData(account, "is_local");
     }
 
     private void tearDownActivity() {
@@ -329,9 +337,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         if (getAccounts().isEmpty()) {
             setUpAccount();
         } else {
-            if (Preferences.getFirstRun(mActivity) && !checkIsATV()) {
-                launchIntro();
-            }
             setUpAuthenticationToken();
         }
     }
@@ -435,17 +440,19 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
     }
 
     private void setUpNavigationListener() {
-        getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(mContext, (view, position) -> {
-            getNavigationListView().dispatchSetActivated(false);
+        if (checkIfLocalUser().equals("F")) {
+            getNavigationListView().addOnItemTouchListener(new RecyclerItemClickListener(mContext, (view, position) -> {
+                getNavigationListView().dispatchSetActivated(false);
 
-            view.setActivated(true);
+                view.setActivated(true);
 
-            if (!areServersVisible) {
-                selectedServerListener(position);
-            } else {
-                serverClicked(position);
-            }
-        }));
+                if (!areServersVisible) {
+                    selectedServerListener(position);
+                } else {
+                    serverClicked(position);
+                }
+            }));
+        }
 
         getOfflineFilesLayout().setOnClickListener(view -> showOfflineFiles());
 
@@ -534,8 +541,10 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         areServersVisible = false;
         setUpNavigationAdapter();
 
-        getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
-            0, 0, R.drawable.nav_arrow_down, 0);
+        if (checkIfLocalUser().equals("F")) {
+            getServerNameTextView().setCompoundDrawablesWithIntrinsicBounds(
+                0, 0, R.drawable.nav_arrow_down, 0);
+        }
 
         getOfflineFilesLayout().setVisibility(View.VISIBLE);
         getRecentFilesLayout().setVisibility(View.VISIBLE);
@@ -654,6 +663,11 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         BusProvider.getBus().post(new RecentFilesSelectedEvent());
     }
 
+    private void setUpLocalServerApi(String auth, String ip) {
+        serverClient.connectLocalServer(auth, ip);
+        setUpServersContent(auth);
+    }
+
     @Subscribe
     public void onServerConnectionChanged(ServerConnectionChangedEvent event) {
         areServersVisible = false;
@@ -720,7 +734,6 @@ public class NavigationFragment extends Fragment implements AccountManagerCallba
         getAccountManager().removeOnAccountsUpdatedListener(this);
     }
 
-    /*Sets the adapter for navigation drawer after getting server names*/
     public void showServers() {
         areServersVisible = true;
         getNavigationListView().setAdapter(null);

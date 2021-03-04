@@ -164,9 +164,6 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     private Uri getImageUri(Context context, ServerFile file) {
-        if (!Preferences.getServerName(context).equals(Constants.welcomeToAmahi)) {
-            return serverClient.getFileThumbnailUri(serverShare, file);
-        }
         return serverClient.getFileUri(serverShare, file);
     }
 

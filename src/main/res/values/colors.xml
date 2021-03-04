@@ -49,4 +49,7 @@
     <color name="intro_4">#26a69a</color>
     <color name="intro_5">#ffab00</color>
     <color name="intro_6">#303f9f</color>
+
+    <!--Shimmer Color-->
+    <color name="colorShimmer">#dddddd</color>
 </resources>

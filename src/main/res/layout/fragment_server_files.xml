@@ -25,7 +25,6 @@
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out">
 
-    <include layout="@layout/shares_loading"/>
 
     <FrameLayout
         android:id="@+id/content"
@@ -43,9 +42,9 @@
                 android:layout_height="match_parent"
                 android:layoutAnimation="@anim/recycler_list_anim"
                 app:bubbleColor="@color/accent"
+                app:bubbleSize="small"
                 app:bubbleTextColor="@color/primary_text"
-                app:handleColor="@color/handle_color"
-                app:bubbleSize="small" />
+                app:handleColor="@color/handle_color" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -64,7 +63,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="invisible">
 
             <TextView
                 android:layout_width="match_parent"

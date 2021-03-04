@@ -566,6 +566,7 @@ public class ServerFilesFragment extends Fragment implements
             getListAdapter().setAdapterMode(FilesFilterAdapter.AdapterMode.OFFLINE);
             getFilesAdapter().setUpDownloadReceiver();
             showOfflineFiles();
+            getListAdapter().setShowShimmer(false);
         }
     }
 
@@ -682,6 +683,7 @@ public class ServerFilesFragment extends Fragment implements
     @Subscribe
     public void onFilesLoaded(ServerFilesLoadedEvent event) {
         showFilesContent(event.getServerFiles());
+        getFilesAdapter().setShowShimmer(false);
     }
 
     private void showFilesContent(List<ServerFile> files) {

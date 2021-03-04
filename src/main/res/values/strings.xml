@@ -279,6 +279,18 @@
         <item>@string/preference_key_server_connection_local</item>
     </string-array>
 
+    <string-array name="preference_entries_theme" translatable="false">
+        <item>@string/preference_entry_system_default_theme</item>
+        <item>@string/preference_entry_light_theme</item>
+        <item>@string/preference_entry_dark_theme</item>
+    </string-array>
+
+    <string-array name="preference_entries_keys_theme" translatable="false">
+        <item>@string/preference_key_system_default_theme</item>
+        <item>@string/preference_key_light_theme</item>
+        <item>@string/preference_key_dark_theme</item>
+    </string-array>
+
     <string-array name="preference_entries_language" translatable="false">
         <item>@string/language_def</item>
         <item>@string/language_en</item>
@@ -321,8 +333,8 @@
     <string name="pref_action_not_defined">Action is not defined</string>
 
     <!--Strings related to Theme Preference -->
-    <string name="pref_title_light_theme">Light Theme</string>
-    <string name="pref_key_light_theme" translatable="false">light_theme_enabled</string>
+    <string name="pref_title_light_theme">Theme</string>
+    <string name="pref_key_theme_list" translatable="false">theme</string>
 
     <!--Strings related to TV Theme Preference -->
     <string name="pref_key_theme" translatable="false">theme selected</string>
@@ -354,6 +366,12 @@
     <string name="size_largest">Size (largest first)</string>
     <string name="size_smallest">Size (smallest first)</string>
     <string name="file_type">File type</string>
+    <string name="preference_entry_system_default_theme">System Default</string>
+    <string name="preference_entry_light_theme">Light</string>
+    <string name="preference_entry_dark_theme">Dark</string>
+    <string name="preference_key_system_default_theme" translatable="false">def</string>
+    <string name="preference_key_light_theme" translatable="false">light</string>
+    <string name="preference_key_dark_theme" translatable="false">dark</string>
 
     <!--    Files Filter Options Sheet Dialog-->
     <string name="filter_by">Filter By</string>

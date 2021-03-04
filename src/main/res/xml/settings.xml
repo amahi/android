@@ -55,10 +55,12 @@
             android:key="@string/preference_screen_key_upload"
             android:title="@string/preference_title_upload_settings" />
 
-        <SwitchPreference
-            android:defaultValue="false"
+        <ListPreference
+            android:defaultValue="@string/preference_key_system_default_theme"
+            android:entries="@array/preference_entries_theme"
+            android:entryValues="@array/preference_entries_keys_theme"
             android:icon="@drawable/ic_settings_app_theme"
-            android:key="@string/pref_key_light_theme"
+            android:key="@string/pref_key_theme_list"
             android:title="@string/pref_title_light_theme" />
 
     </PreferenceCategory>

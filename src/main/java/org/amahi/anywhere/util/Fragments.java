@@ -30,6 +30,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.amahi.anywhere.fragment.AudioListFragment;
 import org.amahi.anywhere.fragment.FileOptionsDialogFragment;
+import org.amahi.anywhere.fragment.FileFilterOptionsDialogFragment;
 import org.amahi.anywhere.fragment.FileSortOptionsDialogFragment;
 import org.amahi.anywhere.fragment.NavigationFragment;
 import org.amahi.anywhere.fragment.ServerAppsFragment;
@@ -198,6 +199,10 @@ public final class Fragments {
 
         }
 
+        public static BottomSheetDialogFragment buildFileFilterOptionsDialogFragment() {
+
+            return new FileFilterOptionsDialogFragment();
+        }
     }
 
     public static final class Operator {

@@ -25,19 +25,24 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.content.res.Resources;
 import android.os.Bundle;
 
+import android.view.View;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
+import androidx.core.os.ConfigurationCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatDelegate;
-
-import android.widget.Toast;
 
 import org.amahi.anywhere.AmahiApplication;
 import org.amahi.anywhere.R;
@@ -48,6 +53,7 @@ import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.server.ApiConnection;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.AppTheme;
 import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
@@ -55,6 +61,7 @@ import org.amahi.anywhere.util.LocaleHelper;
 import org.amahi.anywhere.util.Preferences;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -95,13 +102,39 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         setUpSettingsListeners();
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getListView().setVerticalScrollbarThumbDrawable(ContextCompat.getDrawable(getContext(), R.drawable.scrollbar));
+        }
+    }
+
     private void setUpSettingsContent() {
         addPreferencesFromResource(R.xml.settings);
+        setUpLanguageContent();
+    }
+
+    private void setUpLanguageContent() {
+        ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
+        HashMap<CharSequence, CharSequence> entryMap = new HashMap<>();
+        CharSequence[] entries = language.getEntries();
+        CharSequence[] values = language.getEntryValues();
+        for (int i = 0; i < entries.length; i++) {
+            entryMap.put(entries[i], values[i]);
+        }
+        Arrays.sort(entries, 1, entries.length);
+        for (int i = 0; i < entries.length; i++) {
+            values[i] = entryMap.get(entries[i]);
+        }
+        language.setEntries(entries);
+        language.setEntryValues(values);
     }
 
     private void setUpSettingsSummary() {
         ListPreference serverConnection = (ListPreference) getPreference(R.string.preference_key_server_connection);
         ListPreference language = (ListPreference) getPreference(R.string.preference_key_language);
+        ListPreference theme = (ListPreference) getPreference(R.string.pref_key_theme_list);
         Preference applicationVersion = getPreference(R.string.preference_key_about_version);
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
 
@@ -109,6 +142,13 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         serverConnection.setSummary(getServerConnectionSummary());
         applicationVersion.setSummary(getApplicationVersionSummary());
         autoUpload.setSummary(getAutoUploadSummary());
+        theme.setSummary(getThemeSummary());
+    }
+
+    private String getThemeSummary() {
+        ListPreference theme = (ListPreference) getPreference(R.string.pref_key_theme_list);
+
+        return String.format("%s", theme.getEntry());
     }
 
     private String getLanguageSummary() {
@@ -151,7 +191,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         Preference applicationRating = getPreference(R.string.preference_key_about_rating);
         Preference shareApp = getPreference(R.string.preference_key_tell_a_friend);
         Preference autoUpload = getPreference(R.string.preference_screen_key_upload);
-        Preference lightTheme = getPreference(R.string.pref_key_light_theme);
 
         accountSignOut.setOnPreferenceClickListener(preference -> {
             setUpSignOutDialogFragment();
@@ -181,11 +220,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             openUploadSettingsFragment();
             return true;
         });
-        lightTheme.setOnPreferenceChangeListener((preference, newValue) -> {
-            setUpTheme((Boolean) newValue);
-            return true;
-        });
-
     }
 
     private void setUpApplicationIntro() {
@@ -198,17 +232,26 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         BusProvider.getBus().post(new UploadSettingsOpeningEvent());
     }
 
-    private void setUpTheme(Boolean isLightThemeEnabled) {
+    private void setUpTheme() {
         getActivity().setResult(RESULT_THEME_UPDATED);
-        if (isLightThemeEnabled) {
-            AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_NO);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_YES);
+        ListPreference theme = (ListPreference) getPreference(R.string.pref_key_theme_list);
+        String val = theme.getValue();
+        AppTheme themeEnabled = AppTheme.DEFAULT;
+
+        if (val.equals(getString(R.string.preference_key_system_default_theme))) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            themeEnabled = AppTheme.DEFAULT;
+
+        } else if (val.equals(getString(R.string.preference_key_light_theme))) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            themeEnabled = AppTheme.LIGHT;
+
+        } else if (val.equals(getString(R.string.preference_key_dark_theme))) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            themeEnabled = AppTheme.DARK;
         }
 
-        AmahiApplication.getInstance().setIsLightThemeEnabled(isLightThemeEnabled);
+        AmahiApplication.getInstance().setThemeEnabled(themeEnabled);
         getActivity().finish();
         startActivity(getActivity().getIntent());
     }
@@ -306,11 +349,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             setUpSettingsSummary();
 
             setUpLanguage();
+        } else if (key.equals(getString(R.string.pref_key_theme_list))) {
+            setUpSettingsSummary();
+
+            setUpTheme();
         }
     }
 
     private void setUpLanguage() {
-        LocaleHelper.setLocale(getContext(), getLanguage());
+        if (getLanguage().equals(getString(R.string.language_def_key))) {
+            LocaleHelper.setLocale(getContext(), ConfigurationCompat.getLocales(Resources.getSystem().getConfiguration()).get(0).getLanguage());
+        } else {
+            LocaleHelper.setLocale(getContext(), getLanguage());
+        }
         tearDownActivity();
     }
 

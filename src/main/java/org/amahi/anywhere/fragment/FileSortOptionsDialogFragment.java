@@ -3,6 +3,7 @@ package org.amahi.anywhere.fragment;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.FileSortOptionClickEvent;
 import org.amahi.anywhere.model.FileSortOption;
 import org.amahi.anywhere.util.Preferences;
+
+import java.util.Locale;
 
 public class FileSortOptionsDialogFragment extends BottomSheetDialogFragment {
 
@@ -121,7 +124,12 @@ public class FileSortOptionsDialogFragment extends BottomSheetDialogFragment {
     public void setItemChecked(TextView textView) {
 
         Drawable dw = getResources().getDrawable(R.drawable.ic_check);
-        textView.setCompoundDrawablesWithIntrinsicBounds(null, null, dw, null);
+        if (TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) ==
+            View.LAYOUT_DIRECTION_RTL) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(dw, null, null, null);
+        } else {
+            textView.setCompoundDrawablesWithIntrinsicBounds(null, null, dw, null);
+        }
         textView.setTextColor(getResources().getColor(R.color.accent));
 
     }

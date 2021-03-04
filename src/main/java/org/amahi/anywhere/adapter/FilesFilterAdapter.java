@@ -34,11 +34,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.l4digital.fastscroll.FastScroller;
 
+import org.amahi.anywhere.model.FileFilterOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
+import org.amahi.anywhere.util.Constants;
 import org.amahi.anywhere.util.Downloader;
 import org.amahi.anywhere.util.Mimes;
+import org.amahi.anywhere.util.Preferences;
 import org.amahi.anywhere.util.ServerFileClickListener;
 
 import java.io.File;
@@ -95,11 +98,24 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         notifyDataSetChanged();
     }
 
+    public void replaceWith(ServerShare serverShare, List<ServerFile> files, List<ServerFile> filteredFiles) {
+        this.files = files;
+        this.filteredFiles = filteredFiles;
+        this.serverShare = serverShare;
+
+        notifyDataSetChanged();
+    }
+
+
     public void removeFile(int position) {
         ServerFile serverFile = filteredFiles.get(position);
         this.filteredFiles.remove(serverFile);
         this.files.remove(serverFile);
         notifyDataSetChanged();
+    }
+
+    public List<ServerFile> getFilteredFiles() {
+        return filteredFiles;
     }
 
     @Override
@@ -206,4 +222,19 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         }
     }
 
+    public void setFilter(@FileFilterOption.Types int filterOption) {
+        filteredFiles = filter(files, filterOption);
+        notifyDataSetChanged();
+    }
+
+    private List<ServerFile> filter(List<ServerFile> dataList, @FileFilterOption.Types int filterOption) {
+        if (filterOption == FileFilterOption.All) return files;
+        List<ServerFile> filteredDataList = new ArrayList<>();
+        for (ServerFile dataFromDataList : dataList) {
+            if (filterOption == Mimes.matchCategory(dataFromDataList.getMime())) {
+                filteredDataList.add(dataFromDataList);
+            }
+        }
+        return filteredDataList;
+    }
 }

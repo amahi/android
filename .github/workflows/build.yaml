@@ -1,4 +1,4 @@
-name: Testing Workflow
+name: Build Test
 
 on: [pull_request, push]
 

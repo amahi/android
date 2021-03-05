@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -13,14 +15,19 @@ import androidx.fragment.app.DialogFragment;
 
 import org.amahi.anywhere.R;
 import org.amahi.anywhere.db.repositories.FileInfoRepository;
+import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.util.Fragments;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class AlertDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
     File file;
     private int dialogType = -1;
     private String fileUniqueKey;
+    private ServerFile serverFile;
     AlertDialog.Builder builder;
     public static final int DELETE_FILE_DIALOG = 0;
     public static final int DUPLICATE_FILE_DIALOG = 1;
@@ -33,10 +40,10 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         builder = new android.app.AlertDialog.Builder(getActivity());
-
         if (getArguments() != null) {
             dialogType = getArguments().getInt(Fragments.Arguments.DIALOG_TYPE);
             fileUniqueKey = getArguments().getString(Fragments.Arguments.FILE_UNIQUE_KEY);
+            serverFile = getArguments().getParcelable(Fragments.Arguments.SERVER_FILE);
         }
 
         switch (dialogType) {
@@ -71,15 +78,29 @@ public class AlertDialogFragment extends DialogFragment implements DialogInterfa
         file = (File) getArguments().getSerializable("file");
         builder.setTitle(getString(R.string.message_duplicate_file_upload))
             .setIcon(R.drawable.ic_duplicate_dialog)
-            .setMessage(getString(R.string.message_duplicate_file_upload_body, file.getName()))
+            .setMessage(getString(R.string.message_duplicate_file_upload_body))
             .setPositiveButton(getString(R.string.button_yes), this)
             .setNegativeButton(getString(R.string.button_no), this);
     }
 
     private void buildFileInfoDialog() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.file_info_dialog, null);
-        TextView lastOpened = view.findViewById(R.id.text_last_opened);
+
+        TextView lastOpened = view.findViewById(R.id.text_file_last_opened);
+        TextView lastModified = view.findViewById(R.id.text_file_last_modified);
+        TextView fileName = view.findViewById(R.id.text_file_name);
+        TextView fileSize = view.findViewById(R.id.text_file_size);
+        TextView fileType = view.findViewById(R.id.text_file_type);
+
+        Date d = serverFile.getModificationTime();
+        SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
+
         lastOpened.setText(getFileLastOpened());
+        lastModified.setText(dt.format(d));
+        fileName.setText(serverFile.getName());
+        fileSize.setText(Formatter.formatFileSize(getContext(), serverFile.getSize()));
+        fileType.setText(serverFile.getExtension().toUpperCase());
+
         builder.setTitle(getString(R.string.title_file_info))
             .setIcon(R.drawable.ic_info_dialog)
             .setPositiveButton(getString(R.string.text_ok), this);

@@ -38,6 +38,7 @@ import org.amahi.anywhere.bus.BusProvider;
 import org.amahi.anywhere.bus.UploadSettingsOpeningEvent;
 import org.amahi.anywhere.fragment.SettingsFragment;
 import org.amahi.anywhere.fragment.UploadSettingsFragment;
+import org.amahi.anywhere.util.AppTheme;
 import org.amahi.anywhere.util.LocaleHelper;
 
 /**
@@ -49,11 +50,19 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (AmahiApplication.getInstance().isLightThemeEnabled()) {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+        AppTheme selectedTheme = AmahiApplication.getInstance().getThemeEnabled();
+        switch (selectedTheme) {
+            case DEFAULT:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case LIGHT:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case DARK:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
+
         super.onCreate(savedInstanceState);
 
         setUpHomeNavigation();

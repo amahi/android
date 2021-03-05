@@ -10,24 +10,25 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.IntroductoryOverlay;
+import com.google.android.material.snackbar.Snackbar;
 import com.l4digital.fastscroll.FastScrollView;
 import com.squareup.otto.Subscribe;
 
@@ -156,6 +157,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
         recentFiles = getRecentFilesList();
         getRecentFileListView().setAdapter(new RecentFilesAdapter(this, recentFiles));
         showList(!recentFiles.isEmpty());
+        getListAdapter().setShowShimmer(false);
     }
 
     private List<RecentFile> getRecentFilesList() {
@@ -179,13 +181,8 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void setUpFilesContentRefreshing() {
         SwipeRefreshLayout refreshLayout = getRefreshLayout();
-
-        refreshLayout.setColorSchemeResources(
-            android.R.color.holo_blue_light,
-            android.R.color.holo_orange_light,
-            android.R.color.holo_green_light,
-            android.R.color.holo_red_light);
-
+        refreshLayout.setProgressBackgroundColorSchemeResource(R.color.accent);
+        refreshLayout.setColorSchemeResources(android.R.color.white);
         refreshLayout.setOnRefreshListener(this);
     }
 
@@ -258,6 +255,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
     @Subscribe
     public void onFileOptionSelected(FileOptionClickEvent event) {
         selectedFileOption = event.getFileOption();
+        String uniqueKey = event.getFileUniqueKey();
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
             case FileOption.SHARE:
@@ -279,6 +277,9 @@ public class RecentFilesActivity extends AppCompatActivity implements
                 break;
             case FileOption.OFFLINE_DISABLED:
                 changeOfflineState(false);
+                break;
+            case FileOption.FILE_INFO:
+                showFileInfo(uniqueKey);
         }
     }
 
@@ -484,6 +485,16 @@ public class RecentFilesActivity extends AppCompatActivity implements
         }
     }
 
+    private void showFileInfo(String uniqueKey) {
+        AlertDialogFragment fileInfoDialog = new AlertDialogFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.FILE_INFO_DIALOG);
+        bundle.putSerializable("file_unique_key", uniqueKey);
+        fileInfoDialog.setArguments(bundle);
+        fileInfoDialog.show(fm, "file_info_dialog");
+    }
+
     private void deleteFileFromOfflineStorage() {
         OfflineFileRepository offlineFileRepository = new OfflineFileRepository(this);
         OfflineFile offlineFile = offlineFileRepository.getOfflineFile(getSelectedRecentFile().getName(), getSelectedRecentFile().getModificationTime());
@@ -516,7 +527,7 @@ public class RecentFilesActivity extends AppCompatActivity implements
 
     private void startDownloadService(ServerFile file) {
         Intent downloadService = Intents.Builder.with(this).buildDownloadServiceIntent(file, null);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(downloadService);
         } else {
             startService(downloadService);

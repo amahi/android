@@ -43,4 +43,11 @@
         app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/menu_filter"
+        android:icon="@drawable/ic_filter"
+        android:orderInCategory="103"
+        android:title="@string/menu_filter"
+        app:showAsAction="always" />
+
 </menu>

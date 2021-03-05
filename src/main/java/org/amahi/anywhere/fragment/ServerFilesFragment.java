@@ -68,6 +68,7 @@ import org.amahi.anywhere.adapter.FilesFilterAdapter;
 import org.amahi.anywhere.adapter.ServerFilesAdapter;
 import org.amahi.anywhere.adapter.ServerFilesMetadataAdapter;
 import org.amahi.anywhere.bus.BusProvider;
+import org.amahi.anywhere.bus.FileFilterOptionClickEvent;
 import org.amahi.anywhere.bus.FileOpeningEvent;
 import org.amahi.anywhere.bus.FileOptionClickEvent;
 import org.amahi.anywhere.bus.FileSortOptionClickEvent;
@@ -80,6 +81,7 @@ import org.amahi.anywhere.bus.ServerFilesLoadFailedEvent;
 import org.amahi.anywhere.bus.ServerFilesLoadedEvent;
 import org.amahi.anywhere.db.entities.OfflineFile;
 import org.amahi.anywhere.db.repositories.OfflineFileRepository;
+import org.amahi.anywhere.model.FileFilterOption;
 import org.amahi.anywhere.model.FileOption;
 import org.amahi.anywhere.model.FileSortOption;
 import org.amahi.anywhere.server.client.ServerClient;
@@ -136,6 +138,8 @@ public class ServerFilesFragment extends Fragment implements
 
     @FileSortOption.Types
     private int filesSort = FileSortOption.TIME_DES;
+    @FileFilterOption.Types
+    private int filesFilter = FileFilterOption.All;
 
     private OfflineFileRepository mOfflineFileRepo;
     private @FileOption.Types
@@ -216,6 +220,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void setUpDefaults() {
         filesSort = Preferences.getSortOption(getContext());
+        resetFilter();
     }
 
     private void setUpProgressDialog() {
@@ -241,6 +246,8 @@ public class ServerFilesFragment extends Fragment implements
     public void onFileOptionSelected(FileOptionClickEvent event) {
         selectedFileOption = event.getFileOption();
         String uniqueKey = event.getFileUniqueKey();
+        ServerFile serverFile = event.getServerFile();
+
         switch (selectedFileOption) {
             case FileOption.DOWNLOAD:
                 if (Android.isPermissionRequired()) {
@@ -270,7 +277,7 @@ public class ServerFilesFragment extends Fragment implements
                 changeOfflineState(false);
 
             case FileOption.FILE_INFO:
-                showFileInfo(uniqueKey);
+                showFileInfo(uniqueKey, serverFile);
 
         }
     }
@@ -410,7 +417,7 @@ public class ServerFilesFragment extends Fragment implements
 
     private void startDownloadService(ServerFile file) {
         Intent downloadService = Intents.Builder.with(getContext()).buildDownloadServiceIntent(file, getShare());
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getContext().startForegroundService(downloadService);
         } else {
             getContext().startService(downloadService);
@@ -446,11 +453,12 @@ public class ServerFilesFragment extends Fragment implements
         }
     }
 
-    private void showFileInfo(String uniqueKey) {
+    private void showFileInfo(String uniqueKey, ServerFile serverFile) {
         AlertDialogFragment fileInfoDialog = new AlertDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(Fragments.Arguments.DIALOG_TYPE, AlertDialogFragment.FILE_INFO_DIALOG);
         bundle.putSerializable("file_unique_key", uniqueKey);
+        bundle.putParcelable(Fragments.Arguments.SERVER_FILE, serverFile);
         fileInfoDialog.setArguments(bundle);
         fileInfoDialog.setTargetFragment(this, 2);
         fileInfoDialog.show(getFragmentManager(), "file_info_dialog");
@@ -558,6 +566,7 @@ public class ServerFilesFragment extends Fragment implements
             getListAdapter().setAdapterMode(FilesFilterAdapter.AdapterMode.OFFLINE);
             getFilesAdapter().setUpDownloadReceiver();
             showOfflineFiles();
+            getListAdapter().setShowShimmer(false);
         }
     }
 
@@ -674,6 +683,7 @@ public class ServerFilesFragment extends Fragment implements
     @Subscribe
     public void onFilesLoaded(ServerFilesLoadedEvent event) {
         showFilesContent(event.getServerFiles());
+        getFilesAdapter().setShowShimmer(false);
     }
 
     private void showFilesContent(List<ServerFile> files) {
@@ -776,6 +786,7 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public void onRefresh() {
+        resetFilter();
         if (!isOfflineFragment()) {
             setUpFilesContent();
         } else {
@@ -854,11 +865,20 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == R.id.menu_sort) {
+        int id = menuItem.getItemId();
+        if (id == R.id.menu_sort) {
             showSortOptions();
+            return true;
+        } else if (id == R.id.menu_filter) {
+            showFilterOptions();
             return true;
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    private void showFilterOptions() {
+        Fragments.Builder.buildFileFilterOptionsDialogFragment()
+            .show(getChildFragmentManager(), "file_filter_options_dialog");
     }
 
     private void showSortOptions() {
@@ -875,15 +895,33 @@ public class ServerFilesFragment extends Fragment implements
 
     }
 
+    @Subscribe
+    public void onFileFilterOptionSelected(FileFilterOptionClickEvent event) {
+
+        filesFilter = event.getFilterOption();
+        saveFilterOption(filesFilter);
+        setUpFilesContentFilter();
+
+    }
+
+    private void saveFilterOption(int filesFilter) {
+        Preferences.setFilterOption(getContext(), filesFilter);
+    }
+
+    private void setUpFilesContentFilter() {
+
+        getFilesAdapter().setFilter(filesFilter);
+    }
+
     private void saveSortOption(int sortOption) {
         Preferences.setSortOption(getContext(), sortOption);
     }
 
     private void setUpFilesContentSort() {
         if (!isMetadataAvailable()) {
-            getFilesAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())));
+            getFilesAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())), sortFiles(getFilesAdapter().getFilteredFiles()));
         } else {
-            getFilesMetadataAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())));
+            getFilesMetadataAdapter().replaceWith(getShare(), checkOfflineFiles(sortFiles(getFiles())), sortFiles(getFilesAdapter().getFilteredFiles()));
         }
     }
 
@@ -894,12 +932,17 @@ public class ServerFilesFragment extends Fragment implements
 
     @Override
     public boolean onQueryTextChange(String s) {
+        resetFilter();
         if (!isMetadataAvailable()) {
             getFilesAdapter().getFilter().filter(s);
         } else {
             getFilesMetadataAdapter().getFilter().filter(s);
         }
         return true;
+    }
+
+    private void resetFilter() {
+        Preferences.setFilterOption(getContext(), FileFilterOption.All);
     }
 
     private void collapseSearchView() {

@@ -2,6 +2,8 @@
 <resources>
     <string name="alert_delete_confirm">మీకు ఖచ్చితంగా తెలుసా?</string>
     <string name="alert_delete_dialog">ఫైల్‌ను తొలగించు</string>
+    <string name="never_opened">ఎప్పుడూ తెరవలేదు</string>
+    <string name="last_opened">చివరిగా తెరవబడింది</string>
     <string name="application_not_found">​​హ్యాండ్లర్ అనువర్తనాలు కనుగొనబడలేదు</string>
     <string name="button_no">లేదు</string>
     <string name="button_retry">మళ్ళీ ప్రయత్నించండి</string>

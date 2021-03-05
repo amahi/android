@@ -146,6 +146,9 @@
 
     <string name="alert_delete_dialog">删除文件</string>
     <string name="alert_delete_confirm">你确定吗？</string>
+    <string name="never_opened">没开过</string>
+    <string name="last_opened">上次开启</string>
+
 
     <string name="title_file_info">文件信息</string>
     <string name="text_ok">好</string>

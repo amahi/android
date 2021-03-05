@@ -170,6 +170,8 @@
 
     <string name="alert_delete_dialog">ਫਾਈਲ ਮਿਟਾਓ</string>
     <string name="alert_delete_confirm">ਤੁਹਾਨੂੰ ਪੂਰਾ ਵਿਸ਼ਵਾਸ ਹੈ?</string>
+    <string name="never_opened">ਕਦੇ ਨਹੀਂ ਖੋਲ੍ਹਿਆ</string>
+    <string name="last_opened">ਆਖਰੀ ਵਾਰ ਖੋਲ੍ਹਿਆ ਗਿਆ</string>
 
     <string name="title_file_info">ਫਾਈਲ ਜਾਣਕਾਰੀ</string>
     <string name="text_ok">ਠੀਕ ਹੈ</string>

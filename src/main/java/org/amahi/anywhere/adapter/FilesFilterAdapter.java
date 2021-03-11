@@ -67,6 +67,7 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     private FilesFilter filesFilter;
     private onFilterListChange onFilterListChange;
     private AdapterMode adapterMode = AdapterMode.SERVER;
+    private boolean showShimmer = true;
 
     public <T extends onFilterListChange> void setFilterListChangeListener(T t) {
         this.onFilterListChange = t;
@@ -78,7 +79,11 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemCount() {
-        return filteredFiles.size();
+        if (showShimmer) {
+            return Constants.SHIMMER_ITEM_NUMBER;
+        } else {
+            return filteredFiles.size();
+        }
     }
 
     public ServerFile getItem(int i) {
@@ -159,9 +164,6 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     private Uri getImageUri(Context context, ServerFile file) {
-        if (!Preferences.getServerName(context).equals(Constants.welcomeToAmahi)) {
-            return serverClient.getFileThumbnailUri(serverShare, file);
-        }
         return serverClient.getFileUri(serverShare, file);
     }
 
@@ -223,6 +225,14 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
             filteredFiles = (List<ServerFile>) filterResults.values;
             notifyDataSetChanged();
         }
+    }
+
+    public boolean isShowShimmer() {
+        return showShimmer;
+    }
+
+    public void setShowShimmer(boolean showShimmer) {
+        this.showShimmer = showShimmer;
     }
 
     public void setFilter(@FileFilterOption.Types int filterOption) {

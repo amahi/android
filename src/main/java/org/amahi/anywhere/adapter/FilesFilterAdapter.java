@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.l4digital.fastscroll.FastScroller;
 
+import org.amahi.anywhere.model.FileFilterOption;
 import org.amahi.anywhere.server.client.ServerClient;
 import org.amahi.anywhere.server.model.ServerFile;
 import org.amahi.anywhere.server.model.ServerShare;
@@ -66,6 +67,7 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     private FilesFilter filesFilter;
     private onFilterListChange onFilterListChange;
     private AdapterMode adapterMode = AdapterMode.SERVER;
+    private boolean showShimmer = true;
 
     public <T extends onFilterListChange> void setFilterListChangeListener(T t) {
         this.onFilterListChange = t;
@@ -77,7 +79,11 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemCount() {
-        return filteredFiles.size();
+        if (showShimmer) {
+            return Constants.SHIMMER_ITEM_NUMBER;
+        } else {
+            return filteredFiles.size();
+        }
     }
 
     public ServerFile getItem(int i) {
@@ -97,11 +103,24 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         notifyDataSetChanged();
     }
 
+    public void replaceWith(ServerShare serverShare, List<ServerFile> files, List<ServerFile> filteredFiles) {
+        this.files = files;
+        this.filteredFiles = filteredFiles;
+        this.serverShare = serverShare;
+
+        notifyDataSetChanged();
+    }
+
+
     public void removeFile(int position) {
         ServerFile serverFile = filteredFiles.get(position);
         this.filteredFiles.remove(serverFile);
         this.files.remove(serverFile);
         notifyDataSetChanged();
+    }
+
+    public List<ServerFile> getFilteredFiles() {
+        return filteredFiles;
     }
 
     @Override
@@ -145,9 +164,6 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     private Uri getImageUri(Context context, ServerFile file) {
-        if(!Preferences.getServerName(context).equals(Constants.welcomeToAmahi)) {
-            return serverClient.getFileThumbnailUri(serverShare, file);
-        }
         return serverClient.getFileUri(serverShare, file);
     }
 
@@ -211,4 +227,27 @@ public abstract class FilesFilterAdapter extends RecyclerView.Adapter<RecyclerVi
         }
     }
 
+    public boolean isShowShimmer() {
+        return showShimmer;
+    }
+
+    public void setShowShimmer(boolean showShimmer) {
+        this.showShimmer = showShimmer;
+    }
+
+    public void setFilter(@FileFilterOption.Types int filterOption) {
+        filteredFiles = filter(files, filterOption);
+        notifyDataSetChanged();
+    }
+
+    private List<ServerFile> filter(List<ServerFile> dataList, @FileFilterOption.Types int filterOption) {
+        if (filterOption == FileFilterOption.All) return files;
+        List<ServerFile> filteredDataList = new ArrayList<>();
+        for (ServerFile dataFromDataList : dataList) {
+            if (filterOption == Mimes.matchCategory(dataFromDataList.getMime())) {
+                filteredDataList.add(dataFromDataList);
+            }
+        }
+        return filteredDataList;
+    }
 }

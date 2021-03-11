@@ -17,71 +17,53 @@
             android:paddingTop="4dp"
             android:paddingRight="0dp"
             android:paddingBottom="4dp"
-            android:text="@string/sort_by"
+            android:text="@string/filter_by"
             android:textColor="@android:color/black"
             android:textSize="12sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/text_sort_name_asc"
+            android:id="@+id/text_filter_all_files"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/file_name_a_z"
+            android:text="@string/all_files"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/text_sort_name_des"
+            android:id="@+id/text_filter_documents_only"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/file_name_z_a"
+            android:text="@string/documents_only"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/text_sort_time_des"
+            android:id="@+id/text_filter_videos_only"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/date_newest"
+            android:text="@string/videos_only"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/text_sort_time_asc"
+            android:id="@+id/text_filter_audio_only"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/date_oldest"
+            android:text="@string/audio_only"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/text_sort_size_des"
+            android:id="@+id/text_filter_photos_only"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/size_largest"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/text_sort_size_asc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="@string/size_smallest"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/text_sort_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="@string/file_type"
+            android:text="@string/photos_only"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 

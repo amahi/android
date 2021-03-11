@@ -24,12 +24,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.format.Formatter;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +37,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.squareup.otto.Subscribe;
 
 import org.amahi.anywhere.R;
@@ -122,61 +126,76 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final ServerFileViewHolder fileHolder = (ServerFileViewHolder) holder;
 
-        final ServerFile file = filteredFiles.get(position);
-
-        if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
-            fileHolder.moreInfo.setVisibility(View.GONE);
-            fileHolder.moreOptions.setVisibility(View.GONE);
-            fileHolder.rightArrow.setVisibility(View.VISIBLE);
-
+        if (isShowShimmer()) {
+            fileHolder.shimmerFrameLayout.startShimmer();
         } else {
-            fileHolder.moreInfo.setVisibility(View.VISIBLE);
-            fileHolder.moreOptions.setVisibility(View.VISIBLE);
-            fileHolder.rightArrow.setVisibility(View.GONE);
+            final ServerFile file = filteredFiles.get(position);
+            stopShimmer(fileHolder);
 
-            if (!isOfflineMode()) {
-                fileHolder.fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
+            if (Mimes.match(file.getMime()) == Mimes.Type.DIRECTORY) {
+                fileHolder.moreInfo.setVisibility(View.GONE);
+                fileHolder.moreOptions.setVisibility(View.GONE);
+                fileHolder.rightArrow.setVisibility(View.VISIBLE);
+
             } else {
-                if (isFileDownloading(fileHolder, file, position)) {
-                    fileHolder.moreInfo.setVisibility(View.GONE);
-                    fileHolder.progressBar.setVisibility(View.VISIBLE);
+                fileHolder.moreInfo.setVisibility(View.VISIBLE);
+                fileHolder.moreOptions.setVisibility(View.VISIBLE);
+                fileHolder.rightArrow.setVisibility(View.GONE);
+
+                if (!isOfflineMode()) {
+                    fileHolder.fileSize.setText(Formatter.formatFileSize(context, getFileSize(file)));
                 } else {
-                    fileHolder.moreInfo.setVisibility(View.VISIBLE);
-                    fileHolder.progressBar.setVisibility(View.GONE);
-                    File localFile = new File(context.getFilesDir(), Downloader.OFFLINE_PATH + "/" + file.getName());
-                    fileHolder.fileSize.setText(Formatter.formatFileSize(context, localFile.length()));
+                    if (isFileDownloading(fileHolder, file, position)) {
+                        fileHolder.moreInfo.setVisibility(View.GONE);
+                        fileHolder.progressBar.setVisibility(View.VISIBLE);
+                    } else {
+                        fileHolder.moreInfo.setVisibility(View.VISIBLE);
+                        fileHolder.progressBar.setVisibility(View.GONE);
+                        File localFile = new File(context.getFilesDir(), Downloader.OFFLINE_PATH + "/" + file.getName());
+                        fileHolder.fileSize.setText(Formatter.formatFileSize(context, localFile.length()));
+                    }
                 }
+
+                Date d = getLastModified(file);
+                SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
+                fileHolder.fileLastModified.setText(dt.format(d));
+
             }
 
-            Date d = getLastModified(file);
-            SimpleDateFormat dt = new SimpleDateFormat("EEE LLL dd yyyy", Locale.getDefault());
-            fileHolder.fileLastModified.setText(dt.format(d));
+            SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
+            if (queryString != null && !TextUtils.isEmpty(queryString)) {
+                int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
+                if (searchMatchPosition != -1)
+                    sb.setSpan(getFcs(), searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            }
+            fileHolder.fileTextView.setText(sb);
+
+            if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
+                setUpImageIcon(file, fileHolder.fileIconView);
+            } else if (Mimes.match(file.getMime()) == Mimes.Type.AUDIO) {
+                setUpAudioArt(file, fileHolder.fileIconView);
+            } else {
+                fileHolder.fileIconView.setImageResource(Mimes.getFileIcon(file));
+            }
+
+            fileHolder.itemView.setOnClickListener(view -> {
+                mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
+            });
+
+            fileHolder.moreOptions.setOnClickListener(view -> {
+                selectedPosition = fileHolder.getAdapterPosition();
+                mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
+            });
         }
+    }
 
-        SpannableStringBuilder sb = new SpannableStringBuilder(file.getName());
-        if (queryString != null && !TextUtils.isEmpty(queryString)) {
-            int searchMatchPosition = file.getName().toLowerCase().indexOf(queryString.toLowerCase());
-            if (searchMatchPosition != -1)
-                sb.setSpan(fcs, searchMatchPosition, searchMatchPosition + queryString.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        }
-        fileHolder.fileTextView.setText(sb);
-
-        if (Mimes.match(file.getMime()) == Mimes.Type.IMAGE) {
-            setUpImageIcon(file, fileHolder.fileIconView);
-        } else if (Mimes.match(file.getMime()) == Mimes.Type.AUDIO) {
-            setUpAudioArt(file, fileHolder.fileIconView);
-        } else {
-            fileHolder.fileIconView.setImageResource(Mimes.getFileIcon(file));
-        }
-
-        fileHolder.itemView.setOnClickListener(view -> {
-            mListener.onItemClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-        });
-
-        fileHolder.moreOptions.setOnClickListener(view -> {
-            selectedPosition = fileHolder.getAdapterPosition();
-            mListener.onMoreOptionClick(fileHolder.itemView, fileHolder.getAdapterPosition());
-        });
+    private void stopShimmer(ServerFileViewHolder fileHolder) {
+        fileHolder.shimmerFrameLayout.stopShimmer();
+        fileHolder.shimmerFrameLayout.setShimmer(null);
+        fileHolder.fileIconView.setBackground(null);
+        fileHolder.fileTextView.setBackground(null);
+        fileHolder.fileLastModified.setBackground(null);
+        fileHolder.fileSize.setBackground(null);
     }
 
     private boolean isFileDownloading(ServerFileViewHolder holder, ServerFile file, int position) {
@@ -237,6 +256,10 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         }
     }
 
+    public ForegroundColorSpan getFcs() {
+        return new ForegroundColorSpan(ContextCompat.getColor(context, R.color.accent));
+    }
+
     public void tearDownCallbacks() {
         BusProvider.getBus().unregister(this);
         if (isOfflineMode()) {
@@ -248,11 +271,12 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
         this.mListener = mListener;
     }
 
-    public class ServerFileViewHolder extends RecyclerView.ViewHolder {
+    public static class ServerFileViewHolder extends RecyclerView.ViewHolder {
         ImageView fileIconView, moreOptions, rightArrow;
         TextView fileTextView, fileSize, fileLastModified;
         LinearLayout moreInfo;
         ProgressBar progressBar;
+        ShimmerFrameLayout shimmerFrameLayout;
 
         ServerFileViewHolder(View itemView) {
             super(itemView);
@@ -264,6 +288,7 @@ public class ServerFilesAdapter extends FilesFilterAdapter {
             moreOptions = itemView.findViewById(R.id.more_options);
             progressBar = itemView.findViewById(R.id.download_progress_bar);
             rightArrow = itemView.findViewById(R.id.right_arrow);
+            shimmerFrameLayout = itemView.findViewById(R.id.shimmer_layout_file);
         }
     }
 

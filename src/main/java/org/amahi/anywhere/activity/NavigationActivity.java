@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -55,6 +56,7 @@ import org.amahi.anywhere.server.model.ServerApp;
 import org.amahi.anywhere.server.model.ServerShare;
 import org.amahi.anywhere.tv.activity.IntroActivity;
 import org.amahi.anywhere.util.Android;
+import org.amahi.anywhere.util.AppTheme;
 import org.amahi.anywhere.util.CheckTV;
 import org.amahi.anywhere.util.Fragments;
 import org.amahi.anywhere.util.Intents;
@@ -76,14 +78,25 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     private ActionBarDrawerToggle navigationDrawerToggle;
     private String navigationTitle;
     final private int SETTINGS_ACTION = 2;
+    private long backPressedTime;
+    private Toast backToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (AmahiApplication.getInstance().isLightThemeEnabled()) {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else {
-            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+        AppTheme selectedTheme = AmahiApplication.getInstance().getThemeEnabled();
+        switch (selectedTheme) {
+            case DEFAULT:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case LIGHT:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case DARK:
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
+        
+        backPressedTime = System.currentTimeMillis();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
@@ -451,5 +464,19 @@ public class NavigationActivity extends AppCompatActivity implements DrawerLayou
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            if (backToast != null)
+                backToast.cancel();
+            super.onBackPressed();
+            return;
+        } else {
+            backToast = Toast.makeText(getBaseContext(), R.string.message_toast_press_back_again, Toast.LENGTH_SHORT);
+            backToast.show();
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 }

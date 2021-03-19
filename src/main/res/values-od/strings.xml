@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2014 Amahi
+  ~
+  ~ This file is part of Amahi.
+  ~
+  ~ Amahi is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ Amahi is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with Amahi. If not, see <http ://www.gnu.org/licenses/>.
+  -->
+
+    <resources>
+
+        <string name="title_apps">ଆପ୍ଲିକେସନ୍</string>
+        <string name="title_settings">ସେଟିଂ</string>
+        <string name="title_shares">ସେଆର </string>
+        <string name="title_selected_server">Serveur</string>
+        <string name="title_no_server">Pas de serveur</string>
+        <string name="title_upload_list">Téléchargement</string>
+        <string name="title_offline_files">Fichiers hors connexion</string>
+        <string name="title_recent_files">Fichiers récents</string>
+
+        <string name="button_search_application">Recherche Google Play</string>
+        <string name="button_sign_in">Connexion</string>
+        <string name="button_yes">ହଁ</string>
+        <string name="button_no">ନା</string>
+        <string name="button_retry">ଚେଷ୍ଟା କରନ୍ତୁ</string>
+
+        <string name="hint_password">ପାସୱାର୍ଡ</string>
+        <string name="hint_username">Nom d\'utilisateur</string>
+
+        <string name="menu_back">ପଛକୁ</string>
+        <string name="menu_forward">ଆଗକୁ</string>
+        <string name="menu_navigation_close">ନାଭିଗେସନ୍ ବନ୍ଦ</string>
+        <string name="menu_navigation_open">ନାଭିଗେସନ୍ ଖୋଲା</string>
+        <string name="menu_settings">ସେଟି</string>
+        <string name="menu_share">ସେଆର </string>
+        <string name="menu_save">ସେଭ୍</string>
+        <string name="menu_delete">ଡିଲିଟ୍ କରନ୍ତୁ </string>
+        <string name="menu_offline">ଅଫଲାଇନ୍</string>
+        <string name="menu_sort">ସର୍ଟ କରନ୍ତୁ</string>
+        <string name="menu_search">Chercher</string>
+        <string name="menu_open">ଖୋଲ</string>
+        <string name="menu_audio_files">ଅଡିଓ ଫାଇଲ୍</string>
+        <string name="menu_video_subtitle">ଭିଡିଓ ସବ୍ଟାଇଟ୍</string>
+
+        <string name="message_empty_apps">ଖାଲି ଆପ୍ସ'</string>
+        <string name="message_empty_files">ଖାଲି ଫାଇଲ୍ </string>
+        <string name="message_empty_shares">ଖାଲି ସେୟାରଗୁଡିକ</string>
+        <string name="message_empty_recent_files">ସାମ୍ପ୍ରତିକ ଫାଇଲଗୁଡିକ ଖାଲି କରନ୍ତୁ</string>
+
+        <string name="message_error_account_exists">Ce compte existe déjà.</string>
+        <string name="message_error_search_application">Nous n\'avons pas trouvé d\'application supportée pour ce fichier.</string>
+        <string name="forgot_password"> <a href="https://www.amahi.org/forgot">Mot de passe oublié?</a></string>
+        <string name="message_error_authentication">Ce nom d\'utilisateur ou ce mot de passe est incorrect. Veuillez réessayer. </string>
+        <string name="message_error_authentication_connection">Erreur de connexion. Vérifiez vos paramètres et réessayez.</string>
+        <string name="message_error_authentication_field_empty">Le nom d\'utilisateur ou le mot de passe ne peuvent pas être vides</string>
+        <string name="message_error_connection">Erreur de connexion</string>
+        <string name="message_tap_to_retry">Tappez pour réessayer</string>
+        <string name="message_error_video">Erreur lors de la lecture du vidéo</string>
+        <string name="message_error_amahi_anywhere_app">L\'application Amahi Anywhere n\'est pas atteignable sur votre serveur. Veuillez vous assurer que l\'application Amahi Anywhere est installée, en fonction et atteignable sur votre réseau.</string>
+        <string name="message_resume_last_position">Voulez-vous reprendre à l\'endroit où vous aviez arrêté</string>
+
+        <string name="message_notice_create_some">Créez-en et essayez à nouveau</string>
+        <string name="message_notice_visit_some">Visitez-en et essayez encore</string>
+
+        <string name="message_progress_file_downloading">Téléchargement du fichier …</string>
+        <string name="message_progress_file_preparing">Préparation du fichier …</string>
+        <string name="message_no_files">Les fichiers téléchargés apparaîtront ici</string>
+        <string name="message_create_and_try_again">Trouver des fichiers à télécharger</string>
+        <string name="message_connection_error">Erreur de connexion</string>
+
+        <string name="message_delete_file_title">Confirmation de la suppression du fichier?</string>
+        <string name="message_delete_file_body">Cette action n\'est pas réversible.</string>
+        <string name="message_delete_progress">Supression</string>
+        <string name="message_delete_file_error">Une erreur est survenue lors de la supression du fichier</string>
+        <string name="message_file_upload">Sélectionnez les fichiers à envoyer</string>
+        <string name="message_file_upload_title">Envoi de votre fichier</string>
+        <string name="message_file_upload_complete">Fichier envoyé avec succès</string>
+        <string name="message_file_upload_error">Une erreur est survenue lors de l\'envoi de votre fichier</string>
+        <string name="message_duplicate_file_upload">Écraser le fichier existant?</string>
+        <string name="message_duplicate_file_upload_body">Le fichier %1$s existe déjà.\nÊtes-vous sûr de vouloir remplacer le fichier existant?</string>
+        <string name="notification_upload_title">Envoi d\'une nouvelle image</string>
+        <string name="message_upload_success">Envoi complété</string>
+        <string name="message_upload_error">Échec de l\'envoi</string>
+        <string name="message_file_download_complete">Fichier téléchargé avec succès</string>
+        <string name="message_offline_file_deleted">Fichier hors-ligne retiré avec succès</string>
+        <string name="notification_download_offline_title">Rendu disponible hors-ligne</string>
+        <string name="notification_offline_download_complete">Fichier disponible hors-ligne</string>
+        <string name="notification_offline_download_paused">Attente de connexion Internet</string>
+        <string name="notification_offline_download_error">Erreur lors du rendu hors-ligne du fichier</string>
+
+        <string name="share_subject">Regardez mon serveur maison Amahi!</string>
+        <string name="share_message">J\'utilise Amahi Home Server pour stocker, sauvegarder et streamer tous mes fichiers.\n\nRegardez-ça!\n\n<a href="https://www.amahi.org/">https://www.amahi.org/</a></string>
+        <string name="title_version_settings">Amahi pour Android</string>
+        <string name="message_no_search_result">Pas de résultat trouvé.</string>
+
+        <!-- I miss the context for this one -->
+        <string name="application_not_found">Pas d\'application Handler trouvé</string>
+
+        <string name="message_logout">Déconnecté avec succès</string>
+        <string name="share_screen_title">Partager l\'utilisation</string>
+        <string name="share_permission">La permission de stockage est requise pour télécherger le fichier</string>
+        <string name="share_permission_denied">Vous avez refusé la permission de stockage. Activez la permission pour continuer</string>
+        <string name="file_upload_permission">La permission de lecture de fichiers et requise pour accéder aux fichier sur votre appareil</string>
+        <string name="file_upload_permission_denied">Vous avez refusé la permission pour lire les fichiers. Activez la permission pour continuer</string>
+        <string name="camera_permission">L\'accès à la caméra est requis pour prendre des photos et des vidéos</string>
+
+        <string name="label_previous">Précédent</string>
+        <string name="label_next">Suivant</string>
+        <string name="label_play">Jouer</string>
+        <string name="label_pause">Pause</string>
+        <string name="media_route_menu_title">Jouer sur&#8230;</string>
+
+        <string name="upload_camera">Utiliser la caméra</string>
+        <string name="upload_file">Envoyer le fichier</string>
+
+        <!--ANDROID TV RELATED STRINGS-->
+        <string name="exit_title">Quitter</string>
+        <string name="exit_message">Êtes-vous sûr de quitter?</string>
+        <string name="yes">Oui</string>
+        <string name="no">Non</string>
+
+        <!--Introduction TV activity strings-->
+        <string name="intro_tv_1">Bienvenue à Amahi pour Android TV</string>
+        <string name="intro_phone_1">Bienvenue à Amahi pour Android</string>
+        <string name="intro_desc_phone_1">Une app Android qui vous permet d\'accéder à vos fichiers dans votre Amahi Home Server.</string>
+
+        <string name="intro_title_2">Accéder à votre HDA</string>
+        <string name="intro_desc_2">Amahi vous permet de lire vos vidéos, voir vos photos, écouter votre musique et plus encore!</string>
+
+        <string name="intro_title_3">Parcourir vos photos</string>
+        <string name="intro_desc_tv_3">Parcourez votre librairie de photos sur votre téléviseur, rapidement à une résolution incroyable.</string>
+        <string name="intro_desc_phone_3">Parcourez votre librairie de photo facilement, envoyez vos photos directement de votre cellulaire.</string>
+
+        <string name="intro_title_4">Lire votre musique</string>
+        <string name="intro_desc_tv_4">Écoutez votre musique sur votre téléviseur, parfait pour les partys, ou pour relaxer avec vos chansons favorique.</string>
+        <string name="intro_desc_phone_4">Évoutez votre musique, à la maison ou sur la route.</string>
+
+        <string name="intro_title_5">Lire vos films et vos vidéos</string>
+        <string name="intro_desc_tv_5">Regardez vos vidéos et vos films sur votre grand écran avec une pleine résolution incroyable.</string>
+        <string name="intro_desc_phone_5">Regardez vos vidéos et vos films sur votre téléphone n\'importe quand et n\'importe où.</string>
+
+        <string name="intro_title_6">Prêt</string>
+        <string name="intro_desc_6">Vous être prêt. Merci d\'utiliser Amahi.</string>
+
+        <string name="title_file_info">Informations sur le fichier</string>
+        <string name="text_ok">D\'accord</string>
+
+        <string name="alert_delete_dialog">Supprimer le fichier</string>
+        <string name="alert_delete_confirm">Êtes-vous sûr?</string>
+        <string name="language_en">Anglais</string>
+        <string name="language_fr">Français</string>
+        <string name="language_es">Espagnol</string>
+        <string name="language_bn">Bengali</string>
+        <string name="language_te">Telugu</string>
+        <string name="language_pa">Punjabi</string>
+        <string name="language_de">Allemand</string>
+        <string name="language_hi">Hindi</string>
+        <string name="language_zh">Chinois</string>
+
+        <string name="preference_category_about">À propos</string>
+        <string name="preference_category_account">Compte</string>
+        <string name="preference_category_settings">Paramètres</string>
+        <string name="preference_category_general">Général</string>
+        <string name="preference_title_about_feedback">Retour d\'information</string>
+        <string name="preference_title_about_rating">Taux</string>
+        <string name="preference_title_about_version">Version</string>
+        <string name="sign_out_title">Sign Out</string>
+        <string name="sign_out_message">Êtes-vous certain de vouloir vous déconnecter?</string>
+        <string name="cancel">Annuler</string>
+        <string name="introducing_cast">Présentation de Cast</string>
+        <string name="unknown_artist">Artiste inconnu</string>
+        <string name="enable">Enable</string>
+        <string name="disable">Désactiver</string>
+        <string name="header_settings">Paramètres</string>
+        <string name="settings">Paramètres</string>
+        <string name="songs_in">Chanson (s) en </string>
+        <string name="videos_in">Vidéo (s) en </string>
+        <string name="preference_title_about_intro">Intro</string>
+        <string name="preference_title_account_sign_out">Déconnexion</string>
+        <string name="preference_title_server_connection">Lien</string>
+        <string name="preference_title_tell_a_friend">Dire à un ami</string>
+        <string name="preference_title_upload_settings">Téléchargement automatique de photos</string>
+        <string name="preference_title_language">Langue</string>
+        <string name="preference_title_upload_server">Sélectionnez un Serveur</string>
+        <string name="preference_title_upload_share">Sélectionnez Partager</string>
+        <string name="preference_title_upload_location">Télécharger l\'emplacement</string>
+        <string name="preference_title_upload_data">Autoriser sur les données cellulaires</string>
+        <string name="preference_summary_server">Select Server</string>
+        <string name="preference_summary_share">Sélectionnez Partager</string>
+        <string name="preference_summary_location">Sélectionnez l\'emplacement</string>
+        <string name="preference_message_no_server">Aucun serveur n\'est sélectionné</string>
+        <string name="preference_message_no_share">Aucun partage n\'est sélectionné</string>
+        <string name="preference_entry_server_connection_auto">Détection automatique</string>
+        <string name="preference_entry_server_connection_remote">Éloigné</string>
+        <string name="pref_title_server_select">Sélectionnez un serveur</string>
+        <string name="pref_title_server_select_desc">Choisissez le serveur dont vous souhaitez accéder aux partages.</string>
+        <string name="pref_title_server_active_list">Liste des serveurs actifs</string>
+        <string name="pref_server_active_list_desc">Choisissez le serveur actif dont vous souhaitez accéder aux partages.</string>
+        <string name="pref_title_sign_out">Déconnexion</string>
+        <string name="pref_title_account">Compte</string>
+        <string name="pref_sign_out_desc">Se déconnecter d\'Amahi TV</string>
+        <string name="pref_action_not_defined">L\'action n\'est pas définie</string>
+        <string name="pref_title_light_theme">Thème léger</string>
+        <string name="pref_title_select_theme">Sélectionne un thème</string>
+        <string name="pref_title_theme">Thème</string>
+        <string name="pref_theme_desc">Choisissez parmi clair ou foncé</string>
+        <string name="pref_theme_detail_desc">Sélectionnez le type de connexion souhaité. Vous pouvez le définir comme Amahi Light ou Amahi Dark</string>
+        <string name="pref_theme_dark">Amahi sombre</string>
+        <string name="pref_theme_light">Amahi light</string>
+        <string name="pref_title_connection">Lien</string>
+        <string name="pref_option_go_back">Retourner</string>
+        <string name="pref_connection_desc">Sélectionnez le type de connexion souhaité. Vous pouvez le définir comme Détection automatique, réseau local ou distant.</string>
+        <string name="preference_entry_server_connection_local">LAN</string>
+
+        <string name="message_connect_and_try_again">Veuillez vous connecter à Internet et réessayer.</string>
+        <string name="message_connect_to_server_and_try_again">Veuillez vous connecter à votre serveur et réessayer.</string>
+
+        <string name="rate_dialog_title">Notez Amahi</string>
+        <string name="rate_dialog_message">Si vous aimez utiliser Amahi, pourriez-vous prendre un moment pour le noter? Merci pour votre aide!</string>
+        <string name="rate_dialog_ok">Évaluer Maintenant</string>
+        <string name="rate_dialog_cancel">Me le rappeler plus tard</string>
+        <string name="rate_dialog_no">Non, Merci</string>
+        <string name="file_info">Informations sur le fichier</string>
+        <string name="sort_by">Trier par</string>
+        <string name="file_name_a_z">Nom de fichier (A à Z)</string>
+        <string name="file_name_z_a">Nom de fichier (Z à A)</string>
+        <string name="date_newest">Date (la plus récente en premier)</string>
+        <string name="date_oldest">Date (la plus ancienne en premier)</string>
+        <string name="size_largest">Taille (la plus grande en premier)</string>
+        <string name="size_smallest">Taille (la plus petite en premier)</string>
+        <string name="file_type">Type de fichier</string>
+
+        <string name="message_toast_press_back_again">Appuyez à nouveau pour quitter</string>
+
+    </resources>
+
+
+
+</resources>

@@ -52,7 +52,7 @@
     <string name="message_empty_recent_files">"कोई हाल की फाइल्स नहीं हैं "</string>
     <string name="message_error_account_exists">अकाउंट पहले से मौजूद है।</string>
     <string name="message_error_search_application">हमें इस फाइल के लिए कोई समर्थित एप्स नहीं मिले।</string>
-    <string name="forgot_password"><a href="https://www.amahi.org/forgot">आप अपनी फ़ाइलों को भूल गए?</a></string>
+    <string name="forgot_password"><a href="https://www.amahi.org/forgot">आप अपनी पासवर्ड को भूल गए?</a></string>
     <string name="message_error_authentication">उपयोगकर्ता नाम और पासवर्ड सही नहीं हैं। कृपया पुन: प्रयास करें।</string>
     <string name="message_error_authentication_connection">संपर्क त्रुटि। अपनी सेटिंग्स जांचें और फिर से प्रयास करें।</string>
     <string name="message_error_authentication_field_empty">उपयोगकर्ता नाम या पासवर्ड फ़ील्ड को खाली नहीं छोड़ा जा सकता है।</string>

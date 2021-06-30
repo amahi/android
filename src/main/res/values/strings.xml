@@ -54,7 +54,7 @@
     <string name="menu_open">OPEN</string>
     <string name="menu_audio_files">Files</string>
     <string name="menu_video_subtitle">Subtitles</string>
-    <string name="menu_filter">Filter</string>
+    <string name="menu_filter" translatable="false">Filter</string>
 
     <string name="media_route_menu_item" translatable="false">cast</string>
 
@@ -203,6 +203,7 @@
     <string name="language_pa">Punjabi</string>
     <string name="language_hi">Hindi</string>
     <string name="language_zh">Chinese</string>
+    <string name="language_ru">Russian</string>
 
     <string name="language_def_key" translatable="false">def</string>
     <string name="language_zh_key" translatable="false">zh</string>

@@ -260,5 +260,6 @@
     <string name="file_type">Dateityp</string>
 
     <string name="message_toast_press_back_again">" Zum Beenden erneut zurück drücken"</string>
+    <string name="language_ru">Russisch</string>
 
 </resources>

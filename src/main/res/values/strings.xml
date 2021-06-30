@@ -203,6 +203,7 @@
     <string name="language_pa">Punjabi</string>
     <string name="language_hi">Hindi</string>
     <string name="language_zh">Chinese</string>
+    <string name="language_ru">Russian</string>
 
     <string name="language_def_key" translatable="false">def</string>
     <string name="language_zh_key" translatable="false">zh</string>

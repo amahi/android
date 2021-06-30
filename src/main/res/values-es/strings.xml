@@ -213,5 +213,6 @@
     <string name="file_type">Tipo de archivo</string>
 
     <string name="message_toast_press_back_again">" Presione de nuevo para salir"</string>
+    <string name="language_ru">Ruso</string>
 
 </resources>

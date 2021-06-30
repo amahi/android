@@ -54,7 +54,7 @@
     <string name="menu_open">OPEN</string>
     <string name="menu_audio_files">Files</string>
     <string name="menu_video_subtitle">Subtitles</string>
-    <string name="menu_filter" translatable="false">Filter</string>
+    <string name="menu_filter">Filter</string>
 
     <string name="media_route_menu_item" translatable="false">cast</string>
 

@@ -5,6 +5,7 @@
   </a>
 </p>
 
+[![Amahi Downloads](https://www.appbrain.com/shield/org.amahi.anywhere.svg)](https://www.appbrain.com/app/amahi/org.amahi.anywhere)
 [![Build Status](https://travis-ci.org/amahi/android.svg?branch=master)](https://travis-ci.org/amahi/android)
 [![Twitter](https://img.shields.io/twitter/follow/amahi.svg?style=social&label=@amahi)](https://twitter.com/amahi)
 [![#amahi on Freenode](https://img.shields.io/badge/chat-on%20freenode-brightgreen)](https://webchat.freenode.net/?channels=amahi)
